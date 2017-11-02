@@ -70,6 +70,16 @@ define(['jquery', 'core/form-autocomplete', 'core/str', 'core/notification'],
         });
     };
 
+    /**
+     * Return the unified user filter form.
+     *
+     * @method _getForm
+     * @private
+     */
+    var _getForm = function() {
+        return $(SELECTORS.UNIFIED_FILTERS).closest('form');
+    };
+
     return /** @alias module:core/form-autocomplete */ {
         // Public variables and functions.
         /**
@@ -79,6 +89,14 @@ define(['jquery', 'core/form-autocomplete', 'core/str', 'core/notification'],
          */
         'init': function() {
             init();
+        },
+        /**
+         * Return the unified user filter form.
+         *
+         * @method _getForm
+         */
+        '_getForm': function() {
+            return _getForm();
         }
     };
 });

@@ -109,7 +109,7 @@
                     </optgroup>
                 {{/optgroup}}
                 {{^optgroup}}
-                    <option value="{{value}}" {{#selected}}selected{{/selected}}>{{{name}}}</option>
+                    <option {{ignore}} value="{{value}}" {{#selected}}selected{{/selected}}>{{{name}}}</option>
                 {{/optgroup}}
             {{/options}}
         </select>
@@ -119,12 +119,13 @@
     </form>
 </div>
 {{#js}}
-require(['core/yui'], function(Y) {
-    Y.use('moodle-core-formautosubmit', function() {
-        M.core.init_formautosubmit({
-            selectid: '{{id}}',
-            nothing: {{#hasnothing}}'{{nothingkey}}'{{/hasnothing}}{{^hasnothing}}false{{/hasnothing}}
-        });
+require(['jquery'], function($) {
+    $('#{{id}}').change(function() {
+        var form = $(this).closest('form');
+        var ignore = $(this).find(':selected').attr('data-ignore');
+        if (typeof ignore === typeof undefined) {
+            form.submit();
+        }
     });
 });
 {{/js}}

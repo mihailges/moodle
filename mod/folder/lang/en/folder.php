@@ -33,6 +33,7 @@ $string['folder:addinstance'] = 'Add a new folder';
 $string['folder:managefiles'] = 'Manage files in folder module';
 $string['folder:view'] = 'View folder content';
 $string['foldercontent'] = 'Files and subfolders';
+$string['foldercontentchanged'] = 'Folder\'s content has changed. Please reload the page.';
 $string['indicator:cognitivedepth'] = 'Folder cognitive';
 $string['indicator:cognitivedepth_help'] = 'This indicator is based on the cognitive depth reached by the student in a Folder resource.';
 $string['indicator:socialbreadth'] = 'Folder social';

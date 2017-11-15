@@ -207,4 +207,80 @@ class mod_folder_external extends external_api {
             )
         );
     }
+
+    /**
+     * Returns description of folder_state_changed method parameters
+     *
+     * @return external_function_parameters
+     * @since Moodle 3.5
+     */
+    public static function folder_state_changed_parameters() {
+        return new external_function_parameters(
+            array(
+                'folderid' => new external_value(PARAM_INT, 'Folder instance id'),
+                'revision' => new external_value(PARAM_INT, 'Folder revision number')
+            )
+        );
+    }
+
+    /**
+     * Checks if the users folder state is identical to the current folder state.
+     *
+     * @param int $folderid the folder instance id
+     * @param int $revision the folder revision number
+     * @return array of warnings and status result
+     * @since Moodle 3.5
+     */
+    public static function folder_state_changed($folderid, $revision) {
+        global $DB, $CFG;
+
+        $params = self::validate_parameters(self::folder_state_changed_parameters(), array(
+            'folderid' => $folderid,
+            'revision' => $revision
+        ));
+
+        // Request and permission validation.
+        $folder = $DB->get_record('folder', array('id' => $params['folderid']), '*', MUST_EXIST);
+        list($course, $cm) = get_course_and_cm_from_instance($folder, 'folder');
+
+        $context = context_module::instance($cm->id);
+        self::validate_context($context);
+
+        require_capability('mod/folder:view', $context);
+        
+        // Check if the revision number has changed
+        if ($params['revision'] != $folder->revision) {
+            $warnings[] = (object)[
+                'key' => 'foldercontentchanged',
+                'message' => get_string('foldercontentchanged', 'mod_folder')
+            ];
+
+            return ['status' => true, 'warnings' => $warnings];
+        }
+        else {
+            return ['status' => false, 'warnings' => []];
+        }
+    }
+
+    /**
+     * Returns description of the folder_state_changed method return values
+     *
+     * @return external_description
+     * @since Moodle 3.5
+     */
+    public static function folder_state_changed_returns() {
+        return new external_single_structure(
+            array(
+                'status' => new external_value(PARAM_BOOL, 'True if the folder state has changed'),
+                'warnings' => new external_multiple_structure(
+                    new external_single_structure(
+                        array(
+                            'key' => new external_value(PARAM_TEXT, 'The warning key'),
+                            'message' => new external_value(PARAM_TEXT, 'The warning message'),
+                        )
+                    ), 'List of warnings'
+                ),
+            )
+        );
+    }
 }

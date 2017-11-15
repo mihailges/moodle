@@ -45,4 +45,12 @@ $functions = array(
         'capabilities'  => 'mod/folder:view',
         'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE),
     ),
+    'mod_folder_folder_state_changed' => array(
+        'classname'     => 'mod_folder_external',
+        'methodname'    => 'folder_state_changed',
+        'description'   => 'Checks if the folder\'s content has changed.',
+        'type'          => 'read',
+        'capabilities'  => 'mod/folder:view',
+        'ajax' => true
+    )
 );

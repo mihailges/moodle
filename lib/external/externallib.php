@@ -550,4 +550,75 @@ class core_external extends external_api {
 
         return \core\notification::fetch_as_array($PAGE->get_renderer('core'));
     }
+
+    /**
+     * Parameters for function get_files_state()
+     *
+     * @since Moodle 3.5
+     * @return external_function_parameters
+     */
+    public static function get_files_state_parameters() {
+        return new external_function_parameters(
+            array(
+                'component' => new external_value(PARAM_TEXT, 'Component name', VALUE_REQUIRED),
+                'componentid' => new external_value(PARAM_INT, 'Identifier of the item', VALUE_REQUIRED),
+                'revision' => new external_value(PARAM_INT, 'Revision number of the item', VALUE_REQUIRED),
+            ));
+    }
+
+    /**
+     * Update any component's editable value assuming that component implements necessary callback
+     *
+     * @since Moodle 3.5
+     * @param string $component
+     * @param int $componentid
+     * @param int $revisionid
+     */
+    public static function get_files_state($component, $componentid, $revision) {
+        global $DB, $CFG;
+
+        $params = self::validate_parameters(self::get_files_state_parameters(), array(
+            'component' => $component,
+            'componentid' => $componentid,
+            'revision' => $revision
+        ));
+
+       // $validatorfactory = core\filesstatevalidator\files_state_validator_factory::;
+
+        $validator = \core\filesstatevalidator\files_state_validator_factory::create_validator(
+            $params['component'], 
+            $params['componentid'], 
+            $params['revision']
+        );
+
+        // $validator = $validatorfactory::create_validator(
+        //     $params['component'], 
+        //     $params['componentid'], 
+        //     $params['revisionid']
+        // );
+
+        return $validator->validate_files_state();    
+    }
+
+    /**
+     * Return structure for get_files_state()
+     *
+     * @since Moodle 3.5
+     * @return external_description
+     */
+    public static function get_files_state_returns() {
+        return new external_single_structure(
+            array(
+                'status' => new external_value(PARAM_BOOL, 'True if the files state has changed'),
+                'warnings' => new external_multiple_structure(
+                    new external_single_structure(
+                        array(
+                            'key' => new external_value(PARAM_TEXT, 'The warning key'),
+                            'message' => new external_value(PARAM_TEXT, 'The warning message'),
+                        )
+                    ), 'List of warnings'
+                ),
+            )
+        );
+    }
 }

@@ -28,6 +28,8 @@ defined('MOODLE_INTERNAL') || die();
 require_once("$CFG->libdir/formslib.php");
 
 class mod_folder_edit_form extends moodleform {
+    private $uses_filepicker = true;
+
     function definition() {
         $mform = $this->_form;
 

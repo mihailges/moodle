@@ -2092,6 +2092,16 @@ $functions = array(
         'description' => 'Returns the filters available in the given contexts.',
         'type'        => 'read',
         'services'    => array(MOODLE_OFFICIAL_MOBILE_SERVICE),
+    ),
+
+    // Validate files state functions.
+     'core_get_files_state' => array(
+        'classname' => 'core_external',
+        'methodname' => 'get_files_state',
+        'classpath' => 'lib/external/externallib.php',
+        'description' => 'Check if the files state has changed for a particular component.',
+        'type' => 'read',
+        'ajax' => true
     )
 );
 

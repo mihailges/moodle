@@ -203,6 +203,16 @@ abstract class moodleform {
 
         $this->definition();
 
+        // Add additional elements if the form uses filepicker
+        if (isset($this->_customdata['options']['uses_filepicker'])) {
+            $this->_form->addElement('hidden', 'component', $this->_customdata['data']->component);
+            $this->_form->setType('component', PARAM_TEXT);
+            $this->_form->addElement('hidden', 'componentid', $this->_customdata['data']->componentid);
+            $this->_form->setType('componentid', PARAM_INT);
+            $this->_form->addElement('hidden', 'revision', $this->_customdata['data']->revision);
+            $this->_form->setType('revision', PARAM_INT);
+        }
+
         $this->_form->addElement('hidden', 'sesskey', null); // automatic sesskey protection
         $this->_form->setType('sesskey', PARAM_RAW);
         $this->_form->setDefault('sesskey', sesskey());

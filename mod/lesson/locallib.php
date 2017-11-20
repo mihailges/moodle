@@ -295,7 +295,7 @@ function lesson_grade($lesson, $ntries, $userid = 0) {
 
     $params = array ("lessonid" => $lesson->id, "userid" => $userid, "retry" => $ntries);
     if ($useranswers = $DB->get_records_select("lesson_attempts",  "lessonid = :lessonid AND
-            userid = :userid AND retry = :retry", $params, "timeseen")) {
+            userid = :userid AND retry = :retry", $params, "timeseen desc")) {
         // group each try with its page
         $attemptset = array();
         foreach ($useranswers as $useranswer) {

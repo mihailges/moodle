@@ -698,7 +698,7 @@ function file_get_drafarea_files($draftitemid, $filepath = '/') {
             } else {
                 // do NOT use file browser here!
                 $item->mimetype = get_mimetype_description($file);
-                if (file_extension_in_typegroup($file->get_filename(), 'archive')) {
+                if ($file->get_mimetype() == 'application/zip') {
                     $item->type = 'zip';
                 } else {
                     $item->type = 'file';

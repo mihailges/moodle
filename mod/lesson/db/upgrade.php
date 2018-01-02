@@ -437,5 +437,21 @@ function xmldb_lesson_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2017051501, 'lesson');
     }
 
+    // Automatically generated Moodle v3.4.0 release upgrade line.
+    // Put any upgrade step following this.
+
+    if ($oldversion < 2017051502) {
+
+        // Changing nullability of field grade on table lesson_grades to null.
+        $table = new xmldb_table('lesson_grades');
+        $field = new xmldb_field('grade', XMLDB_TYPE_FLOAT, null, null, null, null, '0', 'userid');
+
+        // Launch change of nullability for field grade.
+        $dbman->change_field_notnull($table, $field);
+
+        // Lesson savepoint reached.
+        upgrade_mod_savepoint(true, 2017051502, 'lesson');
+    }
+
     return true;
 }

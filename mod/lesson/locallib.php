@@ -65,6 +65,9 @@ define("LESSON_ANSWER_HTML", "HTML");
 define('LESSON_EVENT_TYPE_OPEN', 'open');
 define('LESSON_EVENT_TYPE_CLOSE', 'close');
 
+/** Define grade for lesson containing only manual grading questions */
+define("LESSON_MANUAL_GRADE", null);
+
 //////////////////////////////////////////////////////////////////////////////////////
 /// Any other lesson functions go here.  Each of them must have a name that
 /// starts with lesson_
@@ -283,15 +286,16 @@ function lesson_grade($lesson, $ntries, $userid = 0) {
     }
 
     // Zero out everything
-    $ncorrect     = 0;
-    $nviewed      = 0;
-    $score        = 0;
-    $nmanual      = 0;
-    $manualpoints = 0;
-    $thegrade     = 0;
-    $nquestions   = 0;
-    $total        = 0;
-    $earned       = 0;
+    $ncorrect      = 0;
+    $nviewed       = 0;
+    $score         = 0;
+    $nmanual       = 0;
+    $manualpoints  = 0;
+    $thegrade      = 0;
+    $nquestions    = 0;
+    $total         = 0;
+    $earned        = 0;
+    $nmanualgraded = 0;
 
     $params = array ("lessonid" => $lesson->id, "userid" => $userid, "retry" => $ntries);
     if ($useranswers = $DB->get_records_select("lesson_attempts",  "lessonid = :lessonid AND
@@ -323,11 +327,13 @@ function lesson_grade($lesson, $ntries, $userid = 0) {
                 // If essay question, handle it, otherwise add to score
                 if ($page->requires_manual_grading()) {
                     $useranswerobj = unserialize($attempt->useranswer);
-                    if (isset($useranswerobj->score)) {
+                    if (isset($useranswerobj->score) && $useranswerobj->graded) {
                         $earned += $useranswerobj->score;
+                        $nmanualgraded++;
                     }
                     $nmanual++;
                     $manualpoints += $answers[$attempt->answerid]->score;
+
                 } else if (!empty($attempt->answerid)) {
                     $earned += $page->earned_score($answers, $attempt);
                 }
@@ -369,7 +375,13 @@ function lesson_grade($lesson, $ntries, $userid = 0) {
     }
 
     if ($total) { // not zero
-        $thegrade = round(100 * $earned / $total, 5);
+        $nmanualnotgraded = $nmanual - $nmanualgraded;
+        // Calculate grade if non manual grading questions or manual graded questions exist in lesson.
+        if ($total !== $nmanualnotgraded) {
+            $thegrade = round(100 * $earned / $total, 5);
+        } else {
+            $thegrade = LESSON_MANUAL_GRADE;
+        }
     }
 
     // Build the grade information object

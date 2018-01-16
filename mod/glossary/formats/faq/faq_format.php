@@ -2,49 +2,49 @@
 
 function glossary_show_entry_faq($course, $cm, $glossary, $entry, $mode="", $hook="", $printicons=1, $aliases=true) {
     global $USER, $OUTPUT;
+
     if ( $entry ) {
+        echo html_writer::start_tag('div', array('class'=>'glossarypost faq'));
 
-        echo '<table class="glossarypost faq" cellspacing="0">';
+        echo html_writer::start_tag('div', array('class' => 'd-inline-block w-100'));
 
-        echo '<tr valign="top">';
-        echo '<th class="entryheader">';
+        echo html_writer::start_tag('div', array('class'=>'entryheader pull-left'));
         $entry->course = $course->id;
-
-        echo '<div class="concept">' . get_string('question','glossary') . ': ';
+        echo html_writer::start_tag('div', array('class'=>'concept'));
+        echo html_writer::span(get_string('question','glossary').':', 'font-weight-bold');
         glossary_print_entry_concept($entry);
-        echo '</div>';
-
-        echo '<span class="time">('.get_string('lastedited').': '.
-             userdate($entry->timemodified).')</span>';
-        echo '</th>';
-        echo '<td class="entryattachment">';
-
+        echo html_writer::end_tag('div'); // concept
+        $lasteditedtext = '('.get_string('lastedited').': '.
+             userdate($entry->timemodified).')';
+        echo html_writer::span($lasteditedtext, 'time font-weight-bold');
+        echo html_writer::end_tag('div'); // entryheader
+        echo html_writer::start_tag('div', array('class'=>'entryapproval pull-right'));
         glossary_print_entry_approval($cm, $entry, $mode);
-        echo '</td>';
+        echo html_writer::end_tag('div'); // entryapproval
 
-        echo '</tr>';
+        echo html_writer::end_tag('div'); // d-inline-block
 
-        echo "\n<tr>";
-        echo '<td colspan="2" class="entry">';
-        echo '<b>'.get_string('answer','glossary').':</b> ';
-
+        echo html_writer::start_tag('div', array('class'=>'entryattachment'));
+        echo html_writer::end_tag('div'); // entryattachment
+        echo html_writer::start_tag('div', array('class'=>'entry m-t-1'));
+        echo html_writer::span(get_string('answer','glossary').':', 'font-weight-bold');
         glossary_print_entry_definition($entry, $glossary, $cm);
         glossary_print_entry_attachment($entry, $cm, 'html');
 
         if (core_tag_tag::is_enabled('mod_glossary', 'glossary_entries')) {
             echo $OUTPUT->tag_list(
-                core_tag_tag::get_item_tags('mod_glossary', 'glossary_entries', $entry->id), null, 'glossary-tags');
+                core_tag_tag::get_item_tags('mod_glossary', 'glossary_entries', $entry->id), null, 'glossary-tags m-t-1');
         }
-
-        echo '</td></tr>';
-        echo '<tr valign="top"><td colspan="3" class="entrylowersection">';
+        echo html_writer::end_tag('div'); // entry
+        echo html_writer::start_tag('div', array('class'=>'entrylowersection'));
         glossary_print_entry_lower_section($course, $cm, $glossary, $entry, $mode, $hook, $printicons, $aliases);
-        echo '</td></tr></table>';
+        echo html_writer::end_tag('div'); // entrylowersection
 
+        echo html_writer::empty_tag('hr');
+        echo html_writer::end_tag('div'); // glossarypost
     } else {
-        echo '<div style="text-align:center">';
-        print_string('noentry', 'glossary');
-        echo '</div>';
+        echo html_writer::div(get_string('noentry', 'glossary'), '',
+            array('style' => 'text-align:center;'));
     }
 }
 

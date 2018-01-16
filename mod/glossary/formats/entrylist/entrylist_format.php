@@ -5,39 +5,39 @@ function glossary_show_entry_entrylist($course, $cm, $glossary, $entry, $mode=''
 
     $return = false;
 
-    echo '<table class="glossarypost entrylist" cellspacing="0">';
-
-    echo '<tr valign="top">';
-    echo '<td class="entry">';
     if ($entry) {
+        echo html_writer::start_tag('div', array('class'=>'glossarypost entrylist'));
+        echo html_writer::start_tag('div', array('class'=>'entryapproval m-b-2'));
         glossary_print_entry_approval($cm, $entry, $mode);
+        echo html_writer::end_tag('div'); // entryapproval
+        echo html_writer::start_tag('div', array('class' => 'd-inline-block w-100'));
 
+        echo html_writer::start_tag('div', array('class'=>'entry pull-left'));
         $anchortagcontents = glossary_print_entry_concept($entry, true);
-
         $link = new moodle_url('/mod/glossary/showentry.php', array('courseid' => $course->id,
                 'eid' => $entry->id, 'displayformat' => 'dictionary'));
         $anchor = html_writer::link($link, $anchortagcontents);
-
-        echo "<div class=\"concept\">$anchor</div> ";
-        echo '</td><td align="right" class="entrylowersection">';
+        echo html_writer::div($anchor, 'concept');
+        echo html_writer::end_tag('div'); // entry
+        echo html_writer::start_tag('div', array('class'=>'entrylowersection pull-right'));
+        if (!empty($entry->rating)) {
+            echo html_writer::start_tag('div', array('class'=>'ratings m-b-1'));
+            $return = glossary_print_entry_ratings($course, $entry);
+            echo html_writer::end_tag('div'); // ratings
+        }
         if ($printicons) {
             glossary_print_entry_icons($course, $cm, $glossary, $entry, $mode, $hook,'print');
         }
-        if (!empty($entry->rating)) {
-            echo '<br />';
-            echo '<span class="ratings">';
-            $return = glossary_print_entry_ratings($course, $entry);
-            echo '</span>';
-        }
-        echo '<br />';
-    } else {
-        echo '<div style="text-align:center">';
-        print_string('noentry', 'glossary');
-        echo '</div>';
-    }
-    echo '</td></tr>';
+        echo html_writer::end_tag('div'); // entrylowersection
 
-    echo "</table>\n";
+        echo html_writer::end_tag('div'); // d-inline-block
+
+        echo html_writer::empty_tag('hr');
+        echo html_writer::end_tag('div'); // glossarypost
+    } else {
+        echo html_writer::div(get_string('noentry', 'glossary'), '',
+            array('style' => 'text-align:center;'));
+    }
     return $return;
 }
 

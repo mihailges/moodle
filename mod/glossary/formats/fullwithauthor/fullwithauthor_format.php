@@ -8,58 +8,50 @@ function glossary_show_entry_fullwithauthor($course, $cm, $glossary, $entry, $mo
     $strby = get_string('writtenby', 'glossary');
 
     if ($entry) {
-        echo '<table class="glossarypost fullwithauthor" cellspacing="0">';
-        echo '<tr valign="top">';
+        echo html_writer::start_tag('div', array('class'=>'glossarypost fullwithauthor'));
 
-        echo '<td class="picture">';
+        echo html_writer::start_tag('div', array('class' => 'd-inline-block w-100'));
+
+        echo html_writer::start_tag('div', array('class' => 'picture pull-left'));
         echo $OUTPUT->user_picture($user, array('courseid'=>$course->id));
-        echo '</td>';
-
-        echo '<th class="entryheader">';
-
-        echo '<div class="concept">';
+        echo html_writer::end_tag('div'); // picture
+        echo html_writer::start_tag('div', array('class' => 'entryheader pull-left'));
+        echo html_writer::start_tag('div', array('class' => 'concept'));
         glossary_print_entry_concept($entry);
-        echo '</div>';
-
+        echo html_writer::end_tag('div'); // concept
         $fullname = fullname($user);
         $by = new stdClass();
-        $by->name = '<a href="'.$CFG->wwwroot.'/user/view.php?id='.$user->id.'&amp;course='.$course->id.'">'.$fullname.'</a>';
+        $by->name = html_writer::link($CFG->wwwroot.'/user/view.php?id='.$user->id.'&amp;course='.$course->id, $fullname);
         $by->date = userdate($entry->timemodified);
-        echo '<span class="author">'.get_string('bynameondate', 'forum', $by).'</span>';
-
-        echo '</th>';
-        echo '<td class="entryattachment">';
-
+        echo html_writer::span(get_string('bynameondate', 'forum', $by), 'author');
+        echo html_writer::end_tag('div'); // entryheader
+        echo html_writer::start_tag('div', array('class' => 'entryattachment'));
+        echo html_writer::end_tag('div'); // entryattachment
+        echo html_writer::start_tag('div', array('class'=>'entryapproval pull-right'));
         glossary_print_entry_approval($cm, $entry, $mode);
-        echo '</td>';
+        echo html_writer::end_tag('div'); // entryapproval
 
-        echo '</tr>';
+        echo html_writer::end_tag('div'); // d-inline-block
 
-        echo '<tr valign="top">';
-        echo '<td class="left">&nbsp;</td>';
-        echo '<td colspan="2" class="entry">';
-
+        echo html_writer::start_tag('div', array('class'=>'entry m-t-1'));
         glossary_print_entry_definition($entry, $glossary, $cm);
         glossary_print_entry_attachment($entry, $cm, 'html');
-
         if (core_tag_tag::is_enabled('mod_glossary', 'glossary_entries')) {
             echo $OUTPUT->tag_list(
-                core_tag_tag::get_item_tags('mod_glossary', 'glossary_entries', $entry->id), null, 'glossary-tags');
+                core_tag_tag::get_item_tags('mod_glossary', 'glossary_entries', $entry->id), null, 'glossary-tags m-t-1');
         }
+        echo html_writer::end_tag('div'); // entry
 
-        echo '</td></tr>';
-        echo '<tr valign="top">';
-        echo '<td class="left">&nbsp;</td>';
-        echo '<td colspan="2" class="entrylowersection">';
-
+        echo html_writer::start_tag('div', array('class'=>'entrylowersection'));
         glossary_print_entry_lower_section($course, $cm, $glossary, $entry, $mode, $hook, $printicons, $aliases);
-        echo ' ';
-        echo '</td></tr>';
-        echo "</table>\n";
+        echo html_writer::end_tag('div'); // entrylowersection
+
+        echo html_writer::empty_tag('hr');
+        echo html_writer::end_tag('div'); // glossarypost
     } else {
-        echo '<div style="text-align:center">';
-        print_string('noentry', 'glossary');
-        echo '</div>';
+        echo html_writer::div(get_string('noentry', 'glossary'), '',
+            array('style' => 'text-align:center;'));
+
     }
 }
 

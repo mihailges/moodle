@@ -1188,16 +1188,15 @@ function  glossary_print_entry_aliases($course, $cm, $glossary, $entry,$mode='',
 
     $return = '';
     if ( $aliases = $DB->get_records('glossary_alias', array('entryid'=>$entry->id))) {
+        $options = array();
         foreach ($aliases as $alias) {
             if (trim($alias->alias)) {
-                if ($return == '') {
-                    $return = '<select id="keyword" class="custom-select">';
-                }
-                $return .= "<option>$alias->alias</option>";
+                $options[] = $alias->alias;
             }
         }
-        if ($return != '') {
-            $return .= '</select>';
+        if (!empty($options)) {
+           $return .= html_writer::select($options, 'keywords', '', false,
+               array('id' => 'keyword', 'class' => 'custom-select'));
         }
     }
     if ($type == 'print') {
@@ -1329,7 +1328,6 @@ function glossary_print_entry_icons($course, $cm, $glossary, $entry, $mode='',$h
         $return .= '<div>'.$comment->output(true).'</div>';
         $output = true;
     }
-    $return .= '<hr>';
 
     //If we haven't calculated any REAL thing, delete result ($return)
     if (!$output) {
@@ -1354,31 +1352,35 @@ function glossary_print_entry_icons($course, $cm, $glossary, $entry, $mode='',$h
  * @param bool $aliases
  * @return void
  */
-function  glossary_print_entry_lower_section($course, $cm, $glossary, $entry, $mode, $hook, $printicons, $aliases=true) {
+function glossary_print_entry_lower_section($course, $cm, $glossary, $entry, $mode, $hook, $printicons, $aliases=true) {
     if ($aliases) {
         $aliases = glossary_print_entry_aliases($course, $cm, $glossary, $entry, $mode, $hook,'html');
     }
-    $icons   = '';
+    $icons = '';
     if ($printicons) {
-        $icons   = glossary_print_entry_icons($course, $cm, $glossary, $entry, $mode, $hook,'html');
+        $icons = glossary_print_entry_icons($course, $cm, $glossary, $entry, $mode, $hook,'html');
     }
     if ($aliases || $icons || !empty($entry->rating)) {
-        echo '<table>';
-        if ( $aliases ) {
-            echo '<tr valign="top"><td class="aliases">' .
-                 '<label for="keyword">' . get_string('aliases','glossary').': </label>' .
-                 $aliases . '</td></tr>';
-        }
-        if ($icons) {
-            echo '<tr valign="top"><td class="icons">'.$icons.'</td></tr>';
+        echo html_writer::start_tag('div');
+        if ($aliases) {
+            echo html_writer::start_tag('div', array('class'=>'aliases m-b-1'));
+            echo html_writer::label(get_string('aliases','glossary').': ', 'keyword');
+            echo $aliases;
+            echo html_writer::end_tag('div'); // aliases
         }
         if (!empty($entry->rating)) {
-            echo '<tr valign="top"><td class="ratings">';
+            echo html_writer::start_tag('div', array('class'=>'ratings m-b-1'));
             glossary_print_entry_ratings($course, $entry);
-            echo '</td></tr>';
+            echo html_writer::end_tag('div'); // ratings
         }
-        echo '</table>';
+        if ($icons) {
+            echo html_writer::tag('div', $icons, array('class'=>'icons'));
+        }
+        echo html_writer::end_tag('div');
+
     }
+
+
 }
 
 /**
@@ -1394,9 +1396,9 @@ function glossary_print_entry_attachment($entry, $cm, $format = null, $unused1 =
     // Valid format values: html: The HTML link for the attachment is an icon; and
     //                      text: The HTML link for the attachment is text.
     if ($entry->attachment) {
-        echo '<div class="attachments">';
+        echo html_writer::start_tag('div', array('class'=>'attachments'));
         echo glossary_print_attachments($entry, $cm, $format);
-        echo '</div>';
+        echo html_writer::end_tag('div'); // attachments
     }
     if ($unused1) {
         debugging('The align parameter is deprecated, please use appropriate CSS instead', DEBUG_DEVELOPER);
@@ -1419,7 +1421,8 @@ function  glossary_print_entry_approval($cm, $entry, $mode, $align="right", $ins
 
     if ($mode == 'approval' and !$entry->approved) {
         if ($insidetable) {
-            echo '<table class="glossaryapproval" align="'.$align.'"><tr><td align="'.$align.'">';
+            echo html_writer::start_tag('div', array('class'=>'glossaryapproval'));
+            echo html_writer::start_tag('div', array('style'=>'text-align:'.$align.';'));
         }
         echo $OUTPUT->action_icon(
             new moodle_url('approve.php', array('eid' => $entry->id, 'mode' => $mode, 'sesskey' => sesskey())),
@@ -1427,7 +1430,8 @@ function  glossary_print_entry_approval($cm, $entry, $mode, $align="right", $ins
                 array('class' => 'iconsmall', 'align' => $align))
         );
         if ($insidetable) {
-            echo '</td></tr></table>';
+            echo html_writer::end_tag('div');
+            echo html_writer::end_tag('div'); // glossaryapproval
         }
     }
 }
@@ -1592,10 +1596,11 @@ function glossary_print_attachments($entry, $cm, $type=NULL, $unused = null) {
             $iconimage = $OUTPUT->pix_icon(file_file_icon($file), get_mimetype_description($file), 'moodle', array('class' => 'icon'));
             $path = file_encode_url($CFG->wwwroot.'/pluginfile.php', '/'.$context->id.'/mod_glossary/attachment/'.$entry->id.'/'.$filename);
 
+            $output .= html_writer::start_tag('div', array('class'=>'attachment'));
             if ($type == 'html') {
-                $output .= "<a href=\"$path\">$iconimage</a> ";
-                $output .= "<a href=\"$path\">".s($filename)."</a>";
-                $output .= "<br />";
+                $output .= html_writer::link($path, $iconimage);
+                $output .= html_writer::link($path, s($filename));
+                $output .= html_writer::empty_tag('br');
 
             } else if ($type == 'text') {
                 $output .= "$strattachment ".s($filename).":\n$path\n";
@@ -1603,13 +1608,15 @@ function glossary_print_attachments($entry, $cm, $type=NULL, $unused = null) {
             } else {
                 if (in_array($mimetype, array('image/gif', 'image/jpeg', 'image/png'))) {
                     // Image attachments don't get printed as links
-                    $imagereturn .= "<br /><img src=\"$path\" alt=\"\" />";
+                    $output .= html_writer::img($path, '', array('class' => 'm-b-1'));
+
                 } else {
-                    $output .= "<a href=\"$path\">$iconimage</a> ";
-                    $output .= format_text("<a href=\"$path\">".s($filename)."</a>", FORMAT_HTML, array('context'=>$context));
-                    $output .= '<br />';
+                    $output .= html_writer::link($path, $iconimage);
+                    $output .= format_text(html_writer::link($path, s($filename)), FORMAT_HTML, array('context'=>$context));
+                    $output .= '';
                 }
             }
+            $output .= html_writer::end_tag('div'); // attachment
         }
     }
 
@@ -1617,7 +1624,7 @@ function glossary_print_attachments($entry, $cm, $type=NULL, $unused = null) {
         return $output;
     } else {
         echo $output;
-        return $imagereturn;
+        //return $imagereturn;
     }
 }
 
@@ -2179,9 +2186,8 @@ function  glossary_print_entry_ratings($course, $entry) {
 function glossary_print_dynaentry($courseid, $entries, $displayformat = -1) {
     global $USER, $CFG, $DB;
 
-    echo '<div class="boxaligncenter">';
-    echo '<table class="glossarypopup" cellspacing="0"><tr>';
-    echo '<td>';
+    echo html_writer::start_tag('div', array('class'=>'boxaligncenter'));
+    echo html_writer::start_tag('div', array('class'=>'glossarypopup'));
     if ( $entries ) {
         foreach ( $entries as $entry ) {
             if (! $glossary = $DB->get_record('glossary', array('id'=>$entry->glossaryid))) {
@@ -2221,8 +2227,8 @@ function glossary_print_dynaentry($courseid, $entries, $displayformat = -1) {
             }
         }
     }
-    echo '</td>';
-    echo '</tr></table></div>';
+    echo html_writer::end_tag('div'); // glossarypopup
+    echo html_writer::end_tag('div'); // boxaligncenter
 }
 
 /**

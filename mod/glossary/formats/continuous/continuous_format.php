@@ -4,28 +4,28 @@ function glossary_show_entry_continuous($course, $cm, $glossary, $entry, $mode='
 
     global $USER, $OUTPUT;
 
-    echo '<table class="glossarypost continuous" cellspacing="0">';
-    echo '<tr valign="top">';
-    echo '<td class="entry">';
+    echo html_writer::start_tag('div', array('class'=>'glossarypost continuous'));
+
+    echo html_writer::start_tag('div', array('class'=>'entry'));
     glossary_print_entry_approval($cm, $entry, $mode);
-    echo '<div class="concept">';
+    echo html_writer::start_tag('div', array('class'=>'concept'));
     glossary_print_entry_concept($entry);
-    echo '</div> ';
+    echo html_writer::end_tag('div'); // concept
     glossary_print_entry_definition($entry, $glossary, $cm);
     glossary_print_entry_attachment($entry, $cm, 'html');
-
     if (core_tag_tag::is_enabled('mod_glossary', 'glossary_entries')) {
         echo $OUTPUT->tag_list(core_tag_tag::get_item_tags(
-            'mod_glossary', 'glossary_entries', $entry->id), null, 'glossary-tags');
+            'mod_glossary', 'glossary_entries', $entry->id), null, 'glossary-tags m-t-1');
     }
     $entry->alias = '';
-    echo '</td></tr>';
+    echo html_writer::end_tag('div'); // entry;
 
-    echo '<tr valign="top"><td class="entrylowersection">';
+    echo html_writer::start_tag('div', array('class'=>'entrylowersection m-t-1'));
     glossary_print_entry_lower_section($course, $cm, $glossary, $entry, $mode, $hook, $printicons, $aliases);
-    echo '</td>';
-    echo '</tr>';
-    echo "</table>\n";
+    echo html_writer::end_tag('div'); // entrylowersection
+
+    echo html_writer::empty_tag('hr');
+    echo html_writer::end_tag('div'); // glossarypost
 }
 
 function glossary_print_entry_continuous($course, $cm, $glossary, $entry, $mode='', $hook='', $printicons=1) {

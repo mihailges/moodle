@@ -113,6 +113,7 @@ class repository_upload extends repository {
         if (!isset($_FILES[$elname])) {
             throw new moodle_exception('nofile');
         }
+
         if (!empty($_FILES[$elname]['error'])) {
             switch ($_FILES[$elname]['error']) {
             case UPLOAD_ERR_INI_SIZE:
@@ -180,9 +181,9 @@ class repository_upload extends repository {
 
         if ($this->mimetypes != '*') {
             // check filetype
-            $filemimetype = file_storage::mimetype($_FILES[$elname]['tmp_name'], $record->filename);
+            $filemimetype = file_storage::mimetype($_FILES[$elname]['tmp_name']);
             if (!in_array($filemimetype, $this->mimetypes)) {
-                throw new moodle_exception('invalidfiletype', 'repository', '', get_mimetype_description(array('filename' => $_FILES[$elname]['name'])));
+                throw new moodle_exception('invalidfiletype', 'repository', '', get_mimetype_description($filemimetype));
             }
         }
 

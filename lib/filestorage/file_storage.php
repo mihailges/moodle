@@ -1310,7 +1310,7 @@ class file_storage {
 
         $newrecord->timecreated  = $filerecord->timecreated;
         $newrecord->timemodified = $filerecord->timemodified;
-        $newrecord->mimetype     = empty($filerecord->mimetype) ? $this->mimetype($pathname, $filerecord->filename) : $filerecord->mimetype;
+        $newrecord->mimetype     = empty($filerecord->mimetype) ? $this->mimetype($pathname) : $filerecord->mimetype;
         $newrecord->userid       = empty($filerecord->userid) ? null : $filerecord->userid;
         $newrecord->source       = empty($filerecord->source) ? null : $filerecord->source;
         $newrecord->author       = empty($filerecord->author) ? null : $filerecord->author;

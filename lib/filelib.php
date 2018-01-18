@@ -887,6 +887,16 @@ function file_save_draft_area_files($draftitemid, $contextid, $component, $filea
         $allowreferences = false;
     }
 
+    // Convert acceptable file types to their respective mime types.
+    // This information should be later used to check if the mime type
+    // of the uploaded file is acceptable.
+    $acceptedmimetypes = array();
+    if (isset($options['accepted_types']) && $options['accepted_types'] != '*') {
+        foreach ($options['accepted_types'] as $acceptedtype) {
+            $acceptedmimetypes[] = mimeinfo('type', $acceptedtype);
+        }
+    }
+
     // Check if the draft area has exceeded the authorised limit. This should never happen as validation
     // should have taken place before, unless the user is doing something nauthly. If so, let's just not save
     // anything at all in the next area.
@@ -922,6 +932,11 @@ function file_save_draft_area_files($draftitemid, $contextid, $component, $filea
                 }
                 if ($options['maxfiles'] != -1 and $options['maxfiles'] <= $filecount) {
                     // more files - should not get here at all
+                    continue;
+                }
+                // Check if this file's mime type is acceptable.
+                $filemimetype = $file->get_mimetype();
+                if (!empty($acceptedmimetypes) && !in_array($filemimetype, $acceptedmimetypes)) {
                     continue;
                 }
                 $filecount++;

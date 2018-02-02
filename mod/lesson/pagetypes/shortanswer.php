@@ -169,6 +169,7 @@ class lesson_page_type_shortanswer extends lesson_page {
             if ($ismatch) {
                 $result->newpageid = $answer->jumpto;
                 $options = new stdClass();
+                $options->noclean = true;
                 $options->para = false;
                 $result->response = format_text($answer->response, $answer->responseformat, $options);
                 $result->answerid = $answer->id;

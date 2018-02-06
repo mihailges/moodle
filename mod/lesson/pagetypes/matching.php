@@ -95,7 +95,8 @@ class lesson_page_type_matching extends lesson_page {
             }
         }
         if (isset($USER->modattempts[$this->lesson->id]) && !empty($attempt->useranswer)) {
-            $useranswers = explode(',', $attempt->useranswer);
+            $delimeter = preg_match("<br />", $useranswer->useranswer) ? "<br />" : ",";
+            $useranswers = explode($delimeter, $attempt->useranswer);
             $t = 0;
         } else {
             $useranswers = array();
@@ -223,7 +224,7 @@ class lesson_page_type_matching extends lesson_page {
             }
         }
 
-        $result->userresponse = implode(",", $userresponse);
+        $result->userresponse = implode("<br />", $userresponse);
 
         if ($hits == count($answers)) {
             $result->correctanswer = true;
@@ -443,7 +444,8 @@ class lesson_page_type_matching extends lesson_page {
                 $data = '<label class="accesshide" for="answer_' . $n . '">' . get_string('answer', 'lesson') . '</label>';
                 $data .= strip_tags(format_string($answer->answer)) . ' ';
                 if ($useranswer != null) {
-                    $userresponse = explode(",", $useranswer->useranswer);
+                    $delimeter = preg_match("<br />", $useranswer->useranswer) ? "<br />" : ",";
+                    $userresponse = explode($delimeter, $useranswer->useranswer);
                     $data .= '<label class="accesshide" for="stu_answer_response_' . $n . '">' . get_string('matchesanswer', 'lesson') . '</label>';
                     $data .= "<select class=\"custom-select\" id=\"stu_answer_response_" . $n . "\" " .
                              "disabled=\"disabled\"><option selected=\"selected\">";

@@ -4452,6 +4452,18 @@ EOD;
     }
 
     /**
+     * Render the verify age and location page into a nice template for the theme.
+     *
+     * @param verify_age_location_page $page
+     * @return string
+     */
+    public function render_verify_age_location_page($page) {
+        $context = $page->export_for_template($this);
+
+        return $this->render_from_template('core/verify_age_location_page', $context);
+    }
+
+    /**
      * Renders a progress bar.
      *
      * Do not use $OUTPUT->render($bar), instead use progress_bar::create().

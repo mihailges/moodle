@@ -382,3 +382,69 @@ function core_login_validate_forgot_password_data($data) {
 
     return $errors;
 }
+
+/**
+ * Checks if a user is a digital minor.
+ *
+ * @param int $age
+ * @param string $country
+ * @return bool
+ */
+function core_login_is_minor($age, $country) {
+    $agedigitalconsentmap = parse_age_digital_consent_map();
+
+    // TODO: Better handling when * wildcard is not present.
+    // Maybe define a default minor age as a separate config variable as presented in the earlier wireframes.
+    return array_key_exists($country, $agedigitalconsentmap) ?
+        $age < $agedigitalconsentmap[$country] : $age < $agedigitalconsentmap['*'];
+}
+
+/**
+ * Validates the age and location verification form data.
+ *
+ * @param  array $data array containing the data to be validated (age and country)
+ * @return array array of errors compatible with mform
+ * @since  Moodle 3.4
+ */
+function core_login_validate_age_location_data($data) {
+
+    $errors = array();
+
+    if (empty($data['age'])) {
+        $errors['age'] = get_string('agemissing');
+    } else {
+        if ($data['age'] < 0) {
+            $errors['age'] = get_string('ageinvalid');
+        }
+    }
+
+    if (empty($data['country'])) {
+        $errors['country'] = get_string('countrymissing');
+    } else {
+        $countries = get_string_manager()->get_list_of_countries();
+        if (!array_key_exists($data['country'], $countries)) {
+            $errors['country'] = get_string('countryinvalid');
+        }
+    }
+
+    return $errors;
+}
+
+/**
+ * Parse the agedigitalconsentmap setting into an array.
+ *
+ * @return array $ageconsentmapparsed
+ */
+function parse_age_digital_consent_map() {
+    global $CFG;
+
+    $ageconsentmapparsed = array();
+    $ageconsentmap = $CFG->agedigitalconsentmap;
+    $lines = preg_split( '/\r\n|\r|\n/', $ageconsentmap);
+    foreach ($lines as $line) {
+        $arr = explode(" ", $line);
+        $ageconsentmapparsed[$arr[0]] = $arr[1];
+    }
+
+    return $ageconsentmapparsed;
+}

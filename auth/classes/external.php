@@ -215,4 +215,96 @@ class core_auth_external extends external_api {
             )
         );
     }
+
+    /**
+     * Describes the parameters for the digital minor check.
+     *
+     * @return external_function_parameters
+     * @since Moodle 3.4
+     */
+    public static function is_minor_parameters() {
+        return new external_function_parameters(
+            array(
+                'age' => new external_value(PARAM_INT, 'Age', VALUE_DEFAULT, ''),
+                'country' => new external_value(PARAM_RAW, 'Country of residence', VALUE_DEFAULT, ''),
+            )
+        );
+    }
+
+    /**
+     * Requests a check if a user is digital minor.
+     *
+     * @param  int $age User age
+     * @param  string $country Country of residence
+     * @return array Warnings and success status (including notices and errors while processing)
+     * @since Moodle 3.4
+     * @throws moodle_exception
+     */
+    public static function is_minor($age, $country) {
+        global $CFG, $PAGE;
+        require_once($CFG->dirroot . '/login/lib.php');
+
+        $warnings = array();
+        $params = self::validate_parameters(
+            self::request_password_reset_parameters(),
+            array(
+                'age' => $age,
+                'country' => $country,
+            )
+        );
+
+        $context = context_system::instance();
+        $PAGE->set_context($context);   // Needed by format_string calls.
+
+        // Check if age location verification is enabled.
+        // TODO: Display proper error message.
+        if (!is_age_location_verification_enabled()) {
+            throw new moodle_exception('cannotmailconfirm');
+        }
+
+        $errors = core_login_validate_age_location_data($params);
+        if (!empty($errors)) {
+            $status = 'dataerror';
+
+            foreach ($errors as $itemname => $message) {
+                $warnings[] = array(
+                    'item' => $itemname,
+                    'itemid' => 0,
+                    'warningcode' => 'fielderror',
+                    'message' => s($message)
+                );
+            }
+        } else {
+            $status = core_login_is_minor($params['age'], $params['country']);
+        }
+
+        return array(
+            'status' => $status,
+            'warnings' => $warnings,
+        );
+    }
+
+    /**
+     * Describes the is_minor return value.
+     *
+     * @return external_single_structure
+     * @since Moodle 3.4
+     */
+    public static function is_minor_returns() {
+        // TODO: Fix return status values.
+        return new external_single_structure(
+            array(
+                'status' => new external_value(PARAM_ALPHANUMEXT, 'The returned status of the process:
+                    dataerror: Error in the sent data (username or email). More information in warnings field.
+                    emailpasswordconfirmmaybesent: Email sent or not (depends on user found in database).
+                    emailpasswordconfirmnotsent: Failure, user not found.
+                    emailpasswordconfirmnoemail: Failure, email not found.
+                    emailalreadysent: Email already sent.
+                    emailpasswordconfirmsent: User pending confirmation.
+                    emailresetconfirmsent: Email sent.
+                '),
+                'warnings'  => new external_warnings(),
+            )
+        );
+    }
 }

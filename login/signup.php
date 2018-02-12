@@ -59,6 +59,16 @@ if (isloggedin() and !isguestuser()) {
     exit;
 }
 
+// If age and location verification is enabled.
+if (is_age_location_verification_enabled()) {
+    if (!isset($USER->is_minor)) {
+        redirect(new moodle_url('/login/verify_age_location.php'));
+    }
+    if ($USER->is_minor == true) {
+        redirect(new moodle_url('/login/contact_admin.php'));
+    }
+}
+
 $mform_signup = $authplugin->signup_form();
 
 if ($mform_signup->is_cancelled()) {

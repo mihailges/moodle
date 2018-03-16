@@ -735,17 +735,19 @@ class api {
      */
     public static function accept_policies($policyversionid, $userid = null, $note = null, $lang = null) {
         global $DB, $USER;
-        if (!isloggedin() || isguestuser()) {
+        if (isguestuser()) {
             throw new \moodle_exception('noguest');
         }
         if (!$userid) {
             $userid = $USER->id;
         }
         $usercontext = \context_user::instance($userid);
-        if ($userid == $USER->id) {
-            require_capability('tool/policy:accept', context_system::instance());
-        } else {
-            require_capability('tool/policy:acceptbehalf', $usercontext);
+        if (!empty($USER->id)) {
+            if ($userid == $USER->id) {
+                require_capability('tool/policy:accept', context_system::instance());
+            } else {
+                require_capability('tool/policy:acceptbehalf', $usercontext);
+            }
         }
 
         if (empty($policyversionid)) {
@@ -842,5 +844,23 @@ class api {
         }
 
         self::update_policyagreed($userid);
+    }
+
+    /**
+     * Create user policy acceptances when the user is created.
+     *
+     * @param \core\event\user_created $event
+     */
+    public static function create_acceptances_user_created(\core\event\user_created $event) {
+        global $DB;
+
+        $userid = $event->objectid;
+        $user = $DB->get_record('user', array('id' => $userid));
+        $lang = current_language();
+
+        $userpolicyagreed = \cache::make('core', 'presignup')->get('tool_policy_userpolicyagreed');
+        if ($user->policyagreed && $userpolicyagreed !== false) {
+            self::accept_policies($userpolicyagreed, $userid, null, $lang);
+        }
     }
 }

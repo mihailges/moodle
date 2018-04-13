@@ -23,3 +23,4 @@
  */
 
 $string['pluginname'] = 'Checkbox';
+$string['privacy:metadata'] = 'The Checkbox plugin does not store any personal data.';

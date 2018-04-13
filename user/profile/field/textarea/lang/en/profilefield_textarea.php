@@ -23,3 +23,4 @@
  */
 
 $string['pluginname'] = 'Text area';
+$string['privacy:metadata'] = 'The Text area plugin does not store any personal data.';

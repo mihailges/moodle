@@ -27,6 +27,7 @@ $string['defaultdate'] = 'Default date';
 $string['endyear'] = 'End year';
 $string['notset'] = 'Not set';
 $string['pluginname'] = 'Date/Time';
+$string['privacy:metadata'] = 'The Date/Time plugin does not store any personal data.';
 $string['specifydatedefault'] = 'or specify a date';
 $string['startyearafterend'] = 'The start year can\'t occur after the end year';
 $string['startyear'] = 'Start year';

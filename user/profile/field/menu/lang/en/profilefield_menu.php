@@ -23,3 +23,4 @@
  */
 
 $string['pluginname'] = 'Dropdown menu';
+$string['privacy:metadata'] = 'The Dropdown menu plugin does not store any personal data.';

@@ -66,10 +66,10 @@ class provider implements
         $sql = "SELECT ctx.id
                   FROM {user_info_data} uda
                   JOIN {user_info_field} uif ON uda.fieldid = uif.id
+                       AND uif.datatype = :datatype
                   JOIN {context} ctx ON ctx.instanceid = uda.userid
                        AND ctx.contextlevel = :contextlevel
-                 WHERE uda.userid = :userid
-                       AND uif.datatype = :datatype";
+                 WHERE uda.userid = :userid";
         $params = [
             'userid' => $userid,
             'contextlevel' => CONTEXT_USER,
@@ -162,8 +162,8 @@ class provider implements
         $sql = "SELECT *
                   FROM {user_info_data} uda
                   JOIN {user_info_field} uif ON uda.fieldid = uif.id
-                 WHERE uda.userid = :userid
-                       AND uif.datatype = :datatype";
+                       AND uif.datatype = :datatype
+                 WHERE uda.userid = :userid";
         $params = [
             'userid' => $userid,
             'datatype' => 'datetime'

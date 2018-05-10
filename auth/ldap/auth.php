@@ -556,6 +556,10 @@ class auth_plugin_ldap extends auth_plugin_base {
 
         \core\event\user_created::create_from_userid($user->id)->trigger();
 
+        // If verification of age and location (minor) has been done, delete the session after signup.
+        $cache = cache::make('core', 'presignup');
+        $cache->delete('isminor');
+
         if (! send_confirmation_email($user)) {
             print_error('noemail', 'auth_ldap');
         }

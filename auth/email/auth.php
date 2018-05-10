@@ -133,6 +133,10 @@ class auth_plugin_email extends auth_plugin_base {
         // Trigger event.
         \core\event\user_created::create_from_userid($user->id)->trigger();
 
+        // If verification of age and location (minor) has been done, delete the session after signup.
+        $cache = cache::make('core', 'presignup');
+        $cache->delete('isminor');
+
         if (! send_confirmation_email($user, $confirmationurl)) {
             print_error('auth_emailnoemail', 'auth_email');
         }

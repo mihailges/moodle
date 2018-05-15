@@ -367,6 +367,17 @@ class lesson_add_page_form_truefalse extends lesson_add_page_form_base {
         $this->add_jumpto(1, get_string('wronganswerjump', 'lesson'), LESSON_THISPAGE);
         $this->add_score(1, get_string('wronganswerscore', 'lesson'), 0);
     }
+
+    public static function get_existing_answer($lessonid, $userid, $pageid) {
+        $answer = self::get_user_attempt($lessonid, $userid, $pageid);
+        if (!empty($answer)) {
+            if ($qtype == 'multi') {
+                return;
+            }
+            return $answer;
+        }
+        return '';
+    }
 }
 
 class lesson_display_answer_form_truefalse extends moodleform {

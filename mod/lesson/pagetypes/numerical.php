@@ -259,6 +259,17 @@ class lesson_page_type_numerical extends lesson_page {
         }
         return $answerpage;
     }
+
+    public static function get_existing_answer($lessonid, $userid, $pageid) {
+        $answer = self::get_user_attempt($lessonid, $userid, $pageid);
+        if (!empty($answer)) {
+            if ($qtype == 'multi') {
+                return;
+            }
+            return $answer;
+        }
+        return '';
+    }
 }
 
 class lesson_add_page_form_numerical extends lesson_add_page_form_base {
@@ -282,9 +293,11 @@ class lesson_add_page_form_numerical extends lesson_add_page_form_base {
 class lesson_display_answer_form_numerical extends moodleform {
 
     public function definition() {
-        global $USER, $OUTPUT;
+        global $USER, $OUTPUT, $GLOBALS;
         $mform = $this->_form;
         $contents = $this->_customdata['contents'];
+        $lessonid = $this->_customdata['lessonid'];
+        $previousanswer = lesson_page_type_numerical::get_existing_answer($lessonid, $USER->id, $GLOBALS['pageid']);
 
         // Disable shortforms.
         $mform->setDisableShortforms();
@@ -314,6 +327,9 @@ class lesson_display_answer_form_numerical extends moodleform {
 
         $mform->addElement('text', 'answer', get_string('youranswer', 'lesson'), $attrs);
         $mform->setType('answer', PARAM_FLOAT);
+        if (!empty($previousanswer)) {
+            $mform->setDefault('answer', $previousanswer['studentanswer']);
+        }
 
         if ($hasattempt) {
             $this->add_action_buttons(null, get_string("nextpage", "lesson"));

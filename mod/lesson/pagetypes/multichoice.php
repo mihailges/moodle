@@ -89,7 +89,8 @@ class lesson_page_type_multichoice extends lesson_page {
         $answers = $this->get_used_answers();
         shuffle($answers);
         $action = $CFG->wwwroot.'/mod/lesson/continue.php';
-        $params = array('answers'=>$answers, 'lessonid'=>$this->lesson->id, 'contents'=>$this->get_contents(), 'attempt'=>$attempt);
+        $params = array('answers' => $answers, 'lessonid' => $this->lesson->id,
+                'pageid' => $this->properties->id, 'contents'=>$this->get_contents(), 'attempt'=>$attempt);
         if ($this->properties->qoption) {
             $mform = new lesson_display_answer_form_multichoice_multianswer($action, $params);
         } else {
@@ -125,7 +126,8 @@ class lesson_page_type_multichoice extends lesson_page {
         $answers = $this->get_used_answers();
         shuffle($answers);
         $action = $CFG->wwwroot.'/mod/lesson/continue.php';
-        $params = array('answers'=>$answers, 'lessonid'=>$this->lesson->id, 'contents'=>$this->get_contents());
+        $params = array('answers' => $answers, 'lessonid' => $this->lesson->id,
+                'pageid' => $this->properties->id, 'contents' => $this->get_contents());
         if ($this->properties->qoption) {
             $mform = new lesson_display_answer_form_multichoice_multianswer($action, $params);
         } else {
@@ -429,6 +431,17 @@ class lesson_page_type_multichoice extends lesson_page {
         }
         return $answerpage;
     }
+
+    public static function get_existing_answer($lessonid, $userid, $pageid, $qtype) {
+        $answer = self::get_user_attempt($lessonid, $userid, $pageid);
+        if (!empty($answer)) {
+            if ($qtype == 'multi') {
+                return;
+            }
+            return $answer;
+        }
+        return;
+    }
 }
 
 
@@ -458,10 +471,11 @@ class lesson_add_page_form_multichoice extends lesson_add_page_form_base {
 class lesson_display_answer_form_multichoice_singleanswer extends moodleform {
 
     public function definition() {
-        global $USER, $OUTPUT;
+        global $USER, $OUTPUT, $GLOBALS;
         $mform = $this->_form;
         $answers = $this->_customdata['answers'];
         $lessonid = $this->_customdata['lessonid'];
+        $pageid = $this->_customdata['pageid'];
         $contents = $this->_customdata['contents'];
         if (array_key_exists('attempt', $this->_customdata)) {
             $attempt = $this->_customdata['attempt'];
@@ -469,6 +483,9 @@ class lesson_display_answer_form_multichoice_singleanswer extends moodleform {
             $attempt = new stdClass();
             $attempt->answerid = null;
         }
+
+        $useranswer = lesson_page_type_multichoice::get_existing_answer($lessonid, $USER->id, $pageid, 'single');
+
 
         // Disable shortforms.
         $mform->setDisableShortforms();
@@ -498,8 +515,13 @@ class lesson_display_answer_form_multichoice_singleanswer extends moodleform {
         foreach ($answers as $answer) {
             $mform->addElement('html', '<div class="answeroption">');
             $answer->answer = preg_replace('#>$#', '> ', $answer->answer);
-            $mform->addElement('radio','answerid',null,format_text($answer->answer, $answer->answerformat, $options),$answer->id, $disabled);
+
+            $mform->addElement('radio', 'answerid', null, format_text($answer->answer, $answer->answerformat, $options), $answer->id, $disabled);
             $mform->setType('answer'.$i, PARAM_INT);
+            if (!empty($useranswer) && $answer->id === $useranswer['answerid']) {
+                //$disabled['checked'] = 'checked';
+                $mform->setDefault('answerid', $answer->id);
+            }
             if ($hasattempt && $answer->id == $USER->modattempts[$lessonid]->answerid) {
                 $mform->setDefault('answerid', $USER->modattempts[$lessonid]->answerid);
             }
@@ -522,7 +544,7 @@ class lesson_display_answer_form_multichoice_multianswer extends moodleform {
         global $USER, $OUTPUT;
         $mform = $this->_form;
         $answers = $this->_customdata['answers'];
-
+        $pageid = $this->_customdata['pageid'];
         $lessonid = $this->_customdata['lessonid'];
         $contents = $this->_customdata['contents'];
 

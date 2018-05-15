@@ -49,6 +49,23 @@ class lesson_page_type_essay extends lesson_page {
     }
 
     /**
+     * Return the existing answer of the particular question.
+     *
+     * @param int $lessonid The id of the lesson
+     * @param int $userid The id of the user
+     * @param int $pageid The id of the page
+     * @return mixed
+     */
+    public static function get_existing_answer($lessonid, $userid, $pageid) {
+        $answer = self::get_user_attempt($lessonid, $userid, $pageid);
+        if (!empty($answer)) {
+            $essayinfo = self::extract_useranswer($answer['useranswer']);
+            return $essayinfo->answer;
+        }
+        return;
+    }
+
+    /**
      * Unserialize attempt useranswer and add missing responseformat if needed
      * for compatibility with old records.
      *
@@ -301,7 +318,7 @@ class lesson_add_page_form_essay extends lesson_add_page_form_base {
 class lesson_display_answer_form_essay extends moodleform {
 
     public function definition() {
-        global $USER, $OUTPUT;
+        global $USER, $OUTPUT, $DB, $GLOBALS;
         $mform = $this->_form;
         $contents = $this->_customdata['contents'];
 
@@ -311,6 +328,8 @@ class lesson_display_answer_form_essay extends moodleform {
         $useranswerraw = '';
         if (isset($this->_customdata['lessonid'])) {
             $lessonid = $this->_customdata['lessonid'];
+
+            $answer = lesson_page_type_essay::get_existing_answer($lessonid, $USER->id, $GLOBALS['pageid']);
             if (isset($USER->modattempts[$lessonid]->useranswer) && !empty($USER->modattempts[$lessonid]->useranswer)) {
                 $attrs = array('disabled' => 'disabled');
                 $hasattempt = true;
@@ -344,8 +363,12 @@ class lesson_display_answer_form_essay extends moodleform {
             $mform->addElement('html', $OUTPUT->container($useranswer, 'reviewessay'));
             $this->add_action_buttons(null, get_string("nextpage", "lesson"));
         } else {
-            $mform->addElement('editor', 'answer', get_string('youranswer', 'lesson'), null, null);
+            $elem = $mform->addElement('editor', 'answer', get_string('youranswer', 'lesson'), null, null);
+            if (isset($answer)) {
+                $elem->setValue(array('text' => $answer));
+            }
             $mform->setType('answer', PARAM_RAW);
+
             $this->add_action_buttons(null, get_string("submit", "lesson"));
         }
     }

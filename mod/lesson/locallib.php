@@ -4829,6 +4829,39 @@ abstract class lesson_page extends lesson_base {
         return $fs->get_area_files($this->lesson->context->id, 'mod_lesson', 'page_contents', $this->properties->id,
                                     'itemid, filepath, filename', $includedirs, $updatedsince);
     }
+
+    /**
+     * Get user attempts for a particular question.
+     *
+     * @param int $lessonid The id of the lesson
+     * @param int $userid The id of the user
+     * @param int $pageid The id of the page
+     * @return array $answers The answers of the user
+     */
+    public static function get_user_attempt($lessonid, $userid, $pageid) {
+        global $DB;
+        // TODO: This returns multiple attempts, we only need the last attempt.
+        $attempts = $DB->get_records('lesson_attempts', array('lessonid' => $lessonid, 'userid' => $userid,
+                'pageid' => $pageid));
+        $answers = array();
+        if (!empty($attempts)) {
+            foreach ($attempts as $answer) {
+                $answers = array('answerid' => $answer->answerid, 'useranswer' => $answer->useranswer);
+            }
+        }
+        return $answers;
+    }
+
+//    /**
+//     * This method should return the existing answer of the particular question.
+//     *
+//     * @abstract
+//     * @param int $lessonid The id of the lesson
+//     * @param int $userid The id of the user
+//     * @param int $pageid The id of the page
+//     * @return mixed
+//     */
+//    abstract protected static function get_existing_answer($lessonid, $userid, $pageid);
 }
 
 

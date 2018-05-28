@@ -283,15 +283,17 @@ function lesson_grade($lesson, $ntries, $userid = 0) {
     }
 
     // Zero out everything
-    $ncorrect     = 0;
-    $nviewed      = 0;
-    $score        = 0;
-    $nmanual      = 0;
-    $manualpoints = 0;
-    $thegrade     = 0;
-    $nquestions   = 0;
-    $total        = 0;
-    $earned       = 0;
+    $ncorrect      = 0;
+    $nviewed       = 0;
+    $score         = 0;
+    $nmanual       = 0;
+    $manualpoints  = 0;
+    $thegrade      = 0;
+    $nquestions    = 0;
+    $total         = 0;
+    $earned        = 0;
+    $nmanualgraded = 0;
+    $currentgrade  = 0;
 
     $params = array ("lessonid" => $lesson->id, "userid" => $userid, "retry" => $ntries);
     if ($useranswers = $DB->get_records_select("lesson_attempts",  "lessonid = :lessonid AND
@@ -323,11 +325,13 @@ function lesson_grade($lesson, $ntries, $userid = 0) {
                 // If essay question, handle it, otherwise add to score
                 if ($page->requires_manual_grading()) {
                     $useranswerobj = unserialize($attempt->useranswer);
-                    if (isset($useranswerobj->score)) {
+                    if (isset($useranswerobj->score) && $useranswerobj->graded) {
                         $earned += $useranswerobj->score;
+                        $nmanualgraded++;
                     }
                     $nmanual++;
                     $manualpoints += $answers[$attempt->answerid]->score;
+
                 } else if (!empty($attempt->answerid)) {
                     $earned += $page->earned_score($answers, $attempt);
                 }
@@ -369,7 +373,10 @@ function lesson_grade($lesson, $ntries, $userid = 0) {
     }
 
     if ($total) { // not zero
-        $thegrade = round(100 * $earned / $total, 5);
+        $currentgrade = round(100 * $earned / $total, 5);
+        $nmanualnotgraded = $nmanual - $nmanualgraded;
+        // Calculate the lesson's grade if all manual grading questions have been graded.
+        $thegrade = (!$nmanualnotgraded) ? $currentgrade : null;
     }
 
     // Build the grade information object
@@ -381,6 +388,7 @@ function lesson_grade($lesson, $ntries, $userid = 0) {
     $gradeinfo->grade        = $thegrade;
     $gradeinfo->nmanual      = $nmanual;
     $gradeinfo->manualpoints = $manualpoints;
+    $gradeinfo->currentgrade = $currentgrade;
 
     return $gradeinfo;
 }
@@ -3041,7 +3049,7 @@ class lesson extends lesson_base {
                         $this->add_message(get_string("numberofcorrectanswers", "lesson", $gradeinfo->earned), 'notify');
                         if ($this->properties->grade != GRADE_TYPE_NONE) {
                             $a = new stdClass;
-                            $a->grade = number_format($gradeinfo->grade * $this->properties->grade / 100, 1);
+                            $a->grade = number_format($gradeinfo->currentgrade * $this->properties->grade / 100, 1);
                             $a->total = $this->properties->grade;
                             $this->add_message(get_string('yourcurrentgradeisoutof', 'lesson', $a), 'notify');
                         }
@@ -3475,7 +3483,7 @@ class lesson extends lesson_base {
                     }
                     if ($this->properties->grade != GRADE_TYPE_NONE) {
                         $a = new stdClass;
-                        $a->grade = number_format($gradeinfo->grade * $this->properties->grade / 100, 1);
+                        $a->grade = number_format($gradeinfo->currentgrade * $this->properties->grade / 100, 1);
                         $a->total = $this->properties->grade;
                         $data->yourcurrentgradeisoutof = $a;
                     }

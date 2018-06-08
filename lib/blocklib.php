@@ -1612,6 +1612,8 @@ class block_manager {
         global $CFG, $DB, $PAGE, $OUTPUT;
 
         $blockid = optional_param('bui_editid', null, PARAM_INT);
+        $sesskey = optional_param('sesskey', null, PARAM_RAW);
+
         if (!$blockid) {
             return false;
         }
@@ -1636,6 +1638,7 @@ class block_manager {
         }
         $editurlbase = str_replace($CFG->wwwroot . '/', '/', $this->page->url->out_omit_querystring());
         $editurlparams = $this->page->url->params();
+        $editurlparams['sesskey'] = $sesskey;
         $editurlparams['bui_editid'] = $blockid;
         $editpage->set_url($editurlbase, $editurlparams);
         $editpage->set_block_actions_done();

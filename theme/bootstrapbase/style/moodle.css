@@ -17646,6 +17646,14 @@ div#dock {
 .path-mod-wiki .wiki_contentbox {
   width: 100%;
 }
+.path-mod-wiki .mediaplugin,
+.path-mod-glossary .mediaplugin {
+  text-align: left;
+}
+.path-mod-wiki .mediaplugin > div,
+.path-mod-glossary .mediaplugin > div {
+  margin: 0;
+}
 .dropdown-menu > li > a {
   padding: 3px 20px 3px 8px;
 }

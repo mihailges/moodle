@@ -264,6 +264,16 @@ div#dock {
     width: 100%;
 }
 
+.path-mod-wiki,
+.path-mod-glossary {
+    .mediaplugin {
+        text-align: left;
+        > div {
+            margin: 0;
+        }
+    }
+}
+
 // Survey module
 
 .path-mod-survey {

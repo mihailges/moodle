@@ -216,6 +216,13 @@ YUI.add('moodle-core_filepicker', function(Y) {
             }
             tmpNode.fileinfo = node;
             tmpNode.isLeaf = !file_is_folder(node);
+            if (file_is_folder(node)) {
+                console.log(el);
+                console.log(el.one('.filename-checkbox'));
+                el.one('.filename-checkbox').remove();
+                el.remove();
+                //el.previous('.filename-checkbox', true).remove();
+            }
             if (!tmpNode.isLeaf) {
                 if(node.expanded) {
                     tmpNode.expand();
@@ -308,6 +315,14 @@ YUI.add('moodle-core_filepicker', function(Y) {
             el.appendChild(options.filenode.cloneNode(true)); // TODO not node but string!
             el.get('children').addClass(o.data['classname']);
             el.one('.fp-filename').setContent(o.value);
+            el.one('.filename-checkbox').set('value', o.data['filepath'] + o.data['filename']);
+            if (o.data['isfolder']) {
+                el.one('.filename-checkbox').remove();
+            }
+            var file = o.data['filepath'] + o.data['filename'];
+            if (M.form_filemanager.selectedfiles.indexOf(file) !== -1) {
+                el.one('.filename-checkbox').setAttribute('checked');
+            }
             if (o.data['icon']) {
                 el.one('.fp-icon').appendChild(Y.Node.create('<img/>'));
                 el.one('.fp-icon img').setImgSrc(o.data['icon'], o.data['realicon'], lazyloading);
@@ -425,6 +440,10 @@ YUI.add('moodle-core_filepicker', function(Y) {
                     element.on('contextmenu', options.rightclickcallback, options.callbackcontext, node);
                 }
             }
+        }
+
+        var append_file_names_checkbox = function() {
+
         }
 
         // Notify the user if any of the files has a problem status.

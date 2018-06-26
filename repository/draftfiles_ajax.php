@@ -109,6 +109,41 @@ switch ($action) {
         }
         die;
 
+    case 'bulkdelete':
+        $files   = required_param('files', PARAM_RAW);
+        $fs = get_file_storage();
+        foreach($files as $file) {
+            $filepathinfo = pathinfo($file);
+            $filepath = $filepathinfo['dirname'];
+            $filename = $filepathinfo['basename'];
+            $filepath = file_correct_filepath($filepath);
+            $return = new stdClass();
+            $returns = array();
+            if ($stored_file = $fs->get_file($user_context->id, 'user', 'draft', $draftid, $filepath, $filename)) {
+                $parent_path = $stored_file->get_parent_directory()->get_filepath();
+                if ($stored_file->is_directory()) {
+                    $files = $fs->get_directory_files($user_context->id, 'user', 'draft', $draftid, $filepath, true);
+                    foreach ($files as $file) {
+                        $file->delete();
+                    }
+                    $stored_file->delete();
+                    $return->filepath = $parent_path;
+                    $returns[] = $return;
+                } else {
+                    if ($result = $stored_file->delete()) {
+                        $return->filepath = $parent_path;
+                        $returns[] = $return;
+                    } else {
+                        $returns[] = false;
+                    }
+                }
+            } else {
+                $returns[] = false;
+            }
+        }
+        echo json_encode($returns);
+        die();
+
     case 'setmainfile':
         $filename   = required_param('filename', PARAM_FILE);
         $filepath   = required_param('filepath', PARAM_PATH);

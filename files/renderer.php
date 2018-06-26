@@ -269,6 +269,7 @@ class core_files_renderer extends plugin_renderer_base {
     protected function fm_js_template_iconfilename() {
         $rv = '
 <div class="fp-file">
+    <input type="checkbox" name="file[]" value="" class="filename-checkbox" />
     <a href="#">
     <div style="position:relative;">
         <div class="fp-thumbnail"></div>
@@ -299,7 +300,8 @@ class core_files_renderer extends plugin_renderer_base {
      */
     protected function fm_js_template_listfilename() {
         $rv = '
-<span class="fp-filename-icon">
+<input type="checkbox" name="file[]" value="" class="filename-checkbox" />
+<span class="fp-filename-icon" style="display: inline-block;">
     <a href="#">
     <span class="fp-icon"></span>
     <span class="fp-reficons1"></span>

@@ -2442,6 +2442,10 @@ class lesson extends lesson_base {
 
         $clusterpages = array();
         $clusterpages = $this->get_sub_pages_of($pageid, array(LESSON_PAGE_ENDOFCLUSTER));
+        // The cluster does not have pages.
+//        if (empty($clusterpages)) {
+//            return LESSON_EOL;
+//        }
         $unseen = array();
         foreach ($clusterpages as $key=>$cluster) {
             // Remove the page if  it is in a branch table or is an endofbranch.
@@ -2479,7 +2483,7 @@ class lesson extends lesson_base {
             }
         } else {
             // seen all there is to see, leave the cluster
-            if (end($clusterpages)->nextpageid == 0) {
+            if (empty($clusterpages) || end($clusterpages)->nextpageid == 0) {
                 return LESSON_EOL;
             } else {
                 $clusterendid = $pageid;
@@ -3174,7 +3178,7 @@ class lesson extends lesson_base {
             return array($newpageid, null, null);
         }
 
-        if (is_numeric($newpageid)) {
+        if (is_numeric($newpageid) && $newpageid > 0) {
             $page = $this->load_page($newpageid);
         }
 

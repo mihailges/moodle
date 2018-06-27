@@ -98,15 +98,31 @@ $lessonfirstpageid = $lessonfirstpage ? $lessonfirstpage->id : false;
 // for flow, changed to simple echo for flow styles, michaelp, moved lesson name and page title down
 $attemptflag = false;
 if (empty($pageid)) {
+    $lessonpages = $DB->get_records('lesson_pages', array('lessonid' => $lesson->id));
     // make sure there are pages to view
     if (!$lessonfirstpageid) {
         if (!$canmanage) {
             $lesson->add_message(get_string('lessonnotready2', 'lesson')); // a nice message to the student
         } else {
-            if (!$DB->count_records('lesson_pages', array('lessonid'=>$lesson->id))) {
+            //if (!$DB->count_records('lesson_pages', array('lessonid'=>$lesson->id))) {
+            if (!$lessonpages) {
                 redirect("$CFG->wwwroot/mod/lesson/edit.php?id=$cm->id"); // no pages - redirect to add pages
             } else {
                 $lesson->add_message(get_string('lessonpagelinkingbroken', 'lesson'));  // ok, bad mojo
+            }
+        }
+    } else {
+        // If only cluster pages are defined.
+        $onlyclusterpages = true;
+        foreach ($lessonpages as $page) {
+            if ($page->qtype !== LESSON_PAGE_CLUSTER && $page->qtype !== LESSON_PAGE_ENDOFCLUSTER) {
+                $onlyclusterpages = false;
+                break;
+            }
+        }
+        if ($onlyclusterpages) {
+            if (!$canmanage) {
+                $lesson->add_message(get_string('lessonnotready2', 'lesson')); // a nice message to the student
             }
         }
     }

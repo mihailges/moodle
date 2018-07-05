@@ -173,9 +173,10 @@ class filter_mediaplugin extends moodle_text_filter {
      * @param int $width Width in pixels (optional)
      * @param int $height Height in pixels (optional)
      * @param array $options Array of key/value pairs
+     * @param string $class
      * @return string HTML content of embed
      */
-    protected function embed_alternatives($urls, $name, $width, $height, $options) {
+    protected function embed_alternatives($urls, $name, $width, $height, $options, $class = '') {
 
         // Allow SWF (or not).
         if ($this->trusted) {
@@ -190,7 +191,7 @@ class filter_mediaplugin extends moodle_text_filter {
         // NOTE: Options are not passed through from filter because the 'embed'
         // code does not recognise filter options (it's a different kind of
         // option-space) as it can be used in non-filter situations.
-        $result = core_media_manager::instance()->embed_alternatives($urls, $name, $width, $height, $options);
+        $result = core_media_manager::instance()->embed_alternatives($urls, $name, $width, $height, $options, $class);
 
         // If something was embedded, return it, otherwise return original.
         if ($result !== '') {
@@ -228,7 +229,8 @@ class filter_mediaplugin extends moodle_text_filter {
             $width = core_media_player_native::get_attribute($fulltext, 'width', PARAM_INT);
             $height = core_media_player_native::get_attribute($fulltext, 'height', PARAM_INT);
             $name = core_media_player_native::get_attribute($fulltext, 'title');
-            return $this->embed_alternatives($urls, $name, $width, $height, $options);
+            $class = core_media_player_native::get_attribute($fulltext, 'class');
+            return $this->embed_alternatives($urls, $name, $width, $height, $options, $class);
         }
         return $fulltext;
     }

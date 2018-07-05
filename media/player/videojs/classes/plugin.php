@@ -49,9 +49,10 @@ class media_videojs_plugin extends core_media_player_native {
      * @param int $width
      * @param int $height
      * @param array $options
+     * @param string $class
      * @return string
      */
-    public function embed($urls, $name, $width, $height, $options) {
+    public function embed($urls, $name, $width, $height, $options, $class = '') {
         global $CFG;
         require_once($CFG->libdir . '/filelib.php');
 
@@ -201,7 +202,8 @@ class media_videojs_plugin extends core_media_player_native {
             }
         }
 
-        return html_writer::div($text, 'mediaplugin mediaplugin_videojs');
+        $class = 'left';
+        return html_writer::div($text, 'mediaplugin mediaplugin_videojs ' . $class);
     }
 
     /**

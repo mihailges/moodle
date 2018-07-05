@@ -246,10 +246,11 @@ final class core_media_manager {
      * @param int $width Width in pixels (optional)
      * @param int $height Height in pixels (optional)
      * @param array $options Array of key/value pairs
+     * @param string $class
      * @return string HTML content of embed
      */
     public function embed_alternatives($alternatives, $name = '', $width = 0, $height = 0,
-                                       $options = array()) {
+                                       $options = array(), $class = '') {
 
         // Get list of player plugins.
         $players = $this->get_players();
@@ -263,7 +264,7 @@ final class core_media_manager {
             $supported = $player->list_supported_urls($alternatives, $options);
             if ($supported) {
                 // Embed.
-                $text = $player->embed($supported, $name, $width, $height, $options);
+                $text = $player->embed($supported, $name, $width, $height, $options, $class);
 
                 // Put this in place of the 'fallback' slot in the previous text.
                 $out = str_replace(core_media_player::PLACEHOLDER, $text, $out);

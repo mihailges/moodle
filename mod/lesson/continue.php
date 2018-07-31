@@ -109,11 +109,8 @@ if (isset($USER->modattempts[$lesson->id])) {
 
 // Review button back
 if (!$result->correctanswer && !$result->noanswer && !$result->isessayquestion && !$reviewmode && $lesson->review && !$result->maxattemptsreached) {
-    $url = $CFG->wwwroot.'/mod/lesson/view.php';
-    $content = html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'id', 'value'=>$cm->id));
-    $content .= html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'pageid', 'value'=>$page->id));
-    $content .= html_writer::empty_tag('input', array('type'=>'submit', 'name'=>'submit', 'value'=>get_string('reviewquestionback', 'lesson')));
-    echo html_writer::tag('form', "<div class=\"singlebutton\">$content</div>", array('method'=>'post', 'action'=>$url));
+    $url = new moodle_url('/mod/lesson/view.php', array('id' => $cm->id, 'pageid' => $page->id));
+    echo $OUTPUT->single_button($url, get_string('reviewquestionback', 'lesson'));
 }
 
 $url = new moodle_url('/mod/lesson/view.php', array('id'=>$cm->id, 'pageid'=>$result->newpageid));

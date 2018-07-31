@@ -26,12 +26,15 @@
     -
 
     Context variables required for this template:
+    * useremail
     * policies
 
     Example context (json):
     {
         "hasonbehalfagreements": true,
         "canrevoke": true,
+        "cancontactdpo": true,
+        "useremail": "test@example.com",
         "policies": [
             {
               "versions": [
@@ -72,7 +75,12 @@
     }
 }}
 {{^canrevoke}}
-    <div class="alert alert-info">{{#str}} contactdpo, tool_policy {{/str}}</div>
+    {{#cancontactdpo}}
+    <div class="alert alert-info">
+        <p class="mb-1">{{#str}} contactdpo, tool_policy {{/str}}</p>
+        <a href="#" data-action="contactdpo" data-replytoemail="{{useremail}}" class="contactdpo">{{#str}} contactdataprotectionofficer, tool_dataprivacy {{/str}}</a>
+    </div>
+    {{/cancontactdpo}}
 {{/canrevoke}}
 
 <table class="generaltable fullwidth">

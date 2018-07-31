@@ -51,4 +51,7 @@ echo $output->heading(get_string('policiesagreements', 'tool_policy'));
 $acceptances = new \tool_policy\output\acceptances($userid, $returnurl);
 echo $output->render($acceptances);
 $PAGE->requires->js_call_amd('tool_policy/acceptmodal', 'getInstance', [context_system::instance()->id]);
+if (\tool_dataprivacy\api::can_contact_dpo()) {
+    $PAGE->requires->js_call_amd('tool_dataprivacy/myrequestactions', 'init');
+}
 echo $output->footer();

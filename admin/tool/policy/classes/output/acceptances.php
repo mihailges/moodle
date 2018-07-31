@@ -72,11 +72,15 @@ class acceptances implements renderable, templatable {
      * @return stdClass
      */
     public function export_for_template(renderer_base $output) {
+        global $USER;
+
         $data = (object)[];
         $data->hasonbehalfagreements = false;
         $data->pluginbaseurl = (new moodle_url('/admin/tool/policy'))->out(false);
         $data->returnurl = $this->returnurl;
         $data->canrevoke = $this->canrevoke;
+        $data->cancontactdpo = \tool_dataprivacy\api::can_contact_dpo();
+        $data->useremail = $USER->email;
 
         // Get the list of policies and versions that current user is able to see
         // and the respective acceptance records for the selected user.
@@ -133,6 +137,7 @@ class acceptances implements renderable, templatable {
         }
 
         $data->policies = array_values($policies);
+
         return $data;
     }
 }

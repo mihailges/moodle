@@ -10,26 +10,37 @@ class user_bulk_action_form extends moodleform {
         $mform =& $this->_form;
 
         $syscontext = context_system::instance();
-        $actions = array(0=>get_string('choose').'...');
+        $actions = array(0 => get_string('choose') . '...');
+
         if (has_capability('moodle/user:update', $syscontext)) {
-            $actions[1] = get_string('confirm');
+            $actions[$CFG->wwwroot.'/'.$CFG->admin.'/user/user_bulk_confirm.php'] =
+                    get_string('confirm');
         }
         if (has_capability('moodle/site:readallmessages', $syscontext) && !empty($CFG->messaging)) {
-            $actions[2] = get_string('messageselectadd');
+            $actions[$CFG->wwwroot.'/'.$CFG->admin.'/user/user_bulk_message.php'] =
+                    get_string('messageselectadd');
         }
         if (has_capability('moodle/user:delete', $syscontext)) {
-            $actions[3] = get_string('delete');
+            $actions[$CFG->wwwroot.'/'.$CFG->admin.'/user/user_bulk_delete.php'] =
+                    get_string('delete');
         }
-        $actions[4] = get_string('displayonpage');
+        $actions[$CFG->wwwroot.'/'.$CFG->admin.'/user/user_bulk_display.php'] =
+                get_string('displayonpage');
         if (has_capability('moodle/user:update', $syscontext)) {
-            $actions[5] = get_string('download', 'admin');
+            $actions[$CFG->wwwroot.'/'.$CFG->admin.'/user/user_bulk_download.php'] =
+                    get_string('download', 'admin');
         }
         if (has_capability('moodle/user:update', $syscontext)) {
-            $actions[7] = get_string('forcepasswordchange');
+            $actions[$CFG->wwwroot.'/'.$CFG->admin.'/user/user_bulk_forcepasswordchange.php'] =
+                    get_string('forcepasswordchange');
         }
         if (has_capability('moodle/cohort:assign', $syscontext)) {
-            $actions[8] = get_string('bulkadd', 'core_cohort');
+            $actions[$CFG->wwwroot.'/'.$CFG->admin.'/user/user_bulk_cohortadd.php'] =
+                    get_string('bulkadd', 'core_cohort');
         }
+        // Enable plugins to create additional bulk action requests.
+        core_user_bulk_action_requests($actions);
+
         $objs = array();
         $objs[] =& $mform->createElement('select', 'action', null, $actions);
         $objs[] =& $mform->createElement('submit', 'doaction', get_string('go'));

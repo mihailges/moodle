@@ -45,3 +45,17 @@ function get_selection_data($ufiltering) {
 
     return $userlist;
 }
+
+/**
+ * Enables plugins to create bulk action requests.
+ *
+ * @param array $actions
+ */
+function core_user_bulk_action_requests(&$actions) {
+    $callbacks = get_plugins_with_function('user_bulk_action_requests');
+    foreach ($callbacks as $type => $plugins) {
+        foreach ($plugins as $plugin => $pluginfunction) {
+            $pluginfunction($actions);
+        }
+    }
+}

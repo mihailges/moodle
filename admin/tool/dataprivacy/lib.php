@@ -211,3 +211,19 @@ function tool_dataprivacy_pluginfile($course, $cm, $context, $filearea, $args, $
         send_file_not_found();
     }
 }
+
+/**
+ * Creates delete user data bulk action request.
+ *
+ * @param array $actions
+ */
+function tool_dataprivacy_user_bulk_action_requests(&$actions) {
+    global $CFG;
+
+    $context = \context_system::instance();
+    // Make sure the user has the proper capability.
+    if (has_capability('tool/dataprivacy:managedatarequests', $context)) {
+        $actions[$CFG->wwwroot.'/admin/tool/dataprivacy/user_bulk_delete_data_request.php'] =
+                get_string('requestbulkdelete', 'tool_dataprivacy');
+    }
+}

@@ -178,11 +178,12 @@ class api {
      * @param int $foruser The user whom the request is being made for.
      * @param int $type The request type.
      * @param string $comments Request comments.
+     * @param bool $skip If true, creates and approves the request.
      * @return data_request
      * @throws invalid_persistent_exception
      * @throws coding_exception
      */
-    public static function create_data_request($foruser, $type, $comments = '') {
+    public static function create_data_request($foruser, $type, $comments = '', $skip = false) {
         global $USER;
 
         $datarequest = new data_request();
@@ -219,7 +220,7 @@ class api {
 
         // Fire an ad hoc task to initiate the data request process.
         $task = new initiate_data_request_task();
-        $task->set_custom_data(['requestid' => $datarequest->get('id')]);
+        $task->set_custom_data(['requestid' => $datarequest->get('id'), 'skip' => $skip]);
         manager::queue_adhoc_task($task, true);
 
         return $datarequest;

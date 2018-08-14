@@ -59,7 +59,11 @@ class initiate_data_request_task extends adhoc_task {
         if (!isset($this->get_custom_data()->requestid)) {
             throw new coding_exception('The custom data \'requestid\' is required.');
         }
+        if (!isset($this->get_custom_data()->skip)) {
+            throw new coding_exception('The custom data \'skip\' is required.');
+        }
         $requestid = $this->get_custom_data()->requestid;
+        $skip = $this->get_custom_data()->skip;
 
         $datarequest = new data_request($requestid);
 
@@ -67,6 +71,17 @@ class initiate_data_request_task extends adhoc_task {
         $status = $datarequest->get('status');
         if (!api::is_active($status)) {
             mtrace('Request ' . $requestid . ' with status ' . $status . ' doesn\'t need to be processed. Skipping...');
+            return;
+        }
+
+        if ($skip) {
+            // Fire an ad hoc task to initiate the data request process.
+            $task = new process_data_request_task();
+            $task->set_custom_data(['requestid' => $requestid]);
+            if ($this->get_custom_data()->type == self::DATAREQUEST_TYPE_EXPORT) {
+                $task->set_userid($this->get_custom_data()->userid);
+            }
+            manager::queue_adhoc_task($task, true);
             return;
         }
 

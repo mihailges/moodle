@@ -79,7 +79,13 @@ class data_requests_table extends table_sql {
         $this->types = $types;
         $this->manage = $manage;
 
+        $checkboxattrs = [
+            'title' => get_string('selectall'),
+            'data-action' => 'selectall'
+        ];
+
         $columnheaders = [
+            'select' => html_writer::checkbox('selectall', 1, false, null, $checkboxattrs),
             'type' => get_string('requesttype', 'tool_dataprivacy'),
             'userid' => get_string('user', 'tool_dataprivacy'),
             'timecreated' => get_string('daterequested', 'tool_dataprivacy'),
@@ -91,7 +97,26 @@ class data_requests_table extends table_sql {
 
         $this->define_columns(array_keys($columnheaders));
         $this->define_headers(array_values($columnheaders));
-        $this->no_sorting('actions');
+        $this->no_sorting('select', 'actions');
+    }
+
+    /**
+     * The select column.
+     *
+     * @param stdClass $data The row data.
+     * @return string
+     */
+    public function col_select($data) {
+        if ($data->status == \tool_dataprivacy\api::DATAREQUEST_STATUS_AWAITING_APPROVAL) {
+            $stringdata = [
+                'username' => $data->foruser->fullname,
+                'requesttype' => \core_text::strtolower($data->typenameshort)
+            ];
+
+            return \html_writer::checkbox('requestids[]', $data->id, false, '',
+                    ['class' => 'selectrequests', 'title' => get_string('selectuserdatarequest',
+                    'tool_dataprivacy', $stringdata)]);
+        }
     }
 
     /**
@@ -289,5 +314,30 @@ class data_requests_table extends table_sql {
      */
     protected function show_hide_link($column, $index) {
         return '';
+    }
+
+    /**
+     * Override the table's wrap_html_finish method in order to render the bulk actions.
+     */
+    public function wrap_html_finish() {
+        global $OUTPUT;
+
+        $data = new stdClass();
+        $data->options = [
+            [
+                'value' => 0,
+                'name' => ''
+            ],
+            [
+                'value' => \tool_dataprivacy\api::DATAREQUEST_ACTION_APPROVE,
+                'name' => get_string('approve', 'tool_dataprivacy')
+            ],
+            [
+                'value' => \tool_dataprivacy\api::DATAREQUEST_ACTION_REJECT,
+                'name' => get_string('deny', 'tool_dataprivacy')
+            ]
+        ];
+
+        echo $OUTPUT->render_from_template('tool_dataprivacy/data_requests_bulk_actions', $data);
     }
 }

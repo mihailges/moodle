@@ -165,6 +165,7 @@ class auth_db_testcase extends advanced_testcase {
 
         $authdb = $auth->db_init();
 
+        $this->setAdminUser();
 
         // Test adodb may access the table.
 
@@ -455,6 +456,8 @@ class auth_db_testcase extends advanced_testcase {
         $this->init_auth_database();
         $auth = get_auth_plugin('db');
         $auth->db_init();
+
+        $this->setAdminUser();
 
         // Set to delete from moodle when missing from DB.
         set_config('removeuser', AUTH_REMOVEUSER_FULLDELETE, 'auth_db');

@@ -478,6 +478,7 @@ class core_userliblib_testcase extends advanced_testcase {
         $this->assertEquals(1, $DB->count_records('user_password_history', array('userid' => $user1->id)));
         $this->assertEquals(2, $DB->count_records('user_password_history', array('userid' => $user2->id)));
 
+        $this->setAdminUser();
         delete_user($user2);
         $this->assertEquals(1, $DB->count_records('user_password_history'));
         $this->assertEquals(1, $DB->count_records('user_password_history', array('userid' => $user1->id)));

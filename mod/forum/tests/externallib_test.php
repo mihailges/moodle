@@ -270,7 +270,10 @@ class mod_forum_external_testcase extends externallib_advanced_testcase {
         $this->getDataGenerator()->enrol_user($user2->id, $course1->id);
 
         // Delete one user, to test that we still receive posts by this user.
+        $this->setAdminUser();
         delete_user($user3);
+
+        self::setUser($user1);
 
         // Create what we expect to be returned when querying the discussion.
         $expectedposts = array(
@@ -631,7 +634,10 @@ class mod_forum_external_testcase extends externallib_advanced_testcase {
         $enrol->enrol_user($instance1, $user1->id);
 
         // Delete one user.
+        $this->setAdminUser();
         delete_user($user4);
+
+        self::setUser($user1);
 
         // Assign capabilities to view discussions for forum 1.
         $cm = get_coursemodule_from_id('forum', $forum1->cmid, 0, false, MUST_EXIST);

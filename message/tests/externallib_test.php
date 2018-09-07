@@ -381,9 +381,11 @@ class core_message_externallib_testcase extends externallib_advanced_testcase {
         $this->assertEquals(1, $stranger['unread']);
 
         // Check that deleted users are not returned.
+        $this->setAdminUser();
         delete_user($user_offline1);
         delete_user($user_stranger);
         delete_user($user_online);
+        $this->setUser($user1);
         $contacts = core_message_external::get_contacts();
         $contacts = external_api::clean_returnvalue(core_message_external::get_contacts_returns(), $contacts);
         $this->assertCount(2, $contacts['offline']);
@@ -796,7 +798,9 @@ class core_message_externallib_testcase extends externallib_advanced_testcase {
         $this->assertCount(1, $blockedusers['users']);
 
         // Remove the $userblocked and check that the list now is empty.
+        $this->setAdminUser();
         delete_user($userblocked);
+        $this->setUser($user1);
         $blockedusers = core_message_external::get_blocked_users($user1->id);
         $blockedusers = external_api::clean_returnvalue(core_message_external::get_blocked_users_returns(), $blockedusers);
         $this->assertCount(0, $blockedusers['users']);
@@ -1004,6 +1008,7 @@ class core_message_externallib_testcase extends externallib_advanced_testcase {
         }
 
         // Not active user.
+        $this->setAdminUser();
         delete_user($user2);
         try {
             $result = core_message_external::delete_message($m1to2, $user2->id, false);
@@ -1013,7 +1018,6 @@ class core_message_externallib_testcase extends externallib_advanced_testcase {
         }
 
         // Now, as an admin, try to delete any message.
-        $this->setAdminUser();
         $result = core_message_external::delete_message($m3to4, $user4->id, false);
         $result = external_api::clean_returnvalue(core_message_external::delete_message_returns(), $result);
         $this->assertTrue($result['status']);

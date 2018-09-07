@@ -4615,7 +4615,10 @@ class core_competency_api_testcase extends advanced_testcase {
 
         // Now, let's delete user 3.
         // It should not be listed on user competencies to review any more.
+        $this->setAdminUser();
         user_delete_user($u3);
+
+        $this->setUser($reviewer);
         $result = api::list_user_competencies_to_review();
         $this->assertEquals(3, $result['count']);
 

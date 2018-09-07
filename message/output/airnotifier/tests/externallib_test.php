@@ -109,7 +109,10 @@ class message_airnotifier_external_testcase extends externallib_advanced_testcas
         $this->assertEquals(2, count($preferences['warnings']));
 
         // Now, remove one user.
+        $this->setAdminUser();
         delete_user($user2);
+
+        self::setUser($user1);
         $preferences = message_airnotifier_external::are_notification_preferences_configured($params);
         $preferences = external_api::clean_returnvalue($returnsdescription, $preferences);
         $this->assertEquals(1, count($preferences['users']));

@@ -330,6 +330,7 @@ class message_received_search_testcase extends advanced_testcase {
         $message = $messages[0];
 
         // Delete user.
+        $this->setAdminUser();
         delete_user($user2);
 
         $doc = $searcharea->get_document($message);

@@ -491,6 +491,7 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
         $this->send_fake_message($user3, $user1, 'Cool.', 0, $time + 8);
 
         // Delete the second user.
+        $this->setAdminUser();
         delete_user($user2);
 
         // Retrieve the conversations.

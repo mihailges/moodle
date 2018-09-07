@@ -205,6 +205,7 @@ class enrol_imsenterprise_testcase extends advanced_testcase {
         $imsuser->email = $user->email;
         $this->set_xml_file(array($imsuser));
 
+        $this->setAdminUser();
         $this->imsplugin->cron();
         $this->assertEquals(1, $DB->get_field('user', 'deleted', array('id' => $user->id), MUST_EXIST));
     }

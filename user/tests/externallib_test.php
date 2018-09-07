@@ -641,9 +641,11 @@ class core_user_externallib_testcase extends externallib_advanced_testcase {
      * Test delete_users
      */
     public function test_delete_users() {
-        global $USER, $CFG, $DB;
+        global $USER, $DB;
 
         $this->resetAfterTest(true);
+
+        $user = self::setUser($USER);
 
         $user1 = self::getDataGenerator()->create_user();
         $user2 = self::getDataGenerator()->create_user();
@@ -653,9 +655,10 @@ class core_user_externallib_testcase extends externallib_advanced_testcase {
                 array('userid1' => $user1->id, 'userid2' => $user2->id)));
 
         $context = context_system::instance();
-        $roleid = $this->assignUserCapability('moodle/user:delete', $context->id);
 
         // Call the external function.
+        $this->setAdminUser();
+        $this->assertTrue(has_capability('moodle/user:delete', $context));
         core_user_external::delete_users(array($user1->id, $user2->id));
 
         // Check we retrieve no users + no error on capability.
@@ -663,7 +666,8 @@ class core_user_externallib_testcase extends externallib_advanced_testcase {
                 array('userid1' => $user1->id, 'userid2' => $user2->id)));
 
         // Call without required capability.
-        $this->unassignUserCapability('moodle/user:delete', $context->id, $roleid);
+        self::setUser($user);
+        $this->assertFalse(has_capability('moodle/user:delete', $context));
         $this->expectException('required_capability_exception');
         core_user_external::delete_users(array($user1->id, $user2->id));
     }
@@ -738,7 +742,11 @@ class core_user_externallib_testcase extends externallib_advanced_testcase {
 
         $userdeleted = self::getDataGenerator()->create_user();
         $user4['id'] = $userdeleted->id;
+
+        $this->setAdminUser();
         user_delete_user($userdeleted);
+
+        self::setUser($wsuser);
 
         // Call the external function.
         core_user_external::update_users(array($user1, $user2, $user3, $user4));

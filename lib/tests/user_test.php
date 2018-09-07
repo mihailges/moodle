@@ -386,13 +386,17 @@ class core_user_testcase extends advanced_testcase {
         $this->assertCount(2, $result);
 
         // What if one is deleted?
+        $this->setAdminUser();
         delete_user($student1);
+        $this->setUser($searcher);
         $result = core_user::search('Amelia');
         $this->assertCount(1, $result);
         $this->assertEquals('Beetle', $result[0]->lastname);
 
         // Delete the other, for good measure.
+        $this->setAdminUser();
         delete_user($student2);
+        $this->setUser($searcher);
         $result = core_user::search('Amelia');
         $this->assertCount(0, $result);
     }
@@ -458,6 +462,7 @@ class core_user_testcase extends advanced_testcase {
         core_user::require_active_user($userexpected);
 
         // Delete user.
+        $this->setAdminUser();
         delete_user($userexpected);
         try {
             core_user::require_active_user($userexpected);

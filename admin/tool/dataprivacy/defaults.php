@@ -74,5 +74,6 @@ if ($form->is_cancelled()) {
 
 $output = $PAGE->get_renderer('tool_dataprivacy');
 echo $output->header();
+echo $output->heading($title);
 $form->display();
 echo $output->footer();

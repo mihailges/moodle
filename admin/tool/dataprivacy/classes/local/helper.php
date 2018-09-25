@@ -44,6 +44,9 @@ class helper {
     /** Filter constant associated with the request status filter. */
     const FILTER_STATUS = 2;
 
+    /** Filter constant associated with the request creation filter. */
+    const FILTER_CREATION = 3;
+
     /** The request filters preference key. */
     const PREF_REQUEST_FILTERS = 'tool_dataprivacy_request-filters';
 
@@ -146,6 +149,34 @@ class helper {
     }
 
     /**
+     * Retrieves the human-readable value of a data request creation method.
+     *
+     * @param int $creation The request creation method.
+     * @return string
+     * @throws moodle_exception
+     */
+    public static function get_request_creation_method_string($creation) {
+        $creationmethods = self::get_request_creation_methods();
+        if (!isset($creationmethods[$creation])) {
+            throw new moodle_exception('errorinvalidrequestcreationmethod', 'tool_dataprivacy');
+        }
+
+        return $creationmethods[$creation];
+    }
+
+    /**
+     * Returns the key value-pairs of request creation method code and string value.
+     *
+     * @return array
+     */
+    public static function get_request_creation_methods() {
+        return [
+            api::DATAREQUEST_CREATION_MANUAL => get_string('creationmanual', 'tool_dataprivacy'),
+            api::DATAREQUEST_CREATION_AUTO => get_string('creationauto', 'tool_dataprivacy'),
+        ];
+    }
+
+    /**
      * Get the users that a user can make data request for.
      *
      * E.g. User having a parent role and has the 'tool/dataprivacy:makedatarequestsforchildren' capability.
@@ -198,6 +229,10 @@ class helper {
             self::FILTER_STATUS => (object)[
                 'name' => get_string('requeststatus', 'tool_dataprivacy'),
                 'options' => self::get_request_statuses()
+            ],
+            self::FILTER_CREATION => (object)[
+                'name' => get_string('requestcreation', 'tool_dataprivacy'),
+                'options' => self::get_request_creation_methods()
             ],
         ];
         $options = [];

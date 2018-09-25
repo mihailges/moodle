@@ -111,6 +111,10 @@ class data_request extends persistent {
                 'type' => PARAM_INT,
                 'default' => FORMAT_PLAIN
             ],
+            'auto' => [
+                'default' => 0,
+                'type' => PARAM_BOOL
+            ],
         ];
     }
 

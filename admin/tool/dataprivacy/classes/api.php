@@ -100,6 +100,12 @@ class api {
     /** Reject data request. */
     const DATAREQUEST_ACTION_REJECT = 2;
 
+    /** Data request created manually. */
+    const DATAREQUEST_CREATION_MANUAL = 0;
+
+    /** Data request created automatically. */
+    const DATAREQUEST_CREATION_AUTO = 1;
+
     /**
      * Determines whether the user can contact the site's Data Protection Officer via Moodle.
      *
@@ -227,11 +233,12 @@ class api {
      * @param int $foruser The user whom the request is being made for.
      * @param int $type The request type.
      * @param string $comments Request comments.
+     * @param bool $auto Whether the request was automatically created.
      * @return data_request
      * @throws invalid_persistent_exception
      * @throws coding_exception
      */
-    public static function create_data_request($foruser, $type, $comments = '') {
+    public static function create_data_request($foruser, $type, $comments = '', $auto = false) {
         global $USER;
 
         $datarequest = new data_request();
@@ -262,6 +269,8 @@ class api {
         $datarequest->set('type', $type);
         // Set request comments.
         $datarequest->set('comments', $comments);
+        // Set whether the status was created automatically.
+        $datarequest->set('auto', $auto);
 
         // Store subject access request.
         $datarequest->create();
@@ -284,6 +293,7 @@ class api {
      * @param int $userid The User ID.
      * @param int[] $statuses The status filters.
      * @param int[] $types The request type filters.
+     * @param int[] $creationmethods The request creation method filters.
      * @param string $sort The order by clause.
      * @param int $offset Amount of records to skip.
      * @param int $limit Amount of records to fetch.
@@ -291,7 +301,8 @@ class api {
      * @throws coding_exception
      * @throws dml_exception
      */
-    public static function get_data_requests($userid = 0, $statuses = [], $types = [], $sort = '', $offset = 0, $limit = 0) {
+    public static function get_data_requests($userid = 0, $statuses = [], $types = [], $creationmethods = [],
+                                             $sort = '', $offset = 0, $limit = 0) {
         global $DB, $USER;
         $results = [];
         $sqlparams = [];
@@ -312,6 +323,13 @@ class api {
         if (!empty($types)) {
             list($typeinsql, $typeparams) = $DB->get_in_or_equal($types, SQL_PARAMS_NAMED);
             $sqlconditions[] = "type $typeinsql";
+            $sqlparams = array_merge($sqlparams, $typeparams);
+        }
+
+        // Set request creation method filter.
+        if (!empty($creationmethods)) {
+            list($typeinsql, $typeparams) = $DB->get_in_or_equal($creationmethods, SQL_PARAMS_NAMED);
+            $sqlconditions[] = "auto $typeinsql";
             $sqlparams = array_merge($sqlparams, $typeparams);
         }
 
@@ -370,11 +388,12 @@ class api {
      * @param int $userid The User ID.
      * @param int[] $statuses The status filters.
      * @param int[] $types The request type filters.
+     * @param int[] $creationmethods The request creation method filters.
      * @return int
      * @throws coding_exception
      * @throws dml_exception
      */
-    public static function get_data_requests_count($userid = 0, $statuses = [], $types = []) {
+    public static function get_data_requests_count($userid = 0, $statuses = [], $types = [], $creationmethods = []) {
         global $DB, $USER;
         $count = 0;
         $sqlparams = [];
@@ -386,6 +405,11 @@ class api {
         if (!empty($types)) {
             list($typeinsql, $typeparams) = $DB->get_in_or_equal($types, SQL_PARAMS_NAMED);
             $sqlconditions[] = "type $typeinsql";
+            $sqlparams = array_merge($sqlparams, $typeparams);
+        }
+        if (!empty($creationmethods)) {
+            list($typeinsql, $typeparams) = $DB->get_in_or_equal($creationmethods, SQL_PARAMS_NAMED);
+            $sqlconditions[] = "auto $typeinsql";
             $sqlparams = array_merge($sqlparams, $typeparams);
         }
         if ($userid) {
@@ -673,7 +697,7 @@ class api {
      * @throws coding_exception
      */
     public static function can_create_data_request_for_user($user, $requester = null) {
-        $usercontext = \context_user::instance($user);
+        $usercontext = \context_user::instance($user, MUST_EXIST, true);
         return has_capability('tool/dataprivacy:makedatarequestsforchildren', $usercontext, $requester);
     }
 

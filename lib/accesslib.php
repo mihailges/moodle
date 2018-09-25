@@ -6082,17 +6082,20 @@ class context_user extends context {
      * @static
      * @param int $userid id from {user} table
      * @param int $strictness
+     * @param bool $includedeleted include or ignore deleted users.
      * @return context_user context instance
      */
-    public static function instance($userid, $strictness = MUST_EXIST) {
+    public static function instance($userid, $strictness = MUST_EXIST, $includedeleted = false) {
         global $DB;
 
         if ($context = context::cache_get(CONTEXT_USER, $userid)) {
             return $context;
         }
 
+        $userfields = ($includedeleted) ? array('id' => $userid) : array('id' => $userid, 'deleted' => 0);
+
         if (!$record = $DB->get_record('context', array('contextlevel' => CONTEXT_USER, 'instanceid' => $userid))) {
-            if ($user = $DB->get_record('user', array('id' => $userid, 'deleted' => 0), 'id', $strictness)) {
+            if ($user = $DB->get_record('user', $userfields, 'id', $strictness)) {
                 $record = context::insert_context_record(CONTEXT_USER, $user->id, '/'.SYSCONTEXTID, 0);
             }
         }

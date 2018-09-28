@@ -116,7 +116,6 @@ class expired_user_contexts extends \tool_dataprivacy\expired_contexts_manager {
     protected function delete_expired_context(manager $privacymanager, expired_context $expiredctx) {
         $context = \context::instance_by_id($expiredctx->get('contextid'), IGNORE_MISSING);
         if (!$context) {
-            api::delete_expired_context($expiredctx->get('contextid'));
             return false;
         }
 

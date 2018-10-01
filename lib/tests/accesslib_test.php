@@ -3738,6 +3738,27 @@ class core_accesslib_testcase extends advanced_testcase {
         $this->setUser($user2);
         $this->assertEquals($expectedteacher, get_profile_roles($coursecontext));
     }
+
+    /**
+     * Test the core_user::instance() function.
+     */
+    public function test_user_context_instance() {
+        $this->resetAfterTest();
+
+        $user1 = $this->getDataGenerator()->create_user();
+        // Deleted user.
+        $user2 = $this->getDataGenerator()->create_user();
+        delete_user($user2);
+        // User without a context.
+        $user3 = $this->getDataGenerator()->create_user();
+        $user3ctx = context_user::instance($user3->id);
+        context_helper::delete_instance(CONTEXT_USER, $user3->id);
+
+        $this->assertNotEmpty(context_user::instance($user1->id));
+        $this->assertNotEmpty(context_user::instance($user2->id));
+        $this->assertNotEmpty(context_user::instance($user3->id));
+        $this->assertNotEquals($user3ctx, context_user::instance($user3->id));
+    }
 }
 
 /**

@@ -540,6 +540,7 @@ class core_repositorylib_testcase extends advanced_testcase {
         $userrepo = repository::get_repository_by_id($repo->id, $usercontext);
         $this->assertEquals(1, $DB->count_records('repository_instances', array('contextid' => $usercontext->id)));
         delete_user($user);
-        $this->assertEquals(0, $DB->count_records('repository_instances', array('contextid' => $usercontext->id)));
+        // The user context should not be deleted upon user deletion.
+        $this->assertEquals(1, $DB->count_records('repository_instances', array('contextid' => $usercontext->id)));
     }
 }

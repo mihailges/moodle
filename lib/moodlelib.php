@@ -4182,9 +4182,6 @@ function delete_user(stdClass $user) {
     // Don't trigger update event, as user is being deleted.
     user_update_user($updateuser, false, false);
 
-    // Now do a final accesslib cleanup - removes all role assignments in user context and context itself.
-    context_helper::delete_instance(CONTEXT_USER, $user->id);
-
     // Any plugin that needs to cleanup should register this event.
     // Trigger event.
     $event = \core\event\user_deleted::create(

@@ -2186,6 +2186,8 @@ class core_moodlelib_testcase extends advanced_testcase {
         $useremptyemail1 = $this->getDataGenerator()->create_user(array('email' => ''));
         $useremptyemail2 = $this->getDataGenerator()->create_user(array('email' => ''));
 
+        $usercontext = context_user::instance($user->id);
+
         // Delete user and capture event.
         $sink = $this->redirectEvents();
         $result = delete_user($user);
@@ -2201,6 +2203,8 @@ class core_moodlelib_testcase extends advanced_testcase {
         $this->assertSame('', $deluser->idnumber);
         $this->assertSame(md5($user->username), $deluser->email);
         $this->assertRegExp('/^'.preg_quote($user->email, '/').'\.\d*$/', $deluser->username);
+        $this->assertNotEmpty(context_user::instance($user->id));
+        $this->assertEquals($usercontext, context_user::instance($user->id));
 
         $this->assertEquals(1, $DB->count_records('user', array('deleted'=>1)));
 

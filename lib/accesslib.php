@@ -6156,7 +6156,7 @@ class context_user extends context {
      * @param int $strictness
      * @return context_user context instance
      */
-    public static function instance($userid, $strictness = MUST_EXIST) {
+    public static function instance($userid, $strictness = MUST_EXIST, $includedeleted = false) {
         global $DB;
 
         if ($context = context::cache_get(CONTEXT_USER, $userid)) {
@@ -6164,7 +6164,11 @@ class context_user extends context {
         }
 
         if (!$record = $DB->get_record('context', array('contextlevel' => CONTEXT_USER, 'instanceid' => $userid))) {
-            if ($user = $DB->get_record('user', array('id' => $userid, 'deleted' => 0), 'id', $strictness)) {
+            $params = ['id' => $userid];
+            if (!$includedeleted) {
+                $params['deleted'] = 0;
+            }
+            if ($user = $DB->get_record('user', $params, 'id', $strictness)) {
                 $record = context::insert_context_record(CONTEXT_USER, $user->id, '/'.SYSCONTEXTID, 0);
             }
         }

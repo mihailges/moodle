@@ -76,7 +76,7 @@ class process_data_request_task extends adhoc_task {
 
         // Get the user details now. We might not be able to retrieve it later if it's a deletion processing.
         $foruser = core_user::get_user($request->userid);
-        $usercontext = \context_user::instance($foruser->id);
+        $usercontext = \context_user::instance($foruser->id, MUST_EXIST, true);
 
         // Update the status of this request as pre-processing.
         mtrace('Processing request...');

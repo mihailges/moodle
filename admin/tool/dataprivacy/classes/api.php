@@ -232,16 +232,17 @@ class api {
      * @throws coding_exception
      */
     public static function create_data_request($foruser, $type, $comments = '') {
-        global $USER;
+        global $USER, $ADMIN;
 
         $datarequest = new data_request();
         // The user the request is being made for.
         $datarequest->set('userid', $foruser);
 
-        $requestinguser = $USER->id;
+        // The cron is considered to be a guest user when it creates a data request.
+        $requestinguser = (!isguestuser()) ? $USER->id : $ADMIN->id;
         // Check when the user is making a request on behalf of another.
         if ($requestinguser != $foruser) {
-            if (self::is_site_dpo($requestinguser)) {
+            if (self::is_site_dpo($requestinguser) || is_siteadmin($requestinguser)) {
                 // The user making the request is a DPO. Should be fine.
                 $datarequest->set('dpo', $requestinguser);
             }
@@ -664,7 +665,8 @@ class api {
      * @return  bool
      */
     public static function can_create_data_request_for_user($user, $requester = null) {
-        $usercontext = \context_user::instance($user);
+        // $usercontext = \context_user::instance($user);
+        $usercontext = \context_user::instance($user, MUST_EXIST, true);
 
         return has_capability('tool/dataprivacy:makedatarequestsforchildren', $usercontext, $requester);
     }

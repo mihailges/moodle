@@ -28,6 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 use \core_privacy\local\request\writer;
 use \core_privacy\local\request\approved_contextlist;
 use \editor_atto\privacy\provider;
+use \core_privacy\local\request\approved_userlist;
 
 /**
  * Unit tests for the editor_atto implementation of the privacy API.
@@ -324,6 +325,180 @@ class editor_atto_privacy_testcase extends \core_privacy\tests\provider_testcase
             'contextid' => $systemcontext->id,
             'userid' => $otheruser->id,
         ]));
+    }
+
+    /**
+     * Test that only users with a user context are fetched.
+     */
+    public function test_get_users_in_context() {
+        $this->resetAfterTest();
+
+        $component = 'editor_atto';
+
+        // Create editor drafts in:
+        // - the system; and
+        // - a course; and
+        // - current user context; and
+        // - another user.
+
+        $systemcontext = \context_system::instance();
+        // Create a course.
+        $course = $this->getDataGenerator()->create_course();
+        $coursecontext = \context_course::instance($course->id);
+
+        $usercontextids = [];
+        // Create a user.
+        $user = $this->getDataGenerator()->create_user();
+        $usercontext = \context_user::instance($user->id);
+        $this->setUser($user);
+
+        $usercontextids[] = $usercontext->id;
+        $usercontextids[] = $systemcontext->id;
+        $usercontextids[] = $coursecontext->id;
+
+        // The list of users should not return anything yet (related data still haven't been created).
+        $userlist = new \core_privacy\local\request\userlist($usercontext, $component);
+        provider::get_users_in_context($userlist);
+        $this->assertCount(0, $userlist);
+
+        // Add a fake inline image to the original post.
+        $userdraftintro = $this->create_editor_draft($usercontext, $user->id,
+                'id_user_intro', 'text for test user at own context');
+        $userdraftdescription = $this->create_editor_draft($usercontext, $user->id,
+                'id_user_description', 'text for test user at own context');
+        $systemuserdraftintro = $this->create_editor_draft($systemcontext, $user->id,
+                'id_system_intro', 'text for test user at system context', 2);
+        $systemuserdraftdescription = $this->create_editor_draft($systemcontext, $user->id,
+                'id_system_description', 'text for test user at system context', 4);
+        $coursedraftintro = $this->create_editor_draft($coursecontext, $user->id,
+                'id_course_intro', 'text for test user at course context');
+        $coursedraftdescription = $this->create_editor_draft($coursecontext, $user->id,
+                'id_course_description', 'text for test user at course context');
+
+        // The list of users for usercontext should return the user.
+        $userlist = new \core_privacy\local\request\userlist($usercontext, $component);
+        provider::get_users_in_context($userlist);
+        $this->assertCount(1, $userlist);
+        $expected = [$user->id];
+        $actual = $userlist->get_userids();
+        $this->assertEquals($expected, $actual);
+
+        // The list of users for systemcontext should not return any users.
+        $userlist = new \core_privacy\local\request\userlist($systemcontext, $component);
+        provider::get_users_in_context($userlist);
+        $this->assertCount(0, $userlist);
+
+        // The list of users for coursecontext should not return any users.
+        $userlist = new \core_privacy\local\request\userlist($coursecontext, $component);
+        provider::get_users_in_context($userlist);
+        $this->assertCount(0, $userlist);
+    }
+
+    /**
+     * Test that data for users in approved userlist is deleted.
+     */
+    public function test_delete_data_for_users() {
+        $this->resetAfterTest();
+
+        $component = 'editor_atto';
+
+        // Create editor drafts in:
+        // - the system; and
+        // - a course; and
+        // - current user context; and
+        // - another user.
+
+        $systemcontext = \context_system::instance();
+        // Create a course.
+        $course = $this->getDataGenerator()->create_course();
+        $coursecontext = \context_course::instance($course->id);
+
+        $usercontextids = [];
+        // Create a user.
+        $user = $this->getDataGenerator()->create_user();
+        $usercontext = \context_user::instance($user->id);
+        $this->setUser($user);
+
+        $usercontextids[] = $usercontext->id;
+        $usercontextids[] = $systemcontext->id;
+        $usercontextids[] = $coursecontext->id;
+
+        // Add a fake inline image to the original post.
+        $userdraftintro = $this->create_editor_draft($usercontext, $user->id,
+            'id_user_intro', 'text for test user at own context');
+        $userdraftdescription = $this->create_editor_draft($usercontext, $user->id,
+            'id_user_description', 'text for test user at own context');
+        $systemuserdraftintro = $this->create_editor_draft($systemcontext, $user->id,
+            'id_system_intro', 'text for test user at system context', 2);
+        $systemuserdraftdescription = $this->create_editor_draft($systemcontext, $user->id,
+            'id_system_description', 'text for test user at system context', 4);
+        $coursedraftintro = $this->create_editor_draft($coursecontext, $user->id,
+            'id_course_intro', 'text for test user at course context');
+        $coursedraftdescription = $this->create_editor_draft($coursecontext, $user->id,
+            'id_course_description', 'text for test user at course context');
+
+        // Create some data as the other user too.
+        $otherusercontextids = [];
+        $otheruser = $this->getDataGenerator()->create_user();
+        $otherusercontext = \context_user::instance($otheruser->id);
+        $this->setUser($otheruser);
+
+        $otherusercontextids[] = $otherusercontext->id;
+        $otherusercontextids[] = $systemcontext->id;
+        $otherusercontextids[] = $coursecontext->id;
+
+        $otheruserdraftintro = $this->create_editor_draft($otherusercontext, $otheruser->id,
+            'id_user_intro', 'text for other user at own context');
+        $otheruserdraftdescription = $this->create_editor_draft($otherusercontext, $otheruser->id,
+            'id_user_description', 'text for other user at own context');
+        $systemotheruserdraftintro = $this->create_editor_draft($systemcontext, $otheruser->id,
+            'id_system_intro', 'text for other user at system context');
+        $systemotheruserdraftdescription = $this->create_editor_draft($systemcontext, $otheruser->id,
+            'id_system_description', 'text for other user at system context');
+        $courseotheruserdraftintro = $this->create_editor_draft($coursecontext, $otheruser->id,
+            'id_course_intro', 'text for other user at course context');
+        $courseotheruserdraftdescription = $this->create_editor_draft($coursecontext, $otheruser->id,
+            'id_course_description', 'text for other user at course context');
+
+        // The list of users for usercontext should return user.
+        $userlist1 = new \core_privacy\local\request\userlist($usercontext, $component);
+        provider::get_users_in_context($userlist1);
+        $this->assertCount(1, $userlist1);
+        $expected = [$user->id];
+        $actual = $userlist1->get_userids();
+        $this->assertEquals($expected, $actual);
+
+        // The list of users for otherusercontext should return user.
+        $userlist2 = new \core_privacy\local\request\userlist($otherusercontext, $component);
+        provider::get_users_in_context($userlist2);
+        $this->assertCount(1, $userlist2);
+        $expected = [$otheruser->id];
+        $actual = $userlist2->get_userids();
+        $this->assertEquals($expected, $actual);
+
+        // Add userlist1 to the approved user list.
+        $approvedlist = new approved_userlist($usercontext, $component, $userlist1->get_userids());
+        // Delete user data using delete_data_for_user for usercontext.
+        provider::delete_data_for_users($approvedlist);
+
+        // Re-fetch users in usercontext - The user list should now be empty.
+        $userlist1 = new \core_privacy\local\request\userlist($usercontext, $component);
+        provider::get_users_in_context($userlist1);
+        $this->assertCount(0, $userlist1);
+        // Re-fetch users in otherusercontext - The user list should not be empty (user2).
+        $userlist2 = new \core_privacy\local\request\userlist($otherusercontext, $component);
+        provider::get_users_in_context($userlist2);
+        $this->assertCount(1, $userlist2);
+
+        // User data should be only removed in the user context.
+        // Add userlist2 to the approved user list in the system context.
+        $approvedlist = new approved_userlist($systemcontext, $component, $userlist2->get_userids());
+        // Delete user1 data using delete_data_for_user.
+        provider::delete_data_for_users($approvedlist);
+        // Re-fetch users in otherusercontext - The user list should not be empty (user2).
+        $userlist1 = new \core_privacy\local\request\userlist($otherusercontext, $component);
+        provider::get_users_in_context($userlist1);
+        $this->assertCount(1, $userlist1);
     }
 
     /**

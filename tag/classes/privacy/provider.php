@@ -31,6 +31,8 @@ use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\contextlist;
 use core_privacy\local\request\transform;
 use core_privacy\local\request\writer;
+use \core_privacy\local\request\userlist;
+use \core_privacy\local\request\approved_userlist;
 
 /**
  * Privacy Subsystem implementation for core_tag.
@@ -44,8 +46,9 @@ class provider implements
 
         // The tag subsystem provides data to other components.
         \core_privacy\local\request\subsystem\plugin_provider,
+        \core_privacy\local\request\core_userlist_provider,
 
-        // The tag subsystem may have data that belongs to this user.
+    // The tag subsystem may have data that belongs to this user.
         \core_privacy\local\request\plugin\provider {
 
     /**
@@ -211,6 +214,32 @@ class provider implements
     }
 
     /**
+     * Get the list of users within a specific context.
+     *
+     * @param userlist $userlist The userlist containing the list of users who have data in this context/plugin combination.
+     */
+    public static function get_users_in_context(userlist $userlist) {
+        $context = $userlist->get_context();
+
+        if (!$context instanceof \context_system) {
+            return;
+        }
+
+        $params = [
+            'contextid' => $context->id,
+            'contextsystem' => CONTEXT_SYSTEM,
+        ];
+
+        $sql = "SELECT t.userid as userid
+                  FROM {tag} t
+                  JOIN {context} ctx
+                       ON ctx.contextlevel = :contextsystem
+                 WHERE ctx.id = :contextid";
+
+        $userlist->add_from_sql('userid', $sql, $params);
+    }
+
+    /**
      * Export all user data for the specified user, in the specified contexts.
      *
      * @param   approved_contextlist    $contextlist    The approved contexts to export information for.
@@ -261,6 +290,21 @@ class provider implements
         if ($context->id == \context_system::instance()->id) {
             $DB->delete_records('tag_instance');
             $DB->delete_records('tag', []);
+        }
+    }
+
+    /**
+     * Delete multiple users within a single context.
+     *
+     * @param approved_userlist $userlist The approved context and user information to delete information for.
+     */
+    public static function delete_data_for_users(approved_userlist $userlist) {
+        global $DB;
+
+        $context = $userlist->get_context();
+
+        if ($context instanceof \context_system) {
+            $DB->set_field_select('tag', 'userid', 0, 'userid = ?', $userlist->get_userids());
         }
     }
 

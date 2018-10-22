@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Privacy Subsystem implementation for core_role.
  *
@@ -20,7 +21,9 @@
  * @copyright  2018 Carlos Escobedo <carlos@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace core_role\privacy;
+
 defined('MOODLE_INTERNAL') || die();
 
 use \core_privacy\local\metadata\collection;
@@ -28,6 +31,8 @@ use \core_privacy\local\request\contextlist;
 use \core_privacy\local\request\approved_contextlist;
 use \core_privacy\local\request\transform;
 use \core_privacy\local\request\writer;
+use \core_privacy\local\request\userlist;
+use \core_privacy\local\request\approved_userlist;
 
 /**
  * Privacy provider for core_role.
@@ -39,7 +44,8 @@ class provider implements
     \core_privacy\local\metadata\provider,
     \core_privacy\local\request\subsystem\provider,
     \core_privacy\local\request\subsystem\plugin_provider,
-    \core_privacy\local\request\user_preference_provider {
+    \core_privacy\local\request\user_preference_provider,
+    \core_privacy\local\request\core_userlist_provider {
 
     /**
      * Get information about the user data stored by this plugin.
@@ -151,6 +157,88 @@ class provider implements
 
         return $contextlist;
     }
+
+    /**
+     * Get the list of users within a specific context.
+     *
+     * @param userlist $userlist The userlist containing the list of users who have data in this context/plugin combination.
+     */
+    public static function get_users_in_context(userlist $userlist) {
+        global $DB;
+
+        if (empty($userlist)) {
+            return;
+        }
+
+        $context = $userlist->get_context();
+
+        // The role_capabilities table contains user data.
+        $contexts = [
+            CONTEXT_SYSTEM,
+            CONTEXT_USER,
+            CONTEXT_COURSECAT,
+            CONTEXT_COURSE,
+            CONTEXT_MODULE,
+            CONTEXT_BLOCK
+        ];
+
+        list($insql, $inparams) = $DB->get_in_or_equal($contexts, SQL_PARAMS_NAMED);
+
+        $sql = "SELECT rc.modifierid as userid
+                  FROM {role_capabilities} rc
+                  JOIN {context} ctx
+                       ON ctx.id = rc.contextid
+                       AND ctx.contextlevel {$insql}
+                 WHERE ctx.id = :contextid";
+
+        $params = [
+            'contextid' => $context->id
+        ];
+
+        $params += $inparams;
+
+        $userlist->add_from_sql('userid', $sql, $params);
+
+        $params = [
+            'contextid' => $context->id,
+            'contextuser' => CONTEXT_USER,
+        ];
+
+        $sql = "SELECT ctx.instanceid as userid
+                  FROM {role_capabilities} rc
+                  JOIN {context} ctx
+                       ON ctx.id = rc.contextid
+                       AND ctx.contextlevel = :contextuser
+                 WHERE ctx.id = :contextid";
+
+        $userlist->add_from_sql('userid', $sql, $params);
+
+        $params = [
+            'contextid' => $context->id,
+        ];
+
+        $params += $inparams;
+
+        $sql = "SELECT ra.userid
+                  FROM {role_assignments} ra
+                  JOIN {context} ctx
+                       ON ctx.id = ra.contextid
+                       AND ctx.contextlevel {$insql}
+                 WHERE ctx.id = :contextid";
+
+        $userlist->add_from_sql('userid', $sql, $params);
+
+        $sql = "SELECT ra.modifierid as userid
+                  FROM {role_assignments} ra
+                  JOIN {context} ctx
+                       ON ctx.id = ra.contextid
+                       AND ctx.contextlevel {$insql}
+                 WHERE ctx.id = :contextid
+                       AND ra.component != 'tool_cohortroles'";
+
+        $userlist->add_from_sql('userid', $sql, $params);
+    }
+
     /**
      * Export all user data for the specified user, in the specified contexts.
      *
@@ -315,6 +403,25 @@ class provider implements
         // Remove data from role_assignments.
         $DB->delete_records('role_assignments', ['contextid' => $context->id]);
     }
+
+    /**
+     * Delete multiple users within a single context.
+     *
+     * @param approved_userlist $userlist The approved context and user information to delete information for.
+     */
+    public static function delete_data_for_users(approved_userlist $userlist) {
+        global $DB;
+
+        // Don't remove data from role_capabilities.
+        // Because this data affects the whole Moodle, there are override capabilities.
+        // Don't belong to the modifier user.
+        $context = $userlist->get_context();
+        // Remove data from role_assignments.
+        foreach ($userlist->get_userids() as $userid) {
+            $DB->delete_records('role_assignments', ['userid' => $userid, 'contextid' => $context->id]);
+        }
+    }
+
     /**
      * Delete all user data for this user only.
      *

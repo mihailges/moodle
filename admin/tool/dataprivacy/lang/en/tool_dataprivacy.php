@@ -56,6 +56,7 @@ $string['confirmdenial'] = 'Do you really want deny this data request?';
 $string['confirmbulkdenial'] = 'Do you really want to bulk deny the selected data requests?';
 $string['contactdataprotectionofficer'] = 'Contact the privacy officer';
 $string['contactdataprotectionofficer_desc'] = 'If enabled, users will be able to contact the privacy officer and make a data request via a link on their profile page.';
+$string['contactdpopolicies'] = 'For any questions about the policies please contact the privacy officer.';
 $string['contextlevelname10'] = 'Site';
 $string['contextlevelname30'] = 'Users';
 $string['contextlevelname40'] = 'Course categories';

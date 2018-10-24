@@ -216,3 +216,18 @@ function tool_dataprivacy_pluginfile($course, $cm, $context, $filearea, $args, $
         send_file_not_found();
     }
 }
+
+/**
+ * Hook to display the contact dpo link and modal.
+ */
+function tool_dataprivacy_render_contact_content() {
+    global $USER, $PAGE, $OUTPUT;
+
+    if (\tool_dataprivacy\api::can_contact_dpo()) {
+        $renderer = $PAGE->get_renderer('tool_dataprivacy');
+        $data = (object)[];
+        $data->contactdpolink = $renderer->render_contact_dpo_link($USER->email);
+
+        echo $OUTPUT->render_from_template('tool_dataprivacy/policy_contact_dpo', $data);
+    }
+}

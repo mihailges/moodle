@@ -235,3 +235,16 @@ function tool_policy_output_fragment_accept_on_behalf($args) {
 
     return $mform->render();
 }
+
+/**
+ * Plugins can create contact form or display the contact information of the person responsible
+ * for handling policy related issues.
+ */
+function tool_policy_display_contact_content() {
+    $callbacks = get_plugins_with_function('render_contact_content');
+    foreach ($callbacks as $type => $plugins) {
+        foreach ($plugins as $plugin => $pluginfunction) {
+            $pluginfunction();
+        }
+    }
+}

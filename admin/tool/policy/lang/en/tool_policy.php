@@ -55,7 +55,6 @@ $string['backtotop'] = 'Back to top';
 $string['consentbulk'] = 'Consent';
 $string['consentdetails'] = 'Give consent on behalf of user(s)';
 $string['consentpagetitle'] = 'Consent';
-$string['contactdpo'] = 'For any questions about the policies please contact the privacy officer.';
 $string['dataproc'] = 'Personal data processing';
 $string['deleting'] = 'Deleting a version';
 $string['deleteconfirm'] = '<p>Are you sure you want to delete policy <em>\'{$a->name}\'</em>?</p><p>This operation can not be undone.</p>';

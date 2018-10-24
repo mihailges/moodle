@@ -294,3 +294,22 @@ Feature: Viewing acceptances reports and accepting on behalf of other users
     And I should see "2 of 2" in the "User One" "table_row"
     And "Consent given on behalf of user" "icon" should exist in the "User Two" "table_row"
     And I should see "2 of 2" in the "User Two" "table_row"
+
+  @javascript
+  Scenario: Contact the privacy officer link visible in Policies and agreements page for current user
+    Given I log in as "admin"
+    And I set the following administration settings values:
+      | contactdataprotectionofficer | 1 |
+    And I log out
+    And I log in as "user1"
+    And I press "Next"
+    And I set the field "I agree to the This site policy" to "1"
+    And I press "Next"
+    And I follow "Profile" in the user menu
+    And I should see "Policies and agreements"
+    # User can see contact the privacy officer link and the contact form.
+    When I follow "Policies and agreements"
+    Then I should see "Contact the privacy officer"
+    And I click on "Contact the privacy officer" "link"
+    And I should see "Reply to"
+    And I should see "one@example.com"

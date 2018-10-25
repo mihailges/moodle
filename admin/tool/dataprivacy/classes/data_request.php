@@ -21,7 +21,9 @@
  * @copyright  2018 Jun Pataleta
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace tool_dataprivacy;
+
 defined('MOODLE_INTERNAL') || die();
 
 use core\persistent;
@@ -36,6 +38,12 @@ class data_request extends persistent {
 
     /** The table name this persistent object maps to. */
     const TABLE = 'tool_dataprivacy_request';
+
+    /** Data request created manually. */
+    const DATAREQUEST_CREATION_MANUAL = 0;
+
+    /** Data request created automatically. */
+    const DATAREQUEST_CREATION_AUTO = 1;
 
     /**
      * Return the definition of the properties of this model.
@@ -110,6 +118,14 @@ class data_request extends persistent {
                 ],
                 'type' => PARAM_INT,
                 'default' => FORMAT_PLAIN
+            ],
+            'creationmethod' => [
+                'default' => self::DATAREQUEST_CREATION_MANUAL,
+                'choices' => [
+                    self::DATAREQUEST_CREATION_MANUAL,
+                    self::DATAREQUEST_CREATION_AUTO
+                ],
+                'type' => PARAM_INT
             ],
         ];
     }

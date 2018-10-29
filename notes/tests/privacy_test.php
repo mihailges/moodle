@@ -31,6 +31,7 @@ require_once($CFG->dirroot . "/notes/lib.php");
 use \core_notes\privacy\provider;
 use \core_privacy\local\request\writer;
 use \core_privacy\local\request\approved_contextlist;
+use \core_privacy\local\request\approved_userlist;
 
 /**
  * Unit tests for the core_notes implementation of the privacy API.
@@ -355,6 +356,174 @@ class core_notes_privacy_testcase extends \core_privacy\tests\provider_testcase 
         // Test the core_note records in mdl_post table is equals zero.
         $notes = $DB->get_records('post', ['module' => 'notes', 'usermodified' => $teacher->id]);
         $this->assertCount(0, $notes);
+    }
+
+    /**
+     * Test that only users within a course context are fetched.
+     */
+    public function test_get_users_in_context() {
+        global $DB;
+
+        $this->resetAfterTest(true);
+
+        $component = 'core_notes';
+        // Test setup.
+        $this->setAdminUser();
+        set_config('enablenotes', true);
+        // Create a teacher.
+        $teacher1 = $this->getDataGenerator()->create_user();
+        $this->setUser($teacher1);
+        $teacherrole = $DB->get_record('role', array('shortname' => 'teacher'));
+        // Create a student.
+        $student = $this->getDataGenerator()->create_user();
+        $studentrole = $DB->get_record('role', array('shortname' => 'student'));
+
+        // Create courses, then enrol a teacher and a student.
+        $nocourses = 3;
+        for ($c = 1; $c <= $nocourses; $c++) {
+            ${'course' . $c} = $this->getDataGenerator()->create_course();
+            ${'coursecontext' . $c} = context_course::instance(${'course' . $c}->id);
+
+            role_assign($teacherrole->id, $teacher1->id, ${'coursecontext' . $c}->id);
+            role_assign($studentrole->id, $student->id, ${'coursecontext' . $c}->id);
+        }
+        // The list of users in coursecontext1 should be empty (related data still have not been created).
+        $userlist1 = new \core_privacy\local\request\userlist($coursecontext1, $component);
+        provider::get_users_in_context($userlist1);
+        $this->assertCount(0, $userlist1);
+        // The list of users in coursecontext1 should be empty (related data still have not been created).
+        $userlist2 = new \core_privacy\local\request\userlist($coursecontext2, $component);
+        provider::get_users_in_context($userlist2);
+        $this->assertCount(0, $userlist2);
+        // The list of users in coursecontext1 should be empty (related data still have not been created).
+        $userlist3 = new \core_privacy\local\request\userlist($coursecontext3, $component);
+        provider::get_users_in_context($userlist3);
+        $this->assertCount(0, $userlist3);
+
+        // Create private user notes (i.e. NOTES_STATE_DRAFT) for student in course1 and course2 written by the teacher.
+        $this->help_create_user_note($student->id, NOTES_STATE_DRAFT, $course1->id,
+            "Test private user note about the student in Course 1 by the teacher");
+        $this->help_create_user_note($student->id, NOTES_STATE_DRAFT, $course2->id,
+            "Test private user note about the student in Course 2 by the teacher");
+
+        // The list of users in coursecontext1 should return one user (teacher1).
+        provider::get_users_in_context($userlist1);
+        $this->assertCount(1, $userlist1);
+        $expected = [$teacher1->id];
+        $actual = $userlist1->get_userids();
+        $this->assertEquals($expected, $actual);
+        // The list of users in coursecontext2 should return one user (teacher1).
+        provider::get_users_in_context($userlist2);
+        $this->assertCount(1, $userlist2);
+        $expected = [$teacher1->id];
+        $actual = $userlist2->get_userids();
+        $this->assertEquals($expected, $actual);
+        // The list of users in coursecontext3 should not return any users.
+        provider::get_users_in_context($userlist3);
+        $this->assertCount(0, $userlist3);
+
+        // Create public user note (i.e. NOTES_STATE_PUBLIC) for student in course3 written by the teacher.
+        $this->help_create_user_note($student->id, NOTES_STATE_PUBLIC, $course3->id,
+            "Test public user note about the student in Course 3 by the teacher");
+
+        // The list of users in coursecontext3 should return 2 users (teacher and student).
+        provider::get_users_in_context($userlist3);
+        $this->assertCount(2, $userlist3);
+        $expected = [$teacher1->id, $student->id];
+        $actual = $userlist3->get_userids();
+        $this->assertEquals($expected, $actual);
+
+        // The list of users should not return any users in a different context than course context.
+        $contextsystem = context_system::instance();
+        $userlist4 = new \core_privacy\local\request\userlist($contextsystem, $component);
+        provider::get_users_in_context($userlist4);
+        $this->assertCount(0, $userlist4);
+    }
+
+    /**
+     * Test that data for users in approved userlist is deleted.
+     */
+    public function test_delete_data_for_users() {
+        global $DB;
+
+        $this->resetAfterTest(true);
+
+        $component = 'core_notes';
+        // Test setup.
+        $this->setAdminUser();
+        set_config('enablenotes', true);
+        // Create a teacher.
+        $teacher1 = $this->getDataGenerator()->create_user();
+        $this->setUser($teacher1);
+        $teacherrole = $DB->get_record('role', array('shortname' => 'teacher'));
+        // Create a student.
+        $student = $this->getDataGenerator()->create_user();
+        $studentrole = $DB->get_record('role', array('shortname' => 'student'));
+
+        // Create Courses, then enrol a teacher and a student.
+        $nocourses = 3;
+        for ($c = 1; $c <= $nocourses; $c++) {
+            ${'course' . $c} = $this->getDataGenerator()->create_course();
+            ${'coursecontext' . $c} = context_course::instance(${'course' . $c}->id);
+
+            role_assign($teacherrole->id, $teacher1->id, ${'coursecontext' . $c}->id);
+            role_assign($studentrole->id, $student->id, ${'coursecontext' . $c}->id);
+        }
+
+        // Create private notes for student in the course1 and course2 written by the teacher.
+        $this->help_create_user_note($student->id, NOTES_STATE_DRAFT, $course1->id,
+            "Test private user note about the student in Course 1 by the teacher");
+        $this->help_create_user_note($student->id, NOTES_STATE_DRAFT, $course2->id,
+            "Test private user note about the student in Course 2 by the teacher");
+        // Create public notes for student in the course3 written by the teacher.
+        $this->help_create_user_note($student->id, NOTES_STATE_PUBLIC, $course3->id,
+            "Test public user note about the student in Course 3 by the teacher");
+
+        // The list of users in coursecontext1 should return one user (teacher1).
+        $userlist1 = new \core_privacy\local\request\userlist($coursecontext1, $component);
+        provider::get_users_in_context($userlist1);
+        $this->assertCount(1, $userlist1);
+        $expected = [$teacher1->id];
+        $actual = $userlist1->get_userids();
+        $this->assertEquals($expected, $actual);
+        // The list of users in coursecontext2 should return one user (teacher1).
+        $userlist2 = new \core_privacy\local\request\userlist($coursecontext2, $component);
+        provider::get_users_in_context($userlist2);
+        $this->assertCount(1, $userlist2);
+        $expected = [$teacher1->id];
+        $actual = $userlist2->get_userids();
+        $this->assertEquals($expected, $actual);
+        // The list of users in coursecontext3 should return two users (teacher1 and student).
+        $userlist3 = new \core_privacy\local\request\userlist($coursecontext3, $component);
+        provider::get_users_in_context($userlist3);
+        $this->assertCount(2, $userlist3);
+        $expected = [$teacher1->id, $student->id];
+        $actual = $userlist3->get_userids();
+        $this->assertEquals($expected, $actual);
+
+        // Convert $userlist3 into an approved_contextlist.
+        $approvedlist = new approved_userlist($coursecontext3, $component, $userlist3->get_userids());
+
+        // Delete using delete_data_for_user. The data for users in coursecontext3 should be removed.
+        provider::delete_data_for_users($approvedlist);
+        // Re-fetch users in the coursecontext1.
+        $userlist1 = new \core_privacy\local\request\userlist($coursecontext1, $component);
+        provider::get_users_in_context($userlist1);
+        $this->assertCount(1, $userlist1);
+        // Re-fetch users in the coursecontext2.
+        $userlist2 = new \core_privacy\local\request\userlist($coursecontext2, $component);
+        provider::get_users_in_context($userlist2);
+        $this->assertCount(1, $userlist2);
+        // Re-fetch users in the contexts.
+        $userlist3 = new \core_privacy\local\request\userlist($coursecontext3, $component);
+        provider::get_users_in_context($userlist3);
+        $this->assertCount(0, $userlist3);
+
+        // The list of users should not return any users for contexts different than course context.
+        $systemcontext = context_system::instance();
+        $userlist4 = new \core_privacy\local\request\userlist($systemcontext, $component);
+        provider::get_users_in_context($userlist4);
+        $this->assertCount(0, $userlist4);
     }
 
     /**

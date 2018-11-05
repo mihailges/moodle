@@ -70,10 +70,9 @@ class tool_cohortroles_privacy_testcase extends \core_privacy\tests\provider_tes
         $contexts = $contextlist->get_contexts();
         $this->assertCount(1, $contexts);
 
-        // Test the User's contexts equal the User's own context.
+        // Test the User's contexts equal the system's context.
         $context = reset($contexts);
-        $this->assertEquals(CONTEXT_USER, $context->contextlevel);
-        $this->assertEquals($user->id, $context->instanceid);
+        $this->assertEquals(CONTEXT_SYSTEM, $context->contextlevel);
     }
 
     /**
@@ -93,16 +92,15 @@ class tool_cohortroles_privacy_testcase extends \core_privacy\tests\provider_tes
         $contexts = $contextlist->get_contexts();
         $this->assertCount(1, $contexts);
 
-        // Test the User's contexts equal the User's own context.
+        // Test the User's contexts equal the system's context.
         $context = reset($contexts);
-        $this->assertEquals(CONTEXT_USER, $context->contextlevel);
-        $this->assertEquals($user->id, $context->instanceid);
+        $this->assertEquals(CONTEXT_SYSTEM, $context->contextlevel);
 
         // Retrieve the User's tool_cohortroles data.
         $approvedcontextlist = new approved_contextlist($user, 'tool_cohortroles', $contextlist->get_contextids());
         provider::export_user_data($approvedcontextlist);
 
-        // Test the tool_cohortroles data is exported at the User context level.
+        // Test the tool_cohortroles data is exported at the system context level.
         $writer = writer::with_context($context);
         $this->assertTrue($writer->has_any_data());
     }
@@ -130,12 +128,20 @@ class tool_cohortroles_privacy_testcase extends \core_privacy\tests\provider_tes
         $contexts = $contextlist->get_contexts();
         $this->assertCount(1, $contexts);
 
-        // Test the User's contexts equal the User's own context.
+        // Test the User's contexts equal the system's context.
         $context = reset($contexts);
-        $this->assertEquals(CONTEXT_USER, $context->contextlevel);
-        $this->assertEquals($user->id, $context->instanceid);
+        $this->assertEquals(CONTEXT_SYSTEM, $context->contextlevel);
 
-        // Delete all the User's records in mdl_tool_cohortroles table by the specified User context.
+        // Make sure the user data is only being deleted in within the system context.
+        $usercontext = context_user::instance($user->id);
+        // Delete all the User's records in mdl_tool_cohortroles table by the user context.
+        provider::delete_data_for_all_users_in_context($usercontext);
+
+        // Test the cohort roles records in mdl_tool_cohortroles table is still present.
+        $cohortroles = $DB->get_records('tool_cohortroles', ['userid' => $user->id]);
+        $this->assertCount($nocohortroles, $cohortroles);
+
+        // Delete all the User's records in mdl_tool_cohortroles table by the specified system context.
         provider::delete_data_for_all_users_in_context($context);
 
         // Test the cohort roles records in mdl_tool_cohortroles table is equals zero.
@@ -166,12 +172,21 @@ class tool_cohortroles_privacy_testcase extends \core_privacy\tests\provider_tes
         $contexts = $contextlist->get_contexts();
         $this->assertCount(1, $contexts);
 
-        // Test the User's contexts equal the User's own context.
+        // Test the User's contexts equal the system's context.
         $context = reset($contexts);
-        $this->assertEquals(CONTEXT_USER, $context->contextlevel);
-        $this->assertEquals($user->id, $context->instanceid);
+        $this->assertEquals(CONTEXT_SYSTEM, $context->contextlevel);
 
-        // Delete all the User's records in mdl_tool_cohortroles table by the specified User approved context list.
+        // Make sure the user data is only being deleted in within the system context.
+        $usercontext = context_user::instance($user->id);
+        // Delete all the User's records in mdl_tool_cohortroles table by the specified approved context list.
+        $approvedcontextlist = new approved_contextlist($user, 'tool_cohortroles', [$usercontext->id]);
+        provider::delete_data_for_user($approvedcontextlist);
+
+        // Test the cohort roles records in mdl_tool_cohortroles table is still present.
+        $cohortroles = $DB->get_records('tool_cohortroles', ['userid' => $user->id]);
+        $this->assertCount($nocohortroles, $cohortroles);
+
+        // Delete all the User's records in mdl_tool_cohortroles table by the specified approved context list.
         $approvedcontextlist = new approved_contextlist($user, 'tool_cohortroles', $contextlist->get_contextids());
         provider::delete_data_for_user($approvedcontextlist);
 

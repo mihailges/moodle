@@ -80,14 +80,20 @@ class provider implements
     public static function get_contexts_for_userid(int $userid) : contextlist {
         $contextlist = new contextlist();
 
-        // Retrieve the User context associated with tool_cohortroles records.
+        // We should process user data from the system context.
+        // When we process user deletions and expiries, we always delete from the user context.
+        // As a result the cohort role assignments would be deleted, which has a knock-on effect with courses
+        // as roles may change and data may be removed earlier than it should be.
+
+        // Retrieve the system context associated with tool_cohortroles records.
         $sql = "SELECT DISTINCT c.id
                   FROM {context} c
-                  JOIN {tool_cohortroles} cr ON cr.userid = c.instanceid AND c.contextlevel = :contextuser
-                 WHERE cr.userid = :userid";
+                  JOIN {tool_cohortroles} cr
+                       ON cr.userid = :userid
+                 WHERE c.contextlevel = :contextsystem";
 
         $params = [
-            'contextuser' => CONTEXT_USER,
+            'contextsystem' => CONTEXT_SYSTEM,
             'userid'       => $userid
         ];
 
@@ -133,18 +139,18 @@ class provider implements
     public static function export_user_data(approved_contextlist $contextlist) {
         global $DB;
 
-        // If the user has tool_cohortroles data, then only the User context should be present so get the first context.
+        // If the user has tool_cohortroles data, then only the system context should be present so get the first context.
         $contexts = $contextlist->get_contexts();
         if (count($contexts) == 0) {
             return;
         }
         $context = reset($contexts);
 
-        // Sanity check that context is at the User context level, then get the userid.
-        if ($context->contextlevel !== CONTEXT_USER) {
+        // Sanity check that context is at the system context level, then get the userid.
+        if ($context->contextlevel !== CONTEXT_SYSTEM) {
             return;
         }
-        $userid = $context->instanceid;
+        $userid = $contextlist->get_user()->id;
 
         // Retrieve the tool_cohortroles records created for the user.
         $sql = 'SELECT cr.id as cohortroleid,
@@ -196,14 +202,21 @@ class provider implements
     public static function delete_data_for_all_users_in_context(\context $context) {
         global $DB;
 
-        // Sanity check that context is at the User context level, then get the userid.
-        if ($context->contextlevel !== CONTEXT_USER) {
+        // We should process user data from the system context.
+        // When we process user deletions and expiries, we always delete from the user context.
+        // As a result the cohort role assignments would be deleted, which has a knock-on effect with courses
+        // as roles may change and data may be removed earlier than it should be.
+
+        // Sanity check that context is at the system context level, then get the userid.
+        if ($context->contextlevel !== CONTEXT_SYSTEM) {
             return;
         }
-        $userid = $context->instanceid;
 
-        // Delete the tool_cohortroles records created for the userid.
-        $DB->delete_records('tool_cohortroles', ['userid' => $userid]);
+        $cohortids = $DB->get_fieldset_select('cohort', 'id', 'contextid = :contextid',
+            ['contextid' => $context->id]);
+
+        // Delete the tool_cohortroles records created in the specific context.
+        $DB->delete_records_list('tool_cohortroles', 'cohortid', $cohortids);
     }
 
     /**
@@ -233,18 +246,23 @@ class provider implements
     public static function delete_data_for_user(approved_contextlist $contextlist) {
         global $DB;
 
-        // If the user has tool_cohortroles data, then only the User context should be present so get the first context.
+        // We should process user data from the system context.
+        // When we process user deletions and expiries, we always delete from the user context.
+        // As a result the cohort role assignments would be deleted, which has a knock-on effect with courses
+        // as roles may change and data may be removed earlier than it should be.
+
+        // If the user has tool_cohortroles data, then only the system context should be present so get the first context.
         $contexts = $contextlist->get_contexts();
         if (count($contexts) == 0) {
             return;
         }
         $context = reset($contexts);
 
-        // Sanity check that context is at the User context level, then get the userid.
-        if ($context->contextlevel !== CONTEXT_USER) {
+        // Sanity check that context is at the system context level, then get the userid.
+        if ($context->contextlevel !== CONTEXT_SYSTEM) {
             return;
         }
-        $userid = $context->instanceid;
+        $userid = $contextlist->get_user()->id;
 
         // Delete the tool_cohortroles records created for the userid.
         $DB->delete_records('tool_cohortroles', ['userid' => $userid]);

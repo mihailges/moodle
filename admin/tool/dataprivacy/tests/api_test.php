@@ -1773,6 +1773,8 @@ class tool_dataprivacy_api_testcase extends advanced_testcase {
     public function test_set_context_defaults($contextlevel, $inheritcategory, $inheritpurpose, $foractivity, $override) {
         $this->resetAfterTest();
 
+        $this->resetAfterTest();
+
         $generator = $this->getDataGenerator();
 
         // Generate course cat, course, block, assignment, forum instances.

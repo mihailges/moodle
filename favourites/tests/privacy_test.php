@@ -134,4 +134,103 @@ class privacy_test extends provider_testcase {
         $this->assertCount(0, $ufservice1->find_favourites_by_type('core_course', 'modules'));
         $this->assertCount(1, $ufservice2->find_favourites_by_type('core_course', 'modules'));
     }
+
+    /**
+     * Test confirming that user ID's of favourited items can be added to the userlist.
+     */
+    public function test_add_userids_for_context() {
+        list($user1, $user2, $user1context, $user2context, $course1context, $course2context) = $this->set_up_courses_and_users();
+
+        // Favourite 2 courses for user1 and 1 course for user2, all at the site context.
+        $ufservice1 = \core_favourites\service_factory::get_service_for_user_context($user1context);
+        $ufservice2 = \core_favourites\service_factory::get_service_for_user_context($user2context);
+        $systemcontext = context_system::instance();
+        $ufservice1->create_favourite('core_course', 'course', $course1context->instanceid, $systemcontext);
+        $ufservice1->create_favourite('core_course', 'course', $course2context->instanceid, $systemcontext);
+        $ufservice2->create_favourite('core_course', 'course', $course2context->instanceid, $systemcontext);
+        $this->assertCount(2, $ufservice1->find_favourites_by_type('core_course', 'course'));
+        $this->assertCount(1, $ufservice2->find_favourites_by_type('core_course', 'course'));
+
+        // Now, just for variety, let's assume you can favourite a course at user context, and do so for user1.
+        $ufservice1->create_favourite('core_course', 'course', $course1context->instanceid, $user1context);
+
+        // Now, ask the favourites privacy api to export userids for favourites of the type we just created, in the system context.
+        $userlist = new \core_privacy\local\request\userlist($systemcontext, 'core_favourites');
+        provider::add_userids_for_context($userlist, 'core_course', 'course');
+        // Verify we have two userids in the list for system context.
+        $this->assertCount(2, $userlist->get_userids());
+        $expected = [
+            $user1->id,
+            $user2->id
+        ];
+        $this->assertEquals($expected, $userlist->get_userids(), '', 0.0, 10, true);
+
+        // Ask the favourites privacy api to export userids for favourites of the type we just created, in the user1 context.
+        $userlist = new \core_privacy\local\request\userlist($user1context, 'core_favourites');
+        provider::add_userids_for_context($userlist, 'core_course', 'course');
+        // Verify we have one userid in the list for user1 context.
+        $this->assertCount(1, $userlist->get_userids());
+        $expected = [$user1->id];
+        $this->assertEquals($expected, $userlist->get_userids(), '', 0.0, 10, true);
+
+        // Ask the favourites privacy api to export userids for favourites of the type we just created, in the user2 context.
+        $userlist = new \core_privacy\local\request\userlist($user2context, 'core_favourites');
+        provider::add_userids_for_context($userlist, 'core_course', 'course');
+        // Verify we do not have any userids in the list for user2 context.
+        $this->assertCount(0, $userlist->get_userids());
+    }
+
+    /**
+     * Test deletion of user favourites based on an approved_userlist, component area and item type.
+     */
+    public function test_delete_favourites_for_userlist() {
+        list($user1, $user2, $user1context, $user2context, $course1context, $course2context) = $this->set_up_courses_and_users();
+
+        // Favourite 2 courses for user1 and 1 course for user2, all at the user context.
+        $systemcontext = context_system::instance();
+        $ufservice1 = \core_favourites\service_factory::get_service_for_user_context($user1context);
+        $ufservice2 = \core_favourites\service_factory::get_service_for_user_context($user2context);
+        $ufservice1->create_favourite('core_course', 'course', $course1context->instanceid, $systemcontext);
+        $ufservice1->create_favourite('core_course', 'course', $course2context->instanceid, $user1context);
+        $ufservice2->create_favourite('core_course', 'course', $course2context->instanceid, $systemcontext);
+        $this->assertCount(2, $ufservice1->find_favourites_by_type('core_course', 'course'));
+        $this->assertCount(1, $ufservice2->find_favourites_by_type('core_course', 'course'));
+
+        // Ask the favourites privacy api to export userids for favourites of the type we just created, in the system context.
+        $userlist1 = new \core_privacy\local\request\userlist($systemcontext, 'core_favourites');
+        provider::add_userids_for_context($userlist1, 'core_course', 'course');
+        // Verify we have two userids in the list for system context.
+        $this->assertCount(2, $userlist1->get_userids());
+
+        // Ask the favourites privacy api to export userids for favourites of the type we just created, in the user1 context.
+        $userlist2 = new \core_privacy\local\request\userlist($user1context, 'core_favourites');
+        provider::add_userids_for_context($userlist2, 'core_course', 'course');
+        // Verify we have one userid in the list for user1 context.
+        $this->assertCount(1, $userlist2->get_userids());
+
+        // Now, delete the favourites for user1 only in the system context.
+        $approveduserlist = new \core_privacy\local\request\approved_userlist($systemcontext, 'core_favourites',
+                [$user1->id]);
+        provider::delete_favourites_for_userlist($approveduserlist, 'core_course', 'course');
+        // Verify user1's favourites were deleted and we still have user2 in the list for system context.
+        $userlist1 = new \core_privacy\local\request\userlist($systemcontext, 'core_favourites');
+        provider::add_userids_for_context($userlist1, 'core_course', 'course');
+        $this->assertCount(1, $userlist1->get_userids());
+        // Verify that user2 is still in the list for system context.
+        $expected = [$user2->id];
+        $this->assertEquals($expected, $userlist1->get_userids(), '', 0.0, 10, true);
+
+        // Now, delete the favourites for user2 only in the user1 context.
+        // Make sure favourites are only being deleted in the right context.
+        $approveduserlist = new \core_privacy\local\request\approved_userlist($user1context, 'core_favourites',
+                $userlist2->get_userids());
+        provider::delete_favourites_for_userlist($approveduserlist, 'core_course', 'course');
+        // Verify we have one userid in the list for system context.
+        $userlist2 = new \core_privacy\local\request\userlist($systemcontext, 'core_favourites');
+        provider::add_userids_for_context($userlist2, 'core_course', 'course');
+        $this->assertCount(1, [$user2->id]);
+        // Verify that user2 is still in the list for system context.
+        $expected = [$user2->id];
+        $this->assertEquals($expected, $userlist2->get_userids(), '', 0.0, 10, true);
+    }
 }

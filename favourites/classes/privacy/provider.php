@@ -36,7 +36,10 @@ use \core_privacy\local\request\approved_contextlist;
  * @copyright  2018 Jake Dallimore <jrhdallimore@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class provider implements \core_privacy\local\metadata\provider, \core_privacy\local\request\subsystem\plugin_provider {
+class provider implements
+        \core_privacy\local\metadata\provider,
+        \core_privacy\local\request\subsystem\plugin_provider,
+        \core_privacy\local\request\shared_userlist_provider {
 
     /**
      * Returns metadata about this system.
@@ -94,6 +97,40 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
     }
 
     /**
+     * Add user IDs for users which have favourites for the specified context.
+     *
+     * @param \core_privacy\local\request\userlist $userlist The userlist to add the users to.
+     * @param string $component the frankenstyle component name.
+     * @param string $itemtype the type of the favourited items.
+     * @return void
+     */
+    public static function add_userids_for_context(\core_privacy\local\request\userlist $userlist,
+                                                   string $component, string $itemtype = null) {
+        if (empty($userlist)) {
+            return;
+        }
+
+        $context = $userlist->get_context();
+
+        $params = [
+            'contextid' => $context->id,
+            'component' => $component
+        ];
+
+        $sql = "SELECT userid
+                  FROM {favourite}
+                 WHERE contextid = :contextid
+                       AND component = :component";
+
+        if (!is_null($itemtype)) {
+            $sql .= " AND itemtype = :itemtype";
+            $params += ['itemtype' => $itemtype];
+        }
+
+        $userlist->add_from_sql('userid', $sql, $params);
+    }
+
+    /**
      * Delete all favourites for all users in the specified contexts, and component area.
      *
      * @param \context $context The context to which deletion is scoped.
@@ -111,6 +148,39 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
         ];
 
         $select = "component = :component AND itemtype =:itemtype AND contextid = :contextid";
+        $DB->delete_records_select('favourite', $select, $params);
+    }
+
+    /**
+     * Delete all favourites for the specified users in the specified context, component area and item type.
+     *
+     * @param \core_privacy\local\request\approved_userlist $userlist The approved contexts and user information to delete information for.
+     * @param string $component The favourite's component name.
+     * @param string $itemtype The favourite's itemtype.
+     * @throws \dml_exception if any errors are encountered during deletion.
+     */
+    public static function delete_favourites_for_userlist(\core_privacy\local\request\approved_userlist $userlist,
+                                                          string $component, string $itemtype) {
+        global $DB;
+
+        $userids = $userlist->get_userids();
+
+        if (empty($userids)) {
+            return;
+        }
+
+        $context = $userlist->get_context();
+        list($usersql, $userparams) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
+
+        $params = [
+            'component' => $component,
+            'itemtype' => $itemtype,
+            'contextid' => $context->id
+        ];
+
+        $params += $userparams;
+        $select = "component = :component AND itemtype = :itemtype AND contextid = :contextid AND userid $usersql";
+
         $DB->delete_records_select('favourite', $select, $params);
     }
 

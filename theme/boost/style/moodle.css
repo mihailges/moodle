@@ -16363,6 +16363,9 @@ p.arrow_button {
 .path-grade-report .gradeparent table .clickable {
   cursor: pointer; }
 
+.path-grade-report #page.container-fluid {
+  width: auto; }
+
 /**
  * User report.
  */

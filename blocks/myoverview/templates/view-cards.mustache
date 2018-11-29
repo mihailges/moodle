@@ -28,7 +28,8 @@
                 "courseimage": "https://moodlesite/pluginfile/123/course/overviewfiles/123.jpg",
                 "fullname": "course 3",
                 "hasprogress": true,
-                "progress": 10
+                "progress": 10,
+                "coursecategory": "Miscellaneous"
             }
         ]
     }
@@ -55,6 +56,7 @@
                 </div>
                 {{> block_myoverview/course-action-menu }}
             </div>
+            <small class="text-muted">{{{coursecategory}}}</small>
         </div>
         {{#hasprogress}}
         <div class="card-footer dashboard-card-footer border-0 bg-white">

@@ -230,7 +230,7 @@ function book_get_toc($chapters, $chapter, $book, $cm, $edit) {
             break;
     }
 
-    if ($edit) { // Teacher's TOC
+    if ($edit) { // Editing on. (Teacher's TOC)
         $toc .= html_writer::start_tag('ul');
         $i = 0;
         foreach ($chapters as $ch) {
@@ -350,12 +350,13 @@ function book_get_toc($chapters, $chapter, $book, $cm, $edit) {
         $toc .= html_writer::end_tag('li');
         $toc .= html_writer::end_tag('ul');
 
-    } else { // Normal students view
+    } else { // Editing off. Normal students, teachers view.
+        $caneditbook = has_capability('mod/book:edit', context_module::instance($cm->id));
         $toc .= html_writer::start_tag('ul');
         foreach ($chapters as $ch) {
             $title = trim(format_string($ch->title, true, array('context'=>$context)));
             $titleunescaped = trim(format_string($ch->title, true, array('context' => $context, 'escape' => false)));
-            if (!$ch->hidden) {
+            if (!$ch->hidden || ($ch->hidden && $caneditbook)) {
                 if (!$ch->subchapter) {
                     $nch++;
                     $ns = 0;
@@ -386,12 +387,16 @@ function book_get_toc($chapters, $chapter, $book, $cm, $edit) {
                           $title = "$nch.$ns. $title";
                     }
                 }
+
+                $title .= ($ch->hidden && $caneditbook) ? ' ' . get_string('hidden', 'mod_book') : '';
+                $class = ($ch->hidden && $caneditbook) ? 'text-muted' : '';
+
                 if ($ch->id == $chapter->id) {
-                    $toc .= html_writer::tag('strong', $title);
+                    $toc .= html_writer::tag('strong', $title, array('class' => $class));
                 } else {
                     $toc .= html_writer::link(new moodle_url('view.php',
                                               array('id' => $cm->id, 'chapterid' => $ch->id)),
-                                              $title, array('title' => s($titleunescaped)));
+                                              $title, array('title' => s($titleunescaped), 'class' => $class));
                 }
 
                 if (!$ch->subchapter) {

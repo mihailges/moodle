@@ -54,6 +54,7 @@ $string['eventchapterdeleted'] = 'Chapter deleted';
 $string['eventchapterupdated'] = 'Chapter updated';
 $string['eventchapterviewed'] = 'Chapter viewed';
 $string['editchapter'] = 'Edit chapter "{$a}"';
+$string['hidden'] = '(hidden)';
 $string['hidechapter'] = 'Hide chapter "{$a}"';
 $string['indicator:cognitivedepth'] = 'Book cognitive';
 $string['indicator:cognitivedepth_help'] = 'This indicator is based on the cognitive depth reached by the student in a Book resource.';

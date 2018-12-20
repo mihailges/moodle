@@ -3792,9 +3792,10 @@ abstract class lesson_page extends lesson_base {
         $newpage->lessonid = $lesson->id;
         $newpage->timecreated = time();
         $newpage->qtype = $properties->qtype;
-        $newpage->qoption = (isset($properties->qoption))?1:0;
-        $newpage->layout = (isset($properties->layout))?1:0;
-        $newpage->display = (isset($properties->display))?1:0;
+        $newpage->qoption = (isset($properties->qoption)) ? 1 : 0 ;
+        $newpage->qshuffle = (isset($properties->qoption)) ? 1 : 0;
+        $newpage->layout = (isset($properties->layout)) ? 1 : 0;
+        $newpage->display = (isset($properties->display)) ? 1 : 0;
         $newpage->prevpageid = 0; // this is a first page
         $newpage->nextpageid = 0; // this is the only page
 

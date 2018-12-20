@@ -87,7 +87,9 @@ class lesson_page_type_multichoice extends lesson_page {
     public function display($renderer, $attempt) {
         global $CFG, $PAGE;
         $answers = $this->get_used_answers();
-        shuffle($answers);
+        if ($this->properties->qshuffle) {
+            shuffle($answers);
+        }
         $action = $CFG->wwwroot.'/mod/lesson/continue.php';
         $params = array('answers'=>$answers, 'lessonid'=>$this->lesson->id, 'contents'=>$this->get_contents(), 'attempt'=>$attempt);
         if ($this->properties->qoption) {
@@ -444,6 +446,10 @@ class lesson_add_page_form_multichoice extends lesson_add_page_form_base {
         $this->_form->addElement('checkbox', 'qoption', get_string('options', 'lesson'), get_string('multianswer', 'lesson'));
         $this->_form->setDefault('qoption', 0);
         $this->_form->addHelpButton('qoption', 'multianswer', 'lesson');
+
+        $this->_form->addElement('checkbox', 'qshuffle', "Shuffle answers");
+        $this->_form->setDefault('qshuffle', 1);
+        $this->_form->addHelpButton('qshuffle', 'multianswer', 'lesson');
 
         for ($i = 0; $i < $this->_customdata['lesson']->maxanswers; $i++) {
             $this->_form->addElement('header', 'answertitle'.$i, get_string('answer').' '.($i+1));

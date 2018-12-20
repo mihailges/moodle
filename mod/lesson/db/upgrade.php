@@ -113,5 +113,24 @@ function xmldb_lesson_upgrade($oldversion) {
     // Automatically generated Moodle v3.6.0 release upgrade line.
     // Put any upgrade step following this.
 
+    if ($oldversion < 2018120301) {
+        // New field for lesson_pages.
+        $table = new xmldb_table('lesson_pages');
+        $field = new xmldb_field('qshuffle', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 0, 'qoption');
+        // Conditionally launch add field timemodifiedoffline.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Pre-set the 'shuffle' answer option to enabled for existing pages that support shuffling.
+        // Update LESSON_PAGE_MULTICHOICE.
+        $DB->set_field('lesson_pages', 'qshuffle', 1, array('qtype' => 3));
+        // Update LESSON_PAGE_TRUEFALSE.
+        $DB->set_field('lesson_pages', 'qshuffle', 1, ['qtype' => 2]);
+
+        // Lesson savepoint reached.
+        upgrade_mod_savepoint(true, 2018120301, 'lesson');
+    }
+
     return true;
 }

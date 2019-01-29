@@ -167,13 +167,18 @@ function book_get_chapter_title($chid, $chapters, $book, $context) {
  * @param   stdClass    $chapter    The current chapter
  * @param   stdClass    $book       The book
  * @param   stdClass    $cm         The course module
- * @param   bool        $edit       Whether the user is editing
+ * @param   bool|null   $edit       Whether the user is editing
+ * @param   bool|null   $canedit    Whether the user can edit
  */
-function book_add_fake_block($chapters, $chapter, $book, $cm, $edit = null) {
+function book_add_fake_block($chapters, $chapter, $book, $cm, $edit = null, $canedit = null) {
     global $PAGE, $USER;
 
+    if ($canedit === null) {
+        $canedit = has_capability('mod/book:edit', context_module::instance($cm->id));
+    }
+
     if ($edit === null) {
-        if (has_capability('mod/book:edit', context_module::instance($cm->id))) {
+        if ($canedit) {
             if (isset($USER->editing)) {
                 $edit = $USER->editing;
             } else {
@@ -184,7 +189,7 @@ function book_add_fake_block($chapters, $chapter, $book, $cm, $edit = null) {
         }
     }
 
-    $toc = book_get_toc($chapters, $chapter, $book, $cm, $edit, 0);
+    $toc = book_get_toc($chapters, $chapter, $book, $cm, $edit, $canedit);
 
     $bc = new block_contents();
     $bc->title = get_string('toc', 'mod_book');
@@ -203,9 +208,10 @@ function book_add_fake_block($chapters, $chapter, $book, $cm, $edit = null) {
  * @param stdClass $book
  * @param stdClass $cm
  * @param bool $edit
+ * @param bool $canedit
  * @return string
  */
-function book_get_toc($chapters, $chapter, $book, $cm, $edit) {
+function book_get_toc($chapters, $chapter, $book, $cm, $edit, $canedit) {
     global $USER, $OUTPUT;
 
     $toc = '';
@@ -230,7 +236,7 @@ function book_get_toc($chapters, $chapter, $book, $cm, $edit) {
             break;
     }
 
-    if ($edit) { // Teacher's TOC
+    if ($edit) { // Editing on (Teacher's TOC).
         $toc .= html_writer::start_tag('ul');
         $i = 0;
         foreach ($chapters as $ch) {
@@ -350,12 +356,12 @@ function book_get_toc($chapters, $chapter, $book, $cm, $edit) {
         $toc .= html_writer::end_tag('li');
         $toc .= html_writer::end_tag('ul');
 
-    } else { // Normal students view
+    } else { // Editing off. Normal students, teachers view.
         $toc .= html_writer::start_tag('ul');
         foreach ($chapters as $ch) {
             $title = trim(format_string($ch->title, true, array('context'=>$context)));
             $titleunescaped = trim(format_string($ch->title, true, array('context' => $context, 'escape' => false)));
-            if (!$ch->hidden) {
+            if (!$ch->hidden || ($ch->hidden && $canedit)) {
                 if (!$ch->subchapter) {
                     $nch++;
                     $ns = 0;
@@ -386,12 +392,15 @@ function book_get_toc($chapters, $chapter, $book, $cm, $edit) {
                           $title = "$nch.$ns. $title";
                     }
                 }
+
+                $cssclass = ($ch->hidden && $canedit) ? 'text-muted' : '';
+
                 if ($ch->id == $chapter->id) {
-                    $toc .= html_writer::tag('strong', $title);
+                    $toc .= html_writer::tag('strong', $title, array('class' => $cssclass));
                 } else {
                     $toc .= html_writer::link(new moodle_url('view.php',
                                               array('id' => $cm->id, 'chapterid' => $ch->id)),
-                                              $title, array('title' => s($titleunescaped)));
+                                              $title, array('title' => s($titleunescaped), 'class' => $cssclass));
                 }
 
                 if (!$ch->subchapter) {

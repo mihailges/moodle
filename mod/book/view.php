@@ -121,7 +121,7 @@ $pagetitle = $book->name . ": " . $chapter->title;
 $PAGE->set_title($pagetitle);
 $PAGE->set_heading($course->fullname);
 
-book_add_fake_block($chapters, $chapter, $book, $cm, $edit);
+book_add_fake_block($chapters, $chapter, $book, $cm, $edit, $allowedit);
 
 // prepare chapter navigation icons
 $previd = null;

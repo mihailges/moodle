@@ -96,6 +96,9 @@ if (!isloggedin() or isguestuser()) {
 
 require_login(0, false);   // Script is useless unless they're logged in.
 
+$entityfactory = mod_forum\local\container::get_entity_factory();
+$vaultfactory = mod_forum\local\container::get_vault_factory();
+
 if (!empty($forum)) {      // User is starting a new discussion in a forum.
     if (! $forum = $DB->get_record("forum", array("id" => $forum))) {
         print_error('invalidforumid', 'forum');
@@ -305,6 +308,10 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum.
     require_login($course, false, $cm);
     $modcontext = context_module::instance($cm->id);
 
+    $postentity = $entityfactory->get_post_from_stdClass($post);
+    $discussionentity = $entityfactory->get_discussion_from_stdClass($discussion);
+    $forumentity = $entityfactory->get_forum_from_stdClass($forum, $modcontext, $cm, $course);
+
     if ( !(($post->userid == $USER->id && has_capability('mod/forum:deleteownpost', $modcontext))
         || has_capability('mod/forum:deleteanypost', $modcontext)) ) {
         print_error('cannotdeletepost', 'forum');
@@ -400,20 +407,27 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum.
                 "post.php?delete=$delete&confirm=$delete",
                 $CFG->wwwroot.'/mod/forum/discuss.php?d='.$post->discussion.'#p'.$post->id);
 
-            forum_print_post($post, $discussion, $forum, $cm, $course, false, false, false);
+            $postentities = [$postentity];
 
             if (empty($post->edit)) {
-                $forumtracked = forum_tp_is_tracked($forum);
-                $posts = forum_get_all_discussion_posts($discussion->id, "created ASC", $forumtracked);
-                forum_print_posts_nested($course, $cm, $forum, $discussion, $post, false, false, $forumtracked, $posts);
+                $postvault = $vaultfactory->get_post_vault();
+                $replies = $postvault->get_replies_to_post($postentity, 'created ASC');
+                $postentities = array_merge($postentities, $replies);
             }
+
+            $rendererfactory = mod_forum\local\container::get_renderer_factory();
+            $postsrenderer = $rendererfactory->get_posts_read_only_renderer($forumentity, $discussionentity);
+            echo $postsrenderer->render($USER, $postentities, FORUM_MODE_NESTED);
         } else {
             echo $OUTPUT->header();
             echo $OUTPUT->heading(format_string($forum->name), 2);
             echo $OUTPUT->confirm(get_string("deletesure", "forum", $replycount),
                 "post.php?delete=$delete&confirm=$delete",
                 $CFG->wwwroot.'/mod/forum/discuss.php?d='.$post->discussion.'#p'.$post->id);
-            forum_print_post($post, $discussion, $forum, $cm, $course, false, false, false);
+
+            $rendererfactory = mod_forum\local\container::get_renderer_factory();
+            $postsrenderer = $rendererfactory->get_posts_read_only_renderer($forumentity, $discussionentity);
+            echo $postsrenderer->render($USER, [$postentity], null);
         }
 
     }
@@ -451,7 +465,6 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum.
     $PAGE->set_context($modcontext);
 
     $prunemform = new mod_forum_prune_form(null, array('prune' => $prune, 'confirm' => $prune));
-
 
     if ($prunemform->is_cancelled()) {
         redirect(forum_go_back_to(new moodle_url("/mod/forum/discuss.php", array('d' => $post->discussion))));
@@ -539,7 +552,12 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum.
 
         $prunemform->display();
 
-        forum_print_post($post, $discussion, $forum, $cm, $course, false, false, false);
+        $postentity = $entityfactory->get_post_from_stdClass($post);
+        $discussionentity = $entityfactory->get_discussion_from_stdClass($discussion);
+        $forumentity = $entityfactory->get_forum_from_stdClass($forum, $modcontext, $cm, $course);
+        $rendererfactory = mod_forum\local\container::get_renderer_factory();
+        $postsrenderer = $rendererfactory->get_posts_read_only_renderer($forumentity, $discussionentity);
+        echo $postsrenderer->render($USER, [$postentity], null);
     }
 
     echo $OUTPUT->footer();
@@ -1048,14 +1066,22 @@ if (!empty($parent)) {
         print_error('notpartofdiscussion', 'forum');
     }
 
-    forum_print_post($parent, $discussion, $forum, $cm, $course, false, false, false);
+    $postentity = $entityfactory->get_post_from_stdClass($parent);
+    $discussionentity = $entityfactory->get_discussion_from_stdClass($discussion);
+    $forumentity = $entityfactory->get_forum_from_stdClass($forum, $modcontext, $cm, $course);
+    $postentities = [$postentity];
+
     if (empty($post->edit)) {
         if ($forum->type != 'qanda' || forum_user_can_see_discussion($forum, $discussion, $modcontext)) {
-            $forumtracked = forum_tp_is_tracked($forum);
-            $posts = forum_get_all_discussion_posts($discussion->id, "created ASC", $forumtracked);
-            forum_print_posts_threaded($course, $cm, $forum, $discussion, $parent, 0, false, $forumtracked, $posts);
+            $postvault = $vaultfactory->get_post_vault();
+            $replies = $postvault->get_replies_to_post($postentity, 'created ASC');
+            $postentities = array_merge($postentities, $replies);
         }
     }
+
+    $rendererfactory = mod_forum\local\container::get_renderer_factory();
+    $postsrenderer = $rendererfactory->get_posts_read_only_renderer($forumentity, $discussionentity);
+    echo $postsrenderer->render($USER, $postentities, FORUM_MODE_THREADED);
 } else {
     if (!empty($forum->intro)) {
         echo $OUTPUT->box(format_module_intro('forum', $forum, $cm->id), 'generalbox', 'intro');

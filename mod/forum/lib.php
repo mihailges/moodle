@@ -3108,7 +3108,7 @@ function forum_print_discussion_header(&$post, $forum, $group = -1, $datestring 
                     echo $post->unread;
                     echo '</a>';
                     echo '<a title="'.$strmarkalldread.'" href="'.$CFG->wwwroot.'/mod/forum/markposts.php?f='.
-                         $forum->id.'&amp;d='.$post->discussion.'&amp;mark=read&amp;returnpage=view.php&amp;sesskey=' . sesskey() . '">' .
+                         $forum->id.'&amp;d='.$post->discussion.'&amp;mark=read&amp;return=/mod/forum/view.php&amp;sesskey=' . sesskey() . '">' .
                          $OUTPUT->pix_icon('t/markasread', $strmarkalldread) . '</a>';
                     echo '</span>';
                 } else {
@@ -4816,7 +4816,7 @@ function forum_print_latest_discussions($course, $forum, $maxdiscussions = -1, $
                 if ($forumtracked) {
                     echo '<a title="'.get_string('markallread', 'forum').
                          '" href="'.$CFG->wwwroot.'/mod/forum/markposts.php?f='.
-                         $forum->id.'&amp;mark=read&amp;returnpage=view.php&amp;sesskey=' . sesskey() . '">'.
+                         $forum->id.'&amp;mark=read&amp;return=/mod/forum/view.php&amp;sesskey=' . sesskey() . '">'.
                          $OUTPUT->pix_icon('t/markasread', get_string('markallread', 'forum')) . '</a>';
                 }
                 echo '</th>';
@@ -5969,6 +5969,13 @@ function forum_tp_is_tracked($forum, $user=false) {
         return false;
     }
 
+    $cache = cache::make('mod_forum', 'forum_is_tracked');
+    $forumid = is_numeric($forum) ? $forum : $forum->id;
+    $key = $forumid . '_' . $user->id;
+    if ($cachedvalue = $cache->get($key)) {
+        return $cachedvalue == 'tracked';
+    }
+
     // Work toward always passing an object...
     if (is_numeric($forum)) {
         debugging('Better use proper forum object.', DEBUG_DEVELOPER);
@@ -5984,10 +5991,17 @@ function forum_tp_is_tracked($forum, $user=false) {
     $userpref = $DB->get_record('forum_track_prefs', array('userid' => $user->id, 'forumid' => $forum->id));
 
     if ($CFG->forum_allowforcedreadtracking) {
-        return $forumforced || ($forumallows && $userpref === false);
+        $istracked = $forumforced || ($forumallows && $userpref === false);
     } else {
-        return  ($forumallows || $forumforced) && $userpref === false;
+        $istracked = ($forumallows || $forumforced) && $userpref === false;
     }
+
+    // We have to store a string here because the cache API returns false
+    // when it can't find the key which would be confused with our legitimate
+    // false value. *sigh*.
+    $cache->set($key, $istracked ? 'tracked' : 'not');
+
+    return $istracked;
 }
 
 /**
@@ -7263,55 +7277,6 @@ function forum_get_context($forumid, $context = null) {
     }
 
     return $context;
-}
-
-/**
- * Mark the activity completed (if required) and trigger the course_module_viewed event.
- *
- * @param  stdClass $forum   forum object
- * @param  stdClass $course  course object
- * @param  stdClass $cm      course module object
- * @param  stdClass $context context object
- * @since Moodle 2.9
- */
-function forum_view($forum, $course, $cm, $context) {
-
-    // Completion.
-    $completion = new completion_info($course);
-    $completion->set_module_viewed($cm);
-
-    // Trigger course_module_viewed event.
-
-    $params = array(
-        'context' => $context,
-        'objectid' => $forum->id
-    );
-
-    $event = \mod_forum\event\course_module_viewed::create($params);
-    $event->add_record_snapshot('course_modules', $cm);
-    $event->add_record_snapshot('course', $course);
-    $event->add_record_snapshot('forum', $forum);
-    $event->trigger();
-}
-
-/**
- * Trigger the discussion viewed event
- *
- * @param  stdClass $modcontext module context object
- * @param  stdClass $forum      forum object
- * @param  stdClass $discussion discussion object
- * @since Moodle 2.9
- */
-function forum_discussion_view($modcontext, $forum, $discussion) {
-    $params = array(
-        'context' => $modcontext,
-        'objectid' => $discussion->id,
-    );
-
-    $event = \mod_forum\event\discussion_viewed::create($params);
-    $event->add_record_snapshot('forum_discussions', $discussion);
-    $event->add_record_snapshot('forum', $forum);
-    $event->trigger();
 }
 
 /**

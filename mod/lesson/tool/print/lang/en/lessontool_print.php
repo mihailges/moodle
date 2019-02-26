@@ -15,16 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information
+ * Book module language strings
  *
- * @package mod_lesson
- * @copyright  1999 onwards Martin Dougiamas  {@link http://moodle.com}
+ * @package    booktool_print
+ * @copyright  2011 Petr Skoda {@link http://skodak.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die;
 
-$plugin->version   = 2018120301;     // The current module version (Date: YYYYMMDDXX)
-$plugin->requires  = 2018112800;    // Requires this Moodle version
-$plugin->component = 'mod_lesson'; // Full name of the plugin (used for diagnostics)
-$plugin->cron      = 0;
+$string['eventbookprinted'] = 'Book printed';
+$string['eventchapterprinted'] = 'Chapter printed';
+$string['pluginname'] = 'Lesson printing';
+$string['printbook'] = 'Print book';
+$string['printchapter'] = 'Print this chapter';
+$string['printdate'] = 'Date';
+$string['printedby'] = 'Printed by';
+$string['print:print'] = 'Print book';
+$string['privacy:metadata'] = 'The Book printing plugin does not store any personal data.';

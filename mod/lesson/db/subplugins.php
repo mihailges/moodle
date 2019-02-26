@@ -15,16 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information
+ * Book module subplugin types declaration
  *
- * @package mod_lesson
- * @copyright  1999 onwards Martin Dougiamas  {@link http://moodle.com}
+ * @package    mod_book
+ * @copyright  2011 Petr Skoda {@link http://skodak.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2018120301;     // The current module version (Date: YYYYMMDDXX)
-$plugin->requires  = 2018112800;    // Requires this Moodle version
-$plugin->component = 'mod_lesson'; // Full name of the plugin (used for diagnostics)
-$plugin->cron      = 0;
+$subplugins = array(
+    'lessontool'       => 'mod/lesson/tool',
+);

@@ -50,6 +50,8 @@ define([
      */
     var registerEventListeners = function(root) {
         root.on('click', Selectors.subscription.toggle, function(e) {
+            e.preventDefault();
+            console.log('aaaaaaaaaa');
             var toggleElement = $(this);
             var forumid = toggleElement.data('forumid');
             var discussionid = toggleElement.data('discussionid');

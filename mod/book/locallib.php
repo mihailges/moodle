@@ -185,7 +185,8 @@ function book_add_fake_block($chapters, $chapter, $book, $cm, $edit = null) {
         }
     }
 
-    $toc = book_get_toc($chapters, $chapter, $book, $cm, $edit);
+    $renderer = $PAGE->get_renderer('mod_book');
+    $toc = $renderer->render_book_toc($chapters, $chapter, $book, $cm, $edit);
 
     $bc = new block_contents();
     $bc->title = get_string('toc', 'mod_book');
@@ -199,6 +200,7 @@ function book_add_fake_block($chapters, $chapter, $book, $cm, $edit = null) {
 /**
  * Generate toc structure
  *
+ * @deprecated since Moodle 3.7
  * @param array $chapters
  * @param stdClass $chapter
  * @param stdClass $book
@@ -209,9 +211,12 @@ function book_add_fake_block($chapters, $chapter, $book, $cm, $edit = null) {
 function book_get_toc($chapters, $chapter, $book, $cm, $edit) {
     global $USER, $OUTPUT;
 
+    debugging('book_get_toc() is deprecated. Please use mod_book renderer
+            function render_book_toc().', DEBUG_DEVELOPER);
+
     $toc = '';
-    $nch = 0;   // Chapter number
-    $ns = 0;    // Subchapter number
+    $nch = 0;   // Chapter number.
+    $ns = 0;    // Subchapter number.
     $first = 1;
 
     $context = context_module::instance($cm->id);

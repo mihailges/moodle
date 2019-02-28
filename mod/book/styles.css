@@ -88,6 +88,11 @@
     text-align: left;
 }
 
+a.bookprev span:after,
+a.booknext span:after {
+    content: " ";
+}
+
 @media (max-width: 480px) {
     .path-mod-book .navbottom,
     .path-mod-book .navtop {

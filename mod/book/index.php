@@ -27,7 +27,9 @@ require_once(__DIR__.'/locallib.php');
 
 $id = required_param('id', PARAM_INT); // Course ID.
 
-$course = $DB->get_record('course', array('id'=>$id), '*', MUST_EXIST);
+if (!$course = $DB->get_record('course', array('id' => $id), '*')) {
+    print_error('invalidcourseid');
+}
 
 unset($id);
 
@@ -35,67 +37,24 @@ require_course_login($course, true);
 $PAGE->set_pagelayout('incourse');
 
 // Get all required strings
-$strbooks        = get_string('modulenameplural', 'mod_book');
-$strbook         = get_string('modulename', 'mod_book');
-$strname         = get_string('name');
-$strintro        = get_string('moduleintro');
+$strbooks = get_string('modulenameplural', 'mod_book');
+
 $strlastmodified = get_string('lastmodified');
 
 $PAGE->set_url('/mod/book/index.php', array('id' => $course->id));
-$PAGE->set_title($course->shortname.': '.$strbooks);
+$PAGE->set_title($course->shortname . ': ' . $strbooks);
 $PAGE->set_heading($course->fullname);
 $PAGE->navbar->add($strbooks);
 echo $OUTPUT->header();
 
 \mod_book\event\course_module_instance_list_viewed::create_from_course($course)->trigger();
 
-// Get all the appropriate data
+$renderer = $PAGE->get_renderer('mod_book');
+// Get all the appropriate data.
 if (!$books = get_all_instances_in_course('book', $course)) {
-    notice(get_string('thereareno', 'moodle', $strbooks), "$CFG->wwwroot/course/view.php?id=$course->id");
-    die;
-}
-
-$usesections = course_format_uses_sections($course->format);
-
-$table = new html_table();
-$table->attributes['class'] = 'generaltable mod_index';
-
-if ($usesections) {
-    $strsectionname = get_string('sectionname', 'format_'.$course->format);
-    $table->head  = array ($strsectionname, $strname, $strintro);
-    $table->align = array ('center', 'left', 'left');
+    echo $renderer->render_no_book_instances_in_course($course);
 } else {
-    $table->head  = array ($strlastmodified, $strname, $strintro);
-    $table->align = array ('left', 'left', 'left');
+    echo $renderer->render_book_instances_in_course($course, $books);
 }
-
-$modinfo = get_fast_modinfo($course);
-$currentsection = '';
-foreach ($books as $book) {
-    $cm = $modinfo->get_cm($book->coursemodule);
-    if ($usesections) {
-        $printsection = '';
-        if ($book->section !== $currentsection) {
-            if ($book->section) {
-                $printsection = get_section_name($course, $book->section);
-            }
-            if ($currentsection !== '') {
-                $table->data[] = 'hr';
-            }
-            $currentsection = $book->section;
-        }
-    } else {
-        $printsection = html_writer::tag('span', userdate($book->timemodified), array('class' => 'smallinfo'));
-    }
-
-    $class = $book->visible ? null : array('class' => 'dimmed'); // hidden modules are dimmed
-
-    $table->data[] = array (
-        $printsection,
-        html_writer::link(new moodle_url('view.php', array('id' => $cm->id)), format_string($book->name), $class),
-        format_module_intro('book', $book, $cm->id));
-}
-
-echo html_writer::table($table);
 
 echo $OUTPUT->footer();

@@ -34,4 +34,10 @@
     {{$discussion_create_text}}
         {{#str}}addanewtopic, forum{{/str}}
     {{/discussion_create_text}}
+    {{$discussion_list_output}}
+        {{#summaries}}
+            <article id=p{{discussion.firstpost.id}} tabindex=-1 class="relativelink">
+            </article>
+        {{/summaries}}
+    {{/discussion_list_output}}
 {{/ mod_forum/discussion_list }}

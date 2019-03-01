@@ -118,6 +118,8 @@ class discussion_list {
      * @return  string      The rendered content for display
      */
     public function render(stdClass $user, \cm_info $cm, ?int $groupid, ?int $sortorder, ?int $pageno, ?int $pagesize) : string {
+        global $PAGE;
+
         $capabilitymanager = $this->capabilitymanager;
         $forum = $this->forum;
 
@@ -131,11 +133,26 @@ class discussion_list {
             $groupid
         );
 
+        $discussionvault = $this->vaultfactory->get_discussions_in_forum_vault();
+        if (null === $groupids) {
+            $discussioncount = $discussionvault->get_total_discussion_count_from_forum_id(
+                $forum->get_id(),
+                $this->capabilitymanager->can_view_hidden_posts($user),
+                $user->id);
+        } else {
+            $discussioncount = $discussionvault->get_total_discussion_count_from_forum_id_and_group_id(
+                $forum->get_id(),
+                $groupids,
+                $this->capabilitymanager->can_view_hidden_posts($user),
+                $user->id);
+        }
+
         $forumview = array_merge(
                 [
                     'notifications' => $this->get_notifications($user, $groupid),
                     'forum' => (array) $forumexporter->export($this->renderer),
                     'groupchangemenu' => groups_print_activity_menu($cm, $this->urlmanager->get_forum_view_url_from_forum($forum), true),
+                    'pagination' => $this->renderer->render(new \paging_bar($discussioncount, $pageno, $pagesize, $PAGE->url, 'p'))
                 ],
                 (array) $this->get_exported_discussions($user, $groupids, $sortorder, $pageno, $pagesize)
             );
@@ -206,28 +223,10 @@ class discussion_list {
                 $this->get_page_size($pagesize),
                 $this->get_page_number($pageno));
         }
-
-        $discussionids = array_keys($discussions);
-
-        $discussioncount = count($discussionids);
-        if ($discussioncount >= $pagesize) {
-            if (null === $groupids) {
-                $discussioncount = $discussionvault->get_total_discussion_count_from_forum_id(
-                    $forum->get_id(),
-                    $this->capabilitymanager->can_view_hidden_posts($user),
-                    $user->id);
-            } else {
-                $discussioncount = $discussionvault->get_total_discussion_count_from_forum_id_and_group_id(
-                    $forum->get_id(),
-                    $groupids,
-                    $this->capabilitymanager->can_view_hidden_posts($user),
-                    $user->id);
-            }
+        if (!$discussions) {
+            return;
         }
-
-        $pagedcontent = new \core\external\paged_content_exporter($pagesize, $pageno, $discussioncount, function ($pageno, $pagelimit) : \moodle_url {
-            return $this->urlmanager->get_forum_view_url_from_forum($this->forum, $pageno);
-        });
+        $discussionids = array_keys($discussions);
 
         $postvault = $this->vaultfactory->get_post_vault();
         $posts = $postvault->get_from_discussion_ids($discussionids);

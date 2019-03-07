@@ -362,9 +362,60 @@ class renderer {
             $this->legacydatamapperfactory,
             $this->exporterfactory,
             $this->vaultfactory,
+            $this->builderfactory,
             $capabilitymanager,
             $urlmanager,
-            $notifications
+            $notifications,
+            function($discussions, $user, $forum) {
+                $exporteddiscussionsummarybuilder = $this->builderfactory->get_exported_discussion_summaries_builder();
+                return $exportedposts = $exporteddiscussionsummarybuilder->build(
+                    $user,
+                    $forum,
+                    $discussions
+                );
+            }
+        );
+    }
+
+    public function get_blog_discussion_list_renderer(
+        forum_entity $forum
+    ) : discussion_list_renderer {
+
+        $capabilitymanager = $this->managerfactory->get_capability_manager($forum);
+        $urlmanager = $this->managerfactory->get_url_manager($forum);
+        $rendererbase = $this->rendererbase;
+        $notifications = [];
+
+        return new discussion_list_renderer(
+            $forum,
+            $rendererbase,
+            $this->legacydatamapperfactory,
+            $this->exporterfactory,
+            $this->vaultfactory,
+            $this->builderfactory,
+            $capabilitymanager,
+            $urlmanager,
+            $notifications,
+            function($discussions, $user, $forum) {
+                $exportedpostsbuilder = $this->builderfactory->get_exported_posts_builder();
+                $discussionentries = [];
+                $postentries = [];
+                foreach($discussions as $discussion) {
+                    $discussionentries[] = $discussion->get_discussion();
+                    $postentries[] = $discussion->get_first_post();
+                }
+
+                $exportedposts['posts'] = $exportedpostsbuilder->build(
+                    $user,
+                    [$forum],
+                    $discussionentries,
+                    $postentries
+                );
+
+                $exportedposts['state']['hasdiscussions'] = $exportedposts['posts'] ? true : false;
+
+                return $exportedposts;
+            }
         );
     }
 }

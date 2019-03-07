@@ -159,6 +159,12 @@ class post extends exporter {
                         'optional' => true,
                         'default' => null,
                         'null' => NULL_ALLOWED
+                    ],
+                    'discuss' => [
+                        'type' => PARAM_URL,
+                        'optional' => true,
+                        'default' => null,
+                        'null' => NULL_ALLOWED
                     ]
                 ]
             ],
@@ -290,6 +296,8 @@ class post extends exporter {
         $exporturl = $canexport ? $urlmanager->get_export_post_url_from_post($post) : null;
         $markasreadurl = $cancontrolreadstatus ? $urlmanager->get_mark_post_as_read_url_from_post($post) : null;
         $markasunreadurl = $cancontrolreadstatus ? $urlmanager->get_mark_post_as_unread_url_from_post($post) : null;
+        // TODO: check right capability.
+        $discussurl = $canview ? $urlmanager->get_discussion_view_url_from_post($post) : null;
 
         $authorexporter = new author_exporter($author, $authorgroups, ($canview && !$isdeleted), $this->related);
         $exportedauthor = $authorexporter->export($output);
@@ -342,6 +350,7 @@ class post extends exporter {
                 'export' => $exporturl && $exporturl ? $exporturl->out(false) : null,
                 'markasread' => $markasreadurl ? $markasreadurl->out(false) : null,
                 'markasunread' => $markasunreadurl ? $markasunreadurl->out(false) : null,
+                'discuss' => $discussurl ? $discussurl->out(false) : null,
             ],
             'attachments' => (!$isdeleted && !empty($attachments)) ? $this->export_attachments($attachments, $post, $output, $canexport) : [],
             'tags' => (!$isdeleted && $hastags) ? $this->export_tags($tags) : [],

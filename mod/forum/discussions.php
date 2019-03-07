@@ -106,7 +106,11 @@ if ('single' !== $forum->get_type() && !empty($forum->get_intro())) {
 }
 
 $rendererfactory = mod_forum\local\container::get_renderer_factory();
-$discussionlistrenderer = $rendererfactory->get_discussion_list_renderer($forum);
+if ($forum->get_type() == 'blog') {
+    $discussionlistrenderer = $rendererfactory->get_blog_discussion_list_renderer($forum);
+} else {
+    $discussionlistrenderer = $rendererfactory->get_discussion_list_renderer($forum);
+}
 
 // Fetch the current groupid.
 $groupid = groups_get_activity_group($cm, true) ?: null;

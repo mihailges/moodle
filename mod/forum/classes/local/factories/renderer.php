@@ -347,7 +347,7 @@ class renderer {
      * @param forum_entity $forum The forum that the discussions belong to
      * @return discussion_list_renderer
      */
-    public function get_discussion_list_renderer(
+    public function get_standard_discussion_list_renderer(
         forum_entity $forum
     ) : discussion_list_renderer {
 
@@ -365,15 +365,7 @@ class renderer {
             $this->builderfactory,
             $capabilitymanager,
             $urlmanager,
-            $notifications,
-            function($discussions, $user, $forum) {
-                $exporteddiscussionsummarybuilder = $this->builderfactory->get_exported_discussion_summaries_builder();
-                return $exportedposts = $exporteddiscussionsummarybuilder->build(
-                    $user,
-                    $forum,
-                    $discussions
-                );
-            }
+            $notifications
         );
     }
 

@@ -46,7 +46,7 @@ require_once($CFG->dirroot . '/mod/forum/lib.php');
  * @package    mod_forum
  * @copyright  2019 Andrew Nicols <andrew@nicols.co.uk>
  */
-abstract class discussion_list {
+class standard_discussion_list extends discussion_list {
     /** @var forum_entity The forum being rendered */
     private $forum;
 
@@ -127,7 +127,7 @@ abstract class discussion_list {
      * @param   int         $pagesize The number of discussions to show on the page
      * @return  string      The rendered content for display
      */
-    abstract protected function render(stdClass $user, \cm_info $cm, ?int $groupid, ?int $sortorder, ?int $pageno, ?int $pagesize) : string {
+    public function render(stdClass $user, \cm_info $cm, ?int $groupid, ?int $sortorder, ?int $pageno, ?int $pagesize) : string {
         global $PAGE;
 
         $capabilitymanager = $this->capabilitymanager;
@@ -146,19 +146,15 @@ abstract class discussion_list {
         // Count all forum discussion posts.
         $alldiscussionscount = $this->get_count_all_discussions($user, $groupids);
 
-        if ($this->forum->get_type() == 'single') {
-            // Get a single, most recent forum discussion post.
-            $discussions = $this->get_discussions($user, $groupids, $sortorder, 0, 1);
-            $alldiscussionscount = 1;
-        } else {
-            // Get all forum discussions posts.
-            $discussions = $this->get_discussions($user, $groupids, $sortorder, $pageno, $pagesize);
-        }
+        // Get all forum discussions posts.
+        $discussions = $this->get_discussions($user, $groupids, $sortorder, $pageno, $pagesize);
 
-        if ($this->postprocessfortemplate !== null) {
-            // We've got some post processing to do!
-            $exportedposts = ($this->postprocessfortemplate) ($discussions, $user, $forum);
-        }
+        $exporteddiscussionsummarybuilder = $this->builderfactory->get_exported_discussion_summaries_builder();
+        $exportedposts = $exporteddiscussionsummarybuilder->build(
+            $user,
+            $forum,
+            $discussions
+        );
 
         // TODO: triggers error if the specified page number does not return any results.
         // if (!$discussions) {
@@ -166,88 +162,19 @@ abstract class discussion_list {
         // }
 
         $forumview = array_merge(
-                [
-                    'notifications' => $this->get_notifications($user, $groupid),
-                    'forum' => (array) $forumexporter->export($this->renderer),
-                    'groupchangemenu' => groups_print_activity_menu($cm, $this->urlmanager->get_forum_view_url_from_forum($forum), true),
-                    'pagination' => $this->renderer->render(new \paging_bar($alldiscussionscount, $pageno, $pagesize, $PAGE->url, 'p')),
-                ],
-                $exportedposts
-            );
+            [
+                'notifications' => $this->get_notifications($user, $groupid),
+                'forum' => (array) $forumexporter->export($this->renderer),
+                'groupchangemenu' => groups_print_activity_menu($cm, $this->urlmanager->get_forum_view_url_from_forum($forum), true),
+                'pagination' => $this->renderer->render(new \paging_bar($alldiscussionscount, $pageno, $pagesize, $PAGE->url, 'p')),
+            ],
+            $exportedposts
+        );
 
-        return $this->renderer->render_from_template($this->get_template(), $forumview);
+        return $this->renderer->render_from_template('mod_forum/discussion_list', $forumview);
     }
 
-    /**
-     * Get the list of groups to show based on the current user and requested groupid.
-     *
-     * @param   stdClass    $user The user viewing
-     * @param   int         $groupid The groupid requested
-     * @return  array       The list of groups to show
-     */
-    protected function get_groups_from_groupid(stdClass $user, ?int $groupid) : ?array {
-        $forum = $this->forum;
-        $effectivegroupmode = $forum->get_effective_group_mode();
-        if (empty($effectivegroupmode)) {
-            // This forum is not in a group mode. Show all posts always.
-            return null;
-        }
 
-        if (null == $groupid) {
-            // No group was specified.
-            $showallgroups = (VISIBLEGROUPS == $effectivegroupmode);
-            $showallgroups = $showallgroups || $this->capabilitymanager->can_access_all_groups($user);
-            if ($showallgroups) {
-                // Return null to show all groups.
-                return null;
-            } else {
-                // No group was specified. Only show the users current groups.
-                return array_keys(groups_get_all_groups($forum->get_course_id(), $user->id, $forum->get_course_module_record()->groupingid));
-            }
-        } else {
-            // A group was specified. Just show that group.
-            return [$groupid];
-        }
-    }
-
-    protected function get_discussions(stdClass $user, ?array $groupids, ?int $sortorder, ?int $pageno, ?int $pagesize) {
-        $forum = $this->forum;
-        $discussionvault = $this->vaultfactory->get_discussions_in_forum_vault();
-        if (null === $groupids) {
-            return $discussions = $discussionvault->get_from_forum_id(
-                $forum->get_id(),
-                $this->capabilitymanager->can_view_hidden_posts($user),
-                $user->id,
-                $sortorder,
-                $this->get_page_size($pagesize),
-                $this->get_page_number($pageno) * $this->get_page_size($pagesize));
-        } else {
-            return $discussions = $discussionvault->get_from_forum_id_and_group_id(
-                $forum->get_id(),
-                $groupids,
-                $this->capabilitymanager->can_view_hidden_posts($user),
-                $user->id,
-                $sortorder,
-                $this->get_page_size($pagesize),
-                $this->get_page_number($pageno) * $this->get_page_size($pagesize));
-        }
-    }
-
-    protected function get_count_all_discussions(stdClass $user, ?array $groupids) {
-        $discussionvault = $this->vaultfactory->get_discussions_in_forum_vault();
-        if (null === $groupids) {
-            return $discussionvault->get_total_discussion_count_from_forum_id(
-                $this->forum->get_id(),
-                $this->capabilitymanager->can_view_hidden_posts($user),
-                $user->id);
-        } else {
-            return $discussionvault->get_total_discussion_count_from_forum_id_and_group_id(
-                $this->forum->get_id(),
-                $groupids,
-                $this->capabilitymanager->can_view_hidden_posts($user),
-                $user->id);
-        }
-    }
 
     /**
      * Fetch the page size to use when displaying the page.
@@ -255,7 +182,7 @@ abstract class discussion_list {
      * @param   int         $pagesize The number of discussions to show on the page
      * @return  int         The normalised page size
      */
-    protected function get_page_size(?int $pagesize) : int {
+    private function get_page_size(?int $pagesize) : int {
         if (null === $pagesize || $pagesize <= 0) {
             $pagesize = discussion_list_vault::PAGESIZE_DEFAULT;
         }
@@ -282,23 +209,8 @@ abstract class discussion_list {
      *
      * @return  string
      */
-    protected function get_template() : string {
-        switch ($this->forum->get_type()) {
-            case 'single':
-                return 'mod_forum/single_discussion_list';
-                break;
-            case 'news':
-                return 'mod_forum/news_discussion_list';
-                break;
-            case 'blog':
-                return 'mod_forum/blog_discussion_list';
-                break;
-            case 'qanda':
-                return 'mod_forum/qanda_discussion_list';
-                break;
-            default:
-                return 'mod_forum/discussion_list';
-        }
+    private function get_template() : string {
+        return 'mod_forum/discussion_list';
     }
 
     /**
@@ -308,7 +220,7 @@ abstract class discussion_list {
      * @param int|null $groupid The forum's group id
      * @return      array
      */
-    protected function get_notifications(stdClass $user, ?int $groupid) : array {
+    private function get_notifications(stdClass $user, ?int $groupid) : array {
         $notifications = $this->notifications;
         $forum = $this->forum;
         $renderer = $this->renderer;
@@ -342,6 +254,7 @@ abstract class discussion_list {
                 notification::NOTIFY_INFO
             ))->set_show_closebutton();
         }
+
 
         if ('eachuser' === $forum->get_type()) {
             $notifications[] = (new notification(

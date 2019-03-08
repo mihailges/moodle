@@ -418,4 +418,46 @@ class renderer {
             }
         );
     }
+
+    public function get_single_discussion_list_renderer(
+        forum_entity $forum
+    ) : discussion_list_renderer {
+
+        $capabilitymanager = $this->managerfactory->get_capability_manager($forum);
+        $urlmanager = $this->managerfactory->get_url_manager($forum);
+        $rendererbase = $this->rendererbase;
+        $notifications = [];
+
+        return new discussion_list_renderer(
+            $forum,
+            $rendererbase,
+            $this->legacydatamapperfactory,
+            $this->exporterfactory,
+            $this->vaultfactory,
+            $this->builderfactory,
+            $capabilitymanager,
+            $urlmanager,
+            $notifications,
+            function($discussions, $user, $forum) {
+                $exportedpostsbuilder = $this->builderfactory->get_exported_posts_builder();
+                $discussionentry = reset($discussions)->get_discussion();
+                $postentry = reset($discussions)->get_first_post();
+
+                $postentries = [];
+                //$postentry = $discussionentry->get_
+
+
+                $exportedposts['posts'] = $exportedpostsbuilder->build(
+                    $user,
+                    [$forum],
+                    [$discussionentry],
+                    [$postentry]
+                );
+
+                $exportedposts['state']['hasdiscussions'] = $exportedposts['posts'] ? true : false;
+
+                return $exportedposts;
+            }
+        );
+    }
 }

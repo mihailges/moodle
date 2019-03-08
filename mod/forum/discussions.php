@@ -75,13 +75,6 @@ if (!$capabilitymanager->can_view_discussions($USER, $forum)) {
         );
 }
 
-// Redirect to discussion view page for single type forums.
-if ('single' === $forum->get_type()) {
-    $discussionvault = $vaultfactory->get_discussion_vault();
-    $discussion = $discussionvault->get_first_discussion_in_forum($forum);
-    redirect($urlmanager->get_discussion_view_url_from_discussion($discussion));
-}
-
 // Mark viewed and trigger the course_module_viewed event.
 $eventmanager->mark_forum_as_viewed($forum);
 
@@ -106,10 +99,15 @@ if ('single' !== $forum->get_type() && !empty($forum->get_intro())) {
 }
 
 $rendererfactory = mod_forum\local\container::get_renderer_factory();
-if ($forum->get_type() == 'blog') {
-    $discussionlistrenderer = $rendererfactory->get_blog_discussion_list_renderer($forum);
-} else {
-    $discussionlistrenderer = $rendererfactory->get_discussion_list_renderer($forum);
+switch ($forum->get_type()) {
+    case 'single':
+        $discussionlistrenderer = $rendererfactory->get_single_discussion_list_renderer($forum);
+        break;
+    case 'blog':
+        $discussionlistrenderer = $rendererfactory->get_blog_discussion_list_renderer($forum);
+        break;
+    default:
+        $discussionlistrenderer = $rendererfactory->get_discussion_list_renderer($forum);
 }
 
 // Fetch the current groupid.

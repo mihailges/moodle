@@ -143,21 +143,17 @@ class discussion_list {
             $groupid
         );
 
-        $discussionvault = $this->vaultfactory->get_discussions_in_forum_vault();
-        if (null === $groupids) {
-            $discussioncount = $discussionvault->get_total_discussion_count_from_forum_id(
-                $forum->get_id(),
-                $this->capabilitymanager->can_view_hidden_posts($user),
-                $user->id);
-        } else {
-            $discussioncount = $discussionvault->get_total_discussion_count_from_forum_id_and_group_id(
-                $forum->get_id(),
-                $groupids,
-                $this->capabilitymanager->can_view_hidden_posts($user),
-                $user->id);
-        }
+        // Count all forum discussion posts.
+        $alldiscussionscount = $this->get_count_all_discussions($user, $groupids);
 
-        $discussions = $this->get_discussions($user, $groupids, $sortorder, $pageno, $pagesize);
+        if ($this->forum->get_type() == 'single') {
+            // Get a single, most recent forum discussion post.
+            $discussions = $this->get_discussions($user, $groupids, $sortorder, 0, 1);
+            $alldiscussionscount = 1;
+        } else {
+            // Get all forum discussions posts.
+            $discussions = $this->get_discussions($user, $groupids, $sortorder, $pageno, $pagesize);
+        }
 
         if ($this->postprocessfortemplate !== null) {
             // We've got some post processing to do!
@@ -174,7 +170,7 @@ class discussion_list {
                     'notifications' => $this->get_notifications($user, $groupid),
                     'forum' => (array) $forumexporter->export($this->renderer),
                     'groupchangemenu' => groups_print_activity_menu($cm, $this->urlmanager->get_forum_view_url_from_forum($forum), true),
-                    'pagination' => $this->renderer->render(new \paging_bar($discussioncount, $pageno, $pagesize, $PAGE->url, 'p')),
+                    'pagination' => $this->renderer->render(new \paging_bar($alldiscussionscount, $pageno, $pagesize, $PAGE->url, 'p')),
                 ],
                 $exportedposts
             );
@@ -237,6 +233,22 @@ class discussion_list {
         }
     }
 
+    public function get_count_all_discussions(stdClass $user, ?array $groupids) {
+        $discussionvault = $this->vaultfactory->get_discussions_in_forum_vault();
+        if (null === $groupids) {
+            return $discussionvault->get_total_discussion_count_from_forum_id(
+                $this->forum->get_id(),
+                $this->capabilitymanager->can_view_hidden_posts($user),
+                $user->id);
+        } else {
+            return $discussionvault->get_total_discussion_count_from_forum_id_and_group_id(
+                $this->forum->get_id(),
+                $groupids,
+                $this->capabilitymanager->can_view_hidden_posts($user),
+                $user->id);
+        }
+    }
+
     /**
      * Fetch the page size to use when displaying the page.
      *
@@ -272,6 +284,9 @@ class discussion_list {
      */
     private function get_template() : string {
         switch ($this->forum->get_type()) {
+            case 'single':
+                return 'mod_forum/single_discussion_list';
+                break;
             case 'news':
                 return 'mod_forum/news_discussion_list';
                 break;

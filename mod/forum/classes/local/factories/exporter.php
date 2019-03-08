@@ -32,6 +32,7 @@ use mod_forum\local\entities\post as post_entity;
 use mod_forum\local\entities\post_read_receipt_collection as post_read_receipt_collection_entity;
 use mod_forum\local\factories\legacy_data_mapper as legacy_data_mapper_factory;
 use mod_forum\local\factories\manager as manager_factory;
+use mod_forum\local\factories\vault as vault_factory;
 use mod_forum\local\exporters\forum as forum_exporter;
 use mod_forum\local\exporters\discussion as discussion_exporter;
 use mod_forum\local\exporters\discussion_summaries as discussion_summaries_exporter;
@@ -54,6 +55,8 @@ class exporter {
     /** @var manager_factory The factory to fetch a new manager */
     private $managerfactory;
 
+    private $vaultfactory;
+
     /**
      * Constructor for the exporter factory.
      *
@@ -62,10 +65,12 @@ class exporter {
      */
     public function __construct(
         legacy_data_mapper_factory $legacydatamapperfactory,
-        manager_factory $managerfactory
+        manager_factory $managerfactory,
+        vault_factory $vaultfactory
     ) {
         $this->legacydatamapperfactory = $legacydatamapperfactory;
         $this->managerfactory = $managerfactory;
+        $this->vaultfactory = $vaultfactory;
     }
 
     /**
@@ -219,6 +224,7 @@ class exporter {
             'urlmanager' => $this->managerfactory->get_url_manager($forum),
             'forum' => $forum,
             'discussion' => $discussion,
+            'postvault' => $this->vaultfactory->get_post_vault(),
             'user' => $user,
             'context' => $forum->get_context(),
             'readreceiptcollection' => $readreceiptcollection,

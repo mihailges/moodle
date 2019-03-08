@@ -194,7 +194,9 @@
                 {{/discussion_list_body}}
             </table>
         {{/discussion_list_output}}
-        {{{ pagination }}}
+        {{$pagination_output}}
+            {{{ pagination }}}
+        {{/pagination_output}}
         {{#can_create_discussion}}
             <div class="forumaddnew">
                 <a href="{{create_discussion_link}}" class="btn btn-primary">{{create_discussion_link_text}}</a>

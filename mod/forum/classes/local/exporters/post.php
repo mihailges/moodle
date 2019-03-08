@@ -84,6 +84,12 @@ class post extends exporter {
                 'default' => null,
                 'null' => NULL_ALLOWED
             ],
+            'countdiscussionreplies' => [
+                'type' => PARAM_INT,
+                'optional' => true,
+                'default' => null,
+                'null' => NULL_ALLOWED
+            ],
             'capabilities' => [
                 'type' => [
                     'view' => ['type' => PARAM_BOOL],
@@ -278,6 +284,7 @@ class post extends exporter {
 
         $capabilitymanager = $this->related['capabilitymanager'];
         $canview = $capabilitymanager->can_view_post($user, $discussion, $post);
+        $canviewdiscussion = $capabilitymanager->can_view_post($user, $discussion, $post);
         $canedit = $capabilitymanager->can_edit_post($user, $discussion, $post);
         $candelete = $capabilitymanager->can_delete_post($user, $discussion, $post);
         $cansplit = $capabilitymanager->can_split_post($user, $discussion, $post);
@@ -297,7 +304,7 @@ class post extends exporter {
         $markasreadurl = $cancontrolreadstatus ? $urlmanager->get_mark_post_as_read_url_from_post($post) : null;
         $markasunreadurl = $cancontrolreadstatus ? $urlmanager->get_mark_post_as_unread_url_from_post($post) : null;
         // TODO: check right capability.
-        $discussurl = $canview ? $urlmanager->get_discussion_view_url_from_post($post) : null;
+        $discussurl = $canviewdiscussion ? $urlmanager->get_discussion_view_url_from_post($post) : null;
 
         $authorexporter = new author_exporter($author, $authorgroups, ($canview && !$isdeleted), $this->related);
         $exportedauthor = $authorexporter->export($output);
@@ -330,6 +337,8 @@ class post extends exporter {
             'isdeleted' => $isdeleted,
             'haswordcount' => $forum->should_display_word_count(),
             'wordcount' => $forum->should_display_word_count() ? count_words($message) : null,
+            // TODO: check how discussion replies were counted (genereated) previously.
+            'countdiscussionreplies' => count($this->related['postvault']->get_from_discussion_id($discussionrecord->id)) - 1,
             'capabilities' => [
                 'view' => $canview,
                 'edit' => $canedit,
@@ -375,6 +384,7 @@ class post extends exporter {
             'urlmanager' => 'mod_forum\local\managers\url',
             'forum' => 'mod_forum\local\entities\forum',
             'discussion' => 'mod_forum\local\entities\discussion',
+            'postvault' => 'mod_forum\local\vaults\post',
             'author' => 'mod_forum\local\entities\author',
             'user' => 'stdClass',
             'context' => 'context',

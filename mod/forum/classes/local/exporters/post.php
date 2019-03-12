@@ -84,6 +84,13 @@ class post extends exporter {
                 'default' => null,
                 'null' => NULL_ALLOWED
             ],
+            'isreplyplural' => ['type' => PARAM_BOOL],
+            'discussionrepliescount' => [
+                'type' => PARAM_INT,
+                'optional' => true,
+                'default' => null,
+                'null' => NULL_ALLOWED
+            ],
             'capabilities' => [
                 'type' => [
                     'view' => ['type' => PARAM_BOOL],
@@ -155,6 +162,12 @@ class post extends exporter {
                         'null' => NULL_ALLOWED
                     ],
                     'markasunread' => [
+                        'type' => PARAM_URL,
+                        'optional' => true,
+                        'default' => null,
+                        'null' => NULL_ALLOWED
+                    ],
+                    'discuss' => [
                         'type' => PARAM_URL,
                         'optional' => true,
                         'default' => null,
@@ -290,6 +303,7 @@ class post extends exporter {
         $exporturl = $canexport ? $urlmanager->get_export_post_url_from_post($post) : null;
         $markasreadurl = $cancontrolreadstatus ? $urlmanager->get_mark_post_as_read_url_from_post($post) : null;
         $markasunreadurl = $cancontrolreadstatus ? $urlmanager->get_mark_post_as_unread_url_from_post($post) : null;
+        $discussurl = $canview ? $urlmanager->get_discussion_view_url_from_post($post) : null;
 
         $authorexporter = new author_exporter($author, $authorgroups, ($canview && !$isdeleted), $this->related);
         $exportedauthor = $authorexporter->export($output);
@@ -308,6 +322,8 @@ class post extends exporter {
             }
         }
 
+        $discussionrepliescount = $this->related['postvault']->get_reply_count_for_discussion_ids([$discussionrecord->id]);
+
         return [
             'id' => $post->get_id(),
             'subject' => $subject,
@@ -322,6 +338,8 @@ class post extends exporter {
             'isdeleted' => $isdeleted,
             'haswordcount' => $forum->should_display_word_count(),
             'wordcount' => $forum->should_display_word_count() ? count_words($message) : null,
+            'isreplyplural' => (reset($discussionrepliescount) != 1) ? true : false,
+            'discussionrepliescount' => reset($discussionrepliescount),
             'capabilities' => [
                 'view' => $canview,
                 'edit' => $canedit,
@@ -342,6 +360,7 @@ class post extends exporter {
                 'export' => $exporturl && $exporturl ? $exporturl->out(false) : null,
                 'markasread' => $markasreadurl ? $markasreadurl->out(false) : null,
                 'markasunread' => $markasunreadurl ? $markasunreadurl->out(false) : null,
+                'discuss' => $discussurl ? $discussurl->out(false) : null,
             ],
             'attachments' => (!$isdeleted && !empty($attachments)) ? $this->export_attachments($attachments, $post, $output, $canexport) : [],
             'tags' => (!$isdeleted && $hastags) ? $this->export_tags($tags) : [],
@@ -366,6 +385,7 @@ class post extends exporter {
             'urlmanager' => 'mod_forum\local\managers\url',
             'forum' => 'mod_forum\local\entities\forum',
             'discussion' => 'mod_forum\local\entities\discussion',
+            'postvault' => 'mod_forum\local\vaults\post',
             'author' => 'mod_forum\local\entities\author',
             'user' => 'stdClass',
             'context' => 'context',

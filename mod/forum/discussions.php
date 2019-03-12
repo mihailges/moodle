@@ -34,6 +34,7 @@ $cmid = required_param('id', PARAM_INT);
 $pageno = optional_param('p', 0, PARAM_INT);
 $pagesize = optional_param('s', 0, PARAM_INT);
 $sortorder = optional_param('o', null, PARAM_INT);
+$mode = optional_param('mode', 0, PARAM_INT);
 
 $forum = $forumvault->get_from_course_module_id($cmid);
 if (!$forum) {
@@ -75,13 +76,6 @@ if (!$capabilitymanager->can_view_discussions($USER, $forum)) {
         );
 }
 
-// Redirect to discussion view page for single type forums.
-if ('single' === $forum->get_type()) {
-    $discussionvault = $vaultfactory->get_discussion_vault();
-    $discussion = $discussionvault->get_first_discussion_in_forum($forum);
-    redirect($urlmanager->get_discussion_view_url_from_discussion($discussion));
-}
-
 // Mark viewed and trigger the course_module_viewed event.
 $eventmanager->mark_forum_as_viewed($forum);
 
@@ -104,12 +98,21 @@ if ('single' !== $forum->get_type() && !empty($forum->get_intro())) {
 
     echo $OUTPUT->box(format_module_intro('forum', $forumrecord, $cm->id), 'generalbox', 'intro');
 }
-
-$rendererfactory = mod_forum\local\container::get_renderer_factory();
-$discussionlistrenderer = $rendererfactory->get_discussion_list_renderer($forum);
-
 // Fetch the current groupid.
 $groupid = groups_get_activity_group($cm, true) ?: null;
-echo $discussionlistrenderer->render($USER, $cm, $groupid, $sortorder, $pageno, $pagesize);
+$rendererfactory = mod_forum\local\container::get_renderer_factory();
+switch ($forum->get_type()) {
+    case 'single':
+        $discussionsrenderer = $rendererfactory->get_single_discussion_list_renderer($forum, $mode);
+        echo $discussionsrenderer->render($USER);
+        break;
+    case 'blog':
+        $discussionsrenderer = $rendererfactory->get_blog_discussion_list_renderer($forum);
+        echo $discussionsrenderer->render($USER, $cm, $groupid, $sortorder, $pageno, $pagesize);
+        break;
+    default:
+        $discussionsrenderer = $rendererfactory->get_discussion_list_renderer($forum);
+        echo $discussionsrenderer->render($USER, $cm, $groupid, $sortorder, $pageno, $pagesize);
+}
 
 echo $OUTPUT->footer();

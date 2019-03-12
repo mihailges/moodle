@@ -55,12 +55,10 @@ require_once($CFG->dirroot . '/mod/forum/lib.php');
  * Discussion renderer class.
  */
 class discussion {
-    /** @var discussion_entity $discussion The discussion to render */
-    private $discussion;
-    /** @var stdClass $discussionrecord Legacy discussion record */
-    private $discussionrecord;
     /** @var forum_entity $forum The forum that the discussion belongs to */
     private $forum;
+    /** @var discussion_entity $discussion The discussion entity */
+    private $discussion;
     /** @var stdClass $forumrecord Legacy forum record */
     private $forumrecord;
     /** @var int $displaymode The display mode to render the discussion in */
@@ -85,14 +83,20 @@ class discussion {
     private $baseurl;
     /** @var array $notifications List of HTML notifications to display */
     private $notifications;
+    /** @var bool $displaysubscribediscussion Whether the subscribe discussion html section should be displayed */
+    private $displaysubscribediscussion = true;
+    /** @var bool $displaymovediscussion Whether the move discussion html section should be displayed */
+    private $displaymovediscussion = true;
+    /** @var bool $displaypindiscussion Whether the pin discussion html section should be displayed */
+    private $displaypindiscussion = true;
     /** @var sorter_entity $exportedpostsorter Sorter for the exported posts */
     private $exportedpostsorter;
 
     /**
      * Constructor.
      *
-     * @param discussion_entity $discussion The discussion to render
      * @param forum_entity $forum The forum that the discussion belongs to
+     * @param discussion_entity $discussion The discussion entity
      * @param int $displaymode The display mode to render the discussion in
      * @param renderer_base $renderer Renderer base
      * @param moodle_page $page The page this discussion is being rendered for
@@ -104,10 +108,13 @@ class discussion {
      * @param sorter_entity $exportedpostsorter Sorter for the exported posts
      * @param moodle_url $baseurl The base URL for the discussion
      * @param array $notifications List of HTML notifications to display
+     * @param bool $displaysubscribediscussion Whether the subscribe discussion html section should be displayed
+     * @param bool $displaymovediscussion Whether the move discussion html section should be displayed
+     * @param bool $displaypindiscussion Whether the pin discussion html section should be displayed
      */
     public function __construct(
-        discussion_entity $discussion,
         forum_entity $forum,
+        discussion_entity $discussion,
         int $displaymode,
         renderer_base $renderer,
         posts_renderer $postsrenderer,
@@ -119,10 +126,13 @@ class discussion {
         rating_manager $ratingmanager,
         sorter_entity $exportedpostsorter,
         moodle_url $baseurl,
-        array $notifications = []
+        array $notifications = [],
+        bool $displaysubscribediscussion = true,
+        bool $displaymovediscussion = true,
+        bool $displaypindiscussion = true
     ) {
-        $this->discussion = $discussion;
         $this->forum = $forum;
+        $this->discussion = $discussion;
         $this->displaymode = $displaymode;
         $this->renderer = $renderer;
         $this->postsrenderer = $postsrenderer;
@@ -134,6 +144,10 @@ class discussion {
         $this->capabilitymanager = $capabilitymanager;
         $this->ratingmanager = $ratingmanager;
         $this->notifications = $notifications;
+        $this->displaysubscribediscussion = $displaysubscribediscussion;
+        $this->displaymovediscussion = $displaymovediscussion;
+        $this->displaypindiscussion = $displaypindiscussion;
+
         $this->exportedpostsorter = $exportedpostsorter;
 
         $forumdatamapper = $this->legacydatamapperfactory->get_forum_data_mapper();
@@ -147,14 +161,10 @@ class discussion {
      * Render the discussion for the given user in the specified display mode.
      *
      * @param stdClass $user The user viewing the discussion
-     * @param post_entity $firstpost The first post in the discussion
-     * @param array $replies List of replies to the first post
      * @return string HTML for the discussion
      */
     public function render(
-        stdClass $user,
-        post_entity $firstpost,
-        array $replies
+        stdClass $user
     ) : string {
         global $CFG;
 
@@ -167,7 +177,21 @@ class discussion {
             throw new moodle_exception('noviewdiscussionspermission', 'mod_forum');
         }
 
-        $posts = array_merge([$firstpost], array_values($replies));
+        if (!$this->discussion) {
+            return '';
+        }
+
+        if ($displaymode) {
+            set_user_preference("forum_displaymode", $displaymode);
+        }
+        $displaymode = get_user_preferences("forum_displaymode", $CFG->forum_displaymode);
+
+        $postvault = $this->vaultfactory->get_post_vault();
+        $post = $postvault->get_from_id($this->discussion->get_first_post_id());
+        $orderpostsby = $displaymode == FORUM_MODE_FLATNEWEST ? 'created DESC' : 'created ASC';
+        $replies = $postvault->get_replies_to_post($post, $orderpostsby);
+
+        $posts = array_merge([$post], array_values($replies));
 
         $exporteddiscussion = $this->get_exported_discussion($user);
         $exporteddiscussion = array_merge($exporteddiscussion, [
@@ -185,15 +209,15 @@ class discussion {
 
         $capabilities = (array) $exporteddiscussion['capabilities'];
 
-        if ($capabilities['subscribe']) {
+        if ($capabilities['subscribe'] && $this->displaysubscribediscussion) {
             $exporteddiscussion['html']['subscribe'] = $this->get_subscription_button_html();
         }
 
-        if ($capabilities['move']) {
+        if ($capabilities['move'] && $this->displaymovediscussion) {
             $exporteddiscussion['html']['movediscussion'] = $this->get_move_discussion_html();
         }
 
-        if ($capabilities['pin']) {
+        if ($capabilities['pin'] & $this->displaypindiscussion) {
             $exporteddiscussion['html']['pindiscussion'] = $this->get_pin_discussion_html();
         }
 

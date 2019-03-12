@@ -43,8 +43,8 @@ class discussion_list extends db_table_vault {
     private const FIRST_AUTHOR_ALIAS = 'userrecord';
     private const LATEST_AUTHOR_ID_ALIAS = 'userpictureid';
     private const LATEST_AUTHOR_ALIAS = 'userrecord';
-
-    public const PAGESIZE_DEFAULT = 100;
+    // TODO: This has been changed for testing purposes. (PAGESIZE_DEFAULT = 100)
+    public const PAGESIZE_DEFAULT = 2;
 
     // TODO Consider how we support additional sortorders.
     public const SORTORDER_NEWEST_FIRST = 1;

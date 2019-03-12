@@ -154,6 +154,7 @@ class posts extends exporter {
             'urlfactory' => 'mod_forum\local\factories\url',
             'forum' => 'mod_forum\local\entities\forum',
             'discussion' => 'mod_forum\local\entities\discussion',
+            'postvault' => 'mod_forum\local\vaults\post',
             'readreceiptcollection' => 'mod_forum\local\entities\post_read_receipt_collection?',
             'user' => 'stdClass',
             'context' => 'context',

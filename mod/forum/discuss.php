@@ -300,7 +300,7 @@ echo $OUTPUT->heading(format_string($forum->get_name()), 2);
 echo $OUTPUT->heading(format_string($discussion->get_name()), 3, 'discussionname');
 
 $rendererfactory = mod_forum\local\container::get_renderer_factory();
-$discussionrenderer = $rendererfactory->get_discussion_renderer($forum, $discussion, $displaymode);
+$discussionrenderer = $rendererfactory->get_discussion_renderer($forum, $displaymode);
 $orderpostsby = $displaymode == FORUM_MODE_FLATNEWEST ? 'created DESC' : 'created ASC';
 $replies = $postvault->get_replies_to_post($post, $orderpostsby);
 $postids = array_map(function($post) {
@@ -312,7 +312,7 @@ if ($move == -1 and confirm_sesskey()) {
     echo $OUTPUT->notification(get_string('discussionmoved', 'forum', $forumname), 'notifysuccess');
 }
 
-echo $discussionrenderer->render($USER, $post, $replies);
+echo $discussionrenderer->render($USER);
 echo $OUTPUT->footer();
 
 if ($istracked && !$CFG->forum_usermarksread) {

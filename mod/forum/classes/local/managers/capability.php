@@ -121,6 +121,12 @@ class capability {
             return false;
         }
 
+        if ($this->forum->get_type() == 'eachuser') {
+            if (forum_user_has_posted_discussion($this->forum->get_id(), $user->id, $groupid)) {
+                return false;
+            }
+        }
+
         if ($this->forum->is_in_group_mode()) {
             return $groupid ? $this->can_access_group($user, $groupid) : $this->can_access_all_groups($user);
         } else {

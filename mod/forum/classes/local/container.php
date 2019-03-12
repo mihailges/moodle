@@ -81,7 +81,8 @@ class container {
         return new exporter_factory(
             self::get_legacy_data_mapper_factory(),
             self::get_manager_factory(),
-            self::get_url_factory()
+            self::get_url_factory(),
+            self::get_vault_factory()
         );
     }
 

@@ -54,8 +54,9 @@ class discussion_list extends db_table_vault {
     private const LATEST_AUTHOR_ID_ALIAS = 'userpictureid';
     /** @const string LATEST_AUTHOR_ALIAS Alias for last author fields */
     private const LATEST_AUTHOR_ALIAS = 'userrecord';
+    // TODO: This has been changed for testing purposes. (PAGESIZE_DEFAULT = 100)
     /** @const int PAGESIZE_DEFAULT Default limit */
-    public const PAGESIZE_DEFAULT = 100;
+    public const PAGESIZE_DEFAULT = 2;
 
     /** @const int SORTORDER_NEWEST_FIRST Sort by newest first */
     public const SORTORDER_NEWEST_FIRST = 1;

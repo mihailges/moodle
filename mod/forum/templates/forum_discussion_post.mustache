@@ -144,9 +144,11 @@
                                     </a>
                                 {{/delete}}
                                 {{#reply}}
-                                    <a href="{{{urls.reply}}}" class="btn btn-link btn-icon icon-size-3">
-                                        {{#str}} reply, mod_forum {{/str}}
-                                    </a>
+                                    {{$replyoutput}}
+                                        <a href="{{{urls.reply}}}" class="btn btn-link btn-icon icon-size-3">
+                                            {{#str}} reply, mod_forum {{/str}}
+                                        </a>
+                                    {{/replyoutput}}
                                 {{/reply}}
                                 {{#export}}
                                     <a href="{{{urls.export}}}" title="{{#str}} addtoportfolio, core_portfolio {{/str}}" class="btn btn-link btn-icon icon-size-3">

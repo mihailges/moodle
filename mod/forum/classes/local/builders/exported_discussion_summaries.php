@@ -106,6 +106,8 @@ class exported_discussion_summaries {
     ) : array {
 
         $discussionids = array_keys($discussions);
+        var_dump($discussions);
+
 
         $postvault = $this->vaultfactory->get_post_vault();
         $posts = $postvault->get_from_discussion_ids($discussionids);
@@ -164,6 +166,7 @@ class exported_discussion_summaries {
             $carry[$post->get_author_id()] = true;
             return $carry;
         }, []);
+
         $authorgroups = groups_get_all_groups($course->id, array_keys($authorids), $coursemodule->groupingid,
                 'g.*, gm.id, gm.groupid, gm.userid');
 

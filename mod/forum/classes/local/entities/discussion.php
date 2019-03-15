@@ -80,6 +80,7 @@ class discussion {
      * @param int $timestart Start time for the discussion
      * @param int $timeend End time for the discussion
      * @param bool $pinned Is the discussion pinned?
+     * @param int $locked Time this discussion was locked
      */
     public function __construct(
         int $id,
@@ -256,7 +257,7 @@ class discussion {
      * @param int $timestamp
      */
     public function toggle_locked_state(int $timestamp) {
-        // If it is locked already then unlock else set it to the timestamp
+        // If it is locked already then unlock else set it to the timestamp.
         $this->locked = ($this->locked ? 0 : $timestamp);
     }
 

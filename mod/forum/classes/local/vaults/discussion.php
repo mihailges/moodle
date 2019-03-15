@@ -124,6 +124,7 @@ class discussion extends db_table_vault {
     public function get_count_discussions_in_forum(forum_entity $forum) : ?int {
         return $this->get_db()->count_records(self::TABLE, [
             'forum' => $forum->get_id()]);
+    }
 
     /**
      * Update the discussion

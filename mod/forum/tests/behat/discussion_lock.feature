@@ -1,4 +1,4 @@
-@mod @mod_forum @blah @javascript
+@mod @mod_forum @javascript
 Feature: As a teacher, you can manually lock individual discussions when viewing the discussion
 
   Background:

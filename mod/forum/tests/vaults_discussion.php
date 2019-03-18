@@ -91,4 +91,56 @@ class vaults_discussion_testcase extends advanced_testcase {
         $discussionentity = $vault->get_first_discussion_in_forum($forumentity);
         $this->assertEquals($discussion2->id, $discussionentity->get_id());
     }
+
+    /**
+     * Test get_last_discussion_in_forum.
+     */
+    public function test_get_last_discussion_in_forum() {
+        $this->resetAfterTest();
+
+        $vault = $this->vault;
+        $entityfactory = \mod_forum\local\container::get_entity_factory();
+        $datagenerator = $this->getDataGenerator();
+        $user = $datagenerator->create_user();
+        $course = $datagenerator->create_course();
+        $forum = $datagenerator->create_module('forum', ['course' => $course->id]);
+        $coursemodule = get_coursemodule_from_instance('forum', $forum->id);
+        $context = context_module::instance($coursemodule->id);
+        $forumentity = $entityfactory->get_forum_from_stdclass($forum, $context, $coursemodule, $course);
+
+        $this->assertEquals(null, $vault->get_last_discussion_in_forum($forumentity));
+
+        [$discussion1, $post] = $this->helper_post_to_forum($forum, $user, ['timemodified' => 2]);
+        [$discussion2, $post] = $this->helper_post_to_forum($forum, $user, ['timemodified' => 1]);
+        [$discussion3, $post] = $this->helper_post_to_forum($forum, $user, ['timemodified' => 3]);
+
+        $discussionentity = $vault->get_last_discussion_in_forum($forumentity);
+        $this->assertEquals($discussion3->id, $discussionentity->get_id());
+    }
+
+    /**
+     * Test get_last_discussion_in_forum.
+     */
+    public function test_get_count_discussions_in_forum() {
+        $this->resetAfterTest();
+
+        $vault = $this->vault;
+        $entityfactory = \mod_forum\local\container::get_entity_factory();
+        $datagenerator = $this->getDataGenerator();
+        $user = $datagenerator->create_user();
+        $course = $datagenerator->create_course();
+        $forum = $datagenerator->create_module('forum', ['course' => $course->id]);
+        $coursemodule = get_coursemodule_from_instance('forum', $forum->id);
+        $context = context_module::instance($coursemodule->id);
+        $forumentity = $entityfactory->get_forum_from_stdclass($forum, $context, $coursemodule, $course);
+
+        $this->assertEquals(null, $vault->get_count_discussions_in_forum($forumentity));
+
+        [$discussion1, $post] = $this->helper_post_to_forum($forum, $user, ['timemodified' => 2]);
+        [$discussion2, $post] = $this->helper_post_to_forum($forum, $user, ['timemodified' => 1]);
+        [$discussion3, $post] = $this->helper_post_to_forum($forum, $user, ['timemodified' => 3]);
+
+        $discussionentity = $vault->get_count_discussions_in_forum($forumentity);
+        $this->assertEquals(3, $discussionentity);
+    }
 }

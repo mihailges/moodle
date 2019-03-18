@@ -167,6 +167,21 @@ class managers_capability_testcase extends advanced_testcase {
 
         $this->assertFalse($capabilitymanager->can_subscribe_to_forum($guestuser));
         $this->assertTrue($capabilitymanager->can_subscribe_to_forum($this->user));
+
+        $forum = $this->create_forum(['type' => 'single']);
+        $capabilitymanager = $this->managerfactory->get_capability_manager($forum);
+
+        $this->assertFalse($capabilitymanager->can_subscribe_to_forum($this->user));
+
+        $forum = $this->create_forum(['type' => 'news']);
+        $capabilitymanager = $this->managerfactory->get_capability_manager($forum);
+
+        $this->assertTrue($capabilitymanager->can_subscribe_to_forum($this->user));
+
+        $forum = $this->create_forum(['type' => 'qanda']);
+        $capabilitymanager = $this->managerfactory->get_capability_manager($forum);
+
+        $this->assertTrue($capabilitymanager->can_subscribe_to_forum($this->user));
     }
 
     /**
@@ -177,6 +192,9 @@ class managers_capability_testcase extends advanced_testcase {
 
         $forum = $this->create_forum();
         $guestuser = $this->getDataGenerator()->create_user();
+        $student = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($student->id, $this->course->id, 'student');
+
         $user = $this->user;
         $capabilitymanager = $this->managerfactory->get_capability_manager($forum);
 
@@ -234,6 +252,21 @@ class managers_capability_testcase extends advanced_testcase {
         $this->getDataGenerator()->create_group_member(['userid' => $user->id, 'groupid' => $group->id]);
 
         $this->assertTrue($capabilitymanager->can_create_discussions($user, $group->id));
+
+        $forum = $this->create_forum(['type' => 'eachuser']);
+        $capabilitymanager = $this->managerfactory->get_capability_manager($forum);
+
+        $this->assertFalse($capabilitymanager->can_create_discussions($user));
+
+        $forum = $this->create_forum(['type' => 'eachuser']);
+        $capabilitymanager = $this->managerfactory->get_capability_manager($forum);
+
+        $this->assertTrue($capabilitymanager->can_create_discussions($student));
+
+        $forum = $this->create_forum(['type' => 'news']);
+        $capabilitymanager = $this->managerfactory->get_capability_manager($forum);
+
+        $this->assertTrue($capabilitymanager->can_create_discussions($user));
     }
 
     /**
@@ -329,6 +362,11 @@ class managers_capability_testcase extends advanced_testcase {
 
         $this->give_capability('mod/forum:pindiscussions');
         $this->assertTrue($capabilitymanager->can_pin_discussions($user));
+
+        $forum = $this->create_forum(['type' => 'single']);
+        $capabilitymanager = $this->managerfactory->get_capability_manager($forum);
+
+        $this->assertFalse($capabilitymanager->can_pin_discussions($user));
     }
 
     /**

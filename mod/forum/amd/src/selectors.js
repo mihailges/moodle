@@ -25,6 +25,9 @@ define([], function() {
     return {
         subscription: {
             toggle: "[data-type='subscription-toggle'][data-action='toggle']",
+        },
+        favourite: {
+            toggle: "[data-type='favorite-toggle'][data-action='toggle']",
         }
     };
 });

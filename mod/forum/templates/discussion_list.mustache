@@ -90,6 +90,11 @@
                                 {{#discussion.pinned}}
                                     {{#pix}}i/pinned, mod_forum, {{#str}}discussionpinned, mod_forum{{/str}}{{/pix}}
                                 {{/discussion.pinned}}
+                                {{^discussion.pinned}}
+                                    {{#discussion.userstate.favourited}}
+                                        {{#pix}}i/pinned, mod_forum, {{#str}}discussionpinned, mod_forum{{/str}}{{/pix}}
+                                    {{/discussion.userstate.favourited}}
+                                {{/discussion.pinned}}
                             </td>
                             <td scope="col" class="timed p-0 text-center align-middle">
                                 {{#discussion.timed.istimed}}

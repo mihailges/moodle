@@ -31,7 +31,15 @@
 }}
 
 {{#html}}
-    {{{subscribe}}}
+    <div class="d-flex flex-wrap flex-row-reverse m-b-1" data-container="discussion-tools"
+         style="text-align: right;">
+        <div class="pl-1">{{{subscribe}}}</div>
+        <div class="pl-1">
+            <div class="discussion-settings-menu">
+                {{> mod_forum/forum_action_menu}}
+            </div>
+        </div>
+    </div>
     {{{neighbourlinks}}}
 
     <div class="d-flex flex-wrap m-b-1">
@@ -49,3 +57,10 @@
 {{{html.posts}}}
 
 {{#html.neighbourlinks}}{{{.}}}{{/html.neighbourlinks}}
+
+{{#js}}
+    require(['jquery', 'mod_forum/favourite_toggle'], function($, View) {
+        var root = $('[data-container="discussion-tools"]');
+    View.init(root);
+});
+{{/js}}

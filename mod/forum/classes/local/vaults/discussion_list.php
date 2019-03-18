@@ -73,6 +73,10 @@ class discussion_list extends db_table_vault {
         return 'd';
     }
 
+    protected function get_favourite_alias() : string {
+        return 'favalias';
+    }
+
     /**
      * Build the SQL to be used in get_records_sql.
      *
@@ -80,7 +84,7 @@ class discussion_list extends db_table_vault {
      * @param string|null $sortsql Order by conditions for the SQL
      * @return string
      */
-    protected function generate_get_records_sql(string $wheresql = null, ?string $sortsql = null) : string {
+    protected function generate_get_records_sql(string $wheresql = null, ?string $sortsql = null, ?string $joinsql = null) : string {
         $alias = $this->get_table_alias();
         $db = $this->get_db();
 
@@ -105,6 +109,7 @@ class discussion_list extends db_table_vault {
         $tables .= ' JOIN {user} fa ON fa.id = ' . $alias . '.userid';
         $tables .= ' JOIN {user} la ON la.id = ' . $alias . '.usermodified';
         $tables .= ' JOIN {forum_posts} fp ON fp.id = ' . $alias . '.firstpost';
+        $tables .= $joinsql ? $joinsql : '';
 
         $selectsql = 'SELECT ' . $fields . ' FROM ' . $tables;
         $selectsql .= $wheresql ? ' WHERE ' . $wheresql : '';
@@ -182,24 +187,18 @@ class discussion_list extends db_table_vault {
 
         $alias = $this->get_table_alias();
 
-        if ($sortmethod == self::SORTORDER_CREATED_DESC) {
-            $keyfield = "fp.created";
-            $direction = "DESC";
-        } else {
-            // TODO consider user favourites...
-            $keyfield = "{$alias}.timemodified";
-            $direction = "DESC";
+        $keyfield = "{$alias}.timemodified";
+        $direction = "DESC";
 
-            if ($sortmethod == self::SORTORDER_OLDEST_FIRST) {
-                $direction = "ASC";
-            }
-
-            if (!empty($CFG->forum_enabletimedposts)) {
-                $keyfield = "CASE WHEN {$keyfield} < {$alias}.timestart THEN {$alias}.timestart ELSE {$keyfield} END";
-            }
+        if ($sortmethod == self::SORTORDER_OLDEST_FIRST) {
+            $direction = "ASC";
         }
 
-        return "{$alias}.pinned DESC, {$keyfield} {$direction}, {$alias}.id DESC";
+        if (!empty($CFG->forum_enabletimedposts)) {
+            $keyfield = "CASE WHEN {$keyfield} < {$alias}.timestart THEN {$alias}.timestart ELSE {$keyfield} END";
+        }
+
+        return "{$alias}.pinned DESC, {$this->get_favourite_alias()}.id DESC, {$keyfield} {$direction}";
     }
 
     /**
@@ -262,7 +261,10 @@ class discussion_list extends db_table_vault {
             'forumid' => $forumid,
         ]);
 
-        $sql = $this->generate_get_records_sql($wheresql, $this->get_sort_order($sortorder));
+        list($favsql, $favparams) = $this->get_favourite_sql();
+        $params += $favparams;
+
+        $sql = $this->generate_get_records_sql($wheresql, $this->get_sort_order($sortorder), $favsql);
         $records = $this->get_db()->get_records_sql($sql, $params, $offset, $limit);
 
         return $this->transform_db_records_to_entities($records);
@@ -388,5 +390,18 @@ class discussion_list extends db_table_vault {
         ]);
 
         return $this->get_db()->count_records_sql($this->generate_count_records_sql($wheresql), $params);
+    }
+
+    /**
+     * Get the standard favouriting sql.
+     */
+    private function get_favourite_sql(): array {
+        global $USER;
+        $usercontext = \context_user::instance($USER->id);
+        $alias = $this->get_table_alias();
+        $ufservice = \core_favourites\service_factory::get_service_for_user_context($usercontext);
+        list($favsql, $favparams) = $ufservice->get_join_sql_by_type('mod_forum', 'discussions', $this->get_favourite_alias(), "$alias.id");
+
+        return [$favsql, $favparams];
     }
 }

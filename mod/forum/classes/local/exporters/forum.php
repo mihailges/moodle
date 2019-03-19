@@ -82,6 +82,12 @@ class forum extends exporter {
                 'type' => [
                     'create' => ['type' => PARAM_URL],
                     'markasread' => ['type' => PARAM_URL],
+                    'sortrepliesasc' => ['type' => PARAM_URL],
+                    'sortrepliesdesc' => ['type' => PARAM_URL],
+                    'sortlastpostasc' => ['type' => PARAM_URL],
+                    'sortlastpostdesc' => ['type' => PARAM_URL],
+                    'sortcreatedasc' => ['type' => PARAM_URL],
+                    'sortcreateddesc' => ['type' => PARAM_URL],
                 ],
             ],
         ];
@@ -115,6 +121,12 @@ class forum extends exporter {
             'urls' => [
                 'create' => $urlfactory->get_discussion_create_url($this->forum)->out(false),
                 'markasread' => $urlfactory->get_mark_all_discussions_as_read_url($this->forum)->out(false),
+                'sortrepliesasc' => $urlfactory->get_forum_view_url_from_forum($this->forum, null, 'replies', 2)->out(false),
+                'sortrepliesdesc' => $urlfactory->get_forum_view_url_from_forum($this->forum, null, 'replies', 1)->out(false),
+                'sortlastpostasc' => $urlfactory->get_forum_view_url_from_forum($this->forum, null, 'lastpost', 2)->out(false),
+                'sortlastpostdesc' => $urlfactory->get_forum_view_url_from_forum($this->forum, null, 'lastpost', 1)->out(false),
+                'sortcreatedasc' => $urlfactory->get_forum_view_url_from_forum($this->forum, null, 'created', 2)->out(false),
+                'sortcreateddesc' => $urlfactory->get_forum_view_url_from_forum($this->forum, null, 'created', 1)->out(false),
             ],
         ];
     }

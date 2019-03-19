@@ -127,12 +127,13 @@ class discussion_list {
      * @param   stdClass    $user The user to render for
      * @param   cm_info     $cm The course module info for this discussion list
      * @param   int         $groupid The group to render
+     * @param   string      $sortby The column to sort by
      * @param   int         $sortorder The sort order to use when selecting the discussions in the list
      * @param   int         $pageno The zero-indexed page number to use
      * @param   int         $pagesize The number of discussions to show on the page
      * @return  string      The rendered content for display
      */
-    public function render(stdClass $user, \cm_info $cm, ?int $groupid, ?int $sortorder, ?int $pageno, ?int $pagesize) : string {
+    public function render(stdClass $user, \cm_info $cm, ?int $groupid, ?string $sortby, ?int $sortorder, ?int $pageno, ?int $pagesize) : string {
         global $PAGE;
 
         $forum = $this->forum;
@@ -151,7 +152,7 @@ class discussion_list {
         $alldiscussionscount = $this->get_count_all_discussions($user, $groupids);
 
         // Get all forum discussions posts.
-        $discussions = $this->get_discussions($user, $groupids, $sortorder, $pageno, $pagesize);
+        $discussions = $this->get_discussions($user, $groupids, $sortby, $sortorder, $pageno, $pagesize);
 
         $forumview = [
             'forum' => (array) $forumexporter->export($this->renderer)
@@ -166,6 +167,8 @@ class discussion_list {
             $exportedposts = ($this->postprocessfortemplate) ($discussions, $user, $forum);
         }
 
+        $baseurl = new \moodle_url($PAGE->url, array('so' => $sortby, 'o' => $sortorder));
+
         $forumview = array_merge(
             $forumview,
             [
@@ -175,11 +178,15 @@ class discussion_list {
                     $this->urlfactory->get_forum_view_url_from_forum($forum),
                     true
                 ),
-                'pagination' => $this->renderer->render(new \paging_bar($alldiscussionscount, $pageno, $pagesize, $PAGE->url, 'p')),
+                'pagination' => $this->renderer->render(new \paging_bar($alldiscussionscount, $pageno, $pagesize, $baseurl, 'p')),
             ],
             $exportedposts
         );
 
+        global $DB;
+        $yes = $DB->get_records('forum_discussions', ['forum' => $forum->get_id()]);
+
+      //  var_dump($yes); die();
         return $this->renderer->render_from_template($this->get_template(), $forumview);
     }
 
@@ -226,12 +233,13 @@ class discussion_list {
      *
      * @param   stdClass    $user The user to render for
      * @param   int[]|null  $groupids The group ids for this list of discussions
+     * @param   string      $sortby The column to sort by
      * @param   int|null    $sortorder The sort order to use when selecting the discussions in the list
      * @param   int|null    $pageno The zero-indexed page number to use
      * @param   int|null    $pagesize The number of discussions to show on the page
      * @return  stdClass    The data to use for display
      */
-    private function get_discussions(stdClass $user, ?array $groupids, ?int $sortorder, ?int $pageno, ?int $pagesize) {
+    private function get_discussions(stdClass $user, ?array $groupids, ?string $sortby, ?int $sortorder, ?int $pageno, ?int $pagesize) {
         $forum = $this->forum;
         $discussionvault = $this->vaultfactory->get_discussions_in_forum_vault();
         if (null === $groupids) {
@@ -239,6 +247,7 @@ class discussion_list {
                 $forum->get_id(),
                 $this->capabilitymanager->can_view_hidden_posts($user),
                 $user->id,
+                $sortby,
                 $sortorder,
                 $this->get_page_size($pagesize),
                 $this->get_page_number($pageno) * $this->get_page_size($pagesize));
@@ -248,6 +257,7 @@ class discussion_list {
                 $groupids,
                 $this->capabilitymanager->can_view_hidden_posts($user),
                 $user->id,
+                $sortby,
                 $sortorder,
                 $this->get_page_size($pagesize),
                 $this->get_page_number($pageno) * $this->get_page_size($pagesize));

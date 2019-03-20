@@ -85,6 +85,13 @@
                                 <a href="{{{forum.urls.sortlastpostdesc}}}">{{#pix}}t/down, core, {{#str}}desc, core{{/str}}{{/pix}}</a>
                             </div>
                         </th>
+                        <th scope="col" class="created">
+                            {{#str}}created, mod_forum{{/str}}
+                            <div class="d-inline">
+                                <a href="{{{forum.urls.sortcreatedasc}}}">{{#pix}}t/up, core, {{#str}}asc, core{{/str}}{{/pix}}</a>
+                                <a href="{{{forum.urls.sortcreateddesc}}}">{{#pix}}t/down, core, {{#str}}desc, core{{/str}}{{/pix}}</a>
+                            </div>
+                        </th>
                         {{#forum.capabilities.subscribe}}
                             <th scope="col" class="discussionsubscription"></th>
                         {{/forum.capabilities.subscribe}}
@@ -195,6 +202,9 @@
                                         </div>
                                     </div>
                                 {{/latestpostid}}
+                            </td>
+                            <td scope="col" class="text-left">
+                               dfasfds
                             </td>
                             <td scope="col" class="p-0 align-middle">
                                 {{#discussion}}

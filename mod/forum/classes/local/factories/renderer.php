@@ -371,12 +371,38 @@ class renderer {
             $this->urlfactory,
             $notifications,
             function($discussions, $user, $forum) {
+                global $DB;
+
                 $exporteddiscussionsummarybuilder = $this->builderfactory->get_exported_discussion_summaries_builder();
-                return $exportedposts = $exporteddiscussionsummarybuilder->build(
+                $exportedposts = $exporteddiscussionsummarybuilder->build(
                     $user,
                     $forum,
                     $discussions
                 );
+
+                $discussionentriesids = [];
+                foreach($discussions as $discussion) {
+                    $discussionentriesids[] = $discussion->get_discussion()->get_id();
+                }
+
+
+                $postvault = $this->vaultfactory->get_post_vault();
+                $firstposts = $postvault->get_first_post_for_discussion_ids($discussionentriesids);
+                //var_dump($firstposts); die();
+
+                $firstpostscreated = array_map(function($firstpost) {
+                    return $firstpost->'created'];
+                }, $firstposts);
+                var_dump($firstpostscreated); die();
+
+
+                array_walk($exportedposts['summaries'], function($summary) use ($DB) {
+//                    if ()
+                    $firstpost = $DB->get_record('forum_posts', ['id' => $summary->discussion->firstpostid]);
+                    $summary->discussion->times['created'] = (int) $firstpost->created;
+                });
+
+                return $exportedposts;
             }
         );
     }

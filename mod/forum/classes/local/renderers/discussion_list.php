@@ -183,10 +183,6 @@ class discussion_list {
             $exportedposts
         );
 
-        global $DB;
-        $yes = $DB->get_records('forum_discussions', ['forum' => $forum->get_id()]);
-
-      //  var_dump($yes); die();
         return $this->renderer->render_from_template($this->get_template(), $forumview);
     }
 

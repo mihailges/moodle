@@ -57,6 +57,7 @@
                 <thead>
                     <tr>
                         <th scope="col">&nbsp;</th>
+                        <th scope="col">&nbsp;</th>
                         <th scope="col" class="p-l-0">{{#str}}discussion, mod_forum{{/str}}</th>
                         <th scope="col" class="author">{{#str}}startedby, mod_forum{{/str}}</th>
                         {{#forum.state.groupmode}}
@@ -88,7 +89,14 @@
                                     {{#pix}}i/pinned, mod_forum, {{#str}}discussionpinned, mod_forum{{/str}}{{/pix}}
                                 {{/discussion.pinned}}
                             </td>
-                            <td scope="col" class="topic p-0">
+                            <td scope="col" class="timed p-0 text-center align-middle">
+                                {{#discussion.timed.istimed}}
+                                    <div class="timedpost">
+                                        {{#pix}}i/calendar, moodle, {{#discussion.times.start}} {{#str}} displaystart, mod_forum {{/str}}: {{#userdate}} {{discussion.times.start}}, {{#str}}strftimerecentfull {{/str}}{{/userdate}} {{/discussion.times.start}}{{#discussion.times.end}}{{#str}} displayend, mod_forum {{/str}}: {{#userdate}}{{discussion.times.end}}, {{#str}} strftimerecentfull {{/str}}{{/userdate}}{{/discussion.times.end}}{{#discussion.timed.visible}} {{#str}} timedvisible, mod_forum {{/str}} {{/discussion.timed.visible}}{{^discussion.timed.visible}} {{#str}} timedhidden, mod_forum {{/str}} {{/discussion.timed.visible}}{{/pix}}
+                                    </div>
+                                {{/discussion.timed.istimed}}
+                            </td>
+                            <td scope="col" class="topic p-0 align-middle">
                                 <a class="p-3 p-l-0 w-100 h-100 d-block" href="{{discussion.urls.view}}">{{{discussion.name}}}</a>
                             </td>
                             <td scope="col" class="author">

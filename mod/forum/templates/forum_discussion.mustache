@@ -58,8 +58,9 @@
 {{#html.neighbourlinks}}{{{.}}}{{/html.neighbourlinks}}
 
 {{#js}}
-    require(['jquery', 'mod_forum/favourite_toggle'], function($, View) {
+    require(['jquery', 'mod_forum/favourite_toggle', 'mod_forum/pin_toggle'], function($, View, Pin) {
         var root = $('[data-container="discussion-tools"]');
-    View.init(root);
-});
+        View.init(root);
+        Pin.init(root);
+    });
 {{/js}}

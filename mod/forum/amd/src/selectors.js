@@ -28,6 +28,9 @@ define([], function() {
         },
         favourite: {
             toggle: "[data-type='favorite-toggle'][data-action='toggle']",
-        }
+        },
+        pin: {
+            toggle: "[data-type='pin-toggle'][data-action='toggle']",
+        },
     };
 });

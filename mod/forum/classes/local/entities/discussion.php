@@ -256,4 +256,26 @@ class discussion {
     public function has_group() : bool {
         return $this->get_group_id() > 0;
     }
+
+    /**
+     * Check if the discussion is timed.
+     *
+     * @return bool
+     */
+    public function is_timed_discussion() : bool {
+        global $CFG;
+
+        return !empty($CFG->forum_enabletimedposts) &&
+              ($this->get_time_start() || $this->get_time_end());
+    }
+
+    /**
+     * Check if the timed discussion is visible.
+     *
+     * @return bool
+     */
+    public function is_timed_discussion_visible() : bool {
+        return !$this->is_timed_discussion() || ($this->get_time_start() <= time() ||
+            ($this->get_time_end() == 0 || $this->get_time_end() >= time()));
+    }
 }

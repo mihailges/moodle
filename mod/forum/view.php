@@ -34,6 +34,7 @@ $postvault = $vaultfactory->get_post_vault();
 $cmid = required_param('id', PARAM_INT);
 $pageno = optional_param('p', 0, PARAM_INT);
 $pagesize = optional_param('s', 0, PARAM_INT);
+$sortby     = optional_param('so', null, PARAM_ALPHA);
 $sortorder = optional_param('o', null, PARAM_INT);
 $mode = optional_param('mode', 0, PARAM_INT);
 
@@ -128,11 +129,11 @@ switch ($forum->get_type()) {
         break;
     case 'blog':
         $discussionsrenderer = $rendererfactory->get_blog_discussion_list_renderer($forum);
-        echo $discussionsrenderer->render($USER, $cm, $groupid, $sortorder, $pageno, $pagesize);
+        echo $discussionsrenderer->render($USER, $cm, $groupid, $sortby, $sortorder, $pageno, $pagesize);
         break;
     default:
         $discussionsrenderer = $rendererfactory->get_discussion_list_renderer($forum);
-        echo $discussionsrenderer->render($USER, $cm, $groupid, $sortorder, $pageno, $pagesize);
+        echo $discussionsrenderer->render($USER, $cm, $groupid, $sortby, $sortorder, $pageno, $pagesize);
 }
 
 echo $OUTPUT->footer();

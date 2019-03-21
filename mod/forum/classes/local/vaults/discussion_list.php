@@ -78,7 +78,8 @@ class discussion_list extends db_table_vault {
      * @param string|null $sortsql Order by conditions for the SQL
      * @return string
      */
-    protected function generate_get_records_sql(string $wheresql = null, ?string $sortsql = null) : string {
+    protected function generate_get_records_sql(string $wheresql = null, ?string $sortsql = null,
+                                                ?string $sortby = null) : string {
         $alias = $this->get_table_alias();
         $db = $this->get_db();
 
@@ -103,9 +104,16 @@ class discussion_list extends db_table_vault {
         $tables .= ' JOIN {user} fa ON fa.id = ' . $alias . '.userid';
         $tables .= ' JOIN {user} la ON la.id = ' . $alias . '.usermodified';
         $tables .= ' JOIN {forum_posts} fp ON fp.id = ' . $alias . '.firstpost';
+        if ($sortby == 'replies') {
+            // Join the discussion replies.
+            $tables .= ' LEFT JOIN {forum_posts} fpr ON fpr.parent = fp.id';
+        }
 
         $selectsql = 'SELECT ' . $fields . ' FROM ' . $tables;
         $selectsql .= $wheresql ? ' WHERE ' . $wheresql : '';
+        if ($sortby == 'replies') {
+            $selectsql .= ' GROUP BY fpr.parent, fp.discussion ';
+        }
         $selectsql .= $sortsql ? ' ORDER BY ' . $sortsql : '';
 
         return $selectsql;
@@ -171,26 +179,53 @@ class discussion_list extends db_table_vault {
     }
 
     /**
-     * Get the sort order SQL for a sort method.
+     * Get the field to sort by.
+     *
+     * @param string|null $sortby
+     * @return string
+     */
+    protected function get_keyfield(?string $sortby) : string {
+
+        switch ($sortby) {
+            case 'replies':
+                return 'COUNT(fpr.parent)';
+            case 'created':
+                return "fp.created";
+            default:
+                global $CFG;
+
+                $alias = $this->get_table_alias();
+                $field = "{$alias}.timemodified";
+                if (!empty($CFG->forum_enabletimedposts)) {
+                    return "CASE WHEN {$field} < {$alias}.timestart THEN {$alias}.timestart ELSE {$field} END";
+                }
+                return $field;
+        }
+    }
+
+    /**
+     * Get the sort direction.
      *
      * @param int|null $sortmethod
+     * @return string
      */
-    public function get_sort_order(?int $sortmethod) : string {
-        global $CFG;
+    protected function get_sort_direction(?int $sortmethod) : string {
+        return $sortmethod == self::SORTORDER_OLDEST_FIRST ? "ASC" : "DESC";
+    }
+
+    /**
+     * Get the sort order SQL for a sort method.
+     *
+     * @param string|null $sortby
+     * @param int|null $sortmethod
+     */
+    public function get_sort_order(?string $sortby, ?int $sortmethod) : string {
 
         $alias = $this->get_table_alias();
 
         // TODO consider user favourites...
-        $keyfield = "{$alias}.timemodified";
-        $direction = "DESC";
-
-        if ($sortmethod == self::SORTORDER_OLDEST_FIRST) {
-            $direction = "ASC";
-        }
-
-        if (!empty($CFG->forum_enabletimedposts)) {
-            $keyfield = "CASE WHEN {$keyfield} < {$alias}.timestart THEN {$alias}.timestart ELSE {$keyfield} END";
-        }
+        $keyfield = $this->get_keyfield($sortby);
+        $direction = $this->get_sort_direction($sortmethod);
 
         return "{$alias}.pinned DESC, {$keyfield} {$direction}";
     }
@@ -230,6 +265,7 @@ class discussion_list extends db_table_vault {
      * @param   int         $forumid The forum to fetch the discussion set for
      * @param   bool        $includehiddendiscussions Whether to include hidden discussions or not
      * @param   int|null    $includepostsforuser Which user to include posts for, if any
+     * @param   string      $sortby The column to sort by
      * @param   int         $sortorder The sort order to use
      * @param   int         $limit The number of discussions to fetch
      * @param   int         $offset The record offset
@@ -239,6 +275,7 @@ class discussion_list extends db_table_vault {
         int $forumid,
         bool $includehiddendiscussions,
         ?int $includepostsforuser,
+        ?string $sortby,
         ?int $sortorder,
         int $limit,
         int $offset
@@ -255,7 +292,9 @@ class discussion_list extends db_table_vault {
             'forumid' => $forumid,
         ]);
 
-        $sql = $this->generate_get_records_sql($wheresql, $this->get_sort_order($sortorder));
+        $forum = $this->get_db()->get_record('forum', ['id' => $forumid]);
+
+        $sql = $this->generate_get_records_sql($wheresql, $this->get_sort_order($sortby, $sortorder), $sortby);
         $records = $this->get_db()->get_records_sql($sql, $params, $offset, $limit);
 
         return $this->transform_db_records_to_entities($records);
@@ -269,6 +308,7 @@ class discussion_list extends db_table_vault {
      * @param   int[]       $groupids The list of real groups to filter on
      * @param   bool        $includehiddendiscussions Whether to include hidden discussions or not
      * @param   int|null    $includepostsforuser Which user to include posts for, if any
+     * @param   string      $sortby The column to sort by
      * @param   int         $sortorder The sort order to use
      * @param   int         $limit The number of discussions to fetch
      * @param   int         $offset The record offset
@@ -279,6 +319,7 @@ class discussion_list extends db_table_vault {
         array $groupids,
         bool $includehiddendiscussions,
         ?int $includepostsforuser,
+        ?string $sortby,
         ?int $sortorder,
         int $limit,
         int $offset
@@ -305,7 +346,7 @@ class discussion_list extends db_table_vault {
             'allgroupsid' => -1,
         ]);
 
-        $sql = $this->generate_get_records_sql($wheresql, $this->get_sort_order($sortorder));
+        $sql = $this->generate_get_records_sql($wheresql, $this->get_sort_order($sortby, $sortorder), $sortby);
         $records = $this->get_db()->get_records_sql($sql, $params, $offset, $limit);
 
         return $this->transform_db_records_to_entities($records);

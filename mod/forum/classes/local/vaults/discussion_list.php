@@ -63,6 +63,14 @@ class discussion_list extends db_table_vault {
     public const SORTORDER_OLDEST_FIRST = 2;
     /** Sort by created desc */
     public const SORTORDER_CREATED_DESC = 3;
+    /** Sort by created asc */
+    public const SORTORDER_CREATED_ASC = 4;
+    /** Sort by number of replies desc */
+    public const SORTORDER_REPLIES_DESC = 5;
+    /** Sort by number of replies desc */
+    public const SORTORDER_REPLIES_ASC = 6;
+    /** The requested sort method */
+    private $sortmethod = self::SORTORDER_NEWEST_FIRST;
 
     /**
      * Get the table alias.
@@ -83,7 +91,7 @@ class discussion_list extends db_table_vault {
     protected function generate_get_records_sql(string $wheresql = null, ?string $sortsql = null) : string {
         $alias = $this->get_table_alias();
         $db = $this->get_db();
-
+        $sortmethod = $this->get_sort_method();
         // Fetch:
         // - Discussion
         // - First post
@@ -101,13 +109,22 @@ class discussion_list extends db_table_vault {
             $latestuserfields,
         ]);
 
+        $issortbyreplies = $sortmethod == self::SORTORDER_REPLIES_DESC || self::SORTORDER_REPLIES_ASC ? true : false;
+
         $tables = '{' . self::TABLE . '} ' . $alias;
         $tables .= ' JOIN {user} fa ON fa.id = ' . $alias . '.userid';
         $tables .= ' JOIN {user} la ON la.id = ' . $alias . '.usermodified';
         $tables .= ' JOIN {forum_posts} fp ON fp.id = ' . $alias . '.firstpost';
+        if ($issortbyreplies) {
+            // Join the discussion replies.
+            $tables .= ' LEFT JOIN {forum_posts} fpr ON fpr.parent = fp.id';
+        }
 
         $selectsql = 'SELECT ' . $fields . ' FROM ' . $tables;
         $selectsql .= $wheresql ? ' WHERE ' . $wheresql : '';
+        if ($issortbyreplies) {
+            $selectsql .= ' GROUP BY fpr.parent, ' . $alias . '.id ';
+        }
         $selectsql .= $sortsql ? ' ORDER BY ' . $sortsql : '';
 
         return $selectsql;
@@ -173,31 +190,67 @@ class discussion_list extends db_table_vault {
     }
 
     /**
+     * Get the field to sort by.
+     *
+     * @param int|null $sortmethod
+     * @return string
+     */
+    protected function get_keyfield(?int $sortmethod) : string {
+        switch ($sortmethod) {
+            case self::SORTORDER_CREATED_DESC:
+            case self::SORTORDER_CREATED_ASC:
+                return 'fp.created';
+            case self::SORTORDER_REPLIES_DESC:
+            case self::SORTORDER_REPLIES_ASC:
+                return 'COUNT(fpr.parent)';
+            default:
+                global $CFG;
+
+                $alias = $this->get_table_alias();
+                $field = "{$alias}.timemodified";
+                if (!empty($CFG->forum_enabletimedposts)) {
+                    return "CASE WHEN {$field} < {$alias}.timestart THEN {$alias}.timestart ELSE {$field} END";
+                }
+                return $field;
+        }
+    }
+
+    /**
+     * Get the sort direction.
+     *
+     * @param int|null $sortmethod
+     * @return string
+     */
+    protected function get_sort_direction(?int $sortmethod) : string {
+        switch ($sortmethod) {
+            case self::SORTORDER_OLDEST_FIRST:
+                return "ASC";
+            case self::SORTORDER_NEWEST_FIRST:
+                return "DESC";
+            case self::SORTORDER_CREATED_DESC:
+                return "DESC";
+            case self::SORTORDER_CREATED_ASC:
+                return "ASC";
+            case self::SORTORDER_REPLIES_DESC:
+                return "DESC";
+            case self::SORTORDER_REPLIES_ASC:
+                return "ASC";
+            default:
+                return "DESC";
+        }
+    }
+
+    /**
      * Get the sort order SQL for a sort method.
      *
      * @param int|null $sortmethod
      */
     public function get_sort_order(?int $sortmethod) : string {
-        global $CFG;
 
         $alias = $this->get_table_alias();
-
-        if ($sortmethod == self::SORTORDER_CREATED_DESC) {
-            $keyfield = "fp.created";
-            $direction = "DESC";
-        } else {
-            // TODO consider user favourites...
-            $keyfield = "{$alias}.timemodified";
-            $direction = "DESC";
-
-            if ($sortmethod == self::SORTORDER_OLDEST_FIRST) {
-                $direction = "ASC";
-            }
-
-            if (!empty($CFG->forum_enabletimedposts)) {
-                $keyfield = "CASE WHEN {$keyfield} < {$alias}.timestart THEN {$alias}.timestart ELSE {$keyfield} END";
-            }
-        }
+        // TODO consider user favourites...
+        $keyfield = $this->get_keyfield($sortmethod);
+        $direction = $this->get_sort_direction($sortmethod);
 
         return "{$alias}.pinned DESC, {$keyfield} {$direction}, {$alias}.id DESC";
     }
@@ -251,6 +304,8 @@ class discussion_list extends db_table_vault {
         int $offset
     ) {
         $alias = $this->get_table_alias();
+        $this->set_sort_method($sortorder);
+
         $wheresql = "{$alias}.forum = :forumid";
         [
             'wheresql' => $hiddensql,
@@ -291,6 +346,7 @@ class discussion_list extends db_table_vault {
         int $offset
     ) {
         $alias = $this->get_table_alias();
+        $this->set_sort_method($sortorder);
 
         $wheresql = "{$alias}.forum = :forumid AND ";
         $groupparams = [];
@@ -388,5 +444,23 @@ class discussion_list extends db_table_vault {
         ]);
 
         return $this->get_db()->count_records_sql($this->generate_count_records_sql($wheresql), $params);
+    }
+
+    /**
+     * Set the sort method.
+     *
+     * @param int $sortmethod The sort method
+     */
+    private function set_sort_method(int $sortmethod) {
+        $this->sortmethod = $sortmethod;
+    }
+
+    /**
+     * Set the sort method.
+     *
+     * @return int
+     */
+    private function get_sort_method() : int {
+        return $this->sortmethod;
     }
 }

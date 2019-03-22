@@ -147,7 +147,7 @@ switch ($forum->get_type()) {
         $discussionsrenderer = $rendererfactory->get_blog_discussion_list_renderer($forum);
         $discussionlistvault = $vaultfactory->get_discussions_in_forum_vault();
         // Blog forums always show discussions newest first.
-        echo $discussionsrenderer->render($USER, $cm, $groupid, $discussionlistvault::SORTORDER_CREATED_DESC, $pageno, $pagesize);
+        echo $discussionsrenderer->render($USER, $cm, $groupid, $discussionlistvault::SORTORDER_OLDEST_FIRST, $pageno, $pagesize);
         break;
     default:
         $discussionsrenderer = $rendererfactory->get_discussion_list_renderer($forum);

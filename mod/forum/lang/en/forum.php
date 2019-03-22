@@ -120,6 +120,7 @@ $string['confirmunsubscribe'] = 'Do you really want to unsubscribe from forum \'
 $string['couldnotadd'] = 'Could not add your post due to an unknown error';
 $string['couldnotdeletereplies'] = 'Sorry, that cannot be deleted as people have already responded to it';
 $string['couldnotupdate'] = 'Could not update your post due to an unknown error';
+$string['created'] = 'Created';
 $string['crontask'] = 'Forum mailings and maintenance jobs';
 $string['delete'] = 'Delete';
 $string['deleteddiscussion'] = 'The discussion topic has been deleted';

@@ -378,12 +378,26 @@ class renderer {
             $notifications,
             function($discussions, $user, $forum) {
 
+                $discussionids = array_map(function($discussionsummary) {
+                    $discussion = $discussionsummary->get_discussion();
+                    return $discussion->get_id();
+                }, $discussions);
+
+                $postvault = $this->vaultfactory->get_post_vault();
+                $firstposts = $postvault->get_first_post_for_discussion_ids($discussionids);
+
                 $exporteddiscussionsummarybuilder = $this->builderfactory->get_exported_discussion_summaries_builder();
-                return $exporteddiscussionsummarybuilder->build(
+                $exportedposts = $exporteddiscussionsummarybuilder->build(
                     $user,
                     $forum,
                     $discussions
                 );
+
+                array_walk($exportedposts['summaries'], function($summary) use ($firstposts) {
+                    $summary->discussion->times['created'] = (int) $firstposts[$summary->discussion->firstpostid]->created;
+                });
+
+                return $exportedposts;
             }
         );
     }

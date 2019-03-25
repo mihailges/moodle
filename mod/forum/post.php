@@ -700,14 +700,14 @@ if ($mformpost->is_cancelled()) {
     } else {
         redirect(new moodle_url('/mod/forum/discuss.php', array('d' => $discussion->id)));
     }
-} else if ($fromform = $mformpost->get_data()) {
+} else if ($mformpost->is_submitted() && !$mformpost->no_submit_button_pressed()) {
 
     if (empty($SESSION->fromurl)) {
         $errordestination = "$CFG->wwwroot/mod/forum/view.php?f=$forum->id";
     } else {
         $errordestination = $SESSION->fromurl;
     }
-
+    $fromform = $mformpost->get_data();
     $fromform->itemid        = $fromform->message['itemid'];
     $fromform->messageformat = $fromform->message['format'];
     $fromform->message       = $fromform->message['text'];

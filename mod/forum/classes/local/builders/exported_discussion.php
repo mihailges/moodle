@@ -15,10 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Exported discussion summaries builder class.
+ * Exported discussion builder class.
  *
  * @package    mod_forum
- * @copyright  2019 Mihail Geshoski <mihail@moodle.com>
+ * @copyright  2019 Peter Dias<peter@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -28,7 +28,6 @@ defined('MOODLE_INTERNAL') || die();
 
 use mod_forum\local\entities\discussion as discussion_entity;
 use mod_forum\local\entities\forum as forum_entity;
-use mod_forum\local\entities\post as post_entity;
 use mod_forum\local\factories\legacy_data_mapper as legacy_data_mapper_factory;
 use mod_forum\local\factories\exporter as exporter_factory;
 use mod_forum\local\factories\vault as vault_factory;
@@ -37,24 +36,23 @@ use renderer_base;
 use stdClass;
 
 /**
- * Exported discussion summaries builder class.
+ * Exported discussion builder class
  *
  * This class is an implementation of the builder pattern (loosely). It is responsible
  * for taking a set of related forums, discussions, and posts and generate the exported
- * version of the discussion summaries.
+ * version of the discussion.
  *
- * It encapsulates the complexity involved with exporting discussions summaries. All of the relevant
+ * It encapsulates the complexity involved with exporting discussions. All of the relevant
  * additional resources will be loaded by this class in order to ensure the exporting
  * process can happen.
  *
  * See this doc for more information on the builder pattern:
  * https://designpatternsphp.readthedocs.io/en/latest/Creational/Builder/README.html
  *
- * @package    mod_forum
- * @copyright  2019 Mihail Geshoski <mihail@moodle.com>
+ * @copyright  2019 Peter Dias<peter@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class exported_discussion_summaries {
+class exported_discussion {
     /** @var renderer_base $renderer Core renderer */
     private $renderer;
 
@@ -94,71 +92,32 @@ class exported_discussion_summaries {
     }
 
     /**
-     * Build the exported discussion summaries for a given set of discussions.
+     * Build any additional variables for the exported discussion for a given set of discussions.
      *
      * This will typically be used for a list of discussions in the same forum.
      *
      * @param stdClass $user The user to export the posts for.
      * @param forum_entity $forum The forum that each of the $discussions belong to
-     * @param discussion_entity[] $discussions A list of all discussions that each of the $posts belong to
+     * @param discussion_entity $discussion A list of all discussions that each of the $posts belong to
      * @return stdClass[] List of exported posts in the same order as the $posts array.
      */
     public function build(
         stdClass $user,
         forum_entity $forum,
-        array $discussions
+        discussion_entity $discussion
     ) : array {
 
-        $discussionids = array_keys($discussions);
-
-        $postvault = $this->vaultfactory->get_post_vault();
-        $posts = $postvault->get_from_discussion_ids($discussionids);
-        $groupsbyid = $this->get_groups_available_in_forum($forum);
-        $groupsbyauthorid = $this->get_author_groups_from_posts($posts, $forum);
-
-        $replycounts = $postvault->get_reply_count_for_discussion_ids($discussionids);
-        $latestposts = $postvault->get_latest_post_id_for_discussion_ids($discussionids);
-
-        $unreadcounts = [];
-        $favourites = $this->get_favourites($user);
-        $forumdatamapper = $this->legacydatamapperfactory->get_forum_data_mapper();
-        $forumrecord = $forumdatamapper->to_legacy_object($forum);
-
-        if (forum_tp_can_track_forums($forumrecord)) {
-            $unreadcounts = $postvault->get_unread_count_for_discussion_ids($user, $discussionids);
+        $favouriteids = [];
+        if ($this->is_favourited($discussion, $forum->get_context(), $user)) {
+            $favouriteids[] = $discussion->get_id();
         }
 
-        $summaryexporter = $this->exporterfactory->get_discussion_summaries_exporter(
-            $user,
-            $forum,
-            $discussions,
-            $groupsbyid,
-            $groupsbyauthorid,
-            $replycounts,
-            $unreadcounts,
-            $latestposts,
-            $favourites
+        $groupsbyid = $this->get_groups_available_in_forum($forum);
+        $discussionexporter = $this->exporterfactory->get_discussion_exporter(
+            $user, $forum, $discussion, $groupsbyid, $favouriteids
         );
 
-        return (array) $summaryexporter->export($this->renderer);
-    }
-
-    /**
-     * Get a list of all favourited discussions.
-     *
-     * @param stdClass $user The user we are getting favourites for
-     * @return int[] A list of favourited itemids
-     */
-    private function get_favourites(stdClass $user) : array {
-        $usercontext = \context_user::instance($user->id);
-        $ufservice = \core_favourites\service_factory::get_service_for_user_context($usercontext);
-        $favourites = $ufservice->find_favourites_by_type('mod_forum', 'discussions');
-        $ids = [];
-        foreach ($favourites as $favourite) {
-            $ids[] = $favourite->itemid;
-        }
-
-        return $ids;
+        return (array) $discussionexporter->export($this->renderer);
     }
 
     /**
@@ -174,44 +133,19 @@ class exported_discussion_summaries {
     }
 
     /**
-     * Get the author's groups for a list of posts.
+     * Check whether the provided discussion has been favourited by the user.
      *
-     * @param post_entity[] $posts The list of posts
-     * @param forum_entity $forum The forum entity
-     * @return array Author groups indexed by author id
+     * @param discussion_entity $discussion The discussion record
+     * @param \context_module $forumcontext Forum context
+     * @param \stdClass $user The user to check the favourite against
+     *
+     * @return bool Whether or not the user has favourited the discussion
      */
-    private function get_author_groups_from_posts(array $posts, $forum) : array {
-        $course = $forum->get_course_record();
-        $coursemodule = $forum->get_course_module_record();
-        $authorids = array_reduce($posts, function($carry, $post) {
-            $carry[$post->get_author_id()] = true;
-            return $carry;
-        }, []);
-        $authorgroups = groups_get_all_groups($course->id, array_keys($authorids), $coursemodule->groupingid,
-                'g.*, gm.id, gm.groupid, gm.userid');
-
-        $authorgroups = array_reduce($authorgroups, function($carry, $group) {
-            // Clean up data returned from groups_get_all_groups.
-            $userid = $group->userid;
-            $groupid = $group->groupid;
-
-            unset($group->userid);
-            unset($group->groupid);
-            $group->id = $groupid;
-
-            if (!isset($carry[$userid])) {
-                $carry[$userid] = [$group];
-            } else {
-                $carry[$userid][] = $group;
-            }
-
-            return $carry;
-        }, []);
-
-        foreach (array_diff(array_keys($authorids), array_keys($authorgroups)) as $authorid) {
-            $authorgroups[$authorid] = [];
-        }
-
-        return $authorgroups;
+    public function is_favourited(discussion_entity $discussion, \context_module $forumcontext, \stdClass $user) {
+        $usercontext = \context_user::instance($user->id);
+        $ufservice = \core_favourites\service_factory::get_service_for_user_context($usercontext);
+        return $ufservice->favourite_exists('mod_forum', 'discussions', $discussion->get_id(), $forumcontext);
     }
+
+
 }

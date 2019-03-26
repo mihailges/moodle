@@ -377,7 +377,6 @@ class renderer {
             $this->urlfactory,
             $notifications,
             function($discussions, $user, $forum) {
-
                 $exporteddiscussionsummarybuilder = $this->builderfactory->get_exported_discussion_summaries_builder();
                 return $exporteddiscussionsummarybuilder->build(
                     $user,

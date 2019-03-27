@@ -271,10 +271,10 @@ class mod_forum_post_form extends moodleform {
             $buttonarray[] = &$mform->createElement('submit', 'submitbutton', $submit_string);
             $buttonarray[] = &$mform->createElement('button', 'cancelbtn',
                 get_string('cancel', 'core'),
-                // Additional attribs to handle collapsible div
+                // Additional attribs to handle collapsible div.
                 ['data-toggle' => 'collapse', 'data-target' => "#collapseAddForm"]);
             $buttonarray[] = &$mform->createElement('submit', 'advancedadddiscussion',
-                get_string('advanced'), ['customclassoverride'=>'btn-link']);
+                get_string('advanced'), ['customclassoverride' => 'btn-link']);
 
             $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
             $mform->closeHeaderBefore('buttonar');

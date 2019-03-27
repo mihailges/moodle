@@ -64,6 +64,8 @@ if (!$capabilitymanager->can_view_discussions($USER)) {
     throw new moodle_exception('noviewdiscussionspermission', 'mod_forum');
 }
 
+$displaymode = get_user_preferences('forum_displaymode', $CFG->forum_displaymode);
+
 $datamapperfactory = mod_forum\local\container::get_legacy_data_mapper_factory();
 $forumdatamapper = $datamapperfactory->get_forum_data_mapper();
 $forumrecord = $forumdatamapper->to_legacy_object($forum);
@@ -97,6 +99,9 @@ if (
     $rsstitle .= ': ' . format_string($forum->get_name());
     rss_add_http_header($modcontext, 'mod_forum', $forumrecord, $rsstitle);
 }
+
+$rendererfactory = mod_forum\local\container::get_renderer_factory();
+$discussionrenderer = $rendererfactory->get_discussion_renderer($forum, $discussion, $displaymode);
 
 // Move discussion if requested.
 if ($move > 0 && confirm_sesskey()) {
@@ -209,8 +214,12 @@ if ($move > 0 && confirm_sesskey()) {
     forum_rss_delete_file($forumrecord);
     forum_rss_delete_file($forumto);
 
-    redirect($return . '&move=-1&sesskey=' . sesskey());
+    $forumname = format_string($forum->get_name(), true);
+
+    $discussionrenderer->add_notification(new \core\output\notification(get_string('discussionmoved', 'forum', $forumname),
+            \core\output\notification::NOTIFY_SUCCESS));
 }
+
 // Pin or unpin discussion if requested.
 if ($pin !== -1 && confirm_sesskey()) {
     if (!$capabilitymanager->can_pin_discussions($USER)) {
@@ -223,17 +232,23 @@ if ($pin !== -1 && confirm_sesskey()) {
         case FORUM_DISCUSSION_PINNED:
             // Pin the discussion and trigger discussion pinned event.
             forum_discussion_pin($modcontext, $forumrecord, $discussionrecord);
+            $discussionrenderer->add_notification(new \core\output\notification(
+                    get_string('discussionpinnedextended', 'forum'),
+                    \core\output\notification::NOTIFY_SUCCESS));
             break;
         case FORUM_DISCUSSION_UNPINNED:
             // Unpin the discussion and trigger discussion unpinned event.
             forum_discussion_unpin($modcontext, $forumrecord, $discussionrecord);
+            $discussionrenderer->add_notification(new \core\output\notification(
+                    get_string('discussionunpinnedextended', 'forum'),
+                    \core\output\notification::NOTIFY_SUCCESS));
             break;
         default:
-            echo $OUTPUT->notification("Invalid value when attempting to pin/unpin discussion");
+            $discussionrenderer->add_notification(new \core\output\notification(
+                "Invalid value when attempting to pin/unpin discussion",
+                \core\output\notification::NOTIFY_SUCCESS));
             break;
     }
-
-    redirect($discussionviewurl->out(false));
 }
 
 // Trigger discussion viewed event.
@@ -244,8 +259,6 @@ unset($SESSION->fromdiscussion);
 if ($mode) {
     set_user_preference('forum_displaymode', $mode);
 }
-
-$displaymode = get_user_preferences('forum_displaymode', $CFG->forum_displaymode);
 
 if ($parent) {
     // If flat AND parent, then force nested display this time
@@ -299,18 +312,20 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading(format_string($forum->get_name()), 2);
 echo $OUTPUT->heading(format_string($discussion->get_name()), 3, 'discussionname');
 
-$rendererfactory = mod_forum\local\container::get_renderer_factory();
-$discussionrenderer = $rendererfactory->get_discussion_renderer($forum, $discussion, $displaymode);
+//$rendererfactory = mod_forum\local\container::get_renderer_factory();
+//$discussionrenderer = $rendererfactory->get_discussion_renderer($forum, $discussion, $displaymode);
 $orderpostsby = $displaymode == FORUM_MODE_FLATNEWEST ? 'created DESC' : 'created ASC';
 $replies = $postvault->get_replies_to_post($post, $orderpostsby);
 $postids = array_map(function($post) {
     return $post->get_id();
 }, array_merge([$post], array_values($replies)));
-
-if ($move == -1 and confirm_sesskey()) {
-    $forumname = format_string($forum->get_name(), true);
-    echo $OUTPUT->notification(get_string('discussionmoved', 'forum', $forumname), 'notifysuccess');
-}
+//
+//if ($move == -1 and confirm_sesskey()) {
+//    $forumname = format_string($forum->get_name(), true);
+//    $discussionrenderer->add_notification(new \core\output\notification(get_string('discussionmoved',
+//            'forum', $forumname), 'notifysuccess'));
+//    //echo $OUTPUT->notification(get_string('discussionmoved', 'forum', $forumname), 'notifysuccess');
+//}
 
 echo $discussionrenderer->render($USER, $post, $replies);
 echo $OUTPUT->footer();

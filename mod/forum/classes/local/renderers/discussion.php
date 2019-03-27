@@ -408,6 +408,10 @@ class discussion {
         }, $notifications);
     }
 
+    public function add_notification(notification $notification) {
+        $this->notifications[] = $notification;
+    }
+
     /**
      * Get HTML to display the neighbour links.
      *

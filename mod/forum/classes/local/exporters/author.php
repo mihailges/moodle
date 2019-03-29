@@ -85,6 +85,7 @@ class author extends exporter {
                 'optional' => true,
                 'type' => [
                     'id' => ['type' => PARAM_INT],
+                    'name' => ['type' => PARAM_TEXT],
                     'urls' => [
                         'type' => [
                             'image' => [
@@ -131,6 +132,7 @@ class author extends exporter {
                 $imageurl = get_group_picture_url($group, $group->courseid);
                 return [
                     'id' => $group->id,
+                    'name' => $group->name,
                     'urls' => [
                         'image' => $imageurl ? $imageurl->out(false) : null
                     ]

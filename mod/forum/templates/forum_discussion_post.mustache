@@ -37,12 +37,14 @@
     tabindex="-1"
     aria-labelledby="post-header-{{id}}"
     aria-describedby="post-content-{{id}}"
+    data-target="{{id}}-target"
 >
 
     <!-- The firstpost and starter classes below aren't used for anything other than to identify the first post in behat -->
     <div
         class="d-flex border p-2 mb-2 forumpost {{#unread}}unread{{/unread}} {{#firstpost}}firstpost starter{{/firstpost}}"
         aria-label='{{#str}} postbyuser, mod_forum, {"post": "{{subject}}", "user": "{{author.fullname}}"} {{/str}}'
+        data-post-id="{{id}}" data-content="forum-post"
     >
         {{#isfirstunread}}<a id="unread" aria-hidden="true"></a>{{/isfirstunread}}
         <div style="width: 45px;">
@@ -67,7 +69,7 @@
             {{/isdeleted}}
         </div>
 
-        <div class="d-flex flex-column ml-2 w-100">
+        <div class="d-flex flex-column ml-2 w-100" data-region-content="forum-post-core">
             <header id="post-header-{{id}}" class="mb-2 header row">
                 {{#parentauthorname}}
                     <span class="sr-only">{{#str}} inreplyto, mod_forum, {{.}} {{/str}}</span>
@@ -221,6 +223,9 @@
                                             data-region="post-action"
                                             href="{{{urls.reply}}}"
                                             class="btn btn-link"
+                                            data-post-id="{{id}}"
+                                            data-action="collapsible-link"
+                                            title="{{#str}} reply, mod_forum {{/str}}"
                                         >
                                             {{#str}} reply, mod_forum {{/str}}
                                         </a>
@@ -245,13 +250,15 @@
         </div>
     </div>
 
+    <div data-region="replies-container">
     {{$replies}}
+        <div>
         {{#hasreplies}}
-            <div>
-                {{#replies}}
-                    {{> mod_forum/forum_discussion_post }}
-                {{/replies}}
-            </div>
+            {{#replies}}
+                {{> mod_forum/forum_discussion_post }}
+            {{/replies}}
         {{/hasreplies}}
+        </div>
     {{/replies}}
+    </div>
 </article>

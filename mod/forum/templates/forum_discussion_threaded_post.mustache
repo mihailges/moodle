@@ -34,6 +34,7 @@
     data-post-id="{{id}}"
     data-region="post"
     tabindex="-1"
+    data-target="{{id}}-target"
 >
     <a href="{{{urls.viewisolated}}}">{{subject}}</a>
     {{^isdeleted}}
@@ -42,9 +43,11 @@
         </address>
     {{/isdeleted}}
 
-    <div class="indent">
-        {{#replies}}
-            {{> mod_forum/forum_discussion_threaded_post }}
-        {{/replies}}
+    <div data-region="replies-container">
+        <div class="indent">
+            {{#replies}}
+                {{> mod_forum/forum_discussion_threaded_post }}
+            {{/replies}}
+        </div>
     </div>
 </div>

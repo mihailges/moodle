@@ -30,7 +30,7 @@
     }
 }}
 
-<div id="discussion-container-{{uniqid}}">
+<div id="discussion-container-{{uniqid}}" data-content="forum-discussion">
 {{#html}}
     {{{subscribe}}}
     {{{neighbourlinks}}}
@@ -55,5 +55,9 @@
 require(['jquery', 'mod_forum/discussion'], function($, Discussion) {
     var root = $('#discussion-container-{{uniqid}}');
     Discussion.init(root);
+});
+require(['jquery', 'mod_forum/posts_list'], function($, View) {
+    var root = $("[data-content='forum-discussion']");
+    View.init(root);
 });
 {{/js}}

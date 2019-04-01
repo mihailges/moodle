@@ -97,6 +97,7 @@ body.path-mod-feedback #region-main .mform.feedback_form .feedback-item-pagebrea
         }
         thead .header th,
         tbody .discussion td {
+            &.discussionlock,
             &.discussionsubscription {
                 width: 16px;
                 padding-left: 0.5em;
@@ -109,11 +110,13 @@ body.path-mod-feedback #region-main .mform.feedback_form .feedback-item-pagebrea
                 white-space: normal;
             }
             .discussionsubscription,
+            .discussionlock,
             .replies {
                 text-align: center;
             }
             .topic,
             .discussionsubscription,
+            .discussionlock,
             .topic.starter,
             .replies,
             .lastpost {

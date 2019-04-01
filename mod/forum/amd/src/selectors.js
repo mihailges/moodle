@@ -41,6 +41,9 @@ define([], function() {
         },
         pin: {
             toggle: ".pindiscussion [data-action='toggle']",
+        },
+        lock: {
+            toggle: "[data-action='toggle'][data-type='lock-toggle']",
         }
     };
 });

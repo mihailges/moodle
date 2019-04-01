@@ -32,7 +32,10 @@
 
 <div id="discussion-container-{{uniqid}}" data-content="forum-discussion">
 {{#html}}
-    {{{subscribe}}}
+    <div class="d-flex flex-wrap flex-row-reverse m-b-1" data-container="discussion-tools" style="text-align: right;">
+        <div class="pl-1">{{{lockdiscussion}}}</div>
+        <div class="pl-1">{{{subscribe}}}</div>
+    </div>
     {{{neighbourlinks}}}
 
     <div class="d-flex flex-wrap m-b-1">
@@ -58,6 +61,10 @@ require(['jquery', 'mod_forum/discussion'], function($, Discussion) {
 });
 require(['jquery', 'mod_forum/posts_list'], function($, View) {
     var root = $("[data-content='forum-discussion']");
+    View.init(root);
+});
+require(['jquery', 'mod_forum/lock_toggle'], function($, View) {
+    var root = $('[data-container="discussion-tools"]');
     View.init(root);
 });
 {{/js}}

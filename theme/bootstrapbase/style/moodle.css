@@ -16754,6 +16754,8 @@ body.path-mod-feedback #region-main .mform.feedback_form .feedback-item-pagebrea
 .path-mod-forum .forumheaderlist thead .header.lastpost {
   text-align: right;
 }
+.path-mod-forum .forumheaderlist thead .header th.discussionlock,
+.path-mod-forum .forumheaderlist tbody .discussion td.discussionlock,
 .path-mod-forum .forumheaderlist thead .header th.discussionsubscription,
 .path-mod-forum .forumheaderlist tbody .discussion td.discussionsubscription {
   width: 16px;
@@ -16765,11 +16767,13 @@ body.path-mod-feedback #region-main .mform.feedback_form .feedback-item-pagebrea
   white-space: normal;
 }
 .path-mod-forum .forumheaderlist .discussion .discussionsubscription,
+.path-mod-forum .forumheaderlist .discussion .discussionlock,
 .path-mod-forum .forumheaderlist .discussion .replies {
   text-align: center;
 }
 .path-mod-forum .forumheaderlist .discussion .topic,
 .path-mod-forum .forumheaderlist .discussion .discussionsubscription,
+.path-mod-forum .forumheaderlist .discussion .discussionlock,
 .path-mod-forum .forumheaderlist .discussion .topic.starter,
 .path-mod-forum .forumheaderlist .discussion .replies,
 .path-mod-forum .forumheaderlist .discussion .lastpost {

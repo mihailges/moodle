@@ -83,6 +83,11 @@
                 {{#hasreplycount}}
                     <span class="sr-only">{{#str}} numberofreplies, mod_forum, {{replycount}} {{/str}}</span>
                 {{/hasreplycount}}
+                {{#isprivatereply}}
+                    <div class="privatereplyinfo">
+                      {{#str}}postisprivatereply, forum{{/str}}
+                    </div>
+                {{/isprivatereply}}
             </header>
             <div id="post-content-{{id}}">
                 {{{message}}}

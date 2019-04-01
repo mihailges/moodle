@@ -163,6 +163,7 @@ class discussion_list {
 
         $forumview = [
             'forum' => (array) $forumexporter->export($this->renderer),
+            'newdiscussionhtml' => $this->get_discussion_form($user, $cm, $groupid),
             'groupchangemenu' => groups_print_activity_menu(
                 $cm,
                 $this->urlfactory->get_forum_view_url_from_forum($forum),
@@ -196,6 +197,61 @@ class discussion_list {
         );
 
         return $this->renderer->render_from_template($this->template, $forumview);
+    }
+
+    /**
+     * Get the mod_forum_post_form. This is the default boiler plate from mod_forum/post_form.php with the inpage flag caveat
+     *
+     * @param stdClass $user The user the form is being generated for
+     * @param \cm_info $cm
+     * @param int $groupid The groupid if any
+     *
+     * @return string The rendered html
+     */
+    private function get_discussion_form(stdClass $user, \cm_info $cm, ?int $groupid) {
+        global $PAGE;
+
+        $forum = $this->forum;
+        $forumrecord = $this->legacydatamapperfactory->get_forum_data_mapper()->to_legacy_object($forum);
+        $modcontext = \context_module::instance($cm->id);
+        $coursecontext = \context_course::instance($forum->get_course_id());
+        $post = (object) [
+            'course' => $forum->get_course_id(),
+            'forum' => $forum->get_id(),
+            'discussion' => 0,           // Ie discussion # not defined yet.
+            'parent' => 0,
+            'subject' => '',
+            'userid' => $user->id,
+            'message' => '',
+            'messageformat' => editors_get_preferred_format(),
+            'messagetrust' => 0,
+            'groupid' => $groupid,
+        ];
+        $thresholdwarning = forum_check_throttling($forum, $cm);
+
+        $mformpost = new \mod_forum_post_form('post.php', array('course' => $forum->get_course_record(),
+            'cm' => $cm,
+            'coursecontext' => $coursecontext,
+            'modcontext' => $modcontext,
+            'forum' => $forumrecord,
+            'post' => $post,
+            'subscribe' => \mod_forum\subscriptions::is_subscribed($user->id, $forumrecord,
+                null, $cm),
+            'thresholdwarning' => $thresholdwarning,
+            'inpagereply' => true,
+            'edit' => 0), 'post', '', array('id' => 'mformforum'));
+
+        $params = array('reply' => 0, 'forum' => $forumrecord->id, 'edit' => 0) +
+            (isset($post->groupid) ? array('groupid' => $post->groupid) : array()) +
+            array(
+                'userid' => $post->userid,
+                'parent' => $post->parent,
+                'discussion' => $post->discussion,
+                'course' => $forum->get_course_id()
+            );
+        $mformpost->set_data($params);
+
+        return $mformpost->render();
     }
 
     /**

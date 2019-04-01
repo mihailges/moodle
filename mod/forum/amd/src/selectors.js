@@ -39,11 +39,14 @@ define([], function() {
             repliesContainer: "[data-region='replies-container']",
             modeSelect: "select[name='mode']",
         },
-        pin: {
-            toggle: ".pindiscussion [data-action='toggle']",
-        },
         lock: {
             toggle: "[data-action='toggle'][data-type='lock-toggle']",
-        }
+        },
+        favourite: {
+            toggle: "[data-type='favorite-toggle'][data-action='toggle']",
+        },
+        pin: {
+            toggle: "[data-type='pin-toggle'][data-action='toggle']",
+        },
     };
 });

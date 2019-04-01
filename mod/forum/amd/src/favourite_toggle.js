@@ -14,54 +14,66 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Module for the list of discussions on when viewing a forum.
+ * Handle discussion subscription toggling on a discussion list in
+ * the forum view.
  *
- * @module     mod_forum/discussion_list
+ * @module     mod_forum/favourite_toggle
  * @package    mod_forum
- * @copyright  2019 Andrew Nicols <andrew@nicols.co.uk>
+ * @copyright  2019 Peter Dias <peter@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 define([
-    'jquery',
-    'mod_forum/subscription_toggle',
-    'mod_forum/selectors',
-    'mod_forum/repository',
-], function(
-    $,
-    SubscriptionToggle,
-    Selectors,
-    Repository
-) {
+        'jquery',
+        'core/templates',
+        'core/notification',
+        'mod_forum/repository',
+        'mod_forum/selectors',
+        'core/str',
+    ], function(
+        $,
+        Templates,
+        Notification,
+        Repository,
+        Selectors,
+        String
+    ) {
+
+    /**
+     * Register event listeners for the subscription toggle.
+     *
+     * @param {object} root The discussion list root element
+     */
     var registerEventListeners = function(root) {
-        root.on('click', Selectors.favourite.toggle, function() {
+        root.on('click', Selectors.favourite.toggle, function(e) {
             var toggleElement = $(this);
             var forumId = toggleElement.data('forumid');
             var discussionId = toggleElement.data('discussionid');
             var subscriptionState = toggleElement.data('targetstate');
-            Repository.setFavouriteDiscussionState(forumId, discussionId, subscriptionState)
-                .then(function() {
-                    location.reload();
-                })
-                .catch(Notification.exception);
-        });
 
-        root.on('click', Selectors.pin.toggle, function(e) {
-            e.preventDefault();
-            var toggleElement = $(this);
-            var forumId = toggleElement.data('forumid');
-            var discussionId = toggleElement.data('discussionid');
-            var state = toggleElement.data('targetstate');
-            Repository.setPinDiscussionState(forumId, discussionId, state)
+            Repository.setFavouriteDiscussionState(forumId, discussionId, subscriptionState)
+                .then(function(context) {
+                    return Templates.render('mod_forum/discussion_favourite_toggle', context);
+                })
+                .then(function(html, js) {
+                    return Templates.replaceNode(toggleElement, html, js);
+                })
                 .then(function() {
-                    location.reload();
+                    return String.get_string("favouriteupdated", "forum")
+                        .done(function(s) {
+                            return Notification.addNotification({
+                                message: s,
+                                type: "info"
+                            });
+                        });
                 })
                 .catch(Notification.exception);
+
+            e.preventDefault();
         });
     };
 
     return {
         init: function(root) {
-            SubscriptionToggle.init(root);
             registerEventListeners(root);
         }
     };

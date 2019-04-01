@@ -395,5 +395,13 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         )
     ),
+
+    'mod/forum:cantogglefavourite' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => array(
+            'user' => CAP_ALLOW
+        )
+    )
 );
 

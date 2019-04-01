@@ -95,6 +95,7 @@ class discussion extends exporter {
                 'type' => [
                     'subscribed' => ['type' => PARAM_BOOL],
                     'locked' => ['type' => PARAM_BOOL],
+                    'favourited' => ['type' => PARAM_BOOL],
                 ],
             ],
             'capabilities' => [
@@ -104,6 +105,7 @@ class discussion extends exporter {
                     'pin' => ['type' => PARAM_BOOL],
                     'post' => ['type' => PARAM_BOOL],
                     'manage' => ['type' => PARAM_BOOL],
+                    'favourite' => ['type' => PARAM_BOOL]
                 ]
             ],
             'urls' => [
@@ -118,7 +120,11 @@ class discussion extends exporter {
                         'type' => PARAM_URL,
                     ],
                     'markasread' => ['type' => PARAM_URL],
-                    'subscribe' => ['type' => PARAM_URL]
+                    'subscribe' => ['type' => PARAM_URL],
+                    'pin' => [
+                        'optional' => true,
+                        'type' => PARAM_URL,
+                    ],
                 ],
             ],
             'timed' => [
@@ -150,6 +156,7 @@ class discussion extends exporter {
 
         $capabilitymanager = $this->related['capabilitymanager'];
         $urlfactory = $this->related['urlfactory'];
+        $favouriteids = isset($this->related['favouriteids']) ? $this->related['favouriteids'] : [];
 
         $forum = $this->related['forum'];
         $forumrecord = $this->get_forum_record();
@@ -193,14 +200,16 @@ class discussion extends exporter {
             ],
             'userstate' => [
                 'subscribed' => \mod_forum\subscriptions::is_subscribed($user->id, $forumrecord, $discussion->get_id()),
-                'locked' => $discussion->is_locked()
+                'locked' => $discussion->is_locked(),
+                'favourited' => in_array($discussion->get_id(), $favouriteids) ? true : false,
             ],
             'capabilities' => [
                 'subscribe' => $capabilitymanager->can_subscribe_to_discussion($user, $discussion),
                 'move' => $capabilitymanager->can_move_discussion($user, $discussion),
                 'pin' => $capabilitymanager->can_pin_discussion($user, $discussion),
                 'post' => $capabilitymanager->can_post_in_discussion($user, $discussion),
-                'manage' => $capabilitymanager->can_manage_forum($user)
+                'manage' => $capabilitymanager->can_manage_forum($user),
+                'favourite' => $capabilitymanager->can_favourite_discussion($user, $discussion)
             ],
             'urls' => [
                 'view' => $urlfactory->get_discussion_view_url_from_discussion($discussion)->out(false),
@@ -215,6 +224,10 @@ class discussion extends exporter {
                     $discussion,
                     $this->related['latestpostid']
                 )->out(false);
+        }
+
+        if ($capabilitymanager->can_pin_discussions($user)) {
+            $data['urls']['pin'] = $urlfactory->get_pin_discussion_url_from_discussion($discussion)->out(false);
         }
 
         if ($groupdata) {
@@ -253,7 +266,8 @@ class discussion extends exporter {
             'urlfactory' => 'mod_forum\local\factories\url',
             'user' => 'stdClass',
             'groupsbyid' => 'stdClass[]',
-            'latestpostid' => 'int?'
+            'latestpostid' => 'int?',
+            'favouriteids' => 'int[]?'
         ];
     }
 }

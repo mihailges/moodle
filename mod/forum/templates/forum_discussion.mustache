@@ -36,13 +36,20 @@
         <div class="pl-1">{{{lockdiscussion}}}</div>
         <div class="pl-1">{{{subscribe}}}</div>
     </div>
+    <div class="d-flex flex-wrap flex-row-reverse m-b-1 text-right" data-container="discussion-tools">
+        <div class="pl-1">{{{subscribe}}}</div>
+        <div class="pl-1">
+            <div class="discussion-settings-menu">
+                {{> mod_forum/forum_action_menu}}
+            </div>
+        </div>
+    </div>
     {{{neighbourlinks}}}
 
     <div class="d-flex flex-wrap m-b-1">
         <div>{{{exportdiscussion}}}</div>
         <div class="{{#exportdiscussion}}ml-2{{/exportdiscussion}}">{{{modeselectorform}}}</div>
         <div class="ml-2">{{{movediscussion}}}</div>
-        <div class="ml-2">{{{pindiscussion}}}</div>
     </div>
 {{/html}}
 
@@ -59,12 +66,17 @@ require(['jquery', 'mod_forum/discussion'], function($, Discussion) {
     var root = $('#discussion-container-{{uniqid}}');
     Discussion.init(root);
 });
-require(['jquery', 'mod_forum/posts_list'], function($, View) {
+require(['jquery', 'mod_forum/posts_list'], function($, Vie_w) {
     var root = $("[data-content='forum-discussion']");
     View.init(root);
 });
 require(['jquery', 'mod_forum/lock_toggle'], function($, View) {
     var root = $('[data-container="discussion-tools"]');
     View.init(root);
+});
+require(['jquery', 'mod_forum/favourite_toggle', 'mod_forum/pin_toggle'], function($, View, Pin) {
+    var root = $('[data-container="discussion-tools"]');
+    View.init(root);
+    Pin.init(root);
 });
 {{/js}}

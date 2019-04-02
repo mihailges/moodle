@@ -206,10 +206,6 @@ class discussion {
             $exporteddiscussion['html']['movediscussion'] = $this->get_move_discussion_html();
         }
 
-        if ($capabilities['manage']) {
-            $exporteddiscussion['html']['lockdiscussion'] = $this->get_lock_discussion_button_html();
-        }
-
         return $this->renderer->render_from_template('mod_forum/forum_discussion', $exporteddiscussion);
     }
 

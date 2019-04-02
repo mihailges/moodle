@@ -34,13 +34,15 @@
 }}
 {{#capabilities.manage}}
     <a
-        class="iconsmall"
+        class="iconsmall btn btn-link"
         data-type="lock-toggle"
         data-action="toggle"
         data-discussionid="{{id}}"
         data-forumid="{{forumid}}"
         data-state="{{times.locked}}"
         tabindex="-1"
+        data-targetstate="0"
+        role="menuitem"
         {{#userstate.locked}}
             title="{{#str}}locked, forum{{/str}}"
         {{/userstate.locked}}
@@ -49,10 +51,10 @@
         {{/userstate.locked}}
     >
         {{#userstate.locked}}
-            {{#pix}}t/unlock, core, {{#str}}clicktounlockdiscussion, forum{{/str}}{{/pix}}{{#str}}locked, forum{{/str}}
+            {{#pix}}t/unlock, core, {{#str}}clicktounlockdiscussion, forum{{/str}}{{/pix}}{{#str}}unlockdiscussion, forum{{/str}}
         {{/userstate.locked}}
         {{^userstate.locked}}
-            {{#pix}}t/lock, core, {{#str}}clicktolockdiscussion, forum{{/str}}{{/pix}}{{#str}}notlocked, forum{{/str}}
+            {{#pix}}t/lock, core, {{#str}}clicktolockdiscussion, forum{{/str}}{{/pix}}{{#str}}lockdiscussion, forum{{/str}}
         {{/userstate.locked}}
     </a>
 {{/capabilities.manage}}

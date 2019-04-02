@@ -169,7 +169,7 @@ class discussion_list {
                 true
             ),
             'hasmore' => ($alldiscussionscount > $pagesize),
-            'notifications' => $this->get_notifications($user, $groupid),
+            'notifications' => $this->get_notifications($user, $groupid, $sortorder),
         ];
 
         if (!$discussions) {
@@ -321,9 +321,10 @@ class discussion_list {
      *
      * @param stdClass $user The viewing user
      * @param int|null $groupid The forum's group id
+     * @param int|null $sortorder The sorting order.
      * @return      array
      */
-    private function get_notifications(stdClass $user, ?int $groupid) : array {
+    private function get_notifications(stdClass $user, ?int $groupid, ?int $sortorder = null) : array {
         $notifications = $this->notifications;
         $forum = $this->forum;
         $renderer = $this->renderer;
@@ -371,6 +372,53 @@ class discussion_list {
                 get_string('allowsdiscussions', 'forum'),
                 notification::NOTIFY_INFO)
             )->set_show_closebutton();
+        }
+
+        if ($sortorder) {
+            switch ($sortorder) {
+                case discussion_list_vault::SORTORDER_NEWEST_FIRST:
+                    $notifications[] = (new notification(
+                        get_string('discussionlistsortedbylastpostdesc', 'forum'),
+                        notification::NOTIFY_INFO)
+                    )->set_show_closebutton();
+                    break;
+
+                case discussion_list_vault::SORTORDER_OLDEST_FIRST:
+                    $notifications[] = (new notification(
+                        get_string('discussionlistsortedbylastpostasc', 'forum'),
+                        notification::NOTIFY_INFO)
+                    )->set_show_closebutton();
+                    break;
+
+                case discussion_list_vault::SORTORDER_CREATED_DESC:
+                    $notifications[] = (new notification(
+                        get_string('discussionlistsortedbycreateddesc', 'forum'),
+                        notification::NOTIFY_INFO)
+                    )->set_show_closebutton();
+                    break;
+
+                case discussion_list_vault::SORTORDER_CREATED_ASC:
+                    $notifications[] = (new notification(
+                        get_string('discussionlistsortedbycreatedasc', 'forum'),
+                        notification::NOTIFY_INFO)
+                    )->set_show_closebutton();
+                    break;
+
+                case discussion_list_vault::SORTORDER_REPLIES_DESC:
+                    $notifications[] = (new notification(
+                        get_string('discussionlistsortedbyrepliesdesc', 'forum'),
+                        notification::NOTIFY_INFO)
+                    )->set_show_closebutton();
+                    break;
+
+                case discussion_list_vault::SORTORDER_REPLIES_ASC:
+                    $notifications[] = (new notification(
+                        get_string('discussionlistsortedbyrepliesasc', 'forum'),
+                        notification::NOTIFY_INFO)
+                    )->set_show_closebutton();
+                    break;
+
+            }
         }
 
         return array_map(function($notification) {

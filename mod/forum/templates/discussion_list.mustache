@@ -54,67 +54,72 @@
             {{{ pagination }}}
         {{/discussion_top_pagination}}
         {{$discussion_list_output}}
-            <table class="table table-hover table-striped">
+            {{#notifications.table}}
+                {{> core/notification}}
+            {{/notifications.table}}
+            <table class="table table-hover table-striped" summary="Discussions lists table">
                 {{$discussion_list_header}}
                 <thead>
                     <tr>
-                        <th scope="col">&nbsp;</th>
-                        <th scope="col">&nbsp;</th>
-                        <th scope="col" class="p-l-0">{{#str}}discussion, mod_forum{{/str}}</th>
-                        <th scope="col" class="author">{{#str}}startedby, mod_forum{{/str}}</th>
+                        <th role="columnheader" scope="col">&nbsp;</th>
+                        <th role="columnheader" scope="col">&nbsp;</th>
+                        <th role="columnheader" scope="col" class="p-l-0" tabindex="0">{{#str}}discussion, mod_forum{{/str}}</th>
+                        <th role="columnheader" scope="col" class="author" tabindex="0">{{#str}}startedby, mod_forum{{/str}}</th>
                         {{#forum.state.groupmode}}
-                            <th scope="col" class="group">{{#str}}group{{/str}}</th>
+                            <th role="columnheader" scope="col" class="group" tabindex="0">{{#str}}group{{/str}}</th>
                         {{/forum.state.groupmode}}
                         {{#forum.capabilities.viewdiscussions}}
-                            <th scope="col" class="text-center">
+                            <th role="columnheader" scope="col" tabindex="0" class="text-center">
                                 {{#state.sortorder.isrepliesdesc}}
-                                    <a href="{{{forum.urls.sortrepliesasc}}}" aria-label="{{#str}}discussionlistsortbyrepliesasc, mod_forum{{/str}}">{{#str}}replies, mod_forum{{/str}}</a> <span class="text-primary">{{#pix}}t/downlong, core, {{#str}}desc, core{{/str}}{{/pix}}</span>
+                                    <a href="{{{forum.urls.sortrepliesasc}}}" title="{{#str}}discussionlistsortbyrepliesasc, mod_forum{{/str}}">{{#str}}replies, mod_forum{{/str}}</a> <span class="text-primary">{{#pix}}t/downlong, core, {{#str}}desc, core{{/str}}{{/pix}}</span>
                                 {{/state.sortorder.isrepliesdesc}}
                                 {{#state.sortorder.isrepliesasc}}
-                                    <a href="{{{forum.urls.sortrepliesdesc}}}" aria-label="{{#str}}discussionlistsortbyrepliesdesc, mod_forum{{/str}}">{{#str}}replies, mod_forum{{/str}}</a> <span class="text-primary">{{#pix}}t/uplong, core, {{#str}}asc, core{{/str}}{{/pix}}</span>
+                                    <a href="{{{forum.urls.sortrepliesdesc}}}" title="{{#str}}discussionlistsortbyrepliesdesc, mod_forum{{/str}}">{{#str}}replies, mod_forum{{/str}}</a> <span class="text-primary">{{#pix}}t/uplong, core, {{#str}}asc, core{{/str}}{{/pix}}</span>
                                 {{/state.sortorder.isrepliesasc}}
                                 {{^state.sortorder.isrepliesdesc}}
                                     {{^state.sortorder.isrepliesasc}}
-                                        <a href="{{{forum.urls.sortrepliesdesc}}} aria-label="{{#str}}discussionlistsortbyrepliesdesc, mod_forum{{/str}}">{{#str}}replies, mod_forum{{/str}}</a>
+                                        <a href="{{{forum.urls.sortrepliesdesc}}}" title="{{#str}}discussionlistsortbyrepliesdesc, mod_forum{{/str}}">{{#str}}replies, mod_forum{{/str}}</a>
                                     {{/state.sortorder.isrepliesasc}}
                                 {{/state.sortorder.isrepliesdesc}}
                             </th>
 
                             {{#forum.userstate.tracked}}
-                            <th scope="col" class="text-center">
+                            <th role="columnheader" scope="col" class="text-center" tabindex="0">
                                 {{#str}}unread, mod_forum{{/str}}
                                 <a href="{{{forum.urls.markasread}}}">{{#pix}}t/markasread, core, {{#str}}markallread, mod_forum{{/str}}{{/pix}}</a>
                             </th>
                             {{/forum.userstate.tracked}}
                         {{/forum.capabilities.viewdiscussions}}
-                        <th scope="col" class="lastpost">
+                        <th role="columnheader" scope="col" class="lastpost" tabindex="0">
                             {{#state.sortorder.islastpostdesc}}
-                                <a href="{{{forum.urls.sortlastpostasc}}}" aria-label="{{#str}}discussionlistsortbylastpostasc, mod_forum{{/str}}">{{#str}}lastpost, mod_forum{{/str}}</a> <span class="text-primary">{{#pix}}t/downlong, core, {{#str}}desc, core{{/str}}{{/pix}}</span>
+                                <a href="{{{forum.urls.sortlastpostasc}}}" title="{{#str}}discussionlistsortbylastpostasc, mod_forum{{/str}}">{{#str}}lastpost, mod_forum{{/str}}</a>
+                                <span class="text-primary">{{#pix}}t/downlong, core, {{#str}}desc, core{{/str}}{{/pix}}</span>
                             {{/state.sortorder.islastpostdesc}}
                             {{#state.sortorder.islastpostasc}}
-                                <a href="{{{forum.urls.sortlastpostdesc}}}" aria-label="{{#str}}discussionlistsortbylastpostdesc, mod_forum{{/str}}">{{#str}}lastpost, mod_forum{{/str}}</a> <span class="text-primary">{{#pix}}t/uplong, core, {{#str}}asc, core{{/str}}{{/pix}}</span>
+                                <a href="{{{forum.urls.sortlastpostdesc}}}" title="{{#str}}discussionlistsortbylastpostdesc, mod_forum{{/str}}">{{#str}}lastpost, mod_forum{{/str}}</a>
+                                <span class="text-primary">{{#pix}}t/uplong, core, {{#str}}asc, core{{/str}}{{/pix}}</span>
                             {{/state.sortorder.islastpostasc}}
                             {{^state.sortorder.islastpostdesc}}
                                 {{^state.sortorder.islastpostasc}}
-                                    <a href="{{{forum.urls.sortlastpostdesc}}}" aria-label="{{#str}}discussionlistsortbylastpostdesc, mod_forum{{/str}}">{{#str}}lastpost, mod_forum{{/str}}</a>
+                                    <a href="{{{forum.urls.sortlastpostdesc}}}" title="{{#str}}discussionlistsortbylastpostdesc, mod_forum{{/str}}">{{#str}}lastpost, mod_forum{{/str}}</a>
                                 {{/state.sortorder.islastpostasc}}
                             {{/state.sortorder.islastpostdesc}}
                         </th>
-                        <th scope="col" class="created">
+                        <th role="columnheader" scope="col" class="created" tabindex="0">
                             {{#state.sortorder.iscreateddesc}}
-                                <a href="{{{forum.urls.sortcreatedasc}}}" aria-label="{{#str}}discussionlistsortbycreatedasc, mod_forum{{/str}}">{{#str}}created, mod_forum{{/str}}</a> <span class="text-primary">{{#pix}}t/downlong, core, {{#str}}desc, core{{/str}}{{/pix}}</span>
+                                <a href="{{{forum.urls.sortcreatedasc}}}" title="{{#str}}discussionlistsortbycreatedasc, mod_forum{{/str}}">{{#str}}created, mod_forum{{/str}}</a> <span class="text-primary">{{#pix}}t/downlong, core, {{#str}}desc, core{{/str}}{{/pix}}</span>
                             {{/state.sortorder.iscreateddesc}}
                             {{#state.sortorder.iscreatedasc}}
-                                <a href="{{{forum.urls.sortcreateddesc}}}" aria-label="{{#str}}discussionlistsortbycreateddesc, mod_forum{{/str}}">{{#str}}created, mod_forum{{/str}}</a> <span class="text-primary">{{#pix}}t/uplong, core, {{#str}}asc, core{{/str}}{{/pix}}</span>
+                                <a href="{{{forum.urls.sortcreateddesc}}}" title="{{#str}}discussionlistsortbycreateddesc, mod_forum{{/str}}">{{#str}}created, mod_forum{{/str}}</a> <span class="text-primary">{{#pix}}t/uplong, core, {{#str}}asc, core{{/str}}{{/pix}}</span>
                             {{/state.sortorder.iscreatedasc}}
                             {{^state.sortorder.iscreateddesc}}
                                 {{^state.sortorder.iscreatedasc}}
-                                    <a href="{{{forum.urls.sortcreateddesc}}}" aria-label="{{#str}}discussionlistsortbycreateddesc, mod_forum{{/str}}">{{#str}}created, mod_forum{{/str}}</a>
+                                    <a href="{{{forum.urls.sortcreateddesc}}}" title="{{#str}}discussionlistsortbycreateddesc, mod_forum{{/str}}">{{#str}}created, mod_forum{{/str}}</a>
                                 {{/state.sortorder.iscreatedasc}}
                             {{/state.sortorder.iscreateddesc}}
                         </th>
                         {{#forum.capabilities.subscribe}}
-                            <th scope="col" class="discussionsubscription"></th>
+                            <th role="columnheader" scope="col" class="discussionsubscription"></th>
                         {{/forum.capabilities.subscribe}}
                     </tr>
                 </thead>
@@ -124,12 +129,12 @@
                     {{#summaries}}
                         <!-- The discussion class is only required for behat tests to identify the row -->
                         <tr class="discussion {{#discussion.timed}}{{#istimed}}{{^visible}}dimmed_text{{/visible}}{{/istimed}}{{/discussion.timed}}">
-                            <td scope="col" class="pinned p-0 text-center align-middle">
+                            <td class="pinned p-0 text-center align-middle" tabindex="0">
                                 {{#discussion.pinned}}
                                     {{#pix}}i/pinned, mod_forum, {{#str}}discussionpinned, mod_forum{{/str}}{{/pix}}
                                 {{/discussion.pinned}}
                             </td>
-                            <td scope="col" class="timed p-0 text-center align-middle">
+                            <td class="timed p-0 text-center align-middle" tabindex="0">
                                 {{#discussion.timed.istimed}}
                                     <div class="timedpost">
                                         {{#pix}}
@@ -150,31 +155,29 @@
                                     </div>
                                 {{/discussion.timed.istimed}}
                             </td>
-                            <td scope="col" class="topic p-0 align-middle">
+                                <td scope="row" role="rowheader" class="topic p-0 align-middle" tabindex="0">
                                 <a class="p-3 p-l-0 w-100 h-100 d-block" href="{{discussion.urls.view}}">{{{discussion.name}}}</a>
                             </td>
-                            <td scope="col" class="author align-middle">
+                            <td class="author align-middle" tabindex="0">
                                 {{#firstpostauthor}}
-                                    <a href="{{urls.profile}}">
-                                        <div class="d-flex flex-row">
-                                            <div class="align-middle p-0">
-                                                <a href="{{urls.profile}}">
-                                                    <img {{!
-                                                        }} class="h-auto rounded-circle userpicture" {{!
-                                                        }} src="{{urls.profileimage}}" {{!
-                                                        }} alt="{{#str}}pictureof, moodle, {{fullname}}{{/str}}" {{!
-                                                        }}>
-                                                </a>
-                                            </div>
-                                            <div class="align-middle p-2">
-                                                <a href="{{urls.profile}}">{{fullname}}</a>
-                                            </div>
+                                    <div class="d-flex flex-row">
+                                        <div class="align-middle p-0">
+                                            <a href="{{urls.profile}}" aria-hidden="true">
+                                                <img {{!
+                                                    }} class="h-auto rounded-circle userpicture" {{!
+                                                    }} src="{{urls.profileimage}}" {{!
+                                                    }} alt="{{#str}}pictureof, moodle, {{fullname}}{{/str}}" {{!
+                                                    }}>
+                                            </a>
                                         </div>
-                                    </a>
+                                        <div class="align-middle p-2">
+                                            <a href="{{urls.profile}}">{{fullname}}</a>
+                                        </div>
+                                    </div>
                                 {{/firstpostauthor}}
                             </td>
                             {{#forum.state.groupmode}}
-                                <td scope="col" class="group">
+                                <td class="group" tabindex="0">
                                     {{#discussion.group}}
                                         {{#urls.picture}}
                                             {{#urls.userlist}}
@@ -198,34 +201,30 @@
                                 </td>
                             {{/forum.state.groupmode}}
                             {{#forum.capabilities.viewdiscussions}}
-                                <td scope="col" class="p-0 text-center align-middle">
+                                <td class="p-0 text-center align-middle" tabindex="0">
                                     <a href="{{discussion.urls.view}}" class="p-3 w-100 h-100 d-block">
                                         {{replies}}
                                     </a>
                                 </td>
                                 {{#forum.userstate.tracked}}
-                                    <td scope="col" class="p-0 text-center align-middle">
+                                    <td class="p-0 text-center align-middle" tabindex="0">
                                         {{#unread}}
                                             {{! TODO Rewrite as AJAX}}
-                                            <div class="p-3 w-100 h-100 d-block">
-                                                <a href="{{{discussion.urls.viewfirstunread}}}">{{unread}}</a>
-                                                <a href="{{{discussion.urls.markasread}}}">{{#pix}}t/markasread, core, {{#str}}markalldread, mod_forum{{/str}}{{/pix}}</a>
-                                            </div>
+                                            <a tabindex="0" href="{{{discussion.urls.viewfirstunread}}}">{{unread}}</a>
+                                            <a href="{{{discussion.urls.markasread}}}">{{#pix}}t/markasread, core, {{#str}}markalldread, mod_forum{{/str}}{{/pix}}</a>
                                         {{/unread}}
                                         {{^unread}}
-                                            <span class="p-3 w-100 h-100 d-block">
-                                                0
-                                            </span>
+                                            0
                                         {{/unread}}
                                     </td>
                                 {{/forum.userstate.tracked}}
                             {{/forum.capabilities.viewdiscussions}}
-                            <td scope="col" class="text-left">
+                            <td class="text-left" tabindex="0">
                                 {{! TODO Check q&a, eachuser }}
                                 {{#latestpostid}}
-                                    <div class="d-flex flex-row">
+                                    <div class="d-flex flex-row" aria-label="Last post created       by {{latestpostauthor.fullname}} on {{#userdate}}{{discussion.times.modified}}, {{#str}}strftimerecentfull{{/str}}{{/userdate}}<">
                                         <div class="align-middle p-0">
-                                            <a href="{{latestpostauthor.urls.profile}}">
+                                            <a href="{{latestpostauthor.urls.profile}}" aria-hidden="true">
                                                 <img {{!
                                                     }} class="h-auto rounded-circle userpicture" {{!
                                                     }} src="{{latestpostauthor.urls.profileimage}}" {{!
@@ -246,10 +245,10 @@
                                     </div>
                                 {{/latestpostid}}
                             </td>
-                            <td scope="col" class="text-left align-middle">
+                            <td class="text-left align-middle" tabindex="0">
                                {{#userdate}}{{discussion.times.created}}, {{#str}}strftimerecentfull{{/str}}{{/userdate}}
                             </td>
-                            <td scope="col" class="p-0 align-middle">
+                            <td class="p-0 align-middle" tabindex="0">
                                 {{#discussion}}
                                     {{> mod_forum/discussion_subscription_toggle}}
                                 {{/discussion}}

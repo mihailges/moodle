@@ -22,7 +22,7 @@
  *
  * @module     mod_forum/posts_list
  * @package    mod_forum
- * @copyright  2018 Peter Dias
+ * @copyright  2019 Peter Dias
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 define([

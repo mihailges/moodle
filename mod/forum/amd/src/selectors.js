@@ -47,6 +47,6 @@ define([], function() {
         },
         pin: {
             toggle: "[data-type='pin-toggle'][data-action='toggle']",
-        },
+        }
     };
 });

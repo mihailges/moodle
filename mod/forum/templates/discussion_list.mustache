@@ -102,7 +102,6 @@
                                 {{/state.sortorder.islastpostasc}}
                             {{/state.sortorder.islastpostdesc}}
                         </th>
-                        <th scope="col">&nbsp;</th>
                         <th scope="col" class="created">
                             {{#state.sortorder.iscreateddesc}}
                                 <a href="{{{forum.urls.sortcreatedasc}}}" aria-label="{{#str}}discussionlistsortbycreatedasc, mod_forum{{/str}}">{{#str}}created, mod_forum{{/str}}</a> <span class="text-primary">{{#pix}}t/downlong, core, {{#str}}desc, core{{/str}}{{/pix}}</span>
@@ -116,6 +115,7 @@
                                 {{/state.sortorder.iscreatedasc}}
                             {{/state.sortorder.iscreateddesc}}
                         </th>
+                        <th scope="col">&nbsp;</th>
                         {{#forum.capabilities.subscribe}}
                             <th scope="col" class="discussionsubscription"></th>
                         {{/forum.capabilities.subscribe}}
@@ -233,6 +233,9 @@
                                     </div>
                                 {{/latestpostid}}
                             </td>
+                            <td scope="col" class="text-left align-middle">
+                               {{#userdate}}{{discussion.times.created}}, {{#str}}strftimerecentfull{{/str}}{{/userdate}}
+                            </td>
                             <td scope="col" class="timed p-0 text-center align-middle">
                                 {{#discussion.timed.istimed}}
                                 <div class="timedpost">
@@ -253,9 +256,6 @@
                                     {{/pix}}
                                 </div>
                                 {{/discussion.timed.istimed}}
-                            </td>
-                            <td scope="col" class="text-left align-middle">
-                               {{#userdate}}{{discussion.times.created}}, {{#str}}strftimerecentfull{{/str}}{{/userdate}}
                             </td>
                             <td scope="col" class="p-0 align-middle">
                                 {{#discussion}}

@@ -27,8 +27,8 @@ Feature: Students can reply to a discussion in page.
     And I am on "Course 1" course homepage
 
   Scenario: Confirm inpage replies work
-    Given I reply "Discussion 2" post from "Test forum name" forum with inpage:
-      | message | Discussion contents 1, third message |
+    Given I reply "Discussion 2" post from "Test forum name" forum using an inpage reply with:
+      | post | Discussion contents 1, third message |
     Then I should see "Discussion contents 1, third message"
     When I reload the page
     Then I should see "Discussion contents 1, third message"

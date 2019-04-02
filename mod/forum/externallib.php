@@ -942,10 +942,10 @@ class mod_forum_external extends external_api {
         }
 
         // Request and permission validation.
-        $forum = $forumvault->get_from_id($discussion->get_forum_id()); // How to do a 'MUST_EXIST' check?
+        $forum = $forumvault->get_from_id($discussion->get_forum_id());
         $capabilitymanager = $managerfactory->get_capability_manager($forum);
         $course = $forum->get_course_record();
-        $cm = $forum->get_course_module_record(); // Check why not caching like in get_course_and_cm_from_instance.
+        $cm = $forum->get_course_module_record();
 
         $discussionrecord = $discussiondatamapper->to_legacy_object($discussion);
         $forumrecord = $forumdatamapper->to_legacy_object($forum);

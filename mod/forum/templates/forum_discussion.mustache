@@ -32,10 +32,6 @@
 
 <div id="discussion-container-{{uniqid}}" data-content="forum-discussion">
 {{#html}}
-    <div class="d-flex flex-wrap flex-row-reverse m-b-1" data-container="discussion-tools" style="text-align: right;">
-        <div class="pl-1">{{{lockdiscussion}}}</div>
-        <div class="pl-1">{{{subscribe}}}</div>
-    </div>
     <div class="d-flex flex-wrap flex-row-reverse m-b-1 text-right" data-container="discussion-tools">
         <div class="pl-1">{{{subscribe}}}</div>
         <div class="pl-1">
@@ -66,7 +62,7 @@ require(['jquery', 'mod_forum/discussion'], function($, Discussion) {
     var root = $('#discussion-container-{{uniqid}}');
     Discussion.init(root);
 });
-require(['jquery', 'mod_forum/posts_list'], function($, Vie_w) {
+require(['jquery', 'mod_forum/posts_list'], function($, View) {
     var root = $("[data-content='forum-discussion']");
     View.init(root);
 });

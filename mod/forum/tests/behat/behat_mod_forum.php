@@ -97,12 +97,12 @@ class behat_mod_forum extends behat_base {
     /**
      * Inpage Reply - adds a reply to the specified post of the specified forum. The step begins from the forum's page or from the forum's course page.
      *
-     * @Given /^I reply "(?P<post_subject_string>(?:[^"]|\\")*)" post from "(?P<forum_name_string>(?:[^"]|\\")*)" forum with inpage:$/
+     * @Given /^I reply "(?P<post_subject_string>(?:[^"]|\\")*)" post from "(?P<forum_name_string>(?:[^"]|\\")*)" forum using an inpage reply with:$/
      * @param string $postsubject The subject of the post
      * @param string $forumname The forum name
      * @param TableNode $table
      */
-    public function i_reply_post_from_forum_with_inpage($postsubject, $forumname, TableNode $table) {
+    public function i_reply_post_from_forum_using_an_inpage_reply_with($postsubject, $forumname, TableNode $table) {
 
         // Navigate to forum.
         $this->execute('behat_general::click_link', $this->escape($forumname));

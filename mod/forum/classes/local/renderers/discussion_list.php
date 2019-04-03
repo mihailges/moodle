@@ -138,9 +138,11 @@ class discussion_list {
      * @param   int         $sortorder The sort order to use when selecting the discussions in the list
      * @param   int         $pageno The zero-indexed page number to use
      * @param   int         $pagesize The number of discussions to show on the page
+     * @param   bool        $sortorderchanged Whether the state of sort order has been changed
      * @return  string      The rendered content for display
      */
-    public function render(stdClass $user, \cm_info $cm, ?int $groupid, ?int $sortorder, ?int $pageno, ?int $pagesize) : string {
+    public function render(stdClass $user, \cm_info $cm, ?int $groupid, ?int $sortorder, ?int $pageno,
+                           ?int $pagesize, bool $sortorderchanged = false) : string {
         global $PAGE;
 
         $forum = $this->forum;
@@ -170,7 +172,7 @@ class discussion_list {
                 true
             ),
             'hasmore' => ($alldiscussionscount > $pagesize),
-            'notifications' => $this->get_notifications($user, $groupid),
+            'notifications' => $this->get_notifications($user, $groupid, $sortorder, $sortorderchanged),
             'settings' => [
                 'excludetext' => true,
                 'togglemoreicon' => true
@@ -383,9 +385,11 @@ class discussion_list {
      *
      * @param stdClass $user The viewing user
      * @param int|null $groupid The forum's group id
+     * @param int|null $sortotder The sorting order
+     * @param bool|null $sortorderchanged Whether the sorting order has been changed
      * @return      array
      */
-    private function get_notifications(stdClass $user, ?int $groupid) : array {
+    private function get_notifications(stdClass $user, ?int $groupid, ?int $sortorder, ?bool $sortorderchanged) : array {
         $notifications = $this->notifications;
         $forum = $this->forum;
         $renderer = $this->renderer;
@@ -433,6 +437,47 @@ class discussion_list {
                 get_string('allowsdiscussions', 'forum'),
                 notification::NOTIFY_INFO)
             )->set_show_closebutton();
+        }
+
+        if ($sortorder && $sortorderchanged) {
+            switch ($sortorder) {
+                case discussion_list_vault::SORTORDER_NEWEST_FIRST:
+                    $notifications[] = (new notification(
+                        get_string('discussionlistsortedbylastpostdesc', 'forum'),
+                        notification::NOTIFY_INFO)
+                    )->set_show_closebutton()->set_announce(true);
+                    break;
+                case discussion_list_vault::SORTORDER_OLDEST_FIRST:
+                    $notifications[] = (new notification(
+                        get_string('discussionlistsortedbylastpostasc', 'forum'),
+                        notification::NOTIFY_INFO)
+                    )->set_show_closebutton()->set_announce(true);
+                    break;
+                case discussion_list_vault::SORTORDER_CREATED_DESC:
+                    $notifications[] = (new notification(
+                        get_string('discussionlistsortedbycreateddesc', 'forum'),
+                        notification::NOTIFY_INFO)
+                    )->set_show_closebutton()->set_announce(true);
+                    break;
+                case discussion_list_vault::SORTORDER_CREATED_ASC:
+                    $notifications[] = (new notification(
+                        get_string('discussionlistsortedbycreatedasc', 'forum'),
+                        notification::NOTIFY_INFO)
+                    )->set_show_closebutton()->set_announce(true);
+                    break;
+                case discussion_list_vault::SORTORDER_REPLIES_DESC:
+                    $notifications[] = (new notification(
+                        get_string('discussionlistsortedbyrepliesdesc', 'forum'),
+                        notification::NOTIFY_INFO)
+                    )->set_show_closebutton()->set_announce(true);
+                    break;
+                case discussion_list_vault::SORTORDER_REPLIES_ASC:
+                    $notifications[] = (new notification(
+                        get_string('discussionlistsortedbyrepliesasc', 'forum'),
+                        notification::NOTIFY_INFO)
+                    )->set_show_closebutton()->set_announce(true);
+                    break;
+            }
         }
 
         return array_map(function($notification) {

@@ -135,8 +135,12 @@ if ($mode) {
 
 $displaymode = get_user_preferences('forum_displaymode', $CFG->forum_displaymode);
 
+$sortorderchanged = false;
 if ($sortorder) {
-    set_user_preference('forum_discussionlistsortorder', $sortorder);
+    if ($sortorder != get_user_preferences('forum_discussionlistsortorder')) {
+        set_user_preference('forum_discussionlistsortorder', $sortorder);
+        $sortorderchanged = true;
+    }
 }
 
 $sortorder = get_user_preferences('forum_discussionlistsortorder', $discussionlistvault::SORTORDER_NEWEST_FIRST);
@@ -169,7 +173,7 @@ switch ($forum->get_type()) {
         break;
     default:
         $discussionsrenderer = $rendererfactory->get_discussion_list_renderer($forum);
-        echo $discussionsrenderer->render($USER, $cm, $groupid, $sortorder, $pageno, $pagesize);
+        echo $discussionsrenderer->render($USER, $cm, $groupid, $sortorder, $pageno, $pagesize, $sortorderchanged);
 }
 
 echo $OUTPUT->footer();

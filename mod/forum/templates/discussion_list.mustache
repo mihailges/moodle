@@ -259,8 +259,22 @@
                                 </div>
                                 {{/discussion.timed.istimed}}
                             </td>
-                            <td scope="col" class="p-0 align-middle">
-                            <td scope="col" class="p-0 align-middle" aria-label="{{#userstate.subscribed}}{{#str}}discussionsubscribed, forum{{/str}}{{/userstate.subscribed}}{{^userstate.subscribed}}{{#str}}discussionnotsubscribed, forum{{/str}}{{/userstate.subscribed}}">
+                            <td scope="col" class="p-0 align-middle" aria-label="
+                                {{#userstate.subscribed}}
+                                    {{#str}}discussionsubscribed, forum{{/str}}
+                                {{/userstate.subscribed}}{{^userstate.subscribed}}
+                                    {{#str}}discussionnotsubscribed, forum{{/str}}
+                                {{/userstate.subscribed}}
+                                {{#discussion.pinned}}
+                                    {{#str}}discussionsubscribed, forum{{/str}}
+                                {{/discussion.pinned}}
+                                {{^discussion.pinned}}
+                                    {{#str}}discussionnotsubscribed, forum{{/str}}
+                                {{/discussion.pinned}}"
+
+                                "
+
+                            >
                                 {{#discussion}}
                                     <div class="d-flex flex-wrap">
                                         <div class="p1-1">

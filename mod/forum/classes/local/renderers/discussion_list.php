@@ -238,6 +238,7 @@ class discussion_list {
             'subscribe' => \mod_forum\subscriptions::is_subscribed($user->id, $forumrecord,
                 null, $cm),
             'thresholdwarning' => $thresholdwarning,
+            'canreplyprivately' => false,
             'inpagereply' => true,
             'edit' => 0), 'post', '', array('id' => 'mformforum'));
 

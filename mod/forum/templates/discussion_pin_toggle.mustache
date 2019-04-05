@@ -32,30 +32,28 @@
     {
     }
 }}
-{{#capabilities.pin}}
-    <a
-        class="btn btn-link text-left"
-        data-type="pin-toggle"
-        data-action="toggle"
-        data-discussionid="{{id}}"
-        data-forumid="{{forumid}}"
-        href="{{urls.pin}}"
-        tabindex="-1"
-        role="menuitem"
-        {{#pinned}}
-            data-targetstate="0"
-            title="{{#str}}unpindiscussion, mod_forum{{/str}}"
-        {{/pinned}}
-        {{^pinned}}
-            data-targetstate="1"
-            title="{{#str}}pindiscussion, mod_forum{{/str}}"
-        {{/pinned}}
-    >
-        {{#pinned}}
-            {{#str}}unpindiscussion, mod_forum{{/str}}
-        {{/pinned}}
-        {{^pinned}}
-            {{#str}}pindiscussion, mod_forum{{/str}}
-        {{/pinned}}
-    </a>
-{{/capabilities.pin}}
+<a
+    class="btn btn-link text-left"
+    data-type="pin-toggle"
+    data-action="toggle"
+    data-discussionid="{{id}}"
+    data-forumid="{{forumid}}"
+    href="{{urls.pin}}"
+    tabindex="-1"
+    role="menuitem"
+    {{#pinned}}
+        data-targetstate="0"
+        title="{{#str}}unpindiscussion, mod_forum{{/str}}"
+    {{/pinned}}
+    {{^pinned}}
+        data-targetstate="1"
+        title="{{#str}}pindiscussion, mod_forum{{/str}}"
+    {{/pinned}}
+>
+    {{#pinned}}
+        {{#str}}unpindiscussion, mod_forum{{/str}}
+    {{/pinned}}
+    {{^pinned}}
+        {{#str}}pindiscussion, mod_forum{{/str}}
+    {{/pinned}}
+</a>

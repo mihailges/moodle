@@ -32,31 +32,27 @@
     {
     }
 }}
-{{#capabilities.manage}}
-    <a
-        class="iconsmall btn btn-link text-left"
-        data-type="lock-toggle"
-        data-action="toggle"
-        data-discussionid="{{id}}"
-        data-forumid="{{forumid}}"
-        data-state="{{times.locked}}"
-        tabindex="-1"
-        data-targetstate="0"
-        role="menuitem"
-        {{#userstate.locked}}
-            title="{{#str}}locked, forum{{/str}}"
-        {{/userstate.locked}}
-        {{^userstate.locked}}
-            title="{{#str}}notlocked, forum{{/str}}"
-        {{/userstate.locked}}
-    >
-        {{#userstate.locked}}
-            {{#str}}unlockdiscussion, forum{{/str}}
-        {{/userstate.locked}}
-        {{^userstate.locked}}
-            {{#str}}lockdiscussion, forum{{/str}}
-        {{/userstate.locked}}
-    </a>
-{{/capabilities.manage}}
-
-
+<a
+    class="iconsmall btn btn-link text-left"
+    data-type="lock-toggle"
+    data-action="toggle"
+    data-discussionid="{{id}}"
+    data-forumid="{{forumid}}"
+    data-state="{{times.locked}}"
+    tabindex="-1"
+    data-targetstate="0"
+    role="menuitem"
+    {{#userstate.locked}}
+        title="{{#str}}locked, forum{{/str}}"
+    {{/userstate.locked}}
+    {{^userstate.locked}}
+        title="{{#str}}notlocked, forum{{/str}}"
+    {{/userstate.locked}}
+>
+    {{#userstate.locked}}
+        {{#str}}unlockdiscussion, forum{{/str}}
+    {{/userstate.locked}}
+    {{^userstate.locked}}
+        {{#str}}lockdiscussion, forum{{/str}}
+    {{/userstate.locked}}
+</a>

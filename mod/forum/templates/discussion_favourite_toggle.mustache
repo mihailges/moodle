@@ -32,31 +32,29 @@
     {
     }
 }}
-{{#capabilities.favourite}}
-    <a
-        class="p-t-0 btn btn-link text-left"
-        data-type="favorite-toggle"
-        data-action="toggle"
-        data-discussionid="{{id}}"
-        data-forumid="{{forumid}}"
-        role="menuitem",
-        tabindex="-1"
+<a
+    class="p-t-0 btn btn-link text-left"
+    data-type="favorite-toggle"
+    data-action="toggle"
+    data-discussionid="{{id}}"
+    data-forumid="{{forumid}}"
+    role="menuitem",
+    tabindex="-1"
+    {{#userstate.favourited}}
+        data-targetstate="0"
+        title="{{#str}}removefromfavourites, mod_forum{{/str}}"
+    {{/userstate.favourited}}
+    {{^userstate.favourited}}
+        data-targetstate="1"
+        title="{{#str}}addtofavourites, mod_forum{{/str}}"
+    {{/userstate.favourited}}
+>
+    {{$favouritecontent}}
         {{#userstate.favourited}}
-            data-targetstate="0"
-            title="{{#str}}removefromfavourites, mod_forum{{/str}}"
+            {{#str}}removefromfavourites, mod_forum{{/str}}
         {{/userstate.favourited}}
         {{^userstate.favourited}}
-            data-targetstate="1"
-            title="{{#str}}addtofavourites, mod_forum{{/str}}"
+            {{#str}}addtofavourites, mod_forum{{/str}}
         {{/userstate.favourited}}
-    >
-        {{$favouritecontent}}
-            {{#userstate.favourited}}
-                {{#str}}removefromfavourites, mod_forum{{/str}}
-            {{/userstate.favourited}}
-            {{^userstate.favourited}}
-                {{#str}}addtofavourites, mod_forum{{/str}}
-            {{/userstate.favourited}}
-        {{/favouritecontent}}
-    </a>
-{{/capabilities.favourite}}
+    {{/favouritecontent}}
+</a>

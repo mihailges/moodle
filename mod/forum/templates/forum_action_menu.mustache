@@ -49,14 +49,20 @@
          data-rel="menu-content"
          role="menu"
          id="forum-action-menu-{{id}}-menu">
-        <div class="dropdown-item">
-            {{> mod_forum/discussion_favourite_toggle}}
-        </div>
-        <div class="dropdown-item">
-            {{> mod_forum/discussion_pin_toggle}}
-        </div>
-        <div class="dropdown-item">
-            {{> mod_forum/discussion_lock_toggle}}
-        </div>
+        {{#capabilities.favourite}}
+            <div class="dropdown-item">
+                {{> mod_forum/discussion_favourite_toggle}}
+            </div>
+        {{/capabilities.favourite}}
+        {{#capabilities.pin}}
+            <div class="dropdown-item">
+                {{> mod_forum/discussion_pin_toggle}}
+            </div>
+        {{/capabilities.pin}}
+        {{#capabilities.manage}}
+            <div class="dropdown-item">
+                {{> mod_forum/discussion_lock_toggle}}
+            </div>
+        {{/capabilities.manage}}
     </div>
 </div>

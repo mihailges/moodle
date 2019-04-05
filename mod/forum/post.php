@@ -977,10 +977,11 @@ if ($mformpost->is_cancelled()) {
         }
         $discussion->timestart = $fromform->timestart;
         $discussion->timeend = $fromform->timeend;
-        $discussion->pinned = FORUM_DISCUSSION_UNPINNED;
 
         if (!empty($fromform->pinned) && $capabilitymanager->can_pin_discussions($USER)) {
             $discussion->pinned = FORUM_DISCUSSION_PINNED;
+        } else {
+            $discussion->pinned = FORUM_DISCUSSION_UNPINNED;
         }
 
         $allowedgroups = array();

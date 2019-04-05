@@ -275,7 +275,7 @@ class discussion_list extends db_table_vault {
         $keyfield = $this->get_keyfield($sortmethod);
         $direction = $this->get_sort_direction($sortmethod);
 
-        return "{$alias}.pinned DESC, {$this->get_favourite_alias()}.id DESC, {$keyfield} {$direction}";
+        return "{$alias}.pinned DESC, {$this->get_favourite_alias()}.itemtype DESC, {$keyfield} {$direction}";
     }
 
     /**

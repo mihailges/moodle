@@ -23,7 +23,9 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['configsetvisibility'] = 'If enabled, users will be capable to set their visibility to other users in the online users block.';
 $string['configtimetosee'] = 'Number of minutes determining the period of inactivity after which a user is no longer considered to be online.';
+$string['setvisibility'] = 'Enable users to set their visibility to others in the block';
 $string['nouser'] = 'No online users';
 $string['numuser'] = '{$a} online user';
 $string['numusers'] = '{$a} online users';

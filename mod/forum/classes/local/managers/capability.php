@@ -322,6 +322,21 @@ class capability {
     }
 
     /**
+     * Can the user view the content of a discussion?
+     *
+     * @param stdClass $user The user to check
+     * @param discussion_entity $discussion The discussion to check
+     * @return bool
+     */
+    public function can_view_discussion(stdClass $user, discussion_entity $discussion) : bool {
+        $forumrecord = $this->get_forum_record();
+        $discussionrecord = $this->get_discussion_record($discussion);
+        $context = $this->get_context();
+
+        return forum_user_can_see_discussion($forumrecord, $discussionrecord, $context, $user);
+    }
+
+    /**
      * Can the user view the content of the post in this discussion?
      *
      * @param stdClass $user The user to check

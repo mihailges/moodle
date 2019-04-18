@@ -500,11 +500,11 @@ class mod_forum_external extends external_api {
         return new external_function_parameters (
             array(
                 'forumid' => new external_value(PARAM_INT, 'forum instance id', VALUE_REQUIRED),
-                'sortby' => new external_value(PARAM_ALPHA,
-                    'sort by this element: id, timemodified, timestart or timeend', VALUE_DEFAULT, 'timemodified'),
-                'sortdirection' => new external_value(PARAM_ALPHA, 'sort direction: ASC or DESC', VALUE_DEFAULT, 'DESC'),
+                'sortorder' => new external_value(PARAM_INT,
+                    'sort by this element: numreplies, , created or timemodified', VALUE_DEFAULT, -1),
                 'page' => new external_value(PARAM_INT, 'current page', VALUE_DEFAULT, -1),
                 'perpage' => new external_value(PARAM_INT, 'items per page', VALUE_DEFAULT, 0),
+                'groupid' => new external_value(PARAM_INT, 'items per page', VALUE_DEFAULT, 0),
             )
         );
     }
@@ -513,17 +513,19 @@ class mod_forum_external extends external_api {
      * Returns a list of forum discussions optionally sorted and paginated.
      *
      * @param int $forumid the forum instance id
-     * @param string $sortby sort by this element (id, timemodified, timestart or timeend)
-     * @param string $sortdirection sort direction: ASC or DESC
+     * @param int $sortorder The sort order
      * @param int $page page number
      * @param int $perpage items per page
+     * @param int $groupid the user course group
+     *
      *
      * @return array the forum discussion details including warnings
      * @since Moodle 2.8
      */
-    public static function get_forum_discussions_paginated($forumid, $sortby = 'timemodified', $sortdirection = 'DESC',
-                                                    $page = -1, $perpage = 0) {
-        global $CFG, $DB, $USER, $PAGE;
+    public static function get_forum_discussions_paginated(int $forumid, ?int $sortorder = -1, ?int $page = -1,
+            ?int $perpage = 0, ?int $groupid = 0) {
+
+        global $CFG, $DB, $USER;
 
         require_once($CFG->dirroot . "/mod/forum/lib.php");
 
@@ -533,154 +535,172 @@ class mod_forum_external extends external_api {
         $params = self::validate_parameters(self::get_forum_discussions_paginated_parameters(),
             array(
                 'forumid' => $forumid,
-                'sortby' => $sortby,
-                'sortdirection' => $sortdirection,
+                'sortorder' => $sortorder,
                 'page' => $page,
-                'perpage' => $perpage
+                'perpage' => $perpage,
+                'groupid' => $groupid
             )
         );
 
         // Compact/extract functions are not recommended.
         $forumid        = $params['forumid'];
-        $sortby         = $params['sortby'];
-        $sortdirection  = $params['sortdirection'];
+        $sortorder      = $params['sortorder'];
         $page           = $params['page'];
         $perpage        = $params['perpage'];
+        $groupid        = $params['groupid'];
 
-        $sortallowedvalues = array('id', 'timemodified', 'timestart', 'timeend');
-        if (!in_array($sortby, $sortallowedvalues)) {
-            throw new invalid_parameter_exception('Invalid value for sortby parameter (value: ' . $sortby . '),' .
-                'allowed values are: ' . implode(',', $sortallowedvalues));
+        $vaultfactory = \mod_forum\local\container::get_vault_factory();
+        $discussionlistvault = $vaultfactory->get_discussions_in_forum_vault();
+
+        $sortallowedvalues = array(
+            $discussionlistvault::SORTORDER_LASTPOST_DESC,
+            $discussionlistvault::SORTORDER_LASTPOST_ASC,
+            $discussionlistvault::SORTORDER_CREATED_DESC,
+            $discussionlistvault::SORTORDER_CREATED_ASC,
+            $discussionlistvault::SORTORDER_REPLIES_DESC,
+            $discussionlistvault::SORTORDER_REPLIES_ASC
+        );
+
+        // If sortorder not defined set a default one.
+        if ($sortorder == -1) {
+            $sortorder = $discussionlistvault::SORTORDER_LASTPOST_DESC;
         }
 
-        $sortdirection = strtoupper($sortdirection);
-        $directionallowedvalues = array('ASC', 'DESC');
-        if (!in_array($sortdirection, $directionallowedvalues)) {
-            throw new invalid_parameter_exception('Invalid value for sortdirection parameter (value: ' . $sortdirection . '),' .
-                'allowed values are: ' . implode(',', $directionallowedvalues));
+        if (!in_array($sortorder, $sortallowedvalues)) {
+            throw new invalid_parameter_exception('Invalid value for sortorder parameter (value: ' . $sortorder . '),' .
+                ' allowed values are: ' . implode(',', $sortallowedvalues));
         }
 
-        $forum = $DB->get_record('forum', array('id' => $forumid), '*', MUST_EXIST);
-        $course = $DB->get_record('course', array('id' => $forum->course), '*', MUST_EXIST);
-        $cm = get_coursemodule_from_instance('forum', $forum->id, $course->id, false, MUST_EXIST);
+        $managerfactory = \mod_forum\local\container::get_manager_factory();
+        $urlfactory = \mod_forum\local\container::get_url_factory();
+        $legacydatamapperfactory = mod_forum\local\container::get_legacy_data_mapper_factory();
+
+        $forumvault = $vaultfactory->get_forum_vault();
+        $forum = $forumvault->get_from_id($forumid);
+        $forumdatamapper = $legacydatamapperfactory->get_forum_data_mapper();
+        $forumrecord = $forumdatamapper->to_legacy_object($forum);
+
+        $capabilitymanager = $managerfactory->get_capability_manager($forum);
+
+        $course = $DB->get_record('course', array('id' => $forum->get_course_id()), '*', MUST_EXIST);
+        $cm = get_coursemodule_from_instance('forum', $forum->get_id(), $course->id, false, MUST_EXIST);
 
         // Validate the module context. It checks everything that affects the module visibility (including groupings, etc..).
         $modcontext = context_module::instance($cm->id);
         self::validate_context($modcontext);
 
-        // Check they have the view forum capability.
-        require_capability('mod/forum:viewdiscussion', $modcontext, null, true, 'noviewdiscussionspermission', 'forum');
+        $canseeanyprivatereply = $capabilitymanager->can_view_any_private_reply($USER);
 
-        $sort = 'd.pinned DESC, d.' . $sortby . ' ' . $sortdirection;
-        $alldiscussions = forum_get_discussions($cm, $sort, true, -1, -1, true, $page, $perpage, FORUM_POSTS_ALL_USER_GROUPS);
+        // Check they have the view forum capability.
+        if (!$capabilitymanager->can_view_discussions($USER)) {
+            throw new moodle_exception('noviewdiscussionspermission', 'forum');
+        }
+
+        $alldiscussions = get_discussions($forum, $USER, $groupid, $sortorder, $page, $perpage);
 
         if ($alldiscussions) {
-            $canviewfullname = has_capability('moodle/site:viewfullnames', $modcontext);
+            $discussionids = array_keys($alldiscussions);
+
+            $postvault = $vaultfactory->get_post_vault();
+            // Return the reply count for each discussion in a given forum.
+            $replies = $postvault->get_reply_count_for_discussion_ids($USER, $discussionids, $canseeanyprivatereply);
+            // Return the first post for each discussion in a given forum.
+            $firstposts = $postvault->get_first_post_for_discussion_ids($discussionids);
 
             // Get the unreads array, this takes a forum id and returns data for all discussions.
             $unreads = array();
-            if ($cantrack = forum_tp_can_track_forums($forum)) {
-                if ($forumtracked = forum_tp_is_tracked($forum)) {
-                    $unreads = forum_get_discussions_unread($cm);
+            if ($cantrack = forum_tp_can_track_forums($forumrecord)) {
+                if ($forumtracked = forum_tp_is_tracked($forumrecord)) {
+                    $unreads = $postvault->get_unread_count_for_discussion_ids($USER, $discussionids, $canseeanyprivatereply);
                 }
             }
-            // The forum function returns the replies for all the discussions in a given forum.
-            $canseeprivatereplies = has_capability('mod/forum:readprivatereplies', $modcontext);
-            $replies = forum_count_discussion_replies($forumid, $sort, -1, $page, $perpage, $canseeprivatereplies);
 
-            foreach ($alldiscussions as $discussion) {
+            foreach ($alldiscussions as $discussionsummary) {
+                $discussion = $discussionsummary->get_discussion();
+                $firstpostauthor = $discussionsummary->get_first_post_author();
+                $latestpostauthor = $discussionsummary->get_latest_post_author();
 
                 // This function checks for qanda forums.
-                // Note that the forum_get_discussions returns as id the post id, not the discussion id so we need to do this.
-                $discussionrec = clone $discussion;
-                $discussionrec->id = $discussion->discussion;
-                if (!forum_user_can_see_discussion($forum, $discussionrec, $modcontext)) {
+                $canviewdiscussion = $capabilitymanager->can_view_discussion($USER, $discussion);
+                if (!$canviewdiscussion) {
                     $warning = array();
                     // Function forum_get_discussions returns forum_posts ids not forum_discussions ones.
                     $warning['item'] = 'post';
-                    $warning['itemid'] = $discussion->id;
+                    $warning['itemid'] = $discussion->get_id();
                     $warning['warningcode'] = '1';
                     $warning['message'] = 'You can\'t see this discussion';
                     $warnings[] = $warning;
                     continue;
                 }
 
-                $discussion->numunread = 0;
+                $discussionobject = $firstposts[$discussion->get_first_post_id()];
+                $discussionobject->groupid = $discussion->get_group_id();
+                $discussionobject->timemodified = $discussion->get_time_modified();
+                $discussionobject->usermodified = $discussion->get_user_modified();
+                $discussionobject->timestart = $discussion->get_time_start();
+                $discussionobject->timeend = $discussion->get_time_end();
+                $discussionobject->pinned = $discussion->is_pinned();
+
+                $discussionobject->numunread = 0;
                 if ($cantrack && $forumtracked) {
-                    if (isset($unreads[$discussion->discussion])) {
-                        $discussion->numunread = (int) $unreads[$discussion->discussion];
+                    if (isset($unreads[$discussion->get_id()])) {
+                        $discussionobject->numunread = (int) $unreads[$discussion->get_id()];
                     }
                 }
 
-                $discussion->numreplies = 0;
-                if (!empty($replies[$discussion->discussion])) {
-                    $discussion->numreplies = (int) $replies[$discussion->discussion]->replies;
+                $discussionobject->numreplies = 0;
+                if (!empty($replies[$discussion->get_id()])) {
+                    $discussionobject->numreplies = (int) $replies[$discussion->get_id()];
                 }
 
-                $discussion->name = external_format_string($discussion->name, $modcontext->id);
-                $discussion->subject = external_format_string($discussion->subject, $modcontext->id);
+                $discussionobject->name = external_format_string($discussion->get_name(), $modcontext->id);
+                $discussionobject->subject = external_format_string($discussionobject->subject, $modcontext->id);
                 // Rewrite embedded images URLs.
-                list($discussion->message, $discussion->messageformat) =
-                    external_format_text($discussion->message, $discussion->messageformat,
-                                            $modcontext->id, 'mod_forum', 'post', $discussion->id);
+                list($discussionobject->message, $discussionobject->messageformat) =
+                    external_format_text($discussionobject->message, $discussionobject->messageformat,
+                        $modcontext->id, 'mod_forum', 'post', $discussionobject->id);
 
                 // List attachments.
-                if (!empty($discussion->attachment)) {
-                    $discussion->attachments = external_util::get_area_files($modcontext->id, 'mod_forum', 'attachment',
-                                                                                $discussion->id);
+                if (!empty($discussionobject->attachment)) {
+                    $discussionobject->attachments = external_util::get_area_files($modcontext->id, 'mod_forum',
+                        'attachment', $discussionobject->id);
                 }
-                $messageinlinefiles = external_util::get_area_files($modcontext->id, 'mod_forum', 'post', $discussion->id);
+                $messageinlinefiles = external_util::get_area_files($modcontext->id, 'mod_forum', 'post',
+                    $discussionobject->id);
                 if (!empty($messageinlinefiles)) {
-                    $discussion->messageinlinefiles = $messageinlinefiles;
+                    $discussionobject->messageinlinefiles = $messageinlinefiles;
                 }
 
-                $discussion->locked = forum_discussion_is_locked($forum, $discussion);
-                $discussion->canreply = forum_user_can_post($forum, $discussion, $USER, $cm, $course, $modcontext);
+                $discussionobject->locked = $forum->is_discussion_locked($discussion);
+                $discussionobject->canreply = $capabilitymanager->can_post_in_discussion($USER, $discussion);
 
-                if (forum_is_author_hidden($discussion, $forum)) {
-                    $discussion->userid = null;
-                    $discussion->userfullname = null;
-                    $discussion->userpictureurl = null;
+                if (forum_is_author_hidden($discussionobject, $forumrecord)) {
+                    $discussionobject->userid = null;
+                    $discussionobject->userfullname = null;
+                    $discussionobject->userpictureurl = null;
 
-                    $discussion->usermodified = null;
-                    $discussion->usermodifiedfullname = null;
-                    $discussion->usermodifiedpictureurl = null;
+                    $discussionobject->usermodified = null;
+                    $discussionobject->usermodifiedfullname = null;
+                    $discussionobject->usermodifiedpictureurl = null;
+
                 } else {
-                    $picturefields = explode(',', user_picture::fields());
+                    $discussionobject->userfullname = $firstpostauthor->get_full_name();
+                    $discussionobject->userpictureurl = $urlfactory->get_author_profile_image_url($firstpostauthor)
+                        ->out(false);
 
-                    // Load user objects from the results of the query.
-                    $user = new stdclass();
-                    $user->id = $discussion->userid;
-                    $user = username_load_fields_from_object($user, $discussion, null, $picturefields);
-                    // Preserve the id, it can be modified by username_load_fields_from_object.
-                    $user->id = $discussion->userid;
-                    $discussion->userfullname = fullname($user, $canviewfullname);
-
-                    $userpicture = new user_picture($user);
-                    $userpicture->size = 1; // Size f1.
-                    $discussion->userpictureurl = $userpicture->get_url($PAGE)->out(false);
-
-                    $usermodified = new stdclass();
-                    $usermodified->id = $discussion->usermodified;
-                    $usermodified = username_load_fields_from_object($usermodified, $discussion, 'um', $picturefields);
-                    // Preserve the id (it can be overwritten due to the prefixed $picturefields).
-                    $usermodified->id = $discussion->usermodified;
-                    $discussion->usermodifiedfullname = fullname($usermodified, $canviewfullname);
-
-                    $userpicture = new user_picture($usermodified);
-                    $userpicture->size = 1; // Size f1.
-                    $discussion->usermodifiedpictureurl = $userpicture->get_url($PAGE)->out(false);
+                    $discussionobject->usermodifiedfullname = $latestpostauthor->get_full_name();
+                    $discussionobject->usermodifiedpictureurl = $urlfactory->get_author_profile_image_url($latestpostauthor)
+                        ->out(false);
                 }
 
-                $discussions[] = $discussion;
+                $discussions[] = (array) $discussionobject;
             }
         }
-
         $result = array();
         $result['discussions'] = $discussions;
         $result['warnings'] = $warnings;
-        return $result;
 
+        return $result;
     }
 
     /**
@@ -721,7 +741,7 @@ class mod_forum_external extends external_api {
                                 'usermodifiedfullname' => new external_value(PARAM_TEXT, 'Post modifier full name'),
                                 'userpictureurl' => new external_value(PARAM_URL, 'Post author picture.'),
                                 'usermodifiedpictureurl' => new external_value(PARAM_URL, 'Post modifier picture.'),
-                                'numreplies' => new external_value(PARAM_TEXT, 'The number of replies in the discussion'),
+                                'numreplies' => new external_value(PARAM_INT, 'The number of replies in the discussion'),
                                 'numunread' => new external_value(PARAM_INT, 'The number of unread discussions.'),
                                 'pinned' => new external_value(PARAM_BOOL, 'Is the discussion pinned'),
                                 'locked' => new external_value(PARAM_BOOL, 'Is the discussion locked'),

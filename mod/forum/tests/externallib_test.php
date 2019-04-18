@@ -958,31 +958,31 @@ class mod_forum_external_testcase extends externallib_advanced_testcase {
         $expecteddiscussions = array(
                 'id' => $discussion1->firstpost,
                 'name' => $discussion1->name,
-                'groupid' => $discussion1->groupid,
-                'timemodified' => $discussion1reply3->created,
-                'usermodified' => $discussion1reply3->userid,
-                'timestart' => $discussion1->timestart,
-                'timeend' => $discussion1->timeend,
-                'discussion' => $discussion1->id,
+                'groupid' => (int) $discussion1->groupid,
+                'timemodified' => (int) $discussion1reply3->created,
+                'usermodified' => (int) $discussion1reply3->userid,
+                'timestart' => (int) $discussion1->timestart,
+                'timeend' => (int) $discussion1->timeend,
+                'discussion' => (int) $discussion1->id,
                 'parent' => 0,
-                'userid' => $discussion1->userid,
-                'created' => $post1->created,
-                'modified' => $post1->modified,
-                'mailed' => $post1->mailed,
+                'userid' => (int) $discussion1->userid,
+                'created' => (int) $post1->created,
+                'modified' => (int) $post1->modified,
+                'mailed' => (int) $post1->mailed,
                 'subject' => $post1->subject,
                 'message' => $post1->message,
-                'messageformat' => $post1->messageformat,
-                'messagetrust' => $post1->messagetrust,
+                'messageformat' => (int) $post1->messageformat,
+                'messagetrust' => (int) $post1->messagetrust,
                 'attachment' => $post1->attachment,
-                'totalscore' => $post1->totalscore,
-                'mailnow' => $post1->mailnow,
+                'totalscore' => (int) $post1->totalscore,
+                'mailnow' => (int) $post1->mailnow,
                 'userfullname' => fullname($user1),
                 'usermodifiedfullname' => fullname($user4),
                 'userpictureurl' => '',
                 'usermodifiedpictureurl' => '',
                 'numreplies' => 3,
                 'numunread' => 0,
-                'pinned' => FORUM_DISCUSSION_UNPINNED,
+                'pinned' => (bool) FORUM_DISCUSSION_UNPINNED,
                 'locked' => false,
                 'canreply' => false,
             );
@@ -997,11 +997,11 @@ class mod_forum_external_testcase extends externallib_advanced_testcase {
 
         // Wait the theme to be loaded (the external_api call does that) to generate the user profiles.
         $userpicture = new user_picture($user1);
-        $userpicture->size = 1; // Size f1.
+        $userpicture->size = 2; // Size f2.
         $expectedreturn['discussions'][0]['userpictureurl'] = $userpicture->get_url($PAGE)->out(false);
 
         $userpicture = new user_picture($user4);
-        $userpicture->size = 1; // Size f1.
+        $userpicture->size = 2; // Size f2.
         $expectedreturn['discussions'][0]['usermodifiedpictureurl'] = $userpicture->get_url($PAGE)->out(false);
 
         $this->assertEquals($expectedreturn, $discussions);

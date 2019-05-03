@@ -58,6 +58,7 @@ define([
                     return Templates.replaceNode(toggleElement, html, js);
                 })
                 .then(function() {
+                    $('#user-notifications').empty();
                     return String.get_string("favouriteupdated", "forum")
                         .done(function(s) {
                             return Notification.addNotification({

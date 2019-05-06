@@ -60,10 +60,17 @@ define([
                 .then(function() {
                     return String.get_string("favouriteupdated", "forum")
                         .done(function(s) {
-                            return Notification.addNotification({
-                                message: s,
-                                type: "info"
-                            });
+                            if ($('#user-notifications .alert.alert-info').length) {
+                                $('#user-notifications .alert.alert-info').fadeOut(function() {
+                                    $('#user-notifications .alert.alert-info').html(s);
+                                    $('#user-notifications .alert.alert-info').fadeIn();
+                                });
+                            } else {
+                                Notification.addNotification({
+                                    message: s,
+                                    type: "info"
+                                });
+                            }
                         });
                 })
                 .catch(Notification.exception);

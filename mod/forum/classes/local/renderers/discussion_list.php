@@ -160,9 +160,13 @@ class discussion_list {
         // Get all forum discussions posts.
         $discussions = get_discussions($forum, $user, $groupid, $sortorder, $pageno, $pagesize);
 
+        // If the user can create discussion in this forum, pass the 'inline create discussion' form.
+        $newdiscussionhtml = $this->capabilitymanager->can_create_discussions($user, $groupid) ?
+            $this->get_discussion_form($user, $cm, $groupid) : "";
+
         $forumview = [
             'forum' => (array) $forumexporter->export($this->renderer),
-            'newdiscussionhtml' => $this->get_discussion_form($user, $cm, $groupid),
+            'newdiscussionhtml' => $newdiscussionhtml,
             'groupchangemenu' => groups_print_activity_menu(
                 $cm,
                 $this->urlfactory->get_forum_view_url_from_forum($forum),

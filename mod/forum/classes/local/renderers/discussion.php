@@ -163,7 +163,9 @@ class discussion {
     public function render(
         stdClass $user,
         post_entity $firstpost,
-        array $replies
+        array $replies,
+        ?int $groupid,
+        ?int $sortorder
     ) : string {
         global $CFG;
 
@@ -191,7 +193,7 @@ class discussion {
                 'subscribe' => null,
                 'movediscussion' => null,
                 'pindiscussion' => null,
-                'neighbourlinks' => $this->get_neighbour_links_html(),
+                'neighbourlinks' => $this->get_neighbour_links_html($user, $groupid, $sortorder),
                 'exportdiscussion' => !empty($CFG->enableportfolios) ? $this->get_export_discussion_html() : null
             ]
         ]);
@@ -409,12 +411,13 @@ class discussion {
     /**
      * Get HTML to display the neighbour links.
      *
+     * @param stdClass  $user The user record.
+     * @param int|null  $groupid The group to render.
+     * @param int|null  $sortorder The sorting order used in the discussions list.
      * @return string
      */
-    private function get_neighbour_links_html() : string {
-        $forum = $this->forum;
-        $coursemodule = $forum->get_course_module_record();
-        $neighbours = forum_get_discussion_neighbours($coursemodule, $this->discussionrecord, $this->forumrecord);
+    private function get_neighbour_links_html(stdClass $user, ?int $groupid, ?int $sortorder) : string {
+        $neighbours = forum_get_discussion_neighbours($this->discussionrecord, $this->forum, $user, $groupid, $sortorder);
         return $this->renderer->neighbouring_discussion_navigation($neighbours['prev'], $neighbours['next']);
     }
 }

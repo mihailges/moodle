@@ -159,7 +159,7 @@ switch ($forum->get_type()) {
                 $capabilitymanager->can_view_any_private_reply($USER),
                 $orderpostsby
             );
-        echo $discussionsrenderer->render($USER, $post, $replies);
+        echo $discussionsrenderer->render($USER, $post, $replies, $groupid, $sortorder);
         break;
     case 'blog':
         $discussionsrenderer = $rendererfactory->get_blog_discussion_list_renderer($forum);

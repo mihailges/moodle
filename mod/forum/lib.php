@@ -1843,147 +1843,36 @@ function forum_get_discussions($cm, $forumsort="", $fullpost=true, $unused=-1, $
 /**
  * Gets the neighbours (previous and next) of a discussion.
  *
- * The calculation is based on the timemodified when time modified or time created is identical
- * It will revert to using the ID to sort consistently. This is better tha skipping a discussion.
- *
- * For blog-style forums, the calculation is based on the original creation time of the
- * blog post.
- *
- * Please note that this does not check whether or not the discussion passed is accessible
- * by the user, it simply uses it as a reference to find the neighbours. On the other hand,
- * the returned neighbours are checked and are accessible to the current user.
- *
- * @param object $cm The CM record.
- * @param object $discussion The discussion record.
- * @param object $forum The forum instance record.
+ * @param  stdClass                         $discussion The discussion record.
+ * @param  \mod_forum\local\entities\forum  $forum The forum entity.
+ * @param  stdClass                         $user The user record.
+ * @param  int|null                         $groupid The group to render.
+ * @param  int|null                         $sortorder The sorting order used in the discussions list.
  * @return array That always contains the keys 'prev' and 'next'. When there is a result
- *               they contain the record with minimal information such as 'id' and 'name'.
- *               When the neighbour is not found the value is false.
+ *               they contain the particular discussion entity. When the neighbour is not found the value is null.
  */
-function forum_get_discussion_neighbours($cm, $discussion, $forum) {
-    global $CFG, $DB, $USER;
+function forum_get_discussion_neighbours(stdClass $discussion, \mod_forum\local\entities\forum $forum, stdClass $user,
+        ?int $groupid, ?int $sortorder) {
 
-    if ($cm->instance != $discussion->forum or $discussion->forum != $forum->id or $forum->id != $cm->instance) {
+    if ($discussion->forum != $forum->get_id()) {
         throw new coding_exception('Discussion is not part of the same forum.');
     }
 
-    $neighbours = array('prev' => false, 'next' => false);
-    $now = floor(time() / 60) * 60;
-    $params = array();
+    $discussions = get_discussions($forum, $user, $groupid, $sortorder);
 
-    $modcontext = context_module::instance($cm->id);
-    $groupmode    = groups_get_activity_groupmode($cm);
-    $currentgroup = groups_get_activity_group($cm);
-
-    // Users must fulfill timed posts.
-    $timelimit = '';
-    if (!empty($CFG->forum_enabletimedposts)) {
-        if (!has_capability('mod/forum:viewhiddentimedposts', $modcontext)) {
-            $timelimit = ' AND ((d.timestart <= :tltimestart AND (d.timeend = 0 OR d.timeend > :tltimeend))';
-            $params['tltimestart'] = $now;
-            $params['tltimeend'] = $now;
-            if (isloggedin()) {
-                $timelimit .= ' OR d.userid = :tluserid';
-                $params['tluserid'] = $USER->id;
-            }
-            $timelimit .= ')';
-        }
+    if (!$discussions) {
+        throw new coding_exception('Discussions are not present in this forum.');
     }
 
-    // Limiting to posts accessible according to groups.
-    $groupselect = '';
-    if ($groupmode) {
-        if ($groupmode == VISIBLEGROUPS || has_capability('moodle/site:accessallgroups', $modcontext)) {
-            if ($currentgroup) {
-                $groupselect = 'AND (d.groupid = :groupid OR d.groupid = -1)';
-                $params['groupid'] = $currentgroup;
-            }
-        } else {
-            if ($currentgroup) {
-                $groupselect = 'AND (d.groupid = :groupid OR d.groupid = -1)';
-                $params['groupid'] = $currentgroup;
-            } else {
-                $groupselect = 'AND d.groupid = -1';
-            }
-        }
-    }
+    $keys = array_flip(array_keys($discussions));
+    $values = array_values($discussions);
 
-    $params['forumid'] = $cm->instance;
-    $params['discid1'] = $discussion->id;
-    $params['discid2'] = $discussion->id;
-    $params['discid3'] = $discussion->id;
-    $params['discid4'] = $discussion->id;
-    $params['disctimecompare1'] = $discussion->timemodified;
-    $params['disctimecompare2'] = $discussion->timemodified;
-    $params['pinnedstate1'] = (int) $discussion->pinned;
-    $params['pinnedstate2'] = (int) $discussion->pinned;
-    $params['pinnedstate3'] = (int) $discussion->pinned;
-    $params['pinnedstate4'] = (int) $discussion->pinned;
+    $prevkey = $keys[$discussion->id] - 1;
+    $nextkey = $keys[$discussion->id] + 1;
 
-    $sql = "SELECT d.id, d.name, d.timemodified, d.groupid, d.timestart, d.timeend
-              FROM {forum_discussions} d
-              JOIN {forum_posts} p ON d.firstpost = p.id
-             WHERE d.forum = :forumid
-               AND d.id <> :discid1
-                   $timelimit
-                   $groupselect";
-    $comparefield = "d.timemodified";
-    $comparevalue = ":disctimecompare1";
-    $comparevalue2  = ":disctimecompare2";
-    if (!empty($CFG->forum_enabletimedposts)) {
-        // Here we need to take into account the release time (timestart)
-        // if one is set, of the neighbouring posts and compare it to the
-        // timestart or timemodified of *this* post depending on if the
-        // release date of this post is in the future or not.
-        // This stops discussions that appear later because of the
-        // timestart value from being buried under discussions that were
-        // made afterwards.
-        $comparefield = "CASE WHEN d.timemodified < d.timestart
-                                THEN d.timestart ELSE d.timemodified END";
-        if ($discussion->timemodified < $discussion->timestart) {
-            // Normally we would just use the timemodified for sorting
-            // discussion posts. However, when timed discussions are enabled,
-            // then posts need to be sorted base on the later of timemodified
-            // or the release date of the post (timestart).
-            $params['disctimecompare1'] = $discussion->timestart;
-            $params['disctimecompare2'] = $discussion->timestart;
-        }
-    }
-    $orderbydesc = forum_get_default_sort_order(true, $comparefield, 'd', false);
-    $orderbyasc = forum_get_default_sort_order(false, $comparefield, 'd', false);
+    $neighbours['prev'] = array_key_exists($prevkey, $values) ? $values[$prevkey]->get_discussion() : null;
+    $neighbours['next'] = array_key_exists($nextkey, $values) ? $values[$nextkey]->get_discussion() : null;
 
-    if ($forum->type === 'blog') {
-         $subselect = "SELECT pp.created
-                   FROM {forum_discussions} dd
-                   JOIN {forum_posts} pp ON dd.firstpost = pp.id ";
-
-         $subselectwhere1 = " WHERE dd.id = :discid3";
-         $subselectwhere2 = " WHERE dd.id = :discid4";
-
-         $comparefield = "p.created";
-
-         $sub1 = $subselect.$subselectwhere1;
-         $comparevalue = "($sub1)";
-
-         $sub2 = $subselect.$subselectwhere2;
-         $comparevalue2 = "($sub2)";
-
-         $orderbydesc = "d.pinned, p.created DESC";
-         $orderbyasc = "d.pinned, p.created ASC";
-    }
-
-    $prevsql = $sql . " AND ( (($comparefield < $comparevalue) AND :pinnedstate1 = d.pinned)
-                         OR ($comparefield = $comparevalue2 AND (d.pinned = 0 OR d.pinned = :pinnedstate4) AND d.id < :discid2)
-                         OR (d.pinned = 0 AND d.pinned <> :pinnedstate2))
-                   ORDER BY CASE WHEN d.pinned = :pinnedstate3 THEN 1 ELSE 0 END DESC, $orderbydesc, d.id DESC";
-
-    $nextsql = $sql . " AND ( (($comparefield > $comparevalue) AND :pinnedstate1 = d.pinned)
-                         OR ($comparefield = $comparevalue2 AND (d.pinned = 1 OR d.pinned = :pinnedstate4) AND d.id > :discid2)
-                         OR (d.pinned = 1 AND d.pinned <> :pinnedstate2))
-                   ORDER BY CASE WHEN d.pinned = :pinnedstate3 THEN 1 ELSE 0 END DESC, $orderbyasc, d.id ASC";
-
-    $neighbours['prev'] = $DB->get_record_sql($prevsql, $params, IGNORE_MULTIPLE);
-    $neighbours['next'] = $DB->get_record_sql($nextsql, $params, IGNORE_MULTIPLE);
     return $neighbours;
 }
 

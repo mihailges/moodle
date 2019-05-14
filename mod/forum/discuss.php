@@ -312,7 +312,17 @@ if ($move == -1 and confirm_sesskey()) {
     echo $OUTPUT->notification(get_string('discussionmoved', 'forum', $forumname), 'notifysuccess');
 }
 
-echo $discussionrenderer->render($USER, $post, $replies);
+$groupid = groups_get_activity_group($cm, true) ?: null;
+
+$discussionlistvault = $vaultfactory->get_discussions_in_forum_vault();
+// Get the sorting order of the discussions in the discussions list.
+if ($forum->get_type() == 'blog') {
+    $discussionssortorder = $discussionlistvault::SORTORDER_CREATED_DESC;
+} else {
+    $discussionssortorder = get_user_preferences('forum_discussionlistsortorder', $discussionlistvault::SORTORDER_LASTPOST_DESC);
+}
+
+echo $discussionrenderer->render($USER, $post, $replies, $groupid, $discussionssortorder);
 echo $OUTPUT->footer();
 
 if ($istracked && !$CFG->forum_usermarksread) {

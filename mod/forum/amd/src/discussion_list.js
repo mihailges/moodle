@@ -81,10 +81,27 @@ define([
                 .then(function() {
                     return String.get_string('lockupdated', 'forum')
                         .done(function(s) {
-                            return Notification.addNotification({
-                                message: s,
-                                type: "info"
-                            });
+                            // Add a new or update an existing flash notification message.
+                            var notificationAttr = {
+                                type: "info",
+                                flash: true
+                            };
+                            // Get all present flash notifications of type "info".
+                            var flashNotifications = Notification.getNotificationElements(notificationAttr);
+                            if (flashNotifications.length > 0) { // Flash notifications are present in the notification area.
+                                Notification.updateNotification(flashNotifications[0], s);
+                                // We only need to update one flash notification. We should remove any additional ones.
+                                flashNotifications.splice(0, 1);
+                                // Remove the other flash notifications.
+                                Notification.clearNotificationElements(flashNotifications);
+                            } else { // Flash notifications are not present in the notification area.
+                                // Add new flash notification.
+                                Notification.addNotification({
+                                    message: s,
+                                    type: "info",
+                                    flash: true
+                                });
+                            }
                         });
                 })
                 .catch(Notification.exception);

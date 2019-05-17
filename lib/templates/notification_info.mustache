@@ -32,14 +32,20 @@
     * extraclasses Additional classes to apply to the notification.
     * closebutton Whether a close button should be displayed to dismiss the message.
     * announce Whether the notification should be announced to screen readers.
+    * flash Whether the notification is a flash notification or not.
 
     Example context (json):
-    { "message": "Your pants are on fire!", "closebutton": 1, "announce": 1, "extraclasses": "foo bar"}
+    {
+      "message": "Your pants are on fire!",
+      "closebutton": 1,
+      "announce": 1,
+      "extraclasses": "foo bar",
+      "flash": false
+    }
 }}
 <div class="alert alert-info alert-block fade in {{ extraclasses }}" {{!
-    }}{{# announce }} role="alert" data-aria-autofocus="true"{{/ announce }}{{!
+    }}{{# announce }} role="alert" data-type="info" data-flash="{{ flash }}" data-aria-autofocus="true"{{/ announce }}{{!
     }}>
     {{# closebutton }}<button type="button" class="close" data-dismiss="alert">&times;</button>{{/ closebutton }}
-    {{{ message }}}
+    <span class="message">{{{ message }}}</span>
 </div>
-

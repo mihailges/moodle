@@ -97,8 +97,11 @@ define([
                             };
                             // Get all present flash notifications in the notification area.
                             var allFlashNotifications = Notification.getNotificationElements(flashNotificationAttr);
-                            // We only need to update and keep one flash notification. We should remove any additional ones.
+                            // If "info" flash notification is already present in the notification area we should simply update it
+                            // in order to improve the transition when adding new notification while having present ones.
+                            // We should remove the other flash notifications.
                             $.each(allFlashNotifications, function(index, flashNotificationElement) {
+                                //
                                 if ($(flashNotificationElement).data("type") == "info") {
                                     infoFlashNotification = flashNotificationElement;
                                     allFlashNotifications.splice(index, 1);

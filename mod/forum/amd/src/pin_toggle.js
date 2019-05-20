@@ -66,10 +66,35 @@ define([
                 .then(function() {
                     return String.get_string("pinupdated", "forum")
                         .done(function(s) {
-                            return Notification.addNotification({
-                                message: s,
-                                type: "info"
+                            // Add a new or update an existing "info" flash notification message.
+                            var infoFlashNotification = null;
+                            var flashNotificationAttr = {
+                                flash: true
+                            };
+                            // Get all present flash notifications in the notification area.
+                            var allFlashNotifications = Notification.getNotificationElements(flashNotificationAttr);
+                            // We only need to update and keep one flash notification. We should remove any additional ones.
+                            $.each(allFlashNotifications, function(index, flashNotificationElement) {
+                                if ($(flashNotificationElement).data("type") == "info") {
+                                    infoFlashNotification = flashNotificationElement;
+                                    allFlashNotifications.splice(index, 1);
+                                    return false;
+                                }
                             });
+
+                            // Remove all other flash notifications.
+                            Notification.clearNotificationElements(allFlashNotifications);
+
+                            if (infoFlashNotification !== null) { // "Info" flash notification is present in the notification area.
+                                Notification.updateNotification(infoFlashNotification, s);
+                            } else { // "Info" flash notification is not present in the notification area.
+                                // Add new "info" flash notification.
+                                Notification.addNotification({
+                                    message: s,
+                                    type: "info",
+                                    flash: true
+                                });
+                            }
                         });
                 })
                 .fail(Notification.exception);

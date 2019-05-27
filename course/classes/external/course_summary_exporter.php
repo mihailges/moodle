@@ -75,7 +75,8 @@ class course_summary_exporter extends \core\external\exporter {
             'isfavourite' => $this->related['isfavourite'],
             'hidden' => boolval(get_user_preferences('block_myoverview_hidden_course_' . $this->data->id, 0)),
             'showshortname' => $CFG->courselistshortnames ? true : false,
-            'coursecategory' => $coursecategory->name
+            'coursecategory' => $coursecategory->name,
+            'showcoursecategory' => get_config('block_myoverview')->displaycategories,
         );
     }
 
@@ -154,6 +155,9 @@ class course_summary_exporter extends \core\external\exporter {
             ),
             'coursecategory' => array(
                 'type' => PARAM_TEXT
+            ),
+            'showcoursecategory' => array(
+                'type' => PARAM_BOOL
             )
         );
     }

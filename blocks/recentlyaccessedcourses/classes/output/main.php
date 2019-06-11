@@ -46,6 +46,13 @@ class main implements renderable, templatable {
         global $USER;
 
         $nocoursesurl = $output->image_url('courses', 'block_recentlyaccessedcourses')->out(false);
+        $config = get_config('block_myoverview');
+
+        if (!$config->displaycategories) {
+            $displaycategories = 0;
+        } else {
+            $displaycategories = 1;
+        }
 
         return [
             'userid' => $USER->id,
@@ -53,7 +60,8 @@ class main implements renderable, templatable {
             'pagingbar' => [
                 'next' => true,
                 'previous' => true
-            ]
+            ],
+            'displaycategories' => $displaycategories
         ];
     }
 }

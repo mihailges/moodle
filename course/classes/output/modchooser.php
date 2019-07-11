@@ -46,6 +46,12 @@ class modchooser extends chooser {
     /** @var stdClass The course. */
     public $course;
 
+    public $resources = [];
+
+    public $activities = [];
+
+    public $userstarredmodules = [];
+
     /**
      * Constructor.
      *
@@ -57,15 +63,20 @@ class modchooser extends chooser {
 
         $sections = [];
         $context = context_course::instance($course->id);
+        $userstarredmodules = explode(",", get_user_preferences('userstarredmodules'));
 
          // Activities.
         $activities = array_filter($modules, function($mod) {
             return ($mod->archetype !== MOD_ARCHETYPE_RESOURCE && $mod->archetype !== MOD_ARCHETYPE_SYSTEM);
         });
         if (count($activities)) {
-            $sections[] = new chooser_section('activities', new lang_string('activities'),
-                array_map(function($module) use ($context) {
-                    return new modchooser_item($module, $context);
+            $sections[] = $this->activities[] = new chooser_section('activities', new lang_string('activities'),
+                array_map(function($module) use ($context, $userstarredmodules) {
+                    $modchooseritem = new modchooser_item($module, $context);
+                    if (in_array($module->name, $userstarredmodules)) {
+                        $this->userstarredmodules[] = $modchooseritem;
+                    }
+                    return $modchooseritem;
                 }, $activities)
             );
         }
@@ -74,9 +85,13 @@ class modchooser extends chooser {
             return ($mod->archetype === MOD_ARCHETYPE_RESOURCE);
         });
         if (count($resources)) {
-            $sections[] = new chooser_section('resources', new lang_string('resources'),
-                array_map(function($module) use ($context) {
-                    return new modchooser_item($module, $context);
+            $sections[] = $this->resources[] = new chooser_section('resources', new lang_string('resources'),
+                array_map(function($module) use ($context, $userstarredmodules) {
+                    $modchooseritem = new modchooser_item($module, $context);
+                    if (in_array($module->name, $userstarredmodules)) {
+                        $this->userstarredmodules[] = $modchooseritem;
+                    }
+                    return $modchooseritem;
                 }, $resources)
             );
         }
@@ -102,6 +117,27 @@ class modchooser extends chooser {
 
         $data = parent::export_for_template($output);
         $data->courseid = $this->course->id;
+        $data->activities = [];
+        $data->resources = [];
+        $userstarredmodules = get_user_preferences('userstarredmodules');
+        $data->userstarredmodules = $userstarredmodules;
+        foreach ($data->sections as $section) {
+            if ($section->id == 'activities') {
+                $data->activities[] = $section;
+                //$section->starred = true;
+            } else if ($section->id == 'resources') {
+                $data->resources[] = $section;
+            }
+            $section->items = array_map(function($item) use ($userstarredmodules) {
+                if (in_array($item->id, explode(',', $userstarredmodules))) {
+                    $item->starred = true;
+                } else {
+                    $item->starred = false;
+                }
+                return $item;
+            }, $section->items);
+        }
+
         return $data;
     }
 

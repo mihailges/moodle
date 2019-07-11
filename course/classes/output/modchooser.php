@@ -113,7 +113,9 @@ class modchooser extends chooser {
     public function export_for_template(renderer_base $output) {
         global $PAGE;
 
-        $PAGE->requires->js_call_amd('core_course/modchooser', 'init');
+        $userstarredmodules = get_user_preferences('userstarredmodules');
+
+        $PAGE->requires->js_call_amd('core_course/modchooser', 'init', [$userstarredmodules]);
 
         $data = parent::export_for_template($output);
         $data->courseid = $this->course->id;

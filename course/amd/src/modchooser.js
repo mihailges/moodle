@@ -59,6 +59,8 @@ define(
      */
     var sectionid = null;
 
+    var starredModules = [];
+
     /**
      * Display the module chooser
      *
@@ -79,6 +81,41 @@ define(
         }
 
         chooserDialogue.displayChooser(e);
+
+        $('.star').on('dblclick', function(e) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+        });
+
+        $('.star').on('click', function(e) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+
+            var moduleId = $(this).parent().find('input[type=radio]').first().attr('id');
+            var module = moduleId.split("item_")[1];
+
+             // Change empty star to filled star.
+            toggleStar($(this), moduleId, function(starredElement) {
+                var starredSection = $('#starred');
+
+                if (starredElement.attr('data-starred') == "true") {
+                    if (starredModules.indexOf(module) == -1) {
+                        starredModules.push(module);
+                    }
+                } else {
+                    if (starredSection.find('#' + moduleId).first().length) {
+                       if (starredModules.indexOf(module) != -1) {
+                           var index = starredModules.indexOf(module);
+                           starredModules.splice(index, 1);
+                       }
+                    }
+                }
+                // Update user preferences.
+                M.util.set_user_preference('userstarredmodules', starredModules.sort().join(','));
+                updateStarredSection();
+            });
+
+        });
     };
 
     /**
@@ -129,11 +166,47 @@ define(
         $(baseselector).find(CSS.SITEMENU).each(function() {
             _setupForSection(this);
         });
+    };
 
-        $('.testtt').on('click', function(e) {
-            e.preventDefault();
-            displayModChooser(e);
-        });
+    var toggleStar = function(starElement, moduleId, callback) {
+         var star = starElement.find('i').first();
+        // TODO: set to use templates.
+        if (starElement.attr('data-starred') == "true") {
+
+
+            starElement.attr('data-starred', false);
+            star.toggleClass('fa-star-o fa-star');
+            // If the unstarring action is taken in the starred section, unstar the option the activities/resources section as well.
+            if (starElement.parents().eq(2).attr('id') == "starred") {
+                if ($('#activities #' + moduleId).length) {
+                    starElement = $('#activities #' + moduleId).parent().find('.star').first();
+                } else {
+                    starElement = $('#resources #' + moduleId).parent().find('.star').first();
+                }
+                toggleStar(starElement, moduleId);
+            }
+        } else {
+            starElement.attr('data-starred', true);
+            // star.setAttribute('title', M.util.get_string('addtool', 'moodle'));
+            star.toggleClass('fa-star fa-star-o');
+        }
+
+        if (callback) {
+            callback(starElement);
+        }
+    };
+
+    var updateStarredSection = function() {
+        var starredSection = $('#starred');
+        starredSection.html('');
+        // var starredModulesSorted = starredModules.sort();
+        if (starredModules.length) {
+            starredModules.sort().forEach(function(module) {
+                var option = $('#item_' + module).closest('.option');
+                var cloneOption = option.clone(true);
+                starredSection.append(cloneOption);
+            });
+        }
     };
 
     /**
@@ -154,7 +227,7 @@ define(
      *
      * @method initializer
      */
-    var initializer = function() {
+    var initializer = function(starredmodules) {
         Y.use('moodle-course-coursebase', function() {
             var sectionclass = M.course.format.get_sectionwrapperclass();
             if (sectionclass) {
@@ -163,7 +236,15 @@ define(
 
             var dialogue = $('.chooserdialoguebody');
             var header = $('.choosertitle');
-            var params = {};
+            var params = {
+                width: '800px'
+            };
+
+            // Save preferences for pinned tools
+            if (starredmodules) {
+                starredModules = starredmodules.split(",");
+            }
+
             chooserDialogue.setupChooserDialogue(dialogue, header, params);
 
             // Initialize existing sections and register for dynamically created sections

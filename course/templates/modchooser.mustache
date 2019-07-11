@@ -30,7 +30,8 @@ require([
         Y.use('moodle-course-modchooser', function() {
             M.course.init_chooser({
                 courseid: {{courseid}},
-                closeButtonTitle: close
+                closeButtonTitle: close,
+                starredmodules: {{#quote}}{{userstarredmodules}}{{/quote}},
             });
         });
     });

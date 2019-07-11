@@ -56,16 +56,49 @@
                         {{instructions}}
                     </div>
                     <div class="alloptions">
-                        {{#sections}}
-                            <div class="moduletypetitle">
-                                <label for="item_{{id}}">
-                                    <span class="typename">{{label}}</span>
-                                </label>
+                        <ul class="nav nav-pills m-b-1" role="tablist">
+                            <li class="nav-item">
+                                 <a class="nav-link active" href="#starred" data-toggle="tab" role="tab">Favourites</a>
+                            </li>
+                            <li class="nav-item">
+                                 <a class="nav-link" href="#activities" data-toggle="tab" role="tab">Activities</a>
+                            </li>
+                            <li class="nav-item">
+                                 <a class="nav-link" href="#resources" data-toggle="tab" role="tab">Resources</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div id="starred" class="tab-pane fade in active">
+                                {{#activities}}
+                                    {{#items}}
+                                        {{#starred}}
+                                            {{>core/chooser_item}}
+                                        {{/starred}}
+                                    {{/items}}
+                                {{/activities}}
+                                {{#resources}}
+                                    {{#items}}
+                                        {{#starred}}
+                                            {{>core/chooser_item}}
+                                        {{/starred}}
+                                    {{/items}}
+                                {{/resources}}
                             </div>
-                            {{#items}}
-                                {{>core/chooser_item}}
-                            {{/items}}
-                        {{/sections}}
+                            <div id="activities" class="tab-pane fade in">
+                                {{#activities}}
+                                    {{#items}}
+                                        {{>core/chooser_item}}
+                                    {{/items}}
+                                {{/activities}}
+                            </div>
+                            <div id="resources" class="tab-pane fade in">
+                                {{#resources}}
+                                    {{#items}}
+                                        {{>core/chooser_item}}
+                                    {{/items}}
+                                {{/resources}}
+                            </div>
+                        </div>
                     </div>
                 </div>
 

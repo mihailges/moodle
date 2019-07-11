@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template core/chooser_item
+    @template core/chooser_item_starred_toggle
 
     Chooser item.
 
@@ -28,18 +28,13 @@
         "description": "description one"
     }
 }}
-<div class="option">
-    <label for="item_{{id}}">
-        <input type="radio" name="{{paramname}}" id="item_{{id}}" value="{{value}}">
-        <span class="modicon">
-            {{#icon}}
-                {{>core/pix_icon}}
-            {{/icon}}
-        </span>
-        <span class="typename">{{label}}</span>
-        {{>core/chooser_item_starred_toggle}}
-        <span class="typesummary">
-            {{{description}}}
-        </span>
-    </label>
-</div>
+{{#starred}}
+<span class="star" data-starred="true">
+    {{#pix}} i/star, core{{/pix}}
+</span>
+{{/starred}}
+{{^starred}}
+<span class="star" data-starred="false">
+    {{#pix}} t/emptystar, core{{/pix}}
+</span>
+{{/starred}}

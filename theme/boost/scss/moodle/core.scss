@@ -1372,7 +1372,7 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
 .jschooser .choosercontainer #chooseform .alloptions {
     overflow-x: hidden;
     overflow-y: auto;
-    max-width: 240px;
+    max-width: 45%;
 
     .option {
         input[type=radio] {
@@ -1383,6 +1383,16 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
             display: inline-block;
             width: 55%;
         }
+    }
+
+    ul {
+        border-bottom: 1px solid #ddd;
+    }
+
+    ul li a.active {
+        background-color: transparent;
+        border-bottom: 2px solid #1177d1;
+        color: #373a3c;
     }
 }
 /* Settings for option rows and option subtypes */
@@ -1447,7 +1457,7 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
     top: 0;
     right: 0;
     bottom: 0;
-    left: 240px;
+    left: 45%;
     margin: 0;
     padding: 1.6em;
     background-color: #fff;

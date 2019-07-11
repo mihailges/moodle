@@ -48,7 +48,8 @@ Y.extend(MODCHOOSER, M.core.chooserdialogue, {
         }
         var dialogue = Y.one('.chooserdialoguebody');
         var header = Y.one('.choosertitle');
-        var params = {};
+        //var params = {};
+        var params = {width: '800px'};
         this.setup_chooser_dialogue(dialogue, header, params);
 
         // Initialize existing sections and register for dynamically created sections
@@ -122,9 +123,47 @@ Y.extend(MODCHOOSER, M.core.chooserdialogue, {
             this.sectionid = section.get('id').replace('section-', '');
         } else if (e.target.ancestor(CSS.SITEMENU)) {
             // The block site menu has a sectionid of 0
-            this.sectionid = 0;
         }
+        this.sectionid = 0;
+
         this.display_chooser(e);
+
+        // Prevent double click on star from redirecting
+        this.container.delegate('dblclick', function(e) {
+            // Stop link redirection and any further propagation.
+            e.preventDefault();
+            e.stopImmediatePropagation();
+        }, '.star');
+
+        // Create variable for click callback functions to access.
+    //    var pinnedtools = this.userpinnedtools;
+
+        // Listen to pin links.
+        var thisevent = this.container.delegate('click', function(e) {
+            // Stop link redirection and any further propagation.
+            e.preventDefault();
+            e.stopImmediatePropagation();
+
+            // Get module details.
+            // var module = this.ancestor('.tool');
+            // var moduleid = this.ancestor().previous('input').getAttribute('id').split("item_")[1];
+
+            // Add module to pinned tools preference.
+      //      pinnedtools.push(moduleid);
+
+            // Update user preferences.
+       //     M.util.set_user_preference('pinnedtools', pinnedtools.join(','));
+
+            // Add pinned class.
+     //       module.addClass('pinned');
+
+            // Change empty star to filled star.
+            MODCHOOSER.toggle_star(this);
+
+        }, '.star');
+
+
+        this.listenevents.push(thisevent);
     },
 
     /**
@@ -156,7 +195,48 @@ Y.extend(MODCHOOSER, M.core.chooserdialogue, {
         maxheight: {
             value: 800
         }
-    }
+    },
+
+    /**
+     * Static helper function to swap filled and empty stars.
+     *
+     * @method toggle_star
+     * @param {Object} container The wrapper around the star image.
+     * @private
+     */
+    toggle_star: function(container) {
+        var star;
+        if (container.data('starred')) {
+            container.data('starred', false);
+            star = container.one('img');
+            // star.setAttribute('title', M.util.get_string('addtool', 'moodle'));
+            star.setAttribute('src', M.util.image_url('t/emptystar'));
+        } else {
+            container.data('starred', false);
+            star = container.one('img');
+            // star.setAttribute('title', M.util.get_string('addtool', 'moodle'));
+            star.setAttribute('src', M.util.image_url('i/star'));
+        }
+
+
+        // var star;
+        // if (container.hasClass('star_empty')) {
+        //     // Toggle from empty star to filled star.
+        //     container.removeClass('star_empty');
+        //     container.addClass('star');
+        //     star = container.one('img');
+        //     star.setAttribute('title', M.util.get_string('removetool', 'moodle'));
+        //     star.setAttribute('src', M.util.image_url('i/star'));
+        // } else {
+        //     // Toggle from filled star to empty star.
+        //     container.removeClass('star');
+        //     container.addClass('star_empty');
+        //     star = container.one('img');
+        //     star.setAttribute('title', M.util.get_string('addtool', 'moodle'));
+        //     star.setAttribute('src', M.util.image_url('i/star_empty'));
+        // }
+    },
+
 });
 M.course = M.course || {};
 M.course.init_chooser = function(config) {

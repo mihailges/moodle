@@ -2880,10 +2880,16 @@ class html_table_cell {
      * Constructs a table cell
      *
      * @param string $text
+     * @param bool $isheader
+     * @param array $attributes
      */
-    public function __construct($text = null) {
+    public function __construct($text = null, $isheader = false, array $attributes = array()) {
         $this->text = $text;
-        $this->attributes['class'] = '';
+        $this->header = $isheader;
+        if (empty($attributes['class'])) {
+            $attributes['class'] = '';
+        }
+        $this->attributes = $attributes;
     }
 }
 

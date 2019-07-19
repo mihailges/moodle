@@ -34,8 +34,8 @@
     margin-top: 1em;
 }
 
-.path-mod-assign div.submissionsummarytable table tbody tr td.c0 {
-    width: 30%;
+.path-mod-assign div.submissionsummarytable table tbody tr th.c0 {
+    width: 25%;
 }
 
 .path-mod-assign .submittedlate {

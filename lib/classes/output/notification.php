@@ -71,6 +71,11 @@ class notification implements \renderable, \templatable {
     protected $announce = true;
 
     /**
+     * @var bool $focus Whether this notification should be focused upon page load.
+     */
+    protected $focus = true;
+
+    /**
      * @var bool $closebutton Whether this notification should inlcude a button to dismiss itself.
      */
     protected $closebutton = true;
@@ -104,6 +109,19 @@ class notification implements \renderable, \templatable {
      */
     public function set_announce($announce = false) {
         $this->announce = (bool) $announce;
+
+        return $this;
+    }
+
+    /**
+     * Set whether this notification should be focused upon page load.
+     * The set focus value would be applied in the template only if $this->announce == true.
+     *
+     * @param bool $focus
+     * @return $this
+     */
+    public function set_focus($focus = false) {
+        $this->focus = (bool) $focus;
 
         return $this;
     }
@@ -161,11 +179,12 @@ class notification implements \renderable, \templatable {
             'message'       => clean_text($this->message),
             'extraclasses'  => implode(' ', $this->extraclasses),
             'announce'      => $this->announce,
+            'focus'         => $this->focus,
             'closebutton'   => $this->closebutton,
-            'issuccess'         => $this->messagetype === 'success',
-            'isinfo'            => $this->messagetype === 'info',
-            'iswarning'         => $this->messagetype === 'warning',
-            'iserror'           => $this->messagetype === 'error',
+            'issuccess'     => $this->messagetype === 'success',
+            'isinfo'        => $this->messagetype === 'info',
+            'iswarning'     => $this->messagetype === 'warning',
+            'iserror'       => $this->messagetype === 'error',
         );
     }
 

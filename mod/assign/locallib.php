@@ -9381,8 +9381,14 @@ class assign_portfolio_caller extends portfolio_module_caller_base {
             if (!groups_is_member($submission->groupid, $this->user->id)) {
                 throw new portfolio_caller_exception('filenotfound');
             }
-        } else if ($this->user->id != $submission->userid) {
-            throw new portfolio_caller_exception('filenotfound');
+            // This for some plugins we check such as assign submission we check wheather the user who posted the submission == the current user.
+            // This check for other plugins such as editpdf (download annotation) since the anotation was created by teacher/admin
+            // therefore current user != annotation_creator.
+            // CHECK for a PROPER SOLUTION.
+        } else if ($this->user->id == $submission->userid) {
+            if ($this->component == "assignsubmission_file") {
+                throw new portfolio_caller_exception('filenotfound');
+            }
         }
 
         // Export either an area of files or a single file (see function for more detail).

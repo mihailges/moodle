@@ -71,6 +71,11 @@ class notification implements \renderable, \templatable {
     protected $announce = true;
 
     /**
+     * @var bool $isautofocusable Whether this notification should be auto-focused upon page load.
+     */
+    protected $isautofocusable = true;
+
+    /**
      * @var bool $closebutton Whether this notification should inlcude a button to dismiss itself.
      */
     protected $closebutton = true;
@@ -105,6 +110,18 @@ class notification implements \renderable, \templatable {
     public function set_announce($announce = false) {
         $this->announce = (bool) $announce;
 
+        return $this;
+    }
+
+    /**
+     * Set whether this notification should be auto-focused upon page load.
+     * The set auto-focus value would be applied in the template only if $this->announce == true.
+     *
+     * @param bool $isautofocusable
+     * @return $this
+     */
+    public function allow_autofocus(bool $isautofocusable = true) {
+        $this->isautofocusable = $isautofocusable;
         return $this;
     }
 
@@ -158,10 +175,11 @@ class notification implements \renderable, \templatable {
      */
     public function export_for_template(\renderer_base $output) {
         return array(
-            'message'       => clean_text($this->message),
-            'extraclasses'  => implode(' ', $this->extraclasses),
-            'announce'      => $this->announce,
-            'closebutton'   => $this->closebutton,
+            'message'         => clean_text($this->message),
+            'extraclasses'    => implode(' ', $this->extraclasses),
+            'announce'        => $this->announce,
+            'isautofocusable' => $this->isautofocusable,
+            'closebutton'     => $this->closebutton,
         );
     }
 

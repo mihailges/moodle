@@ -28,7 +28,7 @@ Feature: In a report, admin can filter log data by action
   Scenario: View only create actions.
     Given I log in as "admin"
     When I navigate to "Reports > Logs" in site administration
-    And I set the field "menumodaction" to "Create"
+    And I set the field "id_modaction" to "Create"
     And I press "Get these logs"
     Then I should see "Course module created"
     And I should not see "Course module updated"
@@ -38,7 +38,7 @@ Feature: In a report, admin can filter log data by action
   Scenario: View only update actions.
     Given I log in as "admin"
     When I navigate to "Reports > Logs" in site administration
-    And I set the field "menumodaction" to "Update"
+    And I set the field "id_modaction" to "Update"
     And I press "Get these logs"
     Then I should see "Course module updated"
     And I should not see "Course module created"
@@ -48,7 +48,7 @@ Feature: In a report, admin can filter log data by action
   Scenario: View only view actions.
     Given I log in as "admin"
     When I navigate to "Reports > Logs" in site administration
-    And I set the field "menumodaction" to "View"
+    And I set the field "id_modaction" to "View"
     And I press "Get these logs"
     Then I should see "The status of the submission has been viewed."
     And I should not see "Course module created"
@@ -58,7 +58,7 @@ Feature: In a report, admin can filter log data by action
   Scenario: View only delete actions.
     Given I log in as "admin"
     When I navigate to "Reports > Logs" in site administration
-    And I set the field "menumodaction" to "Delete"
+    And I set the field "id_modaction" to "Delete"
     And I press "Get these logs"
     Then I should see "Course module deleted"
     And I should not see "Course module created"
@@ -68,7 +68,7 @@ Feature: In a report, admin can filter log data by action
   Scenario: View only changes.
     Given I log in as "admin"
     When I navigate to "Reports > Logs" in site administration
-    And I set the field "menumodaction" to "All changes"
+    And I set the field "id_modaction" to "All changes"
     And I press "Get these logs"
     Then I should see "Course module deleted"
     And I should see "Course module created"
@@ -78,9 +78,57 @@ Feature: In a report, admin can filter log data by action
   Scenario: View all actions.
     Given I log in as "admin"
     When I navigate to "Reports > Logs" in site administration
-    And I set the field "menumodaction" to "All actions"
+    And I set the field "id_modaction" to "All actions"
     And I press "Get these logs"
     Then I should see "Course module deleted"
     And I should see "Course module created"
     And I should see "Course module updated"
     And I should see "The status of the submission has been viewed."
+
+  Scenario: View logs from current date.
+    Given I log in as "admin"
+    When I navigate to "Reports > Logs" in site administration
+    And I set the field "id_modaction" to "All actions"
+    And I set the following fields to these values:
+      | filterstartdate[enabled] | 1    |
+      | filterenddate[enabled]   | 1    |
+    And I press "Get these logs"
+    Then I should see "Course module deleted"
+    And I should see "Course module created"
+    And I should see "Course module updated"
+    And I should see "The status of the submission has been viewed."
+
+  Scenario: View logs from certain date in the past until current date.
+    Given I log in as "admin"
+    When I navigate to "Reports > Logs" in site administration
+    And I set the field "id_modaction" to "All actions"
+    And I set the following fields to these values:
+      | filterstartdate[enabled] | 1    |
+      | filterstartdate[day]     | 11   |
+      | filterstartdate[month]   | June |
+      | filterstartdate[year]    | 2017 |
+    And I press "Get these logs"
+    Then I should see "Course module deleted"
+    And I should see "Course module created"
+    And I should see "Course module updated"
+    And I should see "The status of the submission has been viewed."
+
+  Scenario: View logs from certain date in the past until another date in the past.
+    Given I log in as "admin"
+    When I navigate to "Reports > Logs" in site administration
+    And I set the field "id_modaction" to "All actions"
+    And I set the following fields to these values:
+      | filterstartdate[enabled] | 1    |
+      | filterstartdate[day]     | 11   |
+      | filterstartdate[month]   | June |
+      | filterstartdate[year]    | 2017 |
+    And I set the following fields to these values:
+      | filterenddate[enabled] | 1    |
+      | filterenddate[day]     | 15   |
+      | filterenddate[month]   | June |
+      | filterenddate[year]    | 2017 |
+    And I press "Get these logs"
+    Then I should not see "Course module deleted"
+    And I should not see "Course module created"
+    And I should not see "Course module updated"
+    And I should not see "The status of the submission has been viewed."

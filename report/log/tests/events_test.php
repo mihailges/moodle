@@ -55,8 +55,8 @@ class report_log_events_testcase extends advanced_testcase {
 
         // Trigger event for log report viewed.
         $event = \report_log\event\report_viewed::create(array('context' => $context,
-                'relateduserid' => 0, 'other' => array('groupid' => 0, 'date' => 0, 'modid' => 0, 'modaction' => '',
-                'logformat' => 'showashtml')));
+                'relateduserid' => 0, 'other' => array('groupid' => 0, 'modid' => 0, 'modaction' => '',
+                'logformat' => 'showashtml', 'startdate' => 0, 'enddate' => 0)));
 
         // Trigger and capture the event.
         $sink = $this->redirectEvents();

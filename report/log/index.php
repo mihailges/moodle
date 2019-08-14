@@ -31,7 +31,6 @@ require_once($CFG->dirroot.'/lib/tablelib.php');
 $id          = optional_param('id', 0, PARAM_INT);// Course ID.
 $group       = optional_param('group', 0, PARAM_INT); // Group to display.
 $user        = optional_param('user', 0, PARAM_INT); // User to display.
-$date        = optional_param('date', 0, PARAM_INT); // Date to display.
 $modid       = optional_param('modid', 0, PARAM_ALPHANUMEXT); // Module id or 'site_errors'.
 $modaction   = optional_param('modaction', '', PARAM_ALPHAEXT); // An action as recorded in the logs.
 $page        = optional_param('page', '0', PARAM_INT);     // Which page to show.
@@ -40,9 +39,11 @@ $showcourses = optional_param('showcourses', false, PARAM_BOOL); // Whether to s
 $showusers   = optional_param('showusers', false, PARAM_BOOL); // Whether to show users if we're over our limit.
 $chooselog   = optional_param('chooselog', false, PARAM_BOOL);
 $logformat   = optional_param('download', '', PARAM_ALPHA);
-$logreader      = optional_param('logreader', '', PARAM_COMPONENT); // Reader which will be used for displaying logs.
+$logreader   = optional_param('logreader', '', PARAM_COMPONENT); // Reader which will be used for displaying logs.
 $edulevel    = optional_param('edulevel', -1, PARAM_INT); // Educational level.
 $origin      = optional_param('origin', '', PARAM_TEXT); // Event origin.
+$startdate   = optional_param('startdate', 0, PARAM_INT); // Filter start date.
+$enddate     = optional_param('enddate', 0, PARAM_INT); // Filter end date.
 
 $params = array();
 if (!empty($id)) {
@@ -56,9 +57,6 @@ if ($group !== 0) {
 }
 if ($user !== 0) {
     $params['user'] = $user;
-}
-if ($date !== 0) {
-    $params['date'] = $date;
 }
 if ($modid !== 0) {
     $params['modid'] = $modid;
@@ -93,6 +91,12 @@ if (($edulevel != -1)) {
 if ($origin !== '') {
     $params['origin'] = $origin;
 }
+if ($startdate !== 0) {
+    $params['startdate'] = $startdate;
+}
+if ($enddate !== 0) {
+    $params['enddate'] = $enddate;
+}
 // Legacy store hack, as edulevel is not supported.
 if ($logreader == 'logstore_legacy') {
     $params['edulevel'] = -1;
@@ -117,15 +121,6 @@ if ($id) {
 
 require_capability('report/log:view', $context);
 
-// When user choose to view logs then only trigger event.
-if ($chooselog) {
-    // Trigger a report viewed event.
-    $event = \report_log\event\report_viewed::create(array('context' => $context, 'relateduserid' => $user,
-            'other' => array('groupid' => $group, 'date' => $date, 'modid' => $modid, 'modaction' => $modaction,
-            'logformat' => $logformat)));
-    $event->trigger();
-}
-
 if (!empty($page)) {
     $strlogs = get_string('logs'). ": ". get_string('page', 'report_log', $page + 1);
 } else {
@@ -149,7 +144,30 @@ if (empty($course) || ($course->id == $SITE->id)) {
 }
 
 $reportlog = new report_log_renderable($logreader, $course, $user, $modid, $modaction, $group, $edulevel, $showcourses, $showusers,
-        $chooselog, true, $url, $date, $logformat, $page, $perpage, 'timecreated DESC', $origin);
+        $chooselog, true, $url, $logformat, $page, $perpage, 'timecreated DESC', $origin, $startdate, $enddate);
+
+$logsfilterform = $reportlog->logsfilterform;
+
+if ($filter = $logsfilterform->get_data()) {
+    $redir = $reportlog->url;
+    if ($filter->filterstartdate) {
+        $redir->param('startdate', $filter->filterstartdate);
+    }
+    if ($filter->filterenddate) {
+        $redir->param('enddate', $filter->filterenddate);
+    }
+    redirect($redir);
+}
+
+// When user choose to view logs then only trigger event.
+if ($chooselog) {
+    // Trigger a report viewed event.
+    $event = \report_log\event\report_viewed::create(array('context' => $context, 'relateduserid' => $user,
+        'other' => array('groupid' => $group, 'modid' => $modid, 'modaction' => $modaction,
+            'logformat' => $logformat, 'startdate' => $startdate, 'enddate' => $enddate)));
+    $event->trigger();
+}
+
 $readers = $reportlog->get_readers();
 $output = $PAGE->get_renderer('report_log');
 
@@ -162,20 +180,18 @@ if (empty($readers)) {
         $reportlog->setup_table();
 
         if (empty($logformat)) {
-            echo $output->header();
             $userinfo = get_string('allparticipants');
-            $dateinfo = get_string('alldays');
 
             if ($user) {
                 $u = $DB->get_record('user', array('id' => $user, 'deleted' => 0), '*', MUST_EXIST);
                 $userinfo = fullname($u, has_capability('moodle/site:viewfullnames', $context));
             }
-            if ($date) {
-                $dateinfo = userdate($date, get_string('strftimedaydate'));
-            }
+
             if (!empty($course) && ($course->id != SITEID)) {
-                $PAGE->navbar->add("$userinfo, $dateinfo");
+                $PAGE->navbar->add($userinfo);
             }
+
+            echo $output->header();
             echo $output->render($reportlog);
         } else {
             \core\session\manager::write_close();

@@ -471,10 +471,16 @@ class report_log_table_log extends table_sql {
             $params['userid'] = $this->filterparams->userid;
         }
 
-        if (!empty($this->filterparams->date)) {
-            $joins[] = "timecreated > :date AND timecreated < :enddate";
-            $params['date'] = $this->filterparams->date;
-            $params['enddate'] = $this->filterparams->date + DAYSECS; // Show logs only for the selected date.
+        if (!empty($this->filterparams->startdate) && !empty($this->filterparams->enddate)) {
+            $joins[] = "timecreated > :startdate AND timecreated < :enddate";
+            $params['startdate'] = $this->filterparams->startdate;
+            $params['enddate'] = $this->filterparams->enddate + DAYSECS;
+        } else if (!empty($this->filterparams->startdate) && empty($this->filterparams->enddate)) {
+            $joins[] = "timecreated > :startdate";
+            $params['startdate'] = $this->filterparams->startdate;
+        } else if (empty($this->filterparams->startdate) && !empty($this->filterparams->enddate)) {
+            $joins[] = "timecreated < :enddate";
+            $params['enddate'] = $this->filterparams->enddate + DAYSECS;
         }
 
         if (isset($this->filterparams->edulevel) && ($this->filterparams->edulevel >= 0)) {

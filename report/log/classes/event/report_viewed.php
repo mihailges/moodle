@@ -103,10 +103,6 @@ class report_viewed extends \core\event\base {
             throw new \coding_exception('The \'groupid\' value must be set in other.');
         }
 
-        if (!isset($this->other['date'])) {
-            throw new \coding_exception('The \'date\' value must be set in other.');
-        }
-
         if (!isset($this->other['modid'])) {
             throw new \coding_exception('The \'modid\' value must be set in other.');
         }
@@ -121,6 +117,14 @@ class report_viewed extends \core\event\base {
 
         if (!isset($this->relateduserid)) {
             throw new \coding_exception('The \'relateduserid\' must be set.');
+        }
+
+        if (!isset($this->other['startdate'])) {
+            throw new \coding_exception('The \'startdate\' must be set.');
+        }
+
+        if (!isset($this->other['enddate'])) {
+            throw new \coding_exception('The \'enddate\' must be set.');
         }
     }
 

@@ -55,7 +55,7 @@ class report_log_renderer extends plugin_renderer_base {
             return;
         }
         if ($reportlog->showselectorform) {
-            $this->report_selector_form($reportlog);
+            $reportlog->logsfilterform->display();
         }
 
         if ($reportlog->showreport) {
@@ -83,9 +83,14 @@ class report_log_renderer extends plugin_renderer_base {
     /**
      * This function is used to generate and display selector form
      *
+     * @deprecated since 3.8
      * @param report_log_renderable $reportlog log report.
      */
     public function report_selector_form(report_log_renderable $reportlog) {
+
+        debugging('report_selector_form() is deprecated, please use report_logs_filter_form instead.',
+            DEBUG_DEVELOPER);
+
         echo html_writer::start_tag('form', array('class' => 'logselecform', 'action' => $reportlog->url, 'method' => 'get'));
         echo html_writer::start_div();
         echo html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'chooselog', 'value' => '1'));

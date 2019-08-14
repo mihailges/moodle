@@ -51,9 +51,6 @@ class report_log_renderable implements renderable {
     /** @var moodle_url url of report page */
     public $url;
 
-    /** @var int selected date from which records should be displayed */
-    public $date;
-
     /** @var int selected user id for which logs are displayed */
     public $userid;
 
@@ -87,11 +84,20 @@ class report_log_renderable implements renderable {
     /** @var string origin to filter event origin */
     public $origin;
 
+    /** @var string startdate to filter start date */
+    public $startdate;
+
+    /** @var string enddate to filter end date */
+    public $enddate;
+
     /** @var int group id */
     public $groupid;
 
     /** @var table_log table log which will be used for rendering logs */
     public $tablelog;
+
+    /** @var logsfilterform form log which will be used for filtering logs */
+    public $logsfilterform;
 
     /**
      * Constructor.
@@ -108,15 +114,17 @@ class report_log_renderable implements renderable {
      * @param bool $showreport (optional) show report.
      * @param bool $showselectorform (optional) show selector form.
      * @param moodle_url|string $url (optional) page url.
-     * @param int $date date (optional) timestamp of start of the day for which logs will be displayed.
      * @param string $logformat log format.
      * @param int $page (optional) page number.
      * @param int $perpage (optional) number of records to show per page.
      * @param string $order (optional) sortorder of fetched records
+     * @param int $startdate date (optional) timestamp of the start date for which logs will be displayed.
+     * @param int $enddate date (optional) timestamp of the end date for which logs will be displayed.
      */
     public function __construct($logreader = "", $course = 0, $userid = 0, $modid = 0, $action = "", $groupid = 0, $edulevel = -1,
-            $showcourses = false, $showusers = false, $showreport = true, $showselectorform = true, $url = "", $date = 0,
-            $logformat='showashtml', $page = 0, $perpage = 100, $order = "timecreated ASC", $origin ='') {
+            $showcourses = false, $showusers = false, $showreport = true, $showselectorform = true, $url = "",
+            $logformat='showashtml', $page = 0, $perpage = 100, $order = "timecreated ASC", $origin ='',
+            $startdate = 0, $enddate = 0) {
 
         global $PAGE;
 
@@ -146,7 +154,6 @@ class report_log_renderable implements renderable {
         $this->course = $course;
 
         $this->userid = $userid;
-        $this->date = $date;
         $this->page = $page;
         $this->perpage = $perpage;
         $this->url = $url;
@@ -161,6 +168,10 @@ class report_log_renderable implements renderable {
         $this->showselectorform = $showselectorform;
         $this->logformat = $logformat;
         $this->origin = $origin;
+        $this->startdate = $startdate;
+        $this->enddate = $enddate;
+
+        $this->logsfilterform = $this->logs_filter_form();
     }
 
     /**
@@ -487,9 +498,10 @@ class report_log_renderable implements renderable {
         $filter->logreader = $readers[$this->selectedlogreader];
         $filter->edulevel = $this->edulevel;
         $filter->action = $this->action;
-        $filter->date = $this->date;
         $filter->orderby = $this->order;
         $filter->origin = $this->origin;
+        $filter->startdate = $this->startdate;
+        $filter->enddate = $this->enddate;
         // If showing site_errors.
         if ('site_errors' === $this->modid) {
             $filter->siteerrors = true;
@@ -515,5 +527,43 @@ class report_log_renderable implements renderable {
         }
         $this->tablelog->is_downloading($this->logformat, $filename);
         $this->tablelog->out($this->perpage, false);
+    }
+
+    /**
+     * Return the logs filter form.
+     *
+     * @return moodleform The logs filter form.
+     */
+    private function logs_filter_form() {
+        // Get the users and the courses list.
+        $courses = $this->get_course_list();
+        $users = $this->get_user_list();
+        $params = [
+            'courses'              => $courses,
+            'users'                => $users,
+            'activities'           => $this->get_activities_list(),
+            'showusers'            => $this->showusers,
+            'showcourses'          => $this->showcourses,
+            'course'               => $this->course,
+            'group'                => $this->get_selected_group(),
+            'userid'               => $this->userid,
+            'modid'                => $this->modid,
+            'groups'               => $this->get_group_list(),
+            'groupid'              => $this->groupid,
+            'selecteduserfullname' => $this->get_selected_user_fullname(),
+            'startdate'            => $this->startdate,
+            'enddate'              => $this->enddate,
+            'action'               => $this->action,
+            'originoptions'        => $this->get_origin_options(),
+            'origin'               => $this->origin,
+            'eduleveloptions'      => $this->get_edulevel_options(),
+            'edulevel'             => $this->edulevel,
+            'readers'              => $this->get_readers(true),
+            'selectedlogreader'    => $this->selectedlogreader,
+            'actions'              => $this->get_actions(),
+        ];
+
+        return new \report_log\report_logs_filter_form(null, $params, 'post', '',
+                array('class' => 'logselectform'));
     }
 }

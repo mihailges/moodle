@@ -4144,6 +4144,7 @@
         <FIELD NAME="preloaded_js" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Comma separated list of scripts to load."/>
         <FIELD NAME="preloaded_css" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Comma separated list of stylesheets to load."/>
         <FIELD NAME="droplibrarycss" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="List of libraries that should not have CSS included if this library is used. Comma separated list."/>
+        <FIELD NAME="semantics" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The semantics definition in json format"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -4178,6 +4179,22 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="mainlibraryid" TYPE="foreign" FIELDS="mainlibraryid" REFTABLE="h5p_libraries" REFFIELDS="id"/>
       </KEYS>
+    </TABLE>
+    <TABLE NAME="h5p_contents_libraries" COMMENT="Store which library is used in which content.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="hvpid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Identifier for a content found from the 'hvp' table"/>
+        <FIELD NAME="libraryid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The identifier of a H5P library this content uses"/>
+        <FIELD NAME="dependencytype" TYPE="char" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="dynamic, preloaded or editor"/>
+        <FIELD NAME="dropcss" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" COMMENT="1 if the preloaded css from the dependency is to be excluded"/>
+        <FIELD NAME="weight" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Determines the order in which the preloaded libraries will be loaded"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="meta" UNIQUE="false" FIELDS="drop_css"/>
+      </INDEXES>
     </TABLE>
   </TABLES>
 </XMLDB>

@@ -1394,6 +1394,7 @@ class H5PStorage {
     }
 
     if (!$skipContent) {
+
       $basePath = $this->h5pF->getUploadedH5pFolderPath();
       $current_path = $basePath . DIRECTORY_SEPARATOR . 'content';
 
@@ -1420,6 +1421,7 @@ class H5PStorage {
         $content['disable'] = $options['disable'];
       }
       $content['id'] = $this->h5pC->saveContent($content, $contentMainId);
+      $this->h5pF->setErrorMessage($content['id'], 'save-content-faileds');
       $this->contentId = $content['id'];
 
       try {

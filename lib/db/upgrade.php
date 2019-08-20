@@ -3537,6 +3537,49 @@ function xmldb_main_upgrade($oldversion) {
         upgrade_main_savepoint(true, 2019081600.01);
     }
 
+    if ($oldversion < 2019081600.03) {
+
+        // Define field relativedatesmode to be added to course.
+        $table = new xmldb_table('h5p_libraries');
+        $field = new xmldb_field('semantics', XMLDB_TYPE_TEXT, null, null, null, null, null, 'droplibrarycss');
+
+        // Conditionally launch add field relativedatesmode.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2019081600.03);
+    }
+
+    if ($oldversion < 2019081600.04) {
+
+        // Define table h5p_contents_libraries to be created.
+        $table = new xmldb_table('h5p_contents_libraries');
+
+        // Adding fields to table h5p_contents_libraries.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('h5pid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('libraryid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('dependencytype', XMLDB_TYPE_CHAR, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('dropcss', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('weight', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table hvp_contents_libraries.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+
+        // Adding indexes to table h5p_contents_libraries.
+        $table->add_index('meta', XMLDB_INDEX_NOTUNIQUE, ['dropcss']);
+
+        // Conditionally launch create table for h5p_contents_libraries.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // h5p savepoint reached.
+        upgrade_main_savepoint(true, 2019081600.04);
+    }
+
     return true;
 
 }

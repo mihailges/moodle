@@ -28,7 +28,7 @@ $disabledownload = false;
 $disablefullscreen = false;
 
 // Set up view assets.
-$h5p    = new \core_h5p($id);
+$h5p    = new \core_h5p\view_assets($id);
 $content = $h5p->getcontent();
 
 // Configure page.

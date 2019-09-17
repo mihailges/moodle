@@ -28,10 +28,10 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 
+require_once ($CFG->dirroot . '/h5p/autoloader.php');
+
 require_once($CFG->libdir . '/filelib.php');
 require_once($CFG->libdir . '/adminlib.php');
-
-require_once(__DIR__ . '/../autoloader.php');
 
 /**
  * Moodle's implementation of the H5P framework interface.
@@ -74,7 +74,6 @@ class framework implements \H5PFrameworkInterface {
     public function fetchExternalData($url, $data = null, $blocking = true, $stream = null) {
         global $CFG;
 
-
         if ($stream !== null) {
             // Download file.
             @set_time_limit(0);
@@ -116,6 +115,7 @@ class framework implements \H5PFrameworkInterface {
      * @param string $url
      */
     public function setLibraryTutorialUrl($libraryname, $url) {
+        // Tutorial url is currently not being used or stored in libraries.
     }
 
     /**
@@ -253,7 +253,7 @@ class framework implements \H5PFrameworkInterface {
                         AND l2.machinename IS NULL");
 
         // NOTE: These are treated as library objects but are missing the following properties:
-        // title, embed_types, drop_library_css, fullscreen, runnable, semantics, has_icon.
+        // title, droplibrarycss, fullscreen, runnable, semantics.
 
         // Extract num from records.
         foreach ($records as $addon) {
@@ -268,12 +268,9 @@ class framework implements \H5PFrameworkInterface {
      * Implements getLibraryConfig
      *
      * @param array $libraries
-     * @return array
      */
     public function getLibraryConfig($libraries = null) {
-        global $CFG;
-
-        return $CFG->core_h5p_library_config ?? null;
+        // Currently, a library config is not present.
     }
 
     /**
@@ -373,10 +370,10 @@ class framework implements \H5PFrameworkInterface {
      * Implements isPatchedLibrary
      *
      * @param array $library An associative array containing:
-   *                         - machineName: The library machine name
-   *                         - majorVersion: The librarys major version
-   *                         - minorVersion: The librarys minor version
-   *                         - patchVersion: The librarys patch version
+     *                       - machineName: The library machine name
+     *                       - majorVersion: The librarys major version
+     *                       - minorVersion: The librarys minor version
+     *                       - patchVersion: The librarys patch version
      * @return boolean TRUE if the library is a patched version of an existing library FALSE otherwise
      */
     public function isPatchedLibrary($library) {
@@ -437,21 +434,21 @@ class framework implements \H5PFrameworkInterface {
      * Also fills in the libraryId in the libraryData object if the object is new
      *
      * @param array $librarydata Associative array containing:
-     *                             - libraryId: The id of the library if it is an existing library.
-     *                             - title: The library's name
-     *                             - machineName: The library machineName
-     *                             - majorVersion: The library's majorVersion
-     *                             - minorVersion: The library's minorVersion
-     *                             - patchVersion: The library's patchVersion
-     *                             - runnable: 1 if the library is a content type, 0 otherwise
-     *                             - fullscreen(optional): 1 if the library supports fullscreen, 0 otherwise
-     *                             - preloadedJs(optional): list of associative arrays containing:
-     *                               - path: path to a js file relative to the library root folder
-     *                             - preloadedCss(optional): list of associative arrays containing:
-     *                               - path: path to css file relative to the library root folder
-     *                             - dropLibraryCss(optional): list of associative arrays containing:
-     *                               - machineName: machine name for the librarys that are to drop their css
-     *                             - semantics(optional): Json describing the content structure for the library
+     *                           - libraryId: The id of the library if it is an existing library.
+     *                           - title: The library's name
+     *                           - machineName: The library machineName
+     *                           - majorVersion: The library's majorVersion
+     *                           - minorVersion: The library's minorVersion
+     *                           - patchVersion: The library's patchVersion
+     *                           - runnable: 1 if the library is a content type, 0 otherwise
+     *                           - fullscreen(optional): 1 if the library supports fullscreen, 0 otherwise
+     *                           - preloadedJs(optional): list of associative arrays containing:
+     *                             - path: path to a js file relative to the library root folder
+     *                           - preloadedCss(optional): list of associative arrays containing:
+     *                             - path: path to css file relative to the library root folder
+     *                           - dropLibraryCss(optional): list of associative arrays containing:
+     *                             - machineName: machine name for the librarys that are to drop their css
+     *                           - semantics(optional): Json describing the content structure for the library
      * @param bool $new Whether it is a new or existing library.
      * @return
      */
@@ -469,9 +466,6 @@ class framework implements \H5PFrameworkInterface {
         if (!isset($librarydata['fullscreen'])) {
             $librarydata['fullscreen'] = 0;
         }
-        if (!isset($librarydata['hasIcon'])) {
-            $librarydata['hasIcon'] = 0;
-        }
 
         $library = (object) array(
             'title' => $librarydata['title'],
@@ -484,7 +478,8 @@ class framework implements \H5PFrameworkInterface {
             'preloadedjs' => $preloadedjs,
             'preloadedcss' => $preloadedcss,
             'droplibrarycss' => $droplibrarycss,
-            'semantics' => $librarydata['semantics']
+            'semantics' => $librarydata['semantics'],
+            'addto' => isset($librarydata['addTo']) ? json_encode($librarydata['addTo']) : null,
         );
 
         if ($new) {
@@ -526,20 +521,22 @@ class framework implements \H5PFrameworkInterface {
      *                       - params: The content in json format
      *                       - library: An associative array containing:
      *                         - libraryId: The id of the main library for this content
+     *                       - pathnamehash: The hash linking the record with the entry in the mdl_files table.
      * @param int $contentmainid Main id for the content if this is a system that supports versions
      * @return int The ID of the newly inserted or updated content
      */
     public function updateContent($content, $contentmainid = null) {
         global $DB;
 
-        if (!isset($content['disable'])) {
-            $content['disable'] = \H5PCore::DISABLE_NONE;
+        if (!isset($content['pathnamehash'])) {
+            $content['pathnamehash'] = '';
         }
 
         $data = array(
             'jsoncontent' => $content['params'],
             'embedtype' => 'div',
             'mainlibraryid' => $content['library']['libraryId'],
+            'pathnamehash' => $content['pathnamehash'],
             'timemodified' => time(),
         );
 
@@ -561,14 +558,7 @@ class framework implements \H5PFrameworkInterface {
      * @param int $contentid The h5p content id
      */
     public function resetContentUserData($contentid) {
-        global $DB;
-
-        $userdata = $DB->get_record('h5p_content_user_data', [
-            'h5pid' => $contentid,
-            'delete_on_content_change' => 1
-        ]);
-        $userdata->data = 'RESET';
-        $DB->update_record('h5p_content_user_data', $userdata);
+        // Currently, we do not store user data for a content.
     }
 
     /**
@@ -613,12 +603,7 @@ class framework implements \H5PFrameworkInterface {
      * @param int $contentmainid Main id for the content, typically used in frameworks
      */
     public function copyLibraryUsage($contentid, $copyfromid, $contentmainid = null) {
-        global $DB;
-
-        $libraryusage = $DB->get_record('h5p_contents_libraries', array('id' => $copyfromid));
-
-        $libraryusage->id = $contentid;
-        $DB->insert_record_raw('h5p_contents_libraries', (array) $libraryusage, false, false, true);
+        // Currently not being called.
     }
 
     /**
@@ -628,16 +613,13 @@ class framework implements \H5PFrameworkInterface {
      * @param int $contentid Id identifying the content
      */
     public function deleteContentData($contentid) {
-//        global $DB;
-//
-//        // Remove content.
-//        $DB->delete_records('h5p', array('id' => $contentid));
-//
-//        // Remove content library dependencies.
-//        $this->deleteLibraryUsage($contentid);
-//
-//        // Remove user data for content.
-//        $DB->delete_records('h5p_content_user_data', array('h5pid' => $contentid));
+        global $DB;
+
+        // Remove content.
+        $DB->delete_records('h5p', array('id' => $contentid));
+
+        // Remove content library dependencies.
+        $this->deleteLibraryUsage($contentid);
     }
 
     /**
@@ -665,7 +647,8 @@ class framework implements \H5PFrameworkInterface {
         $droplibrarycsslist = array();
         foreach ($librariesinuse as $dependency) {
             if (!empty($dependency['library']['dropLibraryCss'])) {
-                $droplibrarycsslist = array_merge($droplibrarycsslist, explode(', ', $dependency['library']['dropLibraryCss']));
+                $droplibrarycsslist = array_merge($droplibrarycsslist,
+                        explode(', ', $dependency['library']['dropLibraryCss']));
             }
         }
 
@@ -708,7 +691,7 @@ class framework implements \H5PFrameworkInterface {
                 'libraryid' => $id
             );
 
-            $content = $DB->count_records_sql($sql, array($sqlargs));
+            $content = $DB->count_records_sql($sql, $sqlargs);
         }
 
         $libraries = $DB->count_records('h5p_library_dependencies', ['requiredlibraryid' => $id]);
@@ -760,13 +743,17 @@ class framework implements \H5PFrameworkInterface {
             'minorversion' => $minorversion
         ));
 
+        if (!$library) {
+            return false;
+        }
+
         $librarydata = array(
             'libraryId' => $library->id,
             'title' => $library->title,
             'machineName' => $library->machinename,
             'majorVersion' => $library->majorversion,
             'minorVersion' => $library->minorversion,
-            'patchVersion' => '',
+            'patchVersion' => $library->patchversion,
             'runnable' => $library->runnable,
             'fullscreen' => $library->fullscreen,
             'embedTypes' => '',
@@ -832,6 +819,20 @@ class framework implements \H5PFrameworkInterface {
      * @param int $minorversion The library's minor version
      */
     public function alterLibrarySemantics(&$semantics, $name, $majorversion, $minorversion) {
+        global $DB;
+
+        $library = $DB->get_record('h5p_libraries',
+            array(
+                'machinename' => $name,
+                'majorversion' => $majorversion,
+                'minorversion' => $minorversion,
+            )
+        );
+
+        if ($library) {
+            $library->semantics = $semantics;
+            $DB->update_record('h5p_libraries', $library);
+        }
     }
 
     /**
@@ -871,11 +872,9 @@ class framework implements \H5PFrameworkInterface {
     public function deleteLibrary($library) {
         global $DB;
 
-        // Delete library files.
-        // TODO: Add the correct path.
-        $librarybase = $this->get_h5p_path() . '/libraries/';
-        $libname = "{$library->name}-{$library->majorversion}.{$library->minorversion}";
-        \H5PCore::deleteFileTree("{$librarybase}{$libname}");
+        $fs = new \core_h5p\file_storage();
+        // Delete the library from the file system.
+        $fs->delete_library($library);
 
         // Remove library data from database.
         $DB->delete_records('h5p_library_dependencies', array('libraryid' => $library->id));
@@ -890,16 +889,14 @@ class framework implements \H5PFrameworkInterface {
      * @return array Associative array containing:
      *               - id: Identifier for the content
      *               - params: json content as string
-     *               - title: The contents title
      *               - embedType: csv of embed types
-     *               - filtered
-     *               - language: Language code for the content
      *               - libraryId: Id for the main library
      *               - libraryName: The library machine name
      *               - libraryMajorVersion: The library's majorVersion
      *               - libraryMinorVersion: The library's minorVersion
      *               - libraryEmbedTypes: CSV of the main library's embed types
      *               - libraryFullscreen: 1 if fullscreen is supported. 0 otherwise.
+     *               - metadata: The content's metadata.
      */
     public function loadContent($id) {
         global $DB;
@@ -928,20 +925,15 @@ class framework implements \H5PFrameworkInterface {
         $content = array(
             'id' => $data->id,
             'params' => $data->jsoncontent,
-            'title' => 'h5p-title-' . $data->id,
-            'filtered' => '',
-            'slug' => 'h5p-test-' . $data->id,
             'embedType' => $data->embedtype,
-            'disable' => 'false',
             'libraryId' => $data->libraryid,
             'libraryName' => $data->machinename,
             'libraryMajorVersion' => $data->majorversion,
             'libraryMinorVersion' => $data->minorversion,
-            'libraryEmbedTypes' => $data->embedtype,
+            'libraryEmbedTypes' => '',
             'libraryFullscreen' => $data->fullscreen,
+            'metadata' => ''
         );
-
-        $content['metadata'] = '';
 
         return $content;
     }
@@ -968,8 +960,9 @@ class framework implements \H5PFrameworkInterface {
 
         $query = "SELECT hcl.id AS unidepid, hl.id AS library_id, hl.machinename AS machine_name,
                          hl.majorversion AS major_version, hl.minorversion AS minor_version,
-                         hl.patchversion AS patch_version, hl.preloadedcss, hl.preloadedjs,
-                         hcl.dropcss AS drop_css, hcl.dependencytype as dependency_type
+                         hl.patchversion AS patch_version, hl.preloadedcss AS preloaded_css,
+                         hl.preloadedjs AS preloaded_js, hcl.dropcss AS drop_css,
+                         hcl.dependencytype as dependency_type
                     FROM {h5p_contents_libraries} hcl
                     JOIN {h5p_libraries} hl ON hcl.libraryid = hl.id
                    WHERE hcl.h5pid = :h5pid";
@@ -1014,7 +1007,7 @@ class framework implements \H5PFrameworkInterface {
      * @param mixed $value Data Whatever we want to store as the setting
      */
     public function setOption($name, $value) {
-        set_config($name, $value, 'core_h5p');
+        // Currently not storing settings.
     }
 
     /**
@@ -1025,16 +1018,16 @@ class framework implements \H5PFrameworkInterface {
      * @param array $fields Content fields, e.g. filtered or slug.
      */
     public function updateContentFields($id, $fields) {
-//        global $DB;
-//
-//        $content = new \stdClass();
-//        $content->id = $id;
-//
-//        foreach ($fields as $name => $value) {
-//            $content->$name = $value;
-//        }
-//
-//        $DB->update_record('h5p', $content);
+        global $DB;
+
+        $content = new \stdClass();
+        $content->id = $id;
+
+        foreach ($fields as $name => $value) {
+            $content->$name = $value;
+        }
+
+        $DB->update_record('h5p', $content);
     }
 
     /**
@@ -1044,22 +1037,9 @@ class framework implements \H5PFrameworkInterface {
      * Implements clearFilteredParameters().
      *
      * @param array $libraryids array of library ids
-     *
-     * @throws \dml_exception
-     * @throws \coding_exception
      */
     public function clearFilteredParameters($libraryids) {
-//        global $DB;
-//
-//        if (empty($libraryids)) {
-//            return;
-//        }
-//
-//        list($insql, $inparams) = $DB->get_in_or_equal($libraryids);
-//
-//        $h5p = $DB->get_records_select('h5p', "mainlibraryid {$insql}", $inparams);
-//        $h5p->filtered = null;
-//        $DB->update_record('h5p', $h5p);
+        // Currently, we do not store filtered parameters.
     }
 
     /**
@@ -1071,6 +1051,7 @@ class framework implements \H5PFrameworkInterface {
      *             and parameters re-filtered.
      */
     public function getNumNotFiltered() {
+        // Currently, we do not store filtered parameters.
     }
 
     /**
@@ -1102,6 +1083,8 @@ class framework implements \H5PFrameworkInterface {
      * @return boolean Whether the content slug is used
      */
     public function isContentSlugAvailable($slug) {
+        // Content slug is not being stored.
+        return false;
     }
 
     /**
@@ -1112,6 +1095,7 @@ class framework implements \H5PFrameworkInterface {
      * @return array Number values indexed by library name and version
      */
     public function getLibraryStats($type) {
+        // Event logs are not being stored.
     }
 
     /**
@@ -1121,6 +1105,7 @@ class framework implements \H5PFrameworkInterface {
      * @return int The current number of H5P authors
      */
     public function getNumAuthors() {
+        // Currently, H5P authors are not being stored.
     }
 
     /**
@@ -1214,6 +1199,7 @@ class framework implements \H5PFrameworkInterface {
      * @param $filename The file name
      */
     public function afterExportCreated($content, $filename) {
+        // Not being used.
     }
 
     /**
@@ -1224,23 +1210,7 @@ class framework implements \H5PFrameworkInterface {
      * @param  int $cmid context module id
      */
     public function hasPermission($permission, $cmid = null) {
-//        switch ($permission) {
-//            case \H5PPermission::DOWNLOAD_H5P:
-//            case \H5PPermission::COPY_H5P:
-//                $cmcontext = \context_module::instance($cmid);
-//                return has_capability('core/h5p:getexport', $cmcontext);
-//            case \H5PPermission::CREATE_RESTRICTED:
-//                return has_capability('core/h5p:userestrictedlibraries', $this->getajaxcoursecontext());
-//            case \H5PPermission::UPDATE_LIBRARIES:
-//                $context = \context_system::instance();
-//                return has_capability('core/h5p:updatelibraries', $context);
-//            case \H5PPermission::INSTALL_RECOMMENDED:
-//                return has_capability('core/h5p:installrecommendedh5plibraries', $this->getajaxcoursecontext());
-//            case \H5PPermission::EMBED_H5P:
-//                $cmcontext = \context_module::instance($cmid);
-//                return has_capability('core/h5p:getembedcode', $cmcontext);
-//        }
-//        return false;
+        // H5P capabilities have not been introduced.
     }
 
     /**
@@ -1290,7 +1260,7 @@ class framework implements \H5PFrameworkInterface {
     /**
      * Get type of h5p instance
      *
-     * @param string $type Type of h5p instance to get
+     * @param string|null $type Type of h5p instance to get
      * @return \H5PContentValidator|\H5PCore|\H5PStorage|\H5PValidator|\core_h5p\framework|\H5peditor
      */
     public static function instance($type = null) {
@@ -1306,7 +1276,7 @@ class framework implements \H5PFrameworkInterface {
             $context = \context_system::instance();
             $url = "{$CFG->wwwroot}/pluginfile.php/{$context->id}/core_h5p";
 
-            $core = new \H5PCore($interface, $fs, $url, $language);
+            $core = new \H5PCore($interface, $fs, $url, $language, true);
             $core->aggregateAssets = !(isset($CFG->core_h5p_aggregate_assets) && $CFG->core_h5p_aggregate_assets === '0');
         }
 
@@ -1381,17 +1351,6 @@ class framework implements \H5PFrameworkInterface {
         }
 
         return $SESSION->core_h5p_messages[$type];
-    }
-
-    /**
-     * Return the path to the folder where the h5p files are stored.
-     *
-     * @return string Path to the folder where all h5p files are stored
-     */
-    private function get_h5p_path() : string {
-        global $CFG;
-
-        return $CFG->dirroot . '/h5p/';
     }
 
     /**

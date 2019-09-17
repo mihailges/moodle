@@ -3465,7 +3465,7 @@ function xmldb_main_upgrade($oldversion) {
         upgrade_main_savepoint(true, 2019073100.00);
     }
 
-    if ($oldversion < 2019081600.01) {
+    if ($oldversion < 2019081600.05) {
 
         // Define table h5p_libraries to be created.
         $table = new xmldb_table('h5p_libraries');
@@ -3479,9 +3479,10 @@ function xmldb_main_upgrade($oldversion) {
         $table->add_field('patchversion', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, null);
         $table->add_field('runnable', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, null);
         $table->add_field('fullscreen', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0');
-        $table->add_field('preloaded_js', XMLDB_TYPE_TEXT, null, null, null, null, null);
-        $table->add_field('preloaded_css', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('preloadedjs', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('preloadedcss', XMLDB_TYPE_TEXT, null, null, null, null, null);
         $table->add_field('droplibrarycss', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('semantics', XMLDB_TYPE_TEXT, null, null, null, null, null);
 
         // Adding keys to table h5p_libraries.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
@@ -3521,6 +3522,7 @@ function xmldb_main_upgrade($oldversion) {
         $table->add_field('jsoncontent', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
         $table->add_field('embedtype', XMLDB_TYPE_CHAR, '127', null, XMLDB_NOTNULL, null, null);
         $table->add_field('mainlibraryid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('displayoptions', XMLDB_TYPE_TEXT, null, null, null, null, null);
         $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
 
@@ -3533,8 +3535,32 @@ function xmldb_main_upgrade($oldversion) {
             $dbman->create_table($table);
         }
 
+        // Define table h5p_contents_libraries to be created.
+        $table = new xmldb_table('h5p_contents_libraries');
+
+        // Adding fields to table h5p_contents_libraries.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('h5pid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('libraryid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('dependencytype', XMLDB_TYPE_CHAR, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('dropcss', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('weight', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table h5p_contents_libraries.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('h5pid', XMLDB_KEY_FOREIGN, ['h5pid'], 'h5p', ['id']);
+        $table->add_key('libraryid', XMLDB_KEY_FOREIGN, ['libraryid'], 'h5p_libraries', ['id']);
+
+        // Adding indexes to table h5p_contents_libraries.
+        $table->add_index('dropcss', XMLDB_INDEX_NOTUNIQUE, ['dropcss']);
+
+        // Conditionally launch create table for h5p_contents_libraries.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
         // Main savepoint reached.
-        upgrade_main_savepoint(true, 2019081600.01);
+        upgrade_main_savepoint(true, 2019081600.5);
     }
 
     return true;

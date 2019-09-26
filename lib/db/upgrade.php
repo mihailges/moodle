@@ -3649,7 +3649,7 @@ function xmldb_main_upgrade($oldversion) {
         upgrade_main_savepoint(true, 2019092000.01);
     }
 
-    if ($oldversion < 2019092000.02) {
+    if ($oldversion < 2019092000.04) {
         // An extra field has been added to the h5p table for being able to identify the H5P files uploaded.
 
         // Define field component to be added to h5p.
@@ -3659,8 +3659,68 @@ function xmldb_main_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
+        // Define table h5p_libraries_cachedassets to be created.
+        $table = new xmldb_table('h5p_libraries_cachedassets');
+
+        // Adding fields to table h5p_libraries_cachedassets.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('libraryid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('hash', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table h5p_libraries_cachedassets.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+
+        // Conditionally launch create table for h5p_libraries_cachedassets.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // An extra field has been added to the h5p_libraries table for being able to store the plugin configuration data.
+        // Define field component to be added to h5p_libraries.
+        $table = new xmldb_table('h5p_libraries');
+        $table->add_field('addto', XMLDB_TYPE_TEXT, null, null, null, null, null, 'semantics');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // An extra field has been added to the h5p table for being able to store the filtered content.
+        // Define field component to be added to h5p.
+        $table = new xmldb_table('h5p');
+        $table->add_field('filtered', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // An extra field has been added to the h5p table for being able to store the content's slug.
+        // Define field component to be added to h5p.
+        $table = new xmldb_table('h5p');
+        $table->add_field('slug', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $table = new xmldb_table('h5p');
+        $field = new xmldb_field('displayoptions', XMLDB_TYPE_INTEGER, '4', null, null, null, null, 'mainlibraryid');
+        // Conditionally launch add field displayoptions.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field contenthash to be added to h5p.
+        $field = new xmldb_field('contenthash', XMLDB_TYPE_CHAR, '40', null, XMLDB_NOTNULL, null, null, 'pathnamehash');
+        // Conditionally launch add field contenthash.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Remove field slug from the h5p table.
+        $field = new xmldb_field('slug');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+
         // Main savepoint reached.
-        upgrade_main_savepoint(true, 2019092000.02);
+        upgrade_main_savepoint(true, 2019092000.04);
     }
 
     return true;

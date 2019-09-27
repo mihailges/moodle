@@ -6650,7 +6650,8 @@ function get_file_packer($mimetype='application/zip') {
             $classname = 'zip_packer';
             break;
 
-        case 'application/x-gzip' :
+        case 'application/x-gzip':
+        case 'application/g-zip':
             $classname = 'tgz_packer';
             break;
 

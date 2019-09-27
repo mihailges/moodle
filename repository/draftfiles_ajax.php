@@ -211,11 +211,9 @@ switch ($action) {
         $filename = required_param('filename', PARAM_FILE);
         $filepath = required_param('filepath', PARAM_PATH);
 
-        $zipper = get_file_packer('application/zip');
-
         $fs = get_file_storage();
-
         $file = $fs->get_file($user_context->id, 'user', 'draft', $draftid, $filepath, $filename);
+        $zipper = get_file_packer($file->get_mimetype());
 
         // Find unused name for directory to extract the archive.
         $temppath = $fs->get_unused_dirname($user_context->id, 'user', 'draft', $draftid, $filepath. pathinfo($filename, PATHINFO_FILENAME). '/');

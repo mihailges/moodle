@@ -2903,10 +2903,12 @@ class html_table_cell {
      * Constructs a table cell
      *
      * @param string $text
+     * @param bool $isheader
      */
-    public function __construct($text = null) {
+    public function __construct($text = null, $isheader = false) {
         $this->text = $text;
         $this->attributes['class'] = '';
+        $this->header = $isheader;
     }
 }
 

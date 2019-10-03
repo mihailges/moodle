@@ -372,14 +372,14 @@ class mod_assign_renderer extends plugin_renderer_base {
         // Grade.
         if (isset($status->gradefordisplay)) {
             $row = new html_table_row();
-            $cell1 = new html_table_cell(get_string('grade'));
+            $cell1 = new html_table_cell(get_string('grade'), true);
             $cell2 = new html_table_cell($status->gradefordisplay);
             $row->cells = array($cell1, $cell2);
             $t->data[] = $row;
 
             // Grade date.
             $row = new html_table_row();
-            $cell1 = new html_table_cell(get_string('gradedon', 'assign'));
+            $cell1 = new html_table_cell(get_string('gradedon', 'assign'), true);
             $cell2 = new html_table_cell(userdate($status->gradeddate));
             $row->cells = array($cell1, $cell2);
             $t->data[] = $row;
@@ -388,7 +388,7 @@ class mod_assign_renderer extends plugin_renderer_base {
         if ($status->grader) {
             // Grader.
             $row = new html_table_row();
-            $cell1 = new html_table_cell(get_string('gradedby', 'assign'));
+            $cell1 = new html_table_cell(get_string('gradedby', 'assign'), true);
             $userdescription = $this->output->user_picture($status->grader) .
                                $this->output->spacer(array('width'=>30)) .
                                fullname($status->grader, $status->canviewfullnames);
@@ -405,7 +405,7 @@ class mod_assign_renderer extends plugin_renderer_base {
                     !$plugin->is_empty($status->grade)) {
 
                 $row = new html_table_row();
-                $cell1 = new html_table_cell($plugin->get_name());
+                $cell1 = new html_table_cell($plugin->get_name(), true);
                 $displaymode = assign_feedback_plugin_feedback::SUMMARY;
                 $pluginfeedback = new assign_feedback_plugin_feedback($plugin,
                                                                       $status->grade,
@@ -640,7 +640,7 @@ class mod_assign_renderer extends plugin_renderer_base {
         $warningmsg = '';
         if ($status->teamsubmissionenabled) {
             $row = new html_table_row();
-            $cell1 = new html_table_cell(get_string('submissionteam', 'assign'));
+            $cell1 = new html_table_cell(get_string('submissionteam', 'assign'), true);
             $group = $status->submissiongroup;
             if ($group) {
                 $cell2 = new html_table_cell(format_string($group->name, false, $status->context));
@@ -680,7 +680,7 @@ class mod_assign_renderer extends plugin_renderer_base {
             }
 
             $row = new html_table_row();
-            $cell1 = new html_table_cell(get_string('attemptnumber', 'assign'));
+            $cell1 = new html_table_cell(get_string('attemptnumber', 'assign'), true);
             $maxattempts = $status->maxattempts;
             if ($maxattempts == ASSIGN_UNLIMITED_ATTEMPTS) {
                 $message = get_string('currentattempt', 'assign', $currentattempt);
@@ -694,7 +694,7 @@ class mod_assign_renderer extends plugin_renderer_base {
         }
 
         $row = new html_table_row();
-        $cell1 = new html_table_cell(get_string('submissionstatus', 'assign'));
+        $cell1 = new html_table_cell(get_string('submissionstatus', 'assign'), true);
         if (!$status->teamsubmissionenabled) {
             if ($status->submission && $status->submission->status != ASSIGN_SUBMISSION_STATUS_NEW) {
                 $statusstr = get_string('submissionstatus_' . $status->submission->status, 'assign');
@@ -711,7 +711,7 @@ class mod_assign_renderer extends plugin_renderer_base {
             $t->data[] = $row;
         } else {
             $row = new html_table_row();
-            $cell1 = new html_table_cell(get_string('submissionstatus', 'assign'));
+            $cell1 = new html_table_cell(get_string('submissionstatus', 'assign'), true);
             $group = $status->submissiongroup;
             if (!$group && $status->preventsubmissionnotingroup) {
                 $cell2 = new html_table_cell(get_string('nosubmission', 'assign'));
@@ -767,7 +767,7 @@ class mod_assign_renderer extends plugin_renderer_base {
 
         // Grading status.
         $row = new html_table_row();
-        $cell1 = new html_table_cell(get_string('gradingstatus', 'assign'));
+        $cell1 = new html_table_cell(get_string('gradingstatus', 'assign'), true);
 
         if ($status->gradingstatus == ASSIGN_GRADING_STATUS_GRADED ||
             $status->gradingstatus == ASSIGN_GRADING_STATUS_NOT_GRADED) {
@@ -790,7 +790,7 @@ class mod_assign_renderer extends plugin_renderer_base {
         if ($duedate > 0) {
             // Due date.
             $row = new html_table_row();
-            $cell1 = new html_table_cell(get_string('duedate', 'assign'));
+            $cell1 = new html_table_cell(get_string('duedate', 'assign'), true);
             $cell2 = new html_table_cell(userdate($duedate));
             $row->cells = array($cell1, $cell2);
             $t->data[] = $row;
@@ -799,7 +799,7 @@ class mod_assign_renderer extends plugin_renderer_base {
                 if ($status->cutoffdate) {
                     // Cut off date.
                     $row = new html_table_row();
-                    $cell1 = new html_table_cell(get_string('cutoffdate', 'assign'));
+                    $cell1 = new html_table_cell(get_string('cutoffdate', 'assign'), true);
                     $cell2 = new html_table_cell(userdate($status->cutoffdate));
                     $row->cells = array($cell1, $cell2);
                     $t->data[] = $row;
@@ -809,7 +809,7 @@ class mod_assign_renderer extends plugin_renderer_base {
             if ($status->extensionduedate) {
                 // Extension date.
                 $row = new html_table_row();
-                $cell1 = new html_table_cell(get_string('extensionduedate', 'assign'));
+                $cell1 = new html_table_cell(get_string('extensionduedate', 'assign'), true);
                 $cell2 = new html_table_cell(userdate($status->extensionduedate));
                 $row->cells = array($cell1, $cell2);
                 $t->data[] = $row;
@@ -818,7 +818,7 @@ class mod_assign_renderer extends plugin_renderer_base {
 
             // Time remaining.
             $row = new html_table_row();
-            $cell1 = new html_table_cell(get_string('timeremaining', 'assign'));
+            $cell1 = new html_table_cell(get_string('timeremaining', 'assign'), true);
             if ($duedate - $time <= 0) {
                 if (!$submission ||
                         $submission->status != ASSIGN_SUBMISSION_STATUS_SUBMITTED) {
@@ -854,7 +854,7 @@ class mod_assign_renderer extends plugin_renderer_base {
         // Show graders whether this submission is editable by students.
         if ($status->view == assign_submission_status::GRADER_VIEW) {
             $row = new html_table_row();
-            $cell1 = new html_table_cell(get_string('editingstatus', 'assign'));
+            $cell1 = new html_table_cell(get_string('editingstatus', 'assign'), true);
             if ($status->canedit) {
                 $cell2 = new html_table_cell(get_string('submissioneditable', 'assign'));
                 $cell2->attributes = array('class'=>'submissioneditable');
@@ -869,7 +869,7 @@ class mod_assign_renderer extends plugin_renderer_base {
         // Grading criteria preview.
         if (!empty($status->gradingcontrollerpreview)) {
             $row = new html_table_row();
-            $cell1 = new html_table_cell(get_string('gradingmethodpreview', 'assign'));
+            $cell1 = new html_table_cell(get_string('gradingmethodpreview', 'assign'), true);
             $cell2 = new html_table_cell($status->gradingcontrollerpreview);
             $row->cells = array($cell1, $cell2);
             $t->data[] = $row;
@@ -878,7 +878,7 @@ class mod_assign_renderer extends plugin_renderer_base {
         // Last modified.
         if ($submission) {
             $row = new html_table_row();
-            $cell1 = new html_table_cell(get_string('timemodified', 'assign'));
+            $cell1 = new html_table_cell(get_string('timemodified', 'assign'), true);
 
             if ($submission->status != ASSIGN_SUBMISSION_STATUS_NEW) {
                 $cell2 = new html_table_cell(userdate($submission->timemodified));
@@ -899,7 +899,7 @@ class mod_assign_renderer extends plugin_renderer_base {
                     ) {
 
                         $row = new html_table_row();
-                        $cell1 = new html_table_cell($plugin->get_name());
+                        $cell1 = new html_table_cell($plugin->get_name(), true);
                         $displaymode = assign_submission_plugin_submission::SUMMARY;
                         $pluginsubmission = new assign_submission_plugin_submission($plugin,
                             $submission,

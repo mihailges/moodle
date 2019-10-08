@@ -124,9 +124,10 @@ switch ($action) {
     case 'updatefile':
         // Allows to Rename file, move it to another directory, change it's license and author information in one request
         $filename    = required_param('filename', PARAM_FILE);
+        $extension   = required_param('extension', PARAM_TEXT);
         $filepath    = required_param('filepath', PARAM_PATH);
         $updatedata = array();
-        $updatedata['filename'] = optional_param('newfilename', $filename, PARAM_FILE);
+        $updatedata['filename'] = optional_param('newfilename', $filename, PARAM_FILE) . ".$extension";
         $updatedata['filepath'] = $newfilepath = optional_param('newfilepath', $filepath, PARAM_PATH);
         if (($v = optional_param('newlicense', false, PARAM_TEXT)) !== false) {
             $updatedata['license'] = $v;

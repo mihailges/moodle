@@ -540,7 +540,9 @@ class assign {
                 $nextpageparams['action'] = 'grading';
             }
         } else if ($action == 'quickgrade') {
-            $message = $this->process_save_quick_grades();
+            $response = $this->process_save_quick_grades();
+            $message = $response['message'];
+            $messagetype = $response['type'];
             $action = 'quickgradingresult';
         } else if ($action == 'saveoptions') {
             $this->process_save_grading_options();
@@ -576,7 +578,7 @@ class assign {
             $o .= $this->view_savegrading_result($message);
         } else if ($action == 'quickgradingresult') {
             $mform = null;
-            $o .= $this->view_quickgrading_result($message);
+            $o .= $this->view_quickgrading_result($message, $messagetype);
         } else if ($action == 'gradingpanel') {
             $o .= $this->view_single_grading_panel($args);
         } else if ($action == 'grade') {
@@ -3229,20 +3231,22 @@ class assign {
      * Display a continue page after quickgrading.
      *
      * @param string $message - The message to display.
+     * @param string $messagetype - The message type ('success', 'error').
      * @return string
      */
-    protected function view_quickgrading_result($message) {
+    protected function view_quickgrading_result($message, $messagetype = 'success') {
         $o = '';
         $o .= $this->get_renderer()->render(new assign_header($this->get_instance(),
                                                       $this->get_context(),
                                                       $this->show_intro(),
                                                       $this->get_course_module()->id,
                                                       get_string('quickgradingresult', 'assign')));
+        $iserror = $messagetype == 'error' ? true : false;
         $lastpage = optional_param('lastpage', null, PARAM_INT);
         $gradingresult = new assign_gradingmessage(get_string('quickgradingresult', 'assign'),
                                                    $message,
                                                    $this->get_course_module()->id,
-                                                   false,
+                                                   $iserror,
                                                    $lastpage);
         $o .= $this->get_renderer()->render($gradingresult);
         $o .= $this->view_footer();
@@ -6482,7 +6486,9 @@ class assign {
     /**
      * Save quick grades.
      *
-     * @return string The result of the save operation
+     * @return array Array containing the following elements
+     *               - message A string representing the response message of the save operation
+     *               - messagetype A string representing the type of the response message ('success', 'error')
      */
     protected function process_save_quick_grades() {
         global $USER, $DB, $CFG;
@@ -6495,7 +6501,10 @@ class assign {
         $gradingmanager = get_grading_manager($this->get_context(), 'mod_assign', 'submissions');
         $controller = $gradingmanager->get_active_controller();
         if (!empty($controller)) {
-            return get_string('errorquickgradingvsadvancedgrading', 'assign');
+            return array(
+                'message' => get_string('errorquickgradingvsadvancedgrading', 'assign'),
+                'type' => 'error'
+            );
         }
 
         $users = array();
@@ -6529,7 +6538,10 @@ class assign {
         }
 
         if (empty($users)) {
-            return get_string('nousersselected', 'assign');
+            return array(
+                'message' => get_string('nousersselected', 'assign'),
+                'type' => 'error'
+            );
         }
 
         list($userids, $params) = $DB->get_in_or_equal(array_keys($users), SQL_PARAMS_NAMED);
@@ -6583,7 +6595,10 @@ class assign {
                     // handle hidden columns.
                     if ($plugin->is_quickgrading_modified($modified->userid, $grade)) {
                         if ((int)$current->lastmodified > (int)$modified->lastmodified) {
-                            return get_string('errorrecordmodified', 'assign');
+                            return array(
+                                'message' => get_string('errorrecordmodified', 'assign'),
+                                'type' => 'error'
+                            );
                         } else {
                             $modifiedusers[$modified->userid] = $modified;
                             continue;
@@ -6618,7 +6633,10 @@ class assign {
                 $badattempt = (int)$current->attemptnumber != (int)$modified->attemptnumber;
                 if ($badmodified || $badattempt) {
                     // Error - record has been modified since viewing the page.
-                    return get_string('errorrecordmodified', 'assign');
+                    return array(
+                        'message' => get_string('errorrecordmodified', 'assign'),
+                        'type' => 'error'
+                    );
                 } else {
                     $modifiedusers[$modified->userid] = $modified;
                 }
@@ -6703,7 +6721,10 @@ class assign {
             }
         }
 
-        return get_string('quickgradingchangessaved', 'assign');
+        return array(
+            'message' => get_string('quickgradingchangessaved', 'assign'),
+            'type' => 'success'
+        );
     }
 
     /**

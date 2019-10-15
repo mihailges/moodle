@@ -27,6 +27,10 @@ use \core_h5p\framework;
 
 defined('MOODLE_INTERNAL') || die();
 
+global $CFG;
+
+require_once($CFG->dirroot . '/h5p/tests/generator.php');
+
 /**
  *
  * Test class covering the H5PFrameworkInterface interface implementation.
@@ -37,27 +41,43 @@ defined('MOODLE_INTERNAL') || die();
  */
 class framework_testcase extends advanced_testcase {
 
-    // Test the behaviour of getPlatformInfo().
+    // Use the generator helper.
+    use core_h5p_test_generator;
+
+    /** @var \core_h5p\framework */
+    private $framework;
+
+    /**
+     * Set up function for tests.
+     */
+    public function setUp() {
+
+        $factory = new \core_h5p\factory();
+        $this->framework = $factory->get_framework();
+    }
+
+    /**
+     * Test the behaviour of getPlatformInfo().
+     */
     public function test_getPlatformInfo() {
         global $CFG;
 
         $this->resetAfterTest();
 
-        $CFG->version = "2019083000.05";
-
-        $interface = framework::instance('interface');
-        $platforminfo = $interface->getPlatformInfo();
+        $platforminfo = $this->framework->getPlatformInfo();
 
         $expected = array(
             'name' => 'Moodle',
-            'version' => '2019083000.05',
-            'h5pVersion' => '2019083000.05'
+            'version' => $CFG->version,
+            'h5pVersion' => $CFG->version
         );
 
         $this->assertEquals($expected, $platforminfo);
     }
 
-    // Test the behaviour of fetchExternalData().
+    /**
+     * Test the behaviour of fetchExternalData().
+     */
     public function test_fetchExternalData() {
         global $CFG;
 
@@ -66,18 +86,17 @@ class framework_testcase extends advanced_testcase {
         // Provide a valid URL to an external H5P content.
         $url = "https://h5p.org/sites/default/files/h5p/exports/arithmetic-quiz-22-57860.h5p";
 
-        $interface = framework::instance('interface');
         // Test fetching an external H5P content without defining a path to where the file should be stored.
-        $data = $interface->fetchExternalData($url, null, true);
+        $data = $this->framework->fetchExternalData($url, null, true);
         // The response should not be empty and return true if the file was successfully downloaded.
         $this->assertNotEmpty($data);
         $this->assertTrue($data);
         // The uploaded file should exist on the filesystem.
-        $h5pfolderpath = $interface->getUploadedH5pFolderPath();
+        $h5pfolderpath = $this->framework->getUploadedH5pFolderPath();
         $this->assertTrue(file_exists($h5pfolderpath . '.h5p'));
 
         $h5pfolderpath = $CFG->tempdir . uniqid('/h5p-');
-        $data = $interface->fetchExternalData($url, null, true, $h5pfolderpath . '.h5p');
+        $data = $this->framework->fetchExternalData($url, null, true, $h5pfolderpath . '.h5p');
         // The response should not be empty and return true if the content has been successfully saved to a file.
         $this->assertNotEmpty($data);
         $this->assertTrue($data);
@@ -87,24 +106,26 @@ class framework_testcase extends advanced_testcase {
         // Provide an URL to an external file that is not an H5P content file.
         $url = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf";
 
-        $data = $interface->fetchExternalData($url, null, true);
+        $data = $this->framework->fetchExternalData($url, null, true);
         // The response should not be empty and return true if the content has been successfully saved to a file.
         $this->assertNotEmpty($data);
         $this->assertTrue($data);
 
         // The uploaded file should exist on the filesystem with it's original extension.
         // NOTE: The file would be later validated by the H5P Validator.
-        $h5pfolderpath = $interface->getUploadedH5pFolderPath();
+        $h5pfolderpath = $this->framework->getUploadedH5pFolderPath();
         $this->assertTrue(file_exists($h5pfolderpath . '.pdf'));
 
         // Provide an invalid URL to an external file.
         $url = "someprotocol://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf";
-        $data = $interface->fetchExternalData($url, null, true);
+        $data = $this->framework->fetchExternalData($url, null, true);
         // The response should be empty.
         $this->assertEmpty($data);
     }
 
-    // Test the behaviour of setErrorMessage().
+    /**
+     * Test the behaviour of setErrorMessage().
+     */
     public function test_setErrorMessage() {
         $message = "Error message";
         $code = '404';
@@ -120,7 +141,9 @@ class framework_testcase extends advanced_testcase {
         $this->assertEquals($expected, $errormessages[0]);
     }
 
-    // Test the behaviour of setInfoMessage().
+    /**
+     * Test the behaviour of setInfoMessage().
+     */
     public function test_setInfoMessage() {
         $message = "Info message";
 
@@ -133,7 +156,9 @@ class framework_testcase extends advanced_testcase {
         $this->assertEquals($expected, $infomessages[0]);
     }
 
-    // Test the behaviour of getMessages().
+    /**
+     * Test the behaviour of getMessages().
+     */
     public function test_getMessages() {
         $infomessage = "Info message";
         $errormessage1 = "Error message 1";
@@ -175,7 +200,9 @@ class framework_testcase extends advanced_testcase {
         $this->assertEmpty($errormessages);
     }
 
-    // Test the behaviour of t().
+    /**
+     * Test the behaviour of t().
+     */
     public function test_t() {
         $message1 = 'No copyright information available for this content.';
         $message2 = 'Illegal option %option in %library';
@@ -198,7 +225,9 @@ class framework_testcase extends advanced_testcase {
         $this->assertEquals('Random message %option', $translation3);
     }
 
-    // Test the behaviour of loadAddons().
+    /**
+     * Test the behaviour of loadAddons().
+     */
     public function test_loadAddons() {
         $this->resetAfterTest();
 
@@ -248,7 +277,9 @@ class framework_testcase extends advanced_testcase {
         $this->assertEquals(2, $addons[1]['minorVersion']);
     }
 
-    // Test the behaviour of loadLibraries().
+    /**
+     * Test the behaviour of loadLibraries().
+     */
     public function test_loadLibraries() {
         $this->resetAfterTest();
 
@@ -266,7 +297,9 @@ class framework_testcase extends advanced_testcase {
         $this->assertEquals('MainLibrary', $libraries['MainLibrary'][0]->machine_name);
     }
 
-    // Test the behaviour of test_getLibraryId().
+    /**
+     * Test the behaviour of test_getLibraryId().
+     */
     public function test_getLibraryId() {
         $this->resetAfterTest();
         // Create a library.
@@ -286,7 +319,9 @@ class framework_testcase extends advanced_testcase {
         $this->assertFalse($libraryid);
     }
 
-    // Test the behaviour of isPatchedLibrary().
+    /**
+     * Test the behaviour of isPatchedLibrary().
+     */
     public function test_isPatchedLibrary() {
         $this->resetAfterTest();
         // Create a library.
@@ -311,21 +346,27 @@ class framework_testcase extends advanced_testcase {
         $this->assertFalse($ispatched);
     }
 
-    // Test the behaviour of isInDevMode().
+    /**
+     * Test the behaviour of isInDevMode().
+     */
     public function test_isInDevMode() {
         $interface = framework::instance('interface');
         $isdevmode = $interface->isInDevMode();
         $this->assertFalse($isdevmode);
     }
 
-    // Test the behaviour of mayUpdateLibraries().
+    /**
+     * Test the behaviour of mayUpdateLibraries().
+     */
     public function test_mayUpdateLibraries() {
         $interface = framework::instance('interface');
         $mayupdatelib = $interface->mayUpdateLibraries();
         $this->assertTrue($mayupdatelib);
     }
 
-    // Test the behaviour of saveLibraryData().
+    /**
+     * Test the behaviour of saveLibraryData().
+     */
     public function test_saveLibraryData() {
         global $DB;
 
@@ -377,7 +418,9 @@ class framework_testcase extends advanced_testcase {
         $this->assertEquals($librarydata['machineName'], $library->machinename);
     }
 
-    // Test the behaviour of insertContent(().
+    /**
+     * Test the behaviour of insertContent().
+     */
     public function test_insertContent() {
         global $DB;
 
@@ -386,7 +429,7 @@ class framework_testcase extends advanced_testcase {
         $interface = framework::instance('interface');
 
         $content = array(
-            'params' => '{"param1": "Test"}',
+            'params' => json_encode(['param1' => 'Test']),
             'library' => array(
                 'libraryId' => 1
             ),
@@ -404,7 +447,9 @@ class framework_testcase extends advanced_testcase {
         $this->assertEquals($content['disable'], $dbcontent->displayoptions);
     }
 
-    // Test the behaviour of updateContent().
+    /**
+     * Test the behaviour of updateContent().
+     */
     public function test_updateContent() {
         global $DB;
 
@@ -414,7 +459,7 @@ class framework_testcase extends advanced_testcase {
         $contentid = $this->create_h5p_record($lib->id);
 
         $content = array(
-            'params' => '{"param2": "Test2"}',
+            'params' => json_encode(['param2' => 'Test2']),
             'library' => array(
                 'libraryId' => $lib->id
             ),
@@ -434,7 +479,9 @@ class framework_testcase extends advanced_testcase {
         $this->assertEquals($content['disable'], $h5pcontent->displayoptions);
     }
 
-    // Test the behaviour of saveLibraryDependencies().
+    /**
+     * Test the behaviour of saveLibraryDependencies().
+     */
     public function test_saveLibraryDependencies() {
         global $DB;
 
@@ -466,7 +513,9 @@ class framework_testcase extends advanced_testcase {
         $this->assertEquals($dependency2->id, end($libdependencies)->requiredlibraryid);
     }
 
-    // Test the behaviour of deleteContentData().
+    /**
+     * Test the behaviour of deleteContentData().
+     */
     public function test_deleteContentData() {
         global $DB;
 
@@ -493,7 +542,9 @@ class framework_testcase extends advanced_testcase {
         $this->assertEmpty($h5pcontentlibraries);
     }
 
-    // Test the behaviour of deleteLibraryUsage().
+    /**
+     * Test the behaviour of deleteLibraryUsage().
+     */
     public function test_deleteLibraryUsage() {
         global $DB;
 
@@ -516,7 +567,9 @@ class framework_testcase extends advanced_testcase {
         $this->assertEmpty($h5pcontentlibraries);
     }
 
-    // Test the behaviour of test_saveLibraryUsage().
+    /**
+     * Test the behaviour of test_saveLibraryUsage().
+     */
     public function test_saveLibraryUsage() {
         global $DB;
 
@@ -557,7 +610,9 @@ class framework_testcase extends advanced_testcase {
         $this->assertEquals($dependency2->id, end($libdependencies)->libraryid);
     }
 
-    // Test the behaviour of getLibraryUsage().
+    /**
+     * Test the behaviour of getLibraryUsage().
+     */
     public function test_getLibraryUsage() {
         $this->resetAfterTest();
 
@@ -600,7 +655,9 @@ class framework_testcase extends advanced_testcase {
         $this->assertEquals($expected, $data);
     }
 
-    // Test the behaviour of loadLibrary().
+    /**
+     * Test the behaviour of loadLibrary().
+     */
     public function test_loadLibrary() {
         $this->resetAfterTest();
 
@@ -653,7 +710,9 @@ class framework_testcase extends advanced_testcase {
         $this->assertFalse($data);
     }
 
-    // Test the behaviour of loadLibrarySemantics().
+    /**
+     * Test the behaviour of loadLibrarySemantics().
+     */
     public function test_loadLibrarySemantics() {
         $this->resetAfterTest();
 
@@ -679,7 +738,9 @@ class framework_testcase extends advanced_testcase {
         $this->assertEmpty($semantics2);
     }
 
-    // Test the behaviour of alterLibrarySemantics().
+    /**
+     * Test the behaviour of alterLibrarySemantics().
+     */
     public function test_alterLibrarySemantics() {
         global $DB;
 
@@ -711,7 +772,9 @@ class framework_testcase extends advanced_testcase {
         $this->assertEquals(json_encode($updatedsemantics), $currentsemantics);
     }
 
-    // Test the behaviour of deleteLibraryDependencies().
+    /**
+     * Test the behaviour of deleteLibraryDependencies().
+     */
     public function test_deleteLibraryDependencies() {
         global $DB;
 
@@ -732,7 +795,9 @@ class framework_testcase extends advanced_testcase {
         $this->assertCount(0, $dependencies);
     }
 
-    // Test the behaviour of deleteLibrary().
+    /**
+     * Test the behaviour of deleteLibrary().
+     */
     public function test_deleteLibrary() {
         global $DB;
 
@@ -778,7 +843,9 @@ class framework_testcase extends advanced_testcase {
         $this->assertCount(0, $libraryfiles);
     }
 
-    // Test the behaviour of loadContent().
+    /**
+     * Test the behaviour of loadContent().
+     */
     public function test_loadContent() {
         global $DB;
 
@@ -813,7 +880,9 @@ class framework_testcase extends advanced_testcase {
         $this->assertEquals($expected, $content);
     }
 
-    // Test the behaviour of loadContentDependencies().
+    /**
+     * Test the behaviour of loadContentDependencies().
+     */
     public function test_loadContentDependencies() {
         $this->resetAfterTest();
 
@@ -877,7 +946,9 @@ class framework_testcase extends advanced_testcase {
         $this->assertEquals($expected, $dynamiccontentdependencies);
     }
 
-    // Test the behaviour of updateContentFields().
+    /**
+     * Test the behaviour of updateContentFields().
+     */
     public function test_updateContentFields() {
         global $DB;
 
@@ -889,7 +960,7 @@ class framework_testcase extends advanced_testcase {
         $h5pid = $this->create_h5p_record($library1->id, 'iframe');
 
         $updatedata = array(
-            'jsoncontent' => '{"value" : "test"}',
+            'jsoncontent' => json_encode(['value' => 'test']),
             'mainlibraryid' => $library2->id
         );
         // Update h5p content fields.
@@ -898,11 +969,15 @@ class framework_testcase extends advanced_testcase {
 
         $h5p = $DB->get_record('h5p', ['id' => $h5pid]);
 
-        $this->assertEquals('{"value" : "test"}', $h5p->jsoncontent);
+        $expected = json_encode(['value' => 'test']);
+
+        $this->assertEquals($expected, $h5p->jsoncontent);
         $this->assertEquals($library2->id, $h5p->mainlibraryid);
     }
 
-    // Test the behaviour of clearFilteredParameters().
+    /**
+     * Test the behaviour of clearFilteredParameters().
+     */
     public function test_clearFilteredParameters() {
         global $DB;
 
@@ -951,7 +1026,9 @@ class framework_testcase extends advanced_testcase {
         $this->assertEmpty($h5pcontent4->filtered);
     }
 
-    // Test the behaviour of getNumNotFiltered().
+    /**
+     * Test the behaviour of getNumNotFiltered().
+     */
     public function test_getNumNotFiltered() {
         global $DB;
 
@@ -992,7 +1069,9 @@ class framework_testcase extends advanced_testcase {
         $this->assertEquals(3, $countnotfiltered);
     }
 
-    // Test the behaviour of getNumContent().
+    /**
+     * Test the behaviour of getNumContent().
+     */
     public function test_getNumContent() {
         $this->resetAfterTest();
 
@@ -1021,7 +1100,9 @@ class framework_testcase extends advanced_testcase {
         $this->assertEquals(1, $countmainlib);
     }
 
-    // Test the behaviour of isContentSlugAvailable().
+    /**
+     * Test the behaviour of isContentSlugAvailable().
+     */
     public function test_isContentSlugAvailable() {
         $this->resetAfterTest();
 
@@ -1149,7 +1230,9 @@ class framework_testcase extends advanced_testcase {
         $this->assertCount(3, $records);
     }
 
-    // Test the behaviour of getLibraryContentCount().
+    /**
+     * Test the behaviour of getLibraryContentCount().
+     */
     public function test_getLibraryContentCount() {
         $this->resetAfterTest();
 
@@ -1186,7 +1269,9 @@ class framework_testcase extends advanced_testcase {
         $this->assertEquals($expected, $countlibrarycontent);
     }
 
-    // Test the behaviour of libraryHasUpgrade().
+    /**
+     * Test the behaviour of libraryHasUpgrade().
+     */
     public function test_libraryHasUpgrade() {
         $this->resetAfterTest();
 
@@ -1250,7 +1335,9 @@ class framework_testcase extends advanced_testcase {
         $this->assertFalse($hasupgrade);
     }
 
-    // Test the behaviour of instance().
+    /**
+     * Test the behaviour of instance().
+     */
     public function test_instance() {
         // Test framework instance.
         $interface = framework::instance('interface');
@@ -1275,297 +1362,5 @@ class framework_testcase extends advanced_testcase {
         // Should return \H5PCore by default.
         $interface = framework::instance();
         $this->assertInstanceOf('\H5PCore', $interface);
-    }
-
-    /**
-     * Populate H5P database tables with relevant data to simulate the process of adding H5P content.
-     *
-     * @param bool $createlibraryfiles Whether should create library relater files on the filesystem.
-     * @return object An object representing the added H5P records.
-     */
-    private function generate_h5p_data(bool $createlibraryfiles = false) : stdClass {
-        // Create libraries.
-        $mainlib = $this->create_library_record('MainLibrary', 'Main Lib', 1, 0);
-        $lib1 = $this->create_library_record('Library1', 'Lib1', 2, 0);
-        $lib2 = $this->create_library_record('Library2', 'Lib2', 2, 1);
-        $lib3 = $this->create_library_record('Library3', 'Lib3', 3, 2);
-        $lib4 = $this->create_library_record('Library4', 'Lib4', 1, 1);
-        $lib5 = $this->create_library_record('Library5', 'Lib5', 1, 3);
-
-        if ($createlibraryfiles) {
-            // Get a temp path.
-            $filestorage = new \core_h5p\file_storage();
-            $temppath = $filestorage->getTmpPath();
-            // Create library files for MainLibrary.
-            $basedirectorymain = $temppath . DIRECTORY_SEPARATOR . $mainlib->machinename . '-' .
-                $mainlib->majorversion . '.' . $mainlib->minorversion;
-            $this->create_library_files($basedirectorymain, $mainlib->id, $mainlib->machinename,
-                $mainlib->majorversion, $mainlib->minorversion);
-            // Create library files for Library1.
-            $basedirectory1 = $temppath . DIRECTORY_SEPARATOR . $lib1->machinename . '-' .
-                $lib1->majorversion . '.' . $lib1->minorversion;
-            $this->create_library_files($basedirectory1, $lib1->id, $lib1->machinename,
-                $lib1->majorversion, $lib1->minorversion);
-            // Create library files for Library2.
-            $basedirectory2 = $temppath . DIRECTORY_SEPARATOR . $lib2->machinename . '-' .
-                $lib2->majorversion . '.' . $lib2->minorversion;
-            $this->create_library_files($basedirectory2, $lib2->id, $lib2->machinename,
-                $lib2->majorversion, $lib2->minorversion);
-            // Create library files for Library3.
-            $basedirectory3 = $temppath . DIRECTORY_SEPARATOR . $lib3->machinename . '-' .
-                $lib3->majorversion . '.' . $lib3->minorversion;
-            $this->create_library_files($basedirectory3, $lib3->id, $lib3->machinename,
-                $lib3->majorversion, $lib3->minorversion);
-            // Create library files for Library4.
-            $basedirectory4 = $temppath . DIRECTORY_SEPARATOR . $lib4->machinename . '-' .
-                $lib4->majorversion . '.' . $lib4->minorversion;
-            $this->create_library_files($basedirectory4, $lib4->id, $lib4->machinename,
-                $lib4->majorversion, $lib4->minorversion);
-            // Create library files for Library5.
-            $basedirectory5 = $temppath . DIRECTORY_SEPARATOR . $lib5->machinename . '-' .
-                $lib5->majorversion . '.' . $lib5->minorversion;
-            $this->create_library_files($basedirectory5, $lib5->id, $lib5->machinename,
-                $lib5->majorversion, $lib5->minorversion);
-        }
-
-        // Create h5p content.
-        $h5p = $this->create_h5p_record($mainlib->id);
-        // Create h5p content library dependencies.
-        $this->create_contents_libraries_record($h5p, $mainlib->id);
-        $this->create_contents_libraries_record($h5p, $lib1->id);
-        $this->create_contents_libraries_record($h5p, $lib2->id);
-        $this->create_contents_libraries_record($h5p, $lib3->id);
-        $this->create_contents_libraries_record($h5p, $lib4->id);
-        // Create library dependencies for $mainlib.
-        $this->create_library_dependency_record($mainlib->id, $lib1->id);
-        $this->create_library_dependency_record($mainlib->id, $lib2->id);
-        $this->create_library_dependency_record($mainlib->id, $lib3->id);
-        // Create library dependencies for $lib1.
-        $this->create_library_dependency_record($lib1->id, $lib2->id);
-        $this->create_library_dependency_record($lib1->id, $lib3->id);
-        $this->create_library_dependency_record($lib1->id, $lib4->id);
-        // Create library dependencies for $lib3.
-        $this->create_library_dependency_record($lib3->id, $lib5->id);
-
-        return (object) [
-            'h5pcontent' => (object) array(
-                'h5pid' => $h5p,
-                'contentdependencies' => array($mainlib, $lib1, $lib2, $lib3, $lib4)
-            ),
-            'mainlib' => (object) array(
-                'data' => $mainlib,
-                'dependencies' => array($lib1, $lib2, $lib3)
-            ),
-            'lib1' => (object) array(
-                'data' => $lib1,
-                'dependencies' => array($lib2, $lib3, $lib4)
-            ),
-            'lib2' => (object) array(
-                'data' => $lib2,
-                'dependencies' => array()
-            ),
-            'lib3' => (object) array(
-                'data' => $lib3,
-                'dependencies' => array($lib5)
-            ),
-            'lib4' => (object) array(
-                'data' => $lib4,
-                'dependencies' => array()
-            ),
-            'lib5' => (object) array(
-                'data' => $lib5,
-                'dependencies' => array()
-            ),
-            'libtemppath' => $temppath ?? ''
-        ];
-    }
-
-    /**
-     * Create a record in the h5p_libraries database table.
-     *
-     * @param string $machinename The library machine name
-     * @param string $title The library's name
-     * @param int $majorversion The library's major version
-     * @param int $minorversion The library's minor version
-     * @param int $patchversion The library's patch version
-     * @param string $semantics Json describing the content structure for the library
-     * @param string $addto The plugin configuration data
-     * @return stdClass An object representing the added library record
-     */
-    private function create_library_record(string $machinename, string $title, int $majorversion = 1,
-            int $minorversion = 0, int $patchversion = 1, string $semantics = '', string $addto = null) : stdClass {
-        global $DB;
-
-        $content = array(
-            'machinename' => $machinename,
-            'title' => $title,
-            'majorversion' => $majorversion,
-            'minorversion' => $minorversion,
-            'patchversion' => $patchversion,
-            'runnable' => 1,
-            'fullscreen' => 1,
-            'embedtypes' => 'iframe',
-            'preloadedjs' => 'js/example.js',
-            'preloadedcss' => 'css/example.css',
-            'droplibrarycss' => '',
-            'semantics' => $semantics,
-            'addto' => $addto
-        );
-
-        $libraryid = $DB->insert_record('h5p_libraries', $content);
-
-        return $DB->get_record('h5p_libraries', ['id' => $libraryid]);
-    }
-
-    /**
-     * Create the necessary files and return an array structure for a library.
-     *
-     * @param  string $uploaddirectory base directory for the library.
-     * @param  int    $libraryid       The library ID.
-     * @param  string $machinename     Name for this library.
-     * @param  int    $majorversion    Major version (any number will do).
-     * @param  int    $minorversion    Minor version (any number will do).
-     */
-    private function create_library_files(string $uploaddirectory, int $libraryid, string $machinename,
-            int $majorversion, int $minorversion) {
-        global $CFG;
-
-        // Create library directories.
-        mkdir($uploaddirectory, $CFG->directorypermissions, true);
-        mkdir($uploaddirectory . DIRECTORY_SEPARATOR . 'scripts', $CFG->directorypermissions, true);
-        mkdir($uploaddirectory . DIRECTORY_SEPARATOR . 'styles', $CFG->directorypermissions, true);
-
-        // Create library.json file.
-        $jsonfile = $uploaddirectory . DIRECTORY_SEPARATOR . 'library.json';
-        $handle = fopen($jsonfile, 'w+');
-        fwrite($handle, 'test data');
-        fclose($handle);
-        // Create library js file.
-        $jsfile = $uploaddirectory . DIRECTORY_SEPARATOR . 'scripts/testlib.min.js';
-        $handle = fopen($jsfile, 'w+');
-        fwrite($handle, 'test data');
-        fclose($handle);
-        // Create library css file.
-        $cssfile = $uploaddirectory . DIRECTORY_SEPARATOR . 'styles/testlib.min.css';
-        $handle = fopen($cssfile, 'w+');
-        fwrite($handle, 'test data');
-        fclose($handle);
-
-        $lib = [
-            'title' => 'Test lib',
-            'description' => 'Test library description',
-            'majorVersion' => $majorversion,
-            'minorVersion' => $minorversion,
-            'patchVersion' => 2,
-            'machineName' => $machinename,
-            'embedTypes' => 'iframe',
-            'preloadedJs' => [
-                [
-                    'path' => 'scripts' . DIRECTORY_SEPARATOR . 'testlib.min.js'
-                ]
-            ],
-            'preloadedCss' => [
-                [
-                    'path' => 'styles' . DIRECTORY_SEPARATOR . 'testlib.min.css'
-                ]
-            ],
-            'uploadDirectory' => $uploaddirectory,
-            'libraryId' => $libraryid
-        ];
-
-        $filestorage = new \core_h5p\file_storage();
-        $filestorage->saveLibrary($lib);
-    }
-
-    /**
-     * Create a record in the h5p database table.
-     *
-     * @param int $mainlibid The ID of the content's main library
-     * @param string $jsoncontent The content in json format
-     * @param string $filtered The filtered content parameters
-     * @return int The ID of the added record
-     */
-    private function create_h5p_record(int $mainlibid, string $jsoncontent = null, string $filtered = null) : int {
-        global $DB;
-
-        if (!$jsoncontent) {
-            $jsoncontent = '
-                {
-                   "text":"<p>Dummy text<\/p>\n",
-                   "questions":[
-                      "<p>Test question<\/p>\n"
-                   ]
-                }';
-        }
-
-        if (!$filtered) {
-            $filtered = '
-                {
-                   "text":"Dummy text",
-                   "questions":[
-                      "Test question"
-                   ]
-                }';
-        }
-
-        return $DB->insert_record(
-            'h5p',
-            array(
-                'jsoncontent' => $jsoncontent,
-                'displayoptions' => 8,
-                'mainlibraryid' => $mainlibid,
-                'timecreated' => time(),
-                'timemodified' => time(),
-                'filtered' => $filtered,
-                'pathnamehash' => sha1('pathname'),
-                'contenthash' => sha1('content')
-            )
-        );
-    }
-
-    /**
-     * Create a record in the h5p_contents_libraries database table.
-     *
-     * @param string $h5pid The ID of the H5P content
-     * @param int $libid The ID of the library
-     * @param string $dependencytype The dependency type
-     * @return int The ID of the added record
-     */
-    private function create_contents_libraries_record(string $h5pid, int $libid,
-            string $dependencytype = 'preloaded') : int {
-        global $DB;
-
-        return $DB->insert_record(
-            'h5p_contents_libraries',
-            array(
-                'h5pid' => $h5pid,
-                'libraryid' => $libid,
-                'dependencytype' => $dependencytype,
-                'dropcss' => 0,
-                'weight' => 1
-            )
-        );
-    }
-
-    /**
-     * Create a record in the h5p_library_dependencies database table.
-     *
-     * @param int $libid The ID of the library
-     * @param int $requiredlibid The ID of the required library
-     * @param string $dependencytype The dependency type
-     * @return int The ID of the added record
-     */
-    private function create_library_dependency_record(int $libid, int $requiredlibid,
-            string $dependencytype = 'preloaded') : int {
-        global $DB;
-
-        return $DB->insert_record(
-            'h5p_library_dependencies',
-            array(
-                'libraryid' => $libid,
-                'requiredlibraryid' => $requiredlibid,
-                'dependencytype' => $dependencytype
-            )
-        );
     }
 }

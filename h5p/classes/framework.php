@@ -40,8 +40,10 @@ require_once($CFG->libdir . '/adminlib.php');
  */
 class framework implements \H5PFrameworkInterface {
 
+    /** @var string The path to the last uploaded h5p */
     private $lastuploadedfolder;
 
+    /** @var string The path to the last uploaded h5p file */
     private $lastuploadedfile;
 
     /**
@@ -92,13 +94,6 @@ class framework implements \H5PFrameworkInterface {
             if ($ext) {
                 $stream .= '.' . $ext;
             }
-
-            // Add folder and file paths to H5P Core.
-//            $factory = new \core_h5p\factory();
-//            $framework = $factory->get_framework();
-//            $interface = self::instance('interface');
-//            $interface->getUploadedH5pFolderPath($localfolder);
-//            $interface->getUploadedH5pPath($stream);
 
             $this->getUploadedH5pFolderPath($localfolder);
             $this->getUploadedH5pPath($stream);

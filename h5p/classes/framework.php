@@ -1293,13 +1293,13 @@ class framework implements \H5PFrameworkInterface {
         $params = array();
 
         if (!empty($skip)) {
-            list($notinsql, $params) = $DB->get_in_or_equal($skip, SQL_PARAMS_NAMED, 'param', false);
+            list($sql, $params) = $DB->get_in_or_equal($skip, SQL_PARAMS_NAMED, 'param', false);
+            $notinsql = " AND id {$sql}";
         }
 
         $sql = "SELECT COUNT(id)
                   FROM {h5p}
-                 WHERE mainlibraryid = :libraryid 
-                   AND id {$notinsql}";
+                 WHERE mainlibraryid = :libraryid {$notinsql}";
 
         $params['libraryid'] = $libraryid;
 
@@ -1407,7 +1407,7 @@ class framework implements \H5PFrameworkInterface {
                   FROM {h5p} h
              LEFT JOIN {h5p_libraries} l
                     ON h.mainlibraryid = l.id
-              GROUP BY h.mainlibraryid";
+              GROUP BY h.mainlibraryid, l.machinename, l.majorversion, l.minorversion";
 
         // Count content using the same content type.
         $res = $DB->get_records_sql($sql);

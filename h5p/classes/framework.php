@@ -363,9 +363,30 @@ class framework implements \H5PFrameworkInterface {
     public function getLibraryFileUrl($libraryfoldername, $filename) {
         global $DB;
 
+        // Remove unnecessary slashes from the library name/path (first and last) if present.
+        $libraryfoldername = trim($libraryfoldername, '/');
+
+        // If the library folder name is a path.
+        $libraryfoldernamearr = explode('/', $libraryfoldername);
+
+        $factory = new \core_h5p\factory();
+        $core = $factory->get_core();
+
+        // The provided string is not parsable in the normal library format string.
+        if (!$libdata = $core->libraryFromString($libraryfoldername[0], true)) {
+            return;
+        }
+
+        $params = array(
+            'machinename' => $libdata['machineName'],
+            'majorversion' => $libdata['majorVersion'],
+            'minorversion' => $libdata['minorVersion']
+        );
+
+        $itemid = $DB->get_records('h5p_libraries', $params,
+            'patchversion DESC', 'id', 0, 1);
+
         $context = \context_system::instance();
-        $itemid = $DB->get_field('files', 'itemid', ['component' => 'core_h5p', 'filearea' => 'libraries',
-            'filepath' => $libraryfoldername, 'filename' => $filename]);
 
         return \moodle_url::make_pluginfile_url($context->id, 'core_h5p', 'libraries', $itemid,
             $libraryfoldername . '/', $filename)->out();
@@ -1536,7 +1557,7 @@ class framework implements \H5PFrameworkInterface {
      * @param string $searchparam The library parameter (Default: 'path')
      * @return string Library parameter values separated by ', '
      */
-    private function library_parameter_values_to_csv(array $librarydata, string $key, string $searchparam = 'path') : string {
+    private function library_parameter_values_to_csv(array $librarydata, string $key, string $searchparam = 'path'): string {
         if (isset($librarydata[$key])) {
             $parametervalues = array();
             foreach ($librarydata[$key] as $file) {

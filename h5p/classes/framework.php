@@ -72,7 +72,7 @@ class framework implements \H5PFrameworkInterface {
      */
     public function fetchExternalData($url, $data = null, $blocking = true, $stream = null) {
 
-        if ($stream === null) {
+        if ($stream !== null) {
             // Download file.
             set_time_limit(0);
 

@@ -77,13 +77,13 @@ class framework_testcase extends \advanced_testcase {
         // Test fetching an external H5P content without defining a path to where the file should be stored.
         $data = $this->framework->fetchExternalData($url, null, true);
 
-        // The response should not be empty and return true if the file was successfully downloaded.
-        $this->assertNotEmpty($data);
-        $this->assertTrue($data);
+        // Get the content of the external H5P content.
+        $curl = new curl();
+        $expectedcontent = $curl->get($url);
 
-        $h5pfolderpath = $this->framework->getUploadedH5pFolderPath();
-        // The uploaded file should exist on the filesystem.
-        $this->assertTrue(file_exists($h5pfolderpath . '.h5p'));
+        // The response should not be empty and return the content of the external H5P content.
+        $this->assertNotEmpty($data);
+        $this->assertEquals($expectedcontent, $data);
     }
 
     /**
@@ -99,6 +99,7 @@ class framework_testcase extends \advanced_testcase {
 
         $h5pfolderpath = $CFG->tempdir . uniqid('/h5p-');
 
+        // Test fetching an external H5P content with defined path to where the file should be stored.
         $data = $this->framework->fetchExternalData($url, null, true, $h5pfolderpath . '.h5p');
 
         // The response should not be empty and return true if the content has been successfully saved to a file.
@@ -106,6 +107,7 @@ class framework_testcase extends \advanced_testcase {
         $this->assertTrue($data);
 
         // The uploaded file should exist on the filesystem.
+        $h5pfolderpath = $this->framework->getUploadedH5pFolderPath();
         $this->assertTrue(file_exists($h5pfolderpath . '.h5p'));
     }
 
@@ -119,16 +121,16 @@ class framework_testcase extends \advanced_testcase {
         // Provide an URL to an external file that is not an H5P content file.
         $url = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf";
 
+        // Test fetching an external H5P content without defining a path to where the file should be stored.
         $data = $this->framework->fetchExternalData($url, null, true);
 
-        // The response should not be empty and return true if the content has been successfully saved to a file.
-        $this->assertNotEmpty($data);
-        $this->assertTrue($data);
+        // Get the content of the external H5P content.
+        $curl = new curl();
+        $expectedcontent = $curl->get($url);
 
-        // The uploaded file should exist on the filesystem with it's original extension.
-        // NOTE: The file would be later validated by the H5P Validator.
-        $h5pfolderpath = $this->framework->getUploadedH5pFolderPath();
-        $this->assertTrue(file_exists($h5pfolderpath . '.pdf'));
+        // The response should not be empty and return the content of the external H5P content.
+        $this->assertNotEmpty($data);
+        $this->assertEquals($expectedcontent, $data);
     }
 
     /**

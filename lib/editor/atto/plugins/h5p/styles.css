@@ -1,7 +1,8 @@
 .attoh5poverlay {
     display: none;
 }
-.attoh5pinstructions {
+.attoh5pinstructions,
+.atto_h5p_disabledfiterwarning {
     max-width: 500px;
 }
 .editor_atto_content_wrap .h5p-placeholder + br {

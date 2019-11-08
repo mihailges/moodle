@@ -36,6 +36,7 @@ $string['h5purl'] = 'H5P URL';
 $string['invalidh5purl'] = 'Invalid URL';
 $string['instructions'] = 'You can insert H5P content by <strong>either</strong> entering a URL or embed code from an external H5P site <strong>or</strong> by uploading an H5P file.';
 $string['noh5pcontent'] = 'No H5P content added';
+$string['h5pfilterdisabled'] = 'The <strong>Display H5P</strong> filter is either disabled or not active. In order to render the H5P content you need to enable or activate the filter.';
 $string['pluginname'] = 'Insert H5P';
 $string['privacy:metadata'] = 'The atto_h5p plugin does not store any personal data.';
 $string['or'] = 'or';

@@ -49,9 +49,15 @@ function atto_h5p_params_for_js($elementid, $options, $fpoptions) {
         $allowedmethods = 'upload';
     }
 
+    $h5pfilter = filter_get_global_states()['displayh5p'];
+
+    // Whether the H5P filter is disabled or inactive.
+    $h5pfilterdisabled = $h5pfilter->active == TEXTFILTER_DISABLED || $h5pfilter->active == TEXTFILTER_OFF;
+
     $params = [
         'allowedmethods' => $allowedmethods,
-        'storeinrepo' => true
+        'storeinrepo' => true,
+        'h5pfilterdisabled' => $h5pfilterdisabled
     ];
     return $params;
 }
@@ -71,6 +77,7 @@ function atto_h5p_strings_for_js() {
         'embedbutton',
         'enterurl',
         'h5pfile',
+        'h5pfilterdisabled',
         'h5poptions',
         'h5pproperties',
         'h5purl',

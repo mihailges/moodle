@@ -98,3 +98,33 @@ Feature: Add h5ps to Atto
     When I navigate to "Edit settings" in current page administration
     And I click on "Insert H5P" "button"
     Then I should not see "H5P file upload" in the "Insert H5P" "dialogue"
+
+  @javascript
+  Scenario: Display a warning when h5p filter is disabled
+    Given I log in as "admin"
+    And the "displayh5p" filter is "disabled"
+    And I am on "Course 1" course homepage
+    And I follow "PageName1"
+    When I navigate to "Edit settings" in current page administration
+    And I click on "Insert H5P" "button"
+    Then I should see "The Display H5P filter is either disabled or not active. In order to render the H5P content you need to enable or activate the filter." in the "Insert H5P" "dialogue"
+
+  @javascript
+  Scenario: Display a warning when h5p filter is inactive
+    Given I log in as "admin"
+    And the "displayh5p" filter is "off"
+    And I am on "Course 1" course homepage
+    And I follow "PageName1"
+    When I navigate to "Edit settings" in current page administration
+    And I click on "Insert H5P" "button"
+    Then I should see "The Display H5P filter is either disabled or not active. In order to render the H5P content you need to enable or activate the filter." in the "Insert H5P" "dialogue"
+
+  @javascript
+  Scenario: Do not display a warning when h5p filter is inactive
+    Given I log in as "admin"
+    And the "displayh5p" filter is "on"
+    And I am on "Course 1" course homepage
+    And I follow "PageName1"
+    When I navigate to "Edit settings" in current page administration
+    And I click on "Insert H5P" "button"
+    Then I should not see "The Display H5P filter is either disabled or not active. In order to render the H5P content you need to enable or activate the filter." in the "Insert H5P" "dialogue"

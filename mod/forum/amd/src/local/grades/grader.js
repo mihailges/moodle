@@ -195,6 +195,158 @@ const searchForUsers = (userList, searchTerm) => {
 };
 
 /**
+ * Toggles the visibility of the user search.
+ *
+ * @param {HTMLElement} toggleSearchButton The button that toggles the search
+ * @param {HTMLElement} searchContainer The container element for the user search
+ * @param {HTMLElement} searchInput The input element for searching
+ */
+const firstRadioButton = (node) => {
+
+      var nodeLabel = node.parentElement;
+      var firstNodeLabel = nodeLabel.parentNode.firstElementChild;
+      var first = firstNodeLabel.children[0];
+
+      while (first) {
+          if (first.nodeType === Node.ELEMENT_NODE) {
+              if (first.getAttribute("type") === 'radio') {
+                  return first;
+              }
+        }
+        firstNodeLabel = firstNodeLabel.nextElementSibling;
+        first = firstNodeLabel.children[0];
+      }
+
+      return null;
+};
+
+/**
+ * Toggles the visibility of the user search.
+ *
+ * @param {HTMLElement} toggleSearchButton The button that toggles the search
+ * @param {HTMLElement} searchContainer The container element for the user search
+ * @param {HTMLElement} searchInput The input element for searching
+ */
+const lastRadioButton = (node) => {
+
+    var nodeLabel = node.parentElement;
+    var lastNodeLabel = nodeLabel.parentNode.lastElementChild;
+    var last = lastNodeLabel.children[0];
+
+    while (last) {
+        if (last.nodeType === Node.ELEMENT_NODE) {
+            if (last.getAttribute("type") === 'radio') {
+                return last;
+            }
+        }
+        lastNodeLabel = lastNodeLabel.previousElementSibling;
+        last = lastNodeLabel.children[0];
+    }
+
+    return last;
+};
+
+/**
+ * Toggles the visibility of the user search.
+ *
+ * @param {HTMLElement} toggleSearchButton The button that toggles the search
+ * @param {HTMLElement} searchContainer The container element for the user search
+ * @param {HTMLElement} searchInput The input element for searching
+ */
+const nextRadioButton = (node) => {
+
+    var nodeLabel = node.parentElement;
+
+    var nextNodeLabel = nodeLabel.nextElementSibling;
+    if (nextNodeLabel === null) {
+        return null;
+    }
+    var next = nextNodeLabel.children[0];
+
+    while (next) {
+        if (next.nodeType === Node.ELEMENT_NODE) {
+            if (next.getAttribute("type") === 'radio') {
+                return next;
+            }
+        }
+        nextNodeLabel = nextNodeLabel.nextElementSibling;
+        next = nextNodeLabel.children[0];
+    }
+
+    return null;
+};
+
+/**
+ * Toggles the visibility of the user search.
+ *
+ * @param {HTMLElement} toggleSearchButton The button that toggles the search
+ * @param {HTMLElement} searchContainer The container element for the user search
+ * @param {HTMLElement} searchInput The input element for searching
+ */
+const previousRadioButton = (node) => {
+
+    var nodeLabel = node.parentElement;
+    var prevNodeLabel = nodeLabel.previousElementSibling;
+    var prev = prevNodeLabel.children[0];
+
+    while (prev) {
+        if (prev.nodeType === Node.ELEMENT_NODE) {
+            if (prev.getAttribute("type") === 'radio') {
+                return prev;
+            }
+        }
+        prevNodeLabel = prevNodeLabel.previousElementSibling;
+        prev = prevNodeLabel.children[0];
+    }
+
+    return null;
+};
+
+/**
+ * Toggles the visibility of the user search.
+ *
+ * @param {HTMLElement} toggleSearchButton The button that toggles the search
+ * @param {HTMLElement} searchContainer The container element for the user search
+ * @param {HTMLElement} searchInput The input element for searching
+ */
+const getImage = (node) => {
+
+    var child = node.firstChild;
+
+    while(child) {
+        if (child.nodeType === Node.ELEMENT_NODE) {
+            if (child.tagName === 'IMG') {
+                return child;
+            }
+        }
+        child = child.nextSibling;
+    }
+
+    return null;
+};
+
+/**
+ * Toggles the visibility of the user search.
+ *
+ * @param {HTMLElement} toggleSearchButton The button that toggles the search
+ * @param {HTMLElement} searchContainer The container element for the user search
+ * @param {HTMLElement} searchInput The input element for searching
+ */
+const setRadioButton = (node, state) => {
+
+    var image = getImage(node);
+
+    if (state == 'true') {
+        node.setAttribute('aria-checked', 'true');
+        node.tabIndex = 0;
+        node.focus();
+    } else {
+        node.setAttribute('aria-checked', 'false');
+        node.tabIndex = -1;
+    }
+};
+
+/**
  * Render the list of users in the search results area.
  *
  * @param {HTMLElement} searchResultsContainer The container element for search results
@@ -221,6 +373,9 @@ const registerEventListeners = (graderLayout, userPicker, saveGradeFunction, use
     const bodyContainer = graderContainer.querySelector(Selectors.regions.bodyContainer);
     const userPickerContainer = graderContainer.querySelector(Selectors.regions.pickerRegion);
     const searchResultsContainer = graderContainer.querySelector(Selectors.regions.searchResultsContainer);
+    const sendNotificationsContainer = graderContainer.querySelector(Selectors.regions.sendNotificationsContainer);
+    const sendNotificationRadioButtons = sendNotificationsContainer.querySelectorAll('input[type=radio]');
+    console.log(sendNotificationRadioButtons);
 
     graderContainer.addEventListener('click', (e) => {
         if (e.target.closest(Selectors.buttons.toggleFullscreen)) {
@@ -277,6 +432,57 @@ const registerEventListeners = (graderLayout, userPicker, saveGradeFunction, use
         const users = searchForUsers(userList, searchInput.value);
         renderSearchResults(searchResultsContainer, users);
     }, 300));
+
+    for (var i = 0; i < sendNotificationRadioButtons.length; i++) {
+        var rb = sendNotificationRadioButtons[i];
+
+        console.log(rb.tagName + " " + rb.id);
+
+        rb.addEventListener('keydown', function(event) {
+            var type = event.type;
+            var next = false;
+
+            if (type === "keydown") {
+                var node = event.currentTarget;
+
+                switch (event.keyCode) {
+                    case 40:
+                    case 39:
+                        var next = nextRadioButton(node);
+                        if (!next) {
+                            next = firstRadioButton(node);
+                    } //if node is the last node, node cycles to first.
+                    break;
+
+                    case 38:
+                    case 37:
+                        next = previousRadioButton(node);
+                        if (!next) {
+                        next = lastRadioButton(node);
+                    } //if node is the last node, node cycles to first.
+                    break;
+
+                    case 32:
+                        next = node;
+                        break;
+                }
+
+                if (next) {
+                    var radioButton = firstRadioButton(node);
+
+                    while (radioButton) {
+                        setRadioButton(radioButton, "false");
+                        radioButton = nextRadioButton(radioButton);
+                  }
+
+                  setRadioButton(next, "true");
+
+                  event.preventDefault();
+                  event.stopPropagation();
+                }
+            }
+        });
+      }
 };
 
 /**

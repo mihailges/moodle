@@ -10799,25 +10799,31 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
 /* Various settings for the options area */
 .choosercontainer #chooseform .options {
   position: relative;
-  border-bottom: 1px solid #bbb; }
+  border-bottom: 1px solid #bbb;
+  overflow: hidden; }
 
 /* Only set these options if we're showing the js container */
 .jschooser .choosercontainer #chooseform .alloptions {
   overflow-x: hidden;
   overflow-y: auto;
-  max-width: 240px; }
+  max-width: 100%;
+  display: flex;
+  flex-wrap: wrap; }
   .jschooser .choosercontainer #chooseform .alloptions .option input[type=radio] {
     display: inline-block; }
   .jschooser .choosercontainer #chooseform .alloptions .option .typename {
     display: inline-block;
-    width: 55%; }
+    width: 55%;
+    margin-top: 10px; }
 
 /* Settings for option rows and option subtypes */
 .choosercontainer #chooseform .moduletypetitle,
 .choosercontainer #chooseform .option,
 .choosercontainer #chooseform .nonoption {
   margin-bottom: 0;
-  padding: 0 1.6em 0 1.6em; }
+  padding: 0 0.5em 0 0.5em;
+  width: 120px;
+  text-align: center; }
 
 .choosercontainer #chooseform .moduletypetitle {
   text-transform: uppercase;
@@ -10838,8 +10844,7 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
 .choosercontainer #chooseform .option label {
   display: block;
   margin: 0;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #fff; }
+  padding: 0.5rem 0; }
 
 .choosercontainer #chooseform .option .icon {
   margin: 0;
@@ -10865,7 +10870,7 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
   top: 0;
   right: 0;
   bottom: 0;
-  left: 240px;
+  left: 100%;
   margin: 0;
   padding: 1.6em;
   background-color: #fff;

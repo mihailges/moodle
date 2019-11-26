@@ -30,13 +30,13 @@
 }}
 <div class="option">
     <label for="item_{{id}}">
-        <input type="radio" name="{{paramname}}" id="item_{{id}}" value="{{value}}">
         <span class="modicon">
             {{#icon}}
                 {{>core/pix_icon}}
             {{/icon}}
         </span>
         <span class="typename">{{label}}</span>
+        <span class="info" style="margin-top: 10px; color: #1177d1; pointer: cursor;">{{#pix}} docs, core {{/pix}}</span>
         <span class="typesummary">
             {{{description}}}
         </span>

@@ -50,7 +50,7 @@ Y.extend(MODCHOOSER, M.core.chooserdialogue, {
         }
         var dialogue = Y.one('.chooserdialoguebody');
         var header = Y.one('.choosertitle');
-        var params = {};
+        var params = {width: '800'};
         this.setup_chooser_dialogue(dialogue, header, params);
 
         // Initialize existing sections and register for dynamically created sections
@@ -126,7 +126,85 @@ Y.extend(MODCHOOSER, M.core.chooserdialogue, {
             // The block site menu has a sectionid of 0
             this.sectionid = 0;
         }
-        this.display_chooser(e);
+
+        this.prepare_chooser();
+
+        // Stop the default event actions before we proceed
+        e.preventDefault();
+
+        var bb = this.panel.get('boundingBox');
+        var dialogue = this.container.one('.alloptions');
+
+        // This will detect a change in orientation and retrigger centering
+        var thisevent = Y.one('document').on('orientationchange', function() {
+            this.center_dialogue(dialogue);
+        }, this);
+        this.listenevents.push(thisevent);
+
+        // Detect window resizes (most browsers)
+        thisevent = Y.one('window').on('resize', function() {
+            this.center_dialogue(dialogue);
+        }, this);
+        this.listenevents.push(thisevent);
+
+        // These will trigger a check_options call to display the correct help
+        thisevent = this.container.on('click', this.check_options, this);
+        this.listenevents.push(thisevent);
+        thisevent = this.container.on('key_up', this.check_options, this);
+        this.listenevents.push(thisevent);
+        thisevent = this.container.on('dblclick', function(e) {
+            if (e.target.ancestor('div.option')) {
+                this.check_options();
+
+                // Prevent duplicate submissions
+                this.submitbutton.setAttribute('disabled', 'disabled');
+                this.options.setAttribute('disabled', 'disabled');
+                this.cancel_listenevents();
+
+                this.container.one('form').submit();
+            }
+        }, this);
+        this.listenevents.push(thisevent);
+
+        this.container.one('form').on('submit', function() {
+            // Prevent duplicate submissions on submit
+            this.submitbutton.setAttribute('disabled', 'disabled');
+            this.options.setAttribute('disabled', 'disabled');
+            this.cancel_listenevents();
+        }, this);
+
+        // Hook onto the cancel button to hide the form
+        thisevent = this.container.one('.addcancel').on('click', this.cancel_popup, this);
+        this.listenevents.push(thisevent);
+
+        // Hide will be managed by cancel_popup after restoring the body overflow
+        thisevent = bb.one('button.closebutton').on('click', this.cancel_popup, this);
+        this.listenevents.push(thisevent);
+
+        // Grab global keyup events and handle them
+        thisevent = Y.one('document').on('keydown', this.handle_key_press, this);
+        this.listenevents.push(thisevent);
+
+        // Add references to various elements we adjust
+        this.submitbutton = this.container.one('.submitbutton');
+
+        // Disable the submit element until the user makes a selection
+        this.submitbutton.set('disabled', 'true');
+
+        // Ensure that the options are shown
+        this.options.removeAttribute('disabled');
+
+        // Display the panel
+        this.panel.show(e);
+
+        // Re-centre the dialogue after we've shown it.
+        this.center_dialogue(dialogue);
+
+        // Finally, focus the first radio element - this enables form selection via the keyboard
+        this.container.one('.option input[type=radio]').focus();
+
+        // Trigger check_options to set the initial jumpurl
+        this.check_options();
     },
 
     /**

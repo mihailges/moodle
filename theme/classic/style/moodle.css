@@ -11021,13 +11021,17 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
  */
 /* Hide the dialog and it's title */
 .chooserdialoguebody,
-.choosertitle {
+.choosertitle,
+.modchooserdialoguebody,
+.modchoosertitle {
   display: none; }
 
-.moodle-dialogue.chooserdialogue .moodle-dialogue-content .moodle-dialogue-ft {
+.moodle-dialogue.chooserdialogue .moodle-dialogue-content .moodle-dialogue-ft,
+.moodle-dialogue.modchooserdialogue .moodle-dialogue-content .moodle-dialogue-ft {
   margin: 0; }
 
-.chooserdialogue .moodle-dialogue-wrap .moodle-dialogue-bd {
+.chooserdialogue .moodle-dialogue-wrap .moodle-dialogue-bd,
+.modchooserdialogue .moodle-dialogue-wrap .moodle-dialogue-bd {
   padding: 0;
   background: #f2f2f2;
   border-bottom-right-radius: 10px;
@@ -11048,7 +11052,8 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
   margin: 0 0.5em; }
 
 /* Various settings for the options area */
-.choosercontainer #chooseform .options {
+.choosercontainer #chooseform .options,
+.modchoosercontainer #modchooseform .options {
   position: relative;
   border-bottom: 1px solid #bbb; }
 
@@ -11063,6 +11068,18 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
     display: inline-block;
     width: 55%; }
 
+.jschooser .modchoosercontainer #modchooseform .alloptions {
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-width: 100%;
+  display: flex;
+  flex-wrap: wrap; }
+  .jschooser .modchoosercontainer #modchooseform .alloptions .option input[type=radio] {
+    display: inline-block; }
+  .jschooser .modchoosercontainer #modchooseform .alloptions .option .typename {
+    display: inline-block;
+    margin-top: 10px; }
+
 /* Settings for option rows and option subtypes */
 .choosercontainer #chooseform .moduletypetitle,
 .choosercontainer #chooseform .option,
@@ -11070,20 +11087,32 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
   margin-bottom: 0;
   padding: 0 1.6em 0 1.6em; }
 
-.choosercontainer #chooseform .moduletypetitle {
+.modchoosercontainer #modchooseform .moduletypetitle,
+.modchoosercontainer #modchooseform .option,
+.modchoosercontainer #modchooseform .nonoption {
+  padding: 1em 0.5em 1em 0.5em;
+  width: 120px;
+  text-align: center; }
+
+.choosercontainer #chooseform .moduletypetitle,
+.modchoosercontainer #modchooseform .moduletypetitle {
   text-transform: uppercase;
   padding-top: 1.2em;
   padding-bottom: 0.4em; }
 
 .choosercontainer #chooseform .option .typename,
-.choosercontainer #chooseform .nonoption .typename {
+.choosercontainer #chooseform .nonoption .typename,
+.modchoosercontainer #modchooseform .option .typename,
+.modchoosercontainer #modchooseform .nonoption .typename {
   padding: 0 0 0 0.5em; }
 
-.choosercontainer #chooseform .modicon + .typename {
+.choosercontainer #chooseform .modicon + .typename,
+.modchoosercontainer #modchooseform .modicon + .typename {
   padding-left: 0; }
 
 .choosercontainer #chooseform .option input[type=radio],
-.choosercontainer #chooseform .option span.typename {
+.choosercontainer #chooseform .option span.typename,
+.modchoosercontainer #modchooseform .option span.typename {
   vertical-align: middle; }
 
 .choosercontainer #chooseform .option label {
@@ -11092,20 +11121,33 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
   padding: 0.5rem 0;
   border-bottom: 1px solid #fff; }
 
-.choosercontainer #chooseform .option .icon {
+.modchoosercontainer #modchooseform .option label {
+  display: block;
+  margin: 0;
+  padding: 0.5rem 0; }
+
+.modchoosercontainer #modchooseform .option label .modicon,
+.modchoosercontainer #modchooseform .option label .typename,
+.modchoosercontainer #modchooseform .option label .info {
+  width: 100%; }
+
+.choosercontainer #chooseform .option .icon,
+.modchoosercontainer #modchooseform .option .icon {
   margin: 0;
   padding: 0 1rem; }
 
-.choosercontainer #chooseform .nonoption {
+.choosercontainer #chooseform .nonoption .modchoosercontainer #modchooseform .nonoption {
   padding-left: 2.7em;
   padding-top: 0.3em;
   padding-bottom: 0.1em; }
 
-.choosercontainer #chooseform .subtype {
+.choosercontainer #chooseform .subtype,
+.modchoosercontainer #modchooseform .subtype {
   margin-bottom: 0;
   padding: 0 1.6em 0 3.2em; }
 
-.choosercontainer #chooseform .subtype .typename {
+.choosercontainer #chooseform .subtype .typename,
+.modchoosercontainer #modchooseform .subtype .typename {
   margin: 0 0 0 0.2em; }
 
 /* The instruction/help area */
@@ -11124,26 +11166,47 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
   overflow-y: auto;
   line-height: 2em; }
 
+.jschooser .modchoosercontainer #modchooseform .instruction,
+.jschooser .modchoosercontainer #modchooseform .typesummary {
+  display: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 100%;
+  margin: 0;
+  background-color: #fff;
+  overflow-x: hidden;
+  overflow-y: auto;
+  line-height: 2em; }
+
 /* Selected option settings */
 .jschooser .choosercontainer #chooseform .instruction,
-.choosercontainer #chooseform .selected .typesummary {
+.choosercontainer #chooseform .selected .typesummary,
+.jschooser .modchoosercontainer #modchooseform .instruction,
+.modchoosercontainer #modchooseform .selected .typesummary {
   display: block; }
 
-.choosercontainer #chooseform .selected {
+.choosercontainer #chooseform .selected,
+.modchoosercontainer #modchooseform .selected {
   background-color: #fff;
   margin-top: -1px;
   padding-top: 1px; }
 
-.chooserdialogue-course-modchooser .modicon .icon {
+.chooserdialogue-course-modchooser .modicon .icon,
+.modchooserdialogue-course-modchooser .modicon .icon {
   width: 24px;
   height: 24px;
   font-size: 24px; }
 
 @media (max-width: 575.98px) {
-  .jsenabled .choosercontainer #chooseform .alloptions {
+  .jsenabled .choosercontainer #chooseform .alloptions,
+  .jsenabled .modchoosercontainer #modchooseform .alloptions {
     max-width: 100%; }
   .jsenabled .choosercontainer #chooseform .instruction,
-  .jsenabled .choosercontainer #chooseform .typesummary {
+  .jsenabled .choosercontainer #chooseform .typesummary,
+  .jsenabled .modchoosercontainer #modchooseform .instruction,
+  .jsenabled .modchoosercontainer #modchooseform .typesummary {
     position: static; } }
 
 /* Form element: listing */

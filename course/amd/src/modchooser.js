@@ -161,9 +161,11 @@ define(
                 CSS.SECTION = '.' + sectionclass;
             }
 
-            var dialogue = $('.chooserdialoguebody');
-            var header = $('.choosertitle');
-            var params = {};
+            var dialogue = $('.modchooserdialoguebody');
+            var header = $('.modchoosertitle');
+            var params = {
+                width: '860px'
+            };
             chooserDialogue.setupChooserDialogue(dialogue, header, params);
 
             // Initialize existing sections and register for dynamically created sections

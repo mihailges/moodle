@@ -15,6 +15,54 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    Course module chooser.
+    @template core/chooser
+
+    Chooser.
+
+    Example context (json):
+    {
+        "title": "Chooser title",
+        "method": "post",
+        "actionurl": "http://example.org/test",
+        "instructions": "Choose one:",
+        "paramname": "param",
+        "sections": [{
+            "id": "section-1",
+            "label": "Section one",
+            "items": [{
+                "label": "item one",
+                "description": "description one"
+            }]
+        }]
+    }
 }}
-{{> core/chooser }}
+<div class="hd modchoosertitle">
+    {{title}}
+</div>
+
+<div class="modchooserdialoguebody">
+    <div class="modchoosercontainer">
+        <div id="modchooseform">
+            <form action="{{actionurl}}" id="modchooserform" method="{{method}}">
+                <div id="typeformdiv">
+                    {{#params}}
+                        <input type="hidden" id="{{id}}" name="{{name}}" value="{{value}}">
+                    {{/params}}
+                    <input type="hidden" name="sesskey" value="{{sesskey}}">
+                </div>
+                <div class="options">
+                    <div class="instruction">
+                        {{instructions}}
+                    </div>
+                    <div class="alloptions">
+                        {{#sections}}
+                            {{#items}}
+                                {{>core_course/modchooser_item}}
+                            {{/items}}
+                        {{/sections}}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

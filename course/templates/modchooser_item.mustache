@@ -31,12 +31,16 @@
 <div class="option">
     <label for="item_{{id}}">
         <span class="modicon">
-            {{#icon}}
-                {{>core/pix_icon}}
-            {{/icon}}
+            <a href="{{value}}">
+                {{#icon}}
+                    {{>core/pix_icon}}
+                {{/icon}}
+            </a>
         </span>
         <span class="typename">{{label}}</span>
-        <span class="info" style="margin-top: 10px; color: #1177d1; pointer: cursor;">{{#pix}} docs, core {{/pix}}</span>
+        <span class="info" style="margin-top: 10px; color: #1177d1; pointer: cursor;">
+            {{#pix}} docs, core {{/pix}}
+        </span>
         <span class="typesummary">
             {{{description}}}
         </span>

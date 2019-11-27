@@ -78,7 +78,9 @@ define(
             sectionid = 0;
         }
 
-        chooserDialogue.displayChooser(e);
+
+
+        chooserDialogue.displayChooser(e, sectionid);
     };
 
     /**

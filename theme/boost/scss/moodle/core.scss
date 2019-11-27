@@ -1523,6 +1523,12 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
     overflow-x: hidden;
     overflow-y: auto;
     line-height: 2em;
+    transition: left 1s linear;
+}
+
+.jschooser .modchoosercontainer #modchooseform .typesummary.open {
+    display: block;
+    left: 0;
 }
 
 /* Selected option settings */
@@ -1542,9 +1548,9 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
 
 .chooserdialogue-course-modchooser .modicon .icon,
 .modchooserdialogue-course-modchooser .modicon .icon {
-    width: 24px;
-    height: 24px;
-    font-size: 24px;
+    width: 32px;
+    height: 32px;
+    font-size: 32px;
 }
 
 @include media-breakpoint-down(xs) {

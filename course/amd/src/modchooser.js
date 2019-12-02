@@ -166,7 +166,7 @@ define(
             var dialogue = $('.modchooserdialoguebody');
             var header = $('.modchoosertitle');
             var params = {
-                width: '860px'
+                width: '900px'
             };
             chooserDialogue.setupChooserDialogue(dialogue, header, params);
 

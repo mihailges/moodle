@@ -43,23 +43,21 @@
 <div class="modchooserdialoguebody">
     <div class="modchoosercontainer">
         <div id="modchooseform">
-            <form action="{{actionurl}}" id="modchooserform" method="{{method}}">
-                <div id="typeformdiv">
-                    {{#params}}
-                        <input type="hidden" id="{{id}}" name="{{name}}" value="{{value}}">
-                    {{/params}}
-                    <input type="hidden" name="sesskey" value="{{sesskey}}">
+            <div id="typeformdiv">
+                {{#params}}
+                    <input type="hidden" id="{{id}}" name="{{name}}" value="{{value}}">
+                {{/params}}
+                <input type="hidden" name="sesskey" value="{{sesskey}}">
+            </div>
+            <div class="options">
+                <div class="alloptions">
+                    {{#sections}}
+                        {{#items}}
+                            {{>core_course/modchooser_item}}
+                        {{/items}}
+                    {{/sections}}
                 </div>
-                <div class="options">
-                    <div class="alloptions">
-                        {{#sections}}
-                            {{#items}}
-                                {{>core_course/modchooser_item}}
-                            {{/items}}
-                        {{/sections}}
-                    </div>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>

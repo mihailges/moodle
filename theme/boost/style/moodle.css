@@ -10823,7 +10823,8 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
   max-width: 100%;
   display: flex;
   flex-wrap: wrap;
-  position: relative; }
+  position: relative;
+  padding: 0.5em 1.5em; }
   .jschooser .modchoosercontainer #modchooseform .alloptions .option input[type=radio] {
     display: inline-block; }
   .jschooser .modchoosercontainer #modchooseform .alloptions .option .typename {
@@ -10921,7 +10922,8 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
 
 .jschooser .modchoosercontainer #modchooseform .instruction,
 .jschooser .modchoosercontainer #modchooseform .typesummary {
-  display: block;
+  display: flex;
+  flex-direction: column;
   position: absolute;
   top: 0;
   right: 0;
@@ -10932,11 +10934,17 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
   overflow-x: hidden;
   overflow-y: auto;
   line-height: 2em;
-  transition: all 0.5s linear;
+  transition: left 0.7s linear;
   width: 100%; }
 
 .jschooser .modchoosercontainer #modchooseform .typesummary.open {
   left: 0; }
+
+.jschooser .modchoosercontainer #modchooseform .typesummary .heading .icon {
+  height: 32px;
+  width: 32px;
+  font-size: 32px;
+  padding: 0; }
 
 /* Selected option settings */
 .jschooser .choosercontainer #chooseform .instruction,

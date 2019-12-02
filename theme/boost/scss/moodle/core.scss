@@ -1398,6 +1398,7 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
     display: flex;
     flex-wrap: wrap;
     position: relative;
+    padding: 0.5em 1.5em;
 
     .option {
         input[type=radio] {
@@ -1535,6 +1536,13 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
 
 .jschooser .modchoosercontainer #modchooseform .typesummary.open {
     left: 0;
+}
+
+.jschooser .modchoosercontainer #modchooseform .typesummary .heading .icon {
+    height: 32px;
+    width: 32px;
+    font-size: 32px;
+    padding: 0;
 }
 
 /* Selected option settings */

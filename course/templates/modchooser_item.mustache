@@ -41,8 +41,19 @@
         <span class="info" style="margin-top: 10px; color: #1177d1; pointer: cursor;">
             {{#pix}} docs, core {{/pix}}
         </span>
-        <span class="typesummary">
+        <div class="typesummary">
+            <div style="padding: 2rem 3rem; text-align: left;">
             {{{description}}}
-        </span>
+            </div>
+            <div style="width: 100%; padding: 1rem 2rem; border-top: 1px solid #dee2e6; display: flex; justify-content: space-between;">
+                <a href="#" class="closetypesummary btn btn-secondary">
+                    {{#str}}back{{/str}}
+                </a>
+                <a href="{{value}}" class="submitbutton btn btn-primary" style="justify-self: end;">
+                    {{#str}}add{{/str}}
+                </a>
+
+            </div>
+        </div>
     </label>
 </div>

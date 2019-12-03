@@ -78,8 +78,6 @@ define(
             sectionid = 0;
         }
 
-
-
         chooserDialogue.displayChooser(e, sectionid);
     };
 
@@ -130,11 +128,6 @@ define(
         // Setup for the block site menu
         $(baseselector).find(CSS.SITEMENU).each(function() {
             _setupForSection(this);
-        });
-
-        $('.testtt').on('click', function(e) {
-            e.preventDefault();
-            displayModChooser(e);
         });
     };
 

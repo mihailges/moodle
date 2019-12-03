@@ -28,10 +28,10 @@
         "description": "description one"
     }
 }}
-<div class="option">
+<div role="gridcell" tabindex="-1" aria-label="{{label}}" class="option">
     <label for="item_{{id}}">
         <span class="modicon">
-            <a href="{{value}}">
+            <a tabindex="-1" href="{{value}}">
                 {{#icon}}
                     {{>core/pix_icon}}
                 {{/icon}}
@@ -45,20 +45,21 @@
             <div class="content" style="padding: 2rem 3rem; text-align: left; overflow-y: auto;">
                 <div class="heading" style="margin-bottom: 25px;">
                     <h5>
-                    {{#icon}}
-                        {{>core/pix_icon}}
-                    {{/icon}}
-                    {{label}}</h5>
+                        {{#icon}}
+                            {{>core/pix_icon}}
+                        {{/icon}}
+                        {{label}}
+                    </h5>
                 </div>
                 <div class="description" style="margin-bottom: 25px;">
                     {{{description}}}
                 </div>
             </div>
             <div class="action-footer" style="width: 100%; padding: 1rem 2rem; border-top: 1px solid #dee2e6; display: flex; justify-content: space-between;">
-                <button class="closetypesummary btn btn-secondary">
+                <button class="closetypesummary btn btn-secondary" tabindex="-1">
                     {{#str}}back{{/str}}
                 </button>
-                <a href="{{value}}" class="addbutton btn btn-primary" style="justify-self: end;">
+                <a href="{{value}}" class="addbutton btn btn-primary" style="justify-self: end;" tabindex="-1">
                     {{#str}}add{{/str}}
                 </a>
             </div>

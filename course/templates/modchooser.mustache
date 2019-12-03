@@ -36,7 +36,7 @@
         }]
     }
 }}
-<div class="hd modchoosertitle">
+<div id="modchooser_label" class="hd modchoosertitle">
     {{title}}
 </div>
 
@@ -49,8 +49,8 @@
                 {{/params}}
                 <input type="hidden" name="sesskey" value="{{sesskey}}">
             </div>
-            <div class="options">
-                <div class="alloptions">
+            <div role="grid" aria-labelledby="modchooser_label" class="options">
+                <div role="row" class="alloptions">
                     {{#sections}}
                         {{#items}}
                             {{>core_course/modchooser_item}}

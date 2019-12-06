@@ -2909,6 +2909,80 @@ class core_course_external extends external_api {
         return self::get_course_module_returns();
     }
 
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     * @since Moodle 3.0
+     */
+    public static function get_course_module_types_metadata_parameters() {
+        return new external_function_parameters(
+            array(
+                'courseid' => new external_value(PARAM_INT, 'The course id')
+            )
+        );
+    }
+
+    /**
+     * Return information about a course module.
+     *
+     * @param string $module the module name
+     * @param int $instance the activity instance id
+     * @return array of warnings and the course module
+     * @since Moodle 3.0
+     * @throws moodle_exception
+     */
+    public static function get_course_module_types_metadata($courseid) {
+
+        $params = self::validate_parameters(self::get_course_module_by_instance_parameters(),
+                                            array(
+                                                'courseid' => $courseid
+                                            ));
+
+        $warnings = array();
+        $modnames = get_module_types_names();
+        if (empty($modnames)) {
+            $warnings[] = 'No modules present.';
+        }
+        $course = get_course($courseid);
+        $modules = get_module_metadata($course, $modnames);
+
+        return array(
+            'modules' => $modules,
+            'warnings' => $warnings
+        );
+    }
+
+    /**
+     * Returns description of method result value
+     *
+     * @return external_description
+     * @since Moodle 3.2
+     */
+    public static function get_user_navigation_options_returns() {
+        return new external_single_structure(
+            array(
+                'modules' => new external_multiple_structure(
+                    new external_single_structure(
+                        array(
+                            'title' => new external_value(PARAM_INT, 'Course id'),
+                            'options' => new external_multiple_structure(
+                                new external_single_structure(
+                                    array(
+                                        'name' => new external_value(PARAM_ALPHANUMEXT, 'Option name'),
+                                        'available' => new external_value(PARAM_BOOL, 'Whether the option is available or not'),
+                                    )
+                                )
+                            )
+                        )
+                    ), 'List of courses'
+                ),
+                'warnings' => new external_warnings()
+            )
+        );
+    }
+
     /**
      * Returns description of method parameters
      *

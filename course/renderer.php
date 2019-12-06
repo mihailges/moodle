@@ -266,6 +266,7 @@ class core_course_renderer extends plugin_renderer_base {
 
         // Retrieve all modules with associated metadata
         $modules = get_module_metadata($course, $modnames, $sectionreturn);
+        print_r($modules); die();
         $urlparams = array('section' => $section);
 
         // We'll sort resources and activities into two lists

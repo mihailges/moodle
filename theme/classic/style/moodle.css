@@ -11173,8 +11173,7 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
 
 .jschooser .modchoosercontainer #modchooseform .instruction,
 .jschooser .modchoosercontainer #modchooseform .typesummary {
-  display: flex;
-  flex-direction: column;
+  display: none;
   position: absolute;
   top: 0;
   right: 0;
@@ -11189,6 +11188,8 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
   width: 100%; }
 
 .jschooser .modchoosercontainer #modchooseform .typesummary.open {
+  display: flex;
+  flex-direction: column;
   left: 0; }
 
 .jschooser .modchoosercontainer #modchooseform .typesummary .heading .icon {

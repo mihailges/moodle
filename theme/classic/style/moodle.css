@@ -11068,7 +11068,7 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
     display: inline-block;
     width: 55%; }
 
-.jschooser .modchoosercontainer #modchooseform .alloptions {
+.modchoosercontainer #modchooseform .alloptions {
   overflow-x: hidden;
   overflow-y: auto;
   max-width: 100%;
@@ -11076,13 +11076,13 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
   flex-wrap: wrap;
   position: relative;
   padding: 0.5em 1.5em; }
-  .jschooser .modchoosercontainer #modchooseform .alloptions .option input[type=radio] {
+  .modchoosercontainer #modchooseform .alloptions .option input[type=radio] {
     display: inline-block; }
-  .jschooser .modchoosercontainer #modchooseform .alloptions .option .typename {
+  .modchoosercontainer #modchooseform .alloptions .option .typename {
     display: inline-block;
     margin-top: 10px; }
 
-.jschooser .modchoosercontainer #modchooseform .alloptions.noscroll {
+.modchoosercontainer #modchooseform .alloptions.noscroll {
   overflow-y: hidden; }
 
 /* Settings for option rows and option subtypes */
@@ -11171,8 +11171,8 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
   overflow-y: auto;
   line-height: 2em; }
 
-.jschooser .modchoosercontainer #modchooseform .instruction,
-.jschooser .modchoosercontainer #modchooseform .typesummary {
+.modchoosercontainer #modchooseform .instruction,
+.modchoosercontainer #modchooseform .typesummary {
   display: none;
   position: absolute;
   top: 0;
@@ -11187,7 +11187,7 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
   transition: left 0.7s linear;
   width: 100%; }
 
-.jschooser .modchoosercontainer #modchooseform .typesummary.open {
+.modchoosercontainer #modchooseform .typesummary.open {
   display: flex;
   flex-direction: column;
   left: 0; }
@@ -11201,7 +11201,7 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
 /* Selected option settings */
 .jschooser .choosercontainer #chooseform .instruction,
 .choosercontainer #chooseform .selected .typesummary,
-.jschooser .modchoosercontainer #modchooseform .instruction,
+.modchoosercontainer #modchooseform .instruction,
 .modchoosercontainer #modchooseform .selected .typesummary {
   display: block; }
 

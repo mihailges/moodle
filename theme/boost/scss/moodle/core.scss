@@ -1391,7 +1391,7 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
     }
 }
 
-.jschooser .modchoosercontainer #modchooseform .alloptions {
+.modchoosercontainer #modchooseform .alloptions {
     overflow-x: hidden;
     overflow-y: auto;
     max-width: 100%;
@@ -1412,7 +1412,7 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
     }
 }
 
-.jschooser .modchoosercontainer #modchooseform .alloptions.noscroll {
+.modchoosercontainer #modchooseform .alloptions.noscroll {
     overflow-y: hidden;
 }
 
@@ -1516,8 +1516,8 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
     line-height: 2em;
 }
 
-.jschooser .modchoosercontainer #modchooseform .instruction,
-.jschooser .modchoosercontainer #modchooseform .typesummary {
+.modchoosercontainer #modchooseform .instruction,
+.modchoosercontainer #modchooseform .typesummary {
     display: none;
     position: absolute;
     top: 0;
@@ -1533,7 +1533,7 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
     width: 100%;
 }
 
-.jschooser .modchoosercontainer #modchooseform .typesummary.open {
+.modchoosercontainer #modchooseform .typesummary.open {
     display: flex;
     flex-direction: column;
     left: 0;
@@ -1549,7 +1549,7 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
 /* Selected option settings */
 .jschooser .choosercontainer #chooseform .instruction,
 .choosercontainer #chooseform .selected .typesummary,
-.jschooser .modchoosercontainer #modchooseform .instruction,
+.modchoosercontainer #modchooseform .instruction,
 .modchoosercontainer #modchooseform .selected .typesummary {
     display: block;
 }

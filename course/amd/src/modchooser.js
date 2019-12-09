@@ -157,11 +157,8 @@ define(
             }
 
             var dialogue = $('.modchooserdialoguebody');
-            var header = $('.modchoosertitle');
-            var params = {
-                width: '900px'
-            };
-            chooserDialogue.setupChooserDialogue(dialogue, header, params);
+            var title = $('.modchoosertitle');
+            chooserDialogue.setupChooserDialogue(dialogue, title);
 
             // Initialize existing sections and register for dynamically created sections
             setupForSection();

@@ -28,41 +28,43 @@
         "description": "description one"
     }
 }}
-<div role="gridcell" tabindex="-1" aria-label="{{label}}" class="option">
-    <label for="item_{{id}}">
+<div role="gridcell" tabindex="-1" aria-label="{{label}}" class="module">
+    <div class="modinfo">
         <span class="modicon">
-            <a href="{{value}}" class="actionelement" aria-label="{{#str}} addnew, moodle, {{label}} {{/str}}">
+            <a href="{{value}}" aria-label="{{#str}} addnew, moodle, {{label}} {{/str}}">
                 {{#icon}}
                     {{>core/pix_icon}}
                 {{/icon}}
             </a>
         </span>
-        <span class="typename">{{label}}</span>
-        <span class="info actionelement" aria-label="{{#str}} moreinfo {{/str}}" style="margin-top: 10px; color: #1177d1; pointer: cursor;">
-            {{#pix}} docs, core {{/pix}}
-        </span>
-        <div class="typesummary" aria-labelledby="typesummary_label" aria-describedby="typesumary_desc">
-            <div class="content" style="padding: 2rem 3rem; text-align: left; overflow-y: auto;">
-                <div class="heading" style="margin-bottom: 25px;">
-                    <h5 id="typesummary_label">
-                        {{#icon}}
-                            {{>core/pix_icon}}
-                        {{/icon}}
-                        {{label}}
-                    </h5>
-                </div>
-                <div id="typesumary_desc" class="description" style="margin-bottom: 25px;">
-                    {{{description}}}
-                </div>
+        <span class="modname">{{label}}</span>
+        <div class="modactions">
+            <span class="showmodsummary" aria-label="{{#str}} moreinfo {{/str}}" style="margin-top: 10px; color: #1177d1; pointer: cursor;">
+                {{#pix}} docs, core {{/pix}}
+            </span>
+        </div>
+    </div>
+    <div class="modsummary" aria-labelledby="modsummary_label" aria-describedby="modsumary_desc">
+        <div class="content" style="padding: 2rem 3rem; text-align: left; overflow-y: auto;">
+            <div class="heading" style="margin-bottom: 25px;">
+                <h5 id="modsummary_label">
+                    {{#icon}}
+                        {{>core/pix_icon}}
+                    {{/icon}}
+                    {{label}}
+                </h5>
             </div>
-            <div class="action-footer" style="width: 100%; padding: 1rem 2rem; border-top: 1px solid #dee2e6; display: flex; justify-content: space-between;">
-                <button class="closetypesummary btn btn-secondary" tabindex="-1">
-                    {{#str}} back {{/str}}
-                </button>
-                <a href="{{value}}" class="addbutton btn btn-primary" style="justify-self: end;" tabindex="-1">
-                    {{#str}} add {{/str}}
-                </a>
+            <div id="modsumary_desc" class="description" style="margin-bottom: 25px;">
+                {{{description}}}
             </div>
         </div>
-    </label>
+        <div class="actions" style="width: 100%; padding: 1rem 2rem; border-top: 1px solid #dee2e6; display: flex; justify-content: space-between;">
+            <button class="closemodsummary btn btn-secondary" tabindex="-1">
+                {{#str}} back {{/str}}
+            </button>
+            <a href="{{value}}" class="addmodule btn btn-primary" style="justify-self: end;" tabindex="-1">
+                {{#str}} add {{/str}}
+            </a>
+        </div>
+    </div>
 </div>

@@ -78,7 +78,7 @@ define(
             sectionid = 0;
         }
 
-        chooserDialogue.displayChooser(e);
+        chooserDialogue.displayChooser(e, sectionid);
     };
 
     /**
@@ -129,11 +129,6 @@ define(
         $(baseselector).find(CSS.SITEMENU).each(function() {
             _setupForSection(this);
         });
-
-        $('.testtt').on('click', function(e) {
-            e.preventDefault();
-            displayModChooser(e);
-        });
     };
 
     /**
@@ -161,9 +156,11 @@ define(
                 CSS.SECTION = '.' + sectionclass;
             }
 
-            var dialogue = $('.chooserdialoguebody');
-            var header = $('.choosertitle');
-            var params = {};
+            var dialogue = $('.modchooserdialoguebody');
+            var header = $('.modchoosertitle');
+            var params = {
+                width: '900px'
+            };
             chooserDialogue.setupChooserDialogue(dialogue, header, params);
 
             // Initialize existing sections and register for dynamically created sections

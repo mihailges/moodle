@@ -11054,10 +11054,12 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
   position: relative;
   border-bottom: 1px solid #bbb; }
 
+.modchoosercontainer {
+  overflow-y: auto; }
+
 .modchoosercontainer .modulescontainer {
   position: relative;
   overflow-x: hidden;
-  overflow-y: auto;
   max-width: 100%;
   display: flex;
   flex-wrap: wrap;
@@ -11066,7 +11068,7 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
     display: inline-block;
     margin-top: 10px; }
 
-.modchoosercontainer .modulescontainer.noscroll {
+.modchoosercontainer.noscroll {
   overflow-y: hidden; }
 
 /* Only set these options if we're showing the js container */
@@ -11091,7 +11093,7 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
 .modchoosercontainer .modulescontainer .module,
 .modchoosercontainer .modulescontainer .nonmodule {
   padding: 1em 0.5em 1em 0.5em;
-  width: 120px;
+  width: 118px;
   text-align: center; }
 
 .choosercontainer #chooseform .moduletypetitle {
@@ -11125,9 +11127,9 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
   margin: 0;
   padding: 0.5rem 0; }
 
-.modchoosercontainer .modulescontainer .module label .modicon,
-.modchoosercontainer .modulescontainer .module label .modname,
-.modchoosercontainer .modulescontainer .module label .modinfo {
+.modchoosercontainer .modulescontainer .module .modinfo .modicon,
+.modchoosercontainer .modulescontainer .module .modinfo .modname,
+.modchoosercontainer .modulescontainer .module .modinfo .modinfo {
   width: 100%; }
 
 .choosercontainer #chooseform .option .icon,

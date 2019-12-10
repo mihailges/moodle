@@ -1371,10 +1371,13 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
     border-bottom: 1px solid #bbb;
 }
 
+.modchoosercontainer {
+    overflow-y: auto;
+}
+
 .modchoosercontainer .modulescontainer {
     position: relative;
     overflow-x: hidden;
-    overflow-y: auto;
     max-width: 100%;
     display: flex;
     flex-wrap: wrap;
@@ -1388,7 +1391,7 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
     }
 }
 
-.modchoosercontainer .modulescontainer.noscroll {
+.modchoosercontainer.noscroll {
     overflow-y: hidden;
 }
 
@@ -1422,7 +1425,7 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
 .modchoosercontainer .modulescontainer .module,
 .modchoosercontainer .modulescontainer .nonmodule {
     padding: 1em 0.5em 1em 0.5em;
-    width: 120px;
+    width: 118px;
     text-align: center;
 }
 
@@ -1463,9 +1466,9 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
     padding: ($spacer / 2) 0;
 }
 
-.modchoosercontainer .modulescontainer .module label .modicon,
-.modchoosercontainer .modulescontainer .module label .modname,
-.modchoosercontainer .modulescontainer .module label .modinfo {
+.modchoosercontainer .modulescontainer .module .modinfo .modicon,
+.modchoosercontainer .modulescontainer .module .modinfo .modname,
+.modchoosercontainer .modulescontainer .module .modinfo .modinfo {
     width: 100%;
 }
 

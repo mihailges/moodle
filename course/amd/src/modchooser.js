@@ -77,7 +77,6 @@ define(
             // The block site menu has a sectionid of 0
             sectionid = 0;
         }
-
         chooserDialogue.displayChooser(e, sectionid);
     };
 
@@ -94,10 +93,9 @@ define(
         if (!chooserspan.length) {
             return;
         }
-        var chooserlink = "<a href='#' class='chooser-link' />";
-        $(chooserspan).children().wrapAll(chooserlink);
+        var modchooserlink = $(chooserspan).children().wrapAll("<a href='#' class='chooser-link' />");
 
-        $('.chooser-link').on('click', function(e) {
+        $(modchooserlink).on('click', function(e) {
             e.preventDefault();
             displayModChooser(e);
         });

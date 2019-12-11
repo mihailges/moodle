@@ -11062,8 +11062,7 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
   overflow-x: hidden;
   max-width: 100%;
   display: flex;
-  flex-wrap: wrap;
-  padding: 0.5em 1.5em; }
+  flex-wrap: wrap; }
   .modchoosercontainer .modulescontainer .module .modname {
     display: inline-block;
     margin-top: 10px; }
@@ -11169,7 +11168,8 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
 
 .modchoosercontainer .modulescontainer .module .instruction,
 .modchoosercontainer .modulescontainer .module .modsummary {
-  display: none;
+  visibility: hidden;
+  display: block;
   position: absolute;
   top: 0;
   right: 0;
@@ -11180,12 +11180,11 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
   overflow-x: hidden;
   overflow-y: auto;
   line-height: 2em;
-  transition: left 0.7s linear;
+  transition: visibility 0.3s linear, left 0.3s linear;
   width: 100%; }
 
 .modchoosercontainer .modulescontainer .module .modsummary.open {
-  display: flex;
-  flex-direction: column;
+  visibility: visible;
   left: 0; }
 
 .modchoosercontainer .modulescontainer .module .modsummary .content .heading .icon {

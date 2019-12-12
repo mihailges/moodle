@@ -41,8 +41,8 @@
 </div>
 
 <div class="modchooserdialoguebody">
-    <div class="modchoosercontainer" style="height: 450px;" data-region="chooser-container">
-        <div class="modulescontainer" role="grid" tabindex="0" aria-labelledby="modchooser_label" data-region="chooser-options-container">
+    <div class="modchoosercontainer" style="height: 450px;" aria-labelledby="modchooser_label" data-region="chooser-container" role="grid" aria-rowcount="1">
+        <div class="modulescontainer" role="row" tabindex="0" data-region="chooser-options-container">
             {{#sections}}
                 {{#items}}
                     {{>core_course/modchooser_item}}

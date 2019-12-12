@@ -28,24 +28,27 @@
         "description": "description one"
     }
 }}
-<div role="gridcell" tabindex="-1" aria-label="{{label}}" class="module">
-    <div class="modinfo">
+<div role="gridcell" tabindex="-1" aria-label="{{label}}" class="module" data-region="chooser-option-container">
+    <div class="modinfo" data-region="chooser-option-info-container">
         <span class="modicon">
-            <a href="{{value}}" aria-label="{{#str}} addnew, moodle, {{label}} {{/str}}" tabindex="-1">
+            <a href="{{value}}" aria-label="{{#str}} addnew, moodle, {{label}} {{/str}}" tabindex="-1" data-action="add-chooser-option">
                 {{#icon}}
                     {{>core/pix_icon}}
                 {{/icon}}
             </a>
         </span>
         <span class="modname">{{label}}</span>
-        <div class="modactions">
-            <span class="showmodsummary" aria-label="{{#str}} moreinfo {{/str}}" style="margin-top: 10px; color: #1177d1; pointer: cursor;">
+        <div class="modactions" role="menubar" data-region="chooser-option-actions-container">
+            <span class="showmodsummary" data-group="chooser-option-action" data-action="show-option-summary" tabindex="-1" aria-label="{{#str}} moreinfo {{/str}}" style="margin-top: 10px; color: #1177d1; pointer: cursor;">
+                {{#pix}} docs, core {{/pix}}
+            </span>
+            <span class="showmodsummary" data-group="chooser-option-action" data-action="show-option-summary" tabindex="-1" aria-label="{{#str}} moreinfo {{/str}}" style="margin-top: 10px; color: #1177d1; pointer: cursor;">
                 {{#pix}} docs, core {{/pix}}
             </span>
         </div>
     </div>
-    <div class="modsummary" aria-labelledby="modsummary_label" aria-describedby="modsumary_desc">
-        <div class="content" style="padding: 2rem 3rem; text-align: left; overflow-y: auto;">
+    <div class="modsummary" data-region="chooser-option-summary-container" aria-labelledby="modsummary_label" aria-describedby="modsumary_desc">
+        <div class="content" data-region="chooser-option-summary-content-container" style="padding: 2rem 3rem; text-align: left; overflow-y: auto;">
             <div class="heading" style="margin-bottom: 25px;">
                 <h5 id="modsummary_label">
                     {{#icon}}
@@ -58,11 +61,11 @@
                 {{{description}}}
             </div>
         </div>
-        <div class="actions" style="width: 100%; padding: 1rem 2rem; border-top: 1px solid #dee2e6; display: flex; justify-content: space-between;">
-            <button class="closemodsummary btn btn-secondary" tabindex="-1">
+        <div class="actions" data-region="chooser-option-summary-actions-container" style="width: 100%; padding: 1rem 2rem; border-top: 1px solid #dee2e6; display: flex; justify-content: space-between;">
+            <button data-action="close-chooser-option-summary" class="closemodsummary btn btn-secondary" tabindex="-1">
                 {{#str}} back {{/str}}
             </button>
-            <a href="{{value}}" class="addmodule btn btn-primary" style="justify-self: end;" tabindex="-1">
+            <a href="{{value}}" data-action="add-chooser-option" class="addmodule btn btn-primary" style="justify-self: end;" tabindex="-1">
                 {{#str}} add {{/str}}
             </a>
         </div>

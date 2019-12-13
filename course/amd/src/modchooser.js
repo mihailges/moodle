@@ -30,7 +30,6 @@ define(
         'core/yui',
         'jquery',
         'core/activity_chooser_dialogue',
-        'core/pubsub',
         'core/activity_chooser_events',
     ],
     function(
@@ -49,6 +48,8 @@ define(
         SITETOPIC: 'div.sitetopic'
     };
 
+    var modChooserData = null;
+
     /**
      * The current section ID.
      *
@@ -58,6 +59,10 @@ define(
      * @default null
      */
     var sectionid = null;
+
+    var setModChooserData = function(data) {
+        modChooserData = data;
+    };
 
     /**
      * Display the module chooser
@@ -77,7 +82,16 @@ define(
             // The block site menu has a sectionid of 0
             sectionid = 0;
         }
-        chooserDialogue.displayChooser(e, sectionid);
+
+        //var dialogue = $('.modchooserdialoguebody');
+        var content = $('.modchooserdialoguebody').detach();
+        var title = $('.modchoosertitle');
+        var urlParams = {
+            section:  sectionid
+        };
+        console.log(modChooserData);
+        chooserDialogue.setupChooserDialogue(title, data);
+        chooserDialogue.displayChooser(e);
     };
 
     /**
@@ -96,6 +110,7 @@ define(
         var modchooserlink = $(chooserspan).children().wrapAll("<a href='#' class='chooser-link' />");
 
         $(modchooserlink).on('click', function(e) {
+            console.log(modChooserData);
             e.preventDefault();
             displayModChooser(e);
         });
@@ -153,11 +168,6 @@ define(
             if (sectionclass) {
                 CSS.SECTION = '.' + sectionclass;
             }
-
-            var dialogue = $('.modchooserdialoguebody');
-            var title = $('.modchoosertitle');
-            chooserDialogue.setupChooserDialogue(dialogue, title);
-
             // Initialize existing sections and register for dynamically created sections
             setupForSection();
         });
@@ -166,6 +176,7 @@ define(
     };
 
     return /** @alias module:core/notification */{
-        init: initializer
+        init: initializer,
+        setModChooserData: setModChooserData
     };
 });

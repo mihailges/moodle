@@ -144,8 +144,16 @@ class core_course_renderer extends plugin_renderer_base {
         if (!$this->page->requires->should_create_one_time_item_now('core_course_modchooser')) {
             return '';
         }
-        $modchooser = new \core_course\output\modchooser($course, $modules);
-        return $this->render($modchooser);
+        $data = json_encode($modules);
+     //   $this->page->requires->js_call_amd('core_course/modchooser', 'init');
+        $script = "
+            require(['core_course/modchooser'], function(ModChooser) {
+                    var modChooserData = {$data};
+                    ModChooser.setModChooserData(modChooserData);
+                    ModChooser.init();
+                }
+            );";
+         $this->page->requires->js_amd_inline($script);
     }
 
     /**
@@ -337,7 +345,12 @@ class core_course_renderer extends plugin_renderer_base {
                 $output = html_writer::tag('div', $output, array('class' => 'show addresourcedropdown'));
                 $modchooser = html_writer::tag('div', $modchooser, array('class' => 'hide addresourcemodchooser'));
             }
+//            global $PAGE;
+//
+//            $modchooser .= html_writer::script(js_writer::set_variable('modChooserData', $modules));
+//            $PAGE->requires->js_call_amd('core_course/modchooser', 'init');
             $output = $this->course_modchooser($modules, $course) . $modchooser . $output;
+//            $output = $modchooser . $output;
         }
 
         return $output;

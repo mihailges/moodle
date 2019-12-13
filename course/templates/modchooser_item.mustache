@@ -39,16 +39,16 @@
         </span>
         <span class="modname">{{label}}</span>
         <div class="modactions" role="menubar" data-region="chooser-option-actions-container">
-            <span class="showmodsummary" data-group="chooser-option-action" data-action="show-option-summary" tabindex="0" aria-label="{{#str}} moreinfo {{/str}}" style="margin-top: 10px; color: #1177d1; pointer: cursor;">
+            <span data-group="chooser-option-action" data-action="show-option-summary" tabindex="0" aria-label="{{#str}} moreinfo {{/str}}">
                 {{#pix}} docs, core {{/pix}}
             </span>
-            <span class="showmodsummary" data-group="chooser-option-action" data-action="show-option-summary" tabindex="0" aria-label="{{#str}} moreinfo {{/str}}" style="margin-top: 10px; color: #1177d1; pointer: cursor;">
+            <span data-group="chooser-option-action" data-action="show-option-summary" tabindex="0" aria-label="{{#str}} moreinfo {{/str}}">
                 {{#pix}} docs, core {{/pix}}
             </span>
         </div>
     </div>
     <div class="modsummary" data-region="chooser-option-summary-container" aria-labelledby="modsummary_label" aria-describedby="modsumary_desc">
-        <div class="content" data-region="chooser-option-summary-content-container" style="padding: 2rem 3rem; text-align: left; overflow-y: auto;">
+        <div class="content" data-region="chooser-option-summary-content-container">
             <div class="heading" style="margin-bottom: 25px;">
                 <h5 id="modsummary_label">
                     {{#icon}}
@@ -57,15 +57,15 @@
                     {{label}}
                 </h5>
             </div>
-            <div id="modsumary_desc" class="description" style="margin-bottom: 25px;">
+            <div id="modsumary_desc" class="description">
                 {{{description}}}
             </div>
         </div>
-        <div class="actions" data-region="chooser-option-summary-actions-container" style="width: 100%; padding: 1rem 2rem; border-top: 1px solid #dee2e6; display: flex; justify-content: space-between;">
+        <div class="actions" data-region="chooser-option-summary-actions-container">
             <button data-action="close-chooser-option-summary" class="closemodsummary btn btn-secondary" tabindex="-1">
                 {{#str}} back {{/str}}
             </button>
-            <a href="{{value}}" data-action="add-chooser-option" class="addmodule btn btn-primary" style="justify-self: end;" tabindex="-1">
+            <a href="{{value}}" data-action="add-chooser-option" class="addmodule btn btn-primary" tabindex="-1">
                 {{#str}} add {{/str}}
             </a>
         </div>

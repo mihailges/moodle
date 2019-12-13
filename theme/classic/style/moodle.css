@@ -11126,15 +11126,41 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
   margin: 0;
   padding: 0.5rem 0; }
 
+.modchoosercontainer .modulescontainer .module .modactions {
+  margin-top: .3rem; }
+
+.modchoosercontainer .modulescontainer .module .modactions span {
+  color: #1177d1;
+  cursor: pointer;
+  margin: 0 .2rem; }
+
 .modchoosercontainer .modulescontainer .module .modinfo .modicon,
 .modchoosercontainer .modulescontainer .module .modinfo .modname,
 .modchoosercontainer .modulescontainer .module .modinfo .modinfo {
   width: 100%; }
 
-.choosercontainer #chooseform .option .icon,
-.modchoosercontainer .modulescontainer .module .icon {
+.modchoosercontainer .modulescontainer .module .modsummary .content {
+  padding: 2rem 3rem;
+  text-align: left;
+  overflow-y: auto; }
+
+.modchoosercontainer .modulescontainer .module .modsummary .content .heading {
+  margin-bottom: 25px; }
+
+.modchoosercontainer .modulescontainer .module .modsummary .actions {
+  width: 100%;
+  padding: 1rem 2rem;
+  border-top: 1px solid #dee2e6;
+  display: flex;
+  justify-content: space-between; }
+
+.choosercontainer #chooseform .option .icon {
   margin: 0;
   padding: 0 1rem; }
+
+.modchoosercontainer .modulescontainer .module .icon {
+  margin: 0;
+  padding: 0; }
 
 .choosercontainer #chooseform .nonoption .modchoosercontainer .modulescontainer .nonmodule {
   padding-left: 2.7em;

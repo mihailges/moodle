@@ -70,7 +70,7 @@ define(
      * @method display_mod_chooser
      * @param {EventFacade} e Triggering Event
      */
-    var displayModChooser = function(e) {
+    var displayModChooser = function(e, data) {
         // Set the section for this version of the dialogue
         if ($(e.currentTarget).parents(CSS.SITETOPIC).length) {
             // The site topic has a sectionid of 1
@@ -89,9 +89,7 @@ define(
         var urlParams = {
             section:  sectionid
         };
-        console.log(modChooserData);
-        chooserDialogue.setupChooserDialogue(title, data);
-        chooserDialogue.displayChooser(e);
+        chooserDialogue.displayChooser(e, data);
     };
 
     /**
@@ -102,7 +100,7 @@ define(
      * @private
      * @param baseselector The selector to limit scope to
      */
-    var _setupForSection = function(section) {
+    var _setupForSection = function(section, data) {
         var chooserspan = $(section).find(CSS.SECTIONMODCHOOSER);
         if (!chooserspan.length) {
             return;
@@ -110,9 +108,8 @@ define(
         var modchooserlink = $(chooserspan).children().wrapAll("<a href='#' class='chooser-link' />");
 
         $(modchooserlink).on('click', function(e) {
-            console.log(modChooserData);
             e.preventDefault();
-            displayModChooser(e);
+            displayModChooser(e, data);
         });
     };
 
@@ -123,24 +120,24 @@ define(
      * @method setup_for_section
      * @param baseselector The selector to limit scope to
      */
-    var setupForSection = function(baseselector) {
+    var setupForSection = function(data, baseselector) {
         if (!baseselector) {
             baseselector = CSS.PAGECONTENT;
         }
         // Setup for site topics
         $(baseselector).find(CSS.SITETOPIC).each(function() {
-            _setupForSection(this);
+            _setupForSection(this, data);
         });
         // Setup for standard course topics
         if (CSS.SECTION) {
             $(baseselector).find(CSS.SECTION).each(function() {
-                _setupForSection(this);
+                _setupForSection(this, data);
             });
         }
 
         // Setup for the block site menu
         $(baseselector).find(CSS.SITEMENU).each(function() {
-            _setupForSection(this);
+            _setupForSection(this, data);
         });
     };
 
@@ -162,17 +159,15 @@ define(
      *
      * @method initializer
      */
-    var initializer = function() {
+    var initializer = function(data) {
         Y.use('moodle-course-coursebase', function() {
             var sectionclass = M.course.format.get_sectionwrapperclass();
             if (sectionclass) {
                 CSS.SECTION = '.' + sectionclass;
             }
             // Initialize existing sections and register for dynamically created sections
-            setupForSection();
+            setupForSection(data);
         });
-
-        PubSub.subscribe(ActivityChooserEvents.OPTION_SELECTED, optionSelected);
     };
 
     return /** @alias module:core/notification */{

@@ -142,28 +142,17 @@ class core_course_renderer extends plugin_renderer_base {
      */
     public function course_modchooser($modules, $course) {
         global $OUTPUT;
+
         if (!$this->page->requires->should_create_one_time_item_now('core_course_modchooser')) {
             return '';
         }
 
-        $context = context_course::instance($course->id);
+        $title = get_string('addresourceoractivity');
+        $modchooserdata = new \core_course\external\course_module_chooser_exporter($course, $title, $modules);
+        print_r($modchooserdata); die();
+        $data = json_encode($modchooserdata->export($OUTPUT));
 
-        array_map(function($module) use ($context, $OUTPUT) {
-
-            $item = core_course\output\modchooser_item($module, $context);
-            return $item->export_for_template($OUTPUT);
-        }, $modules);
-
-        $actionurl = new moodle_url('/course/jumpto.php');
-
-        $dataobj = new stdClass();
-        $dataobj->actionurl = $actionurl->out(false);
-        $dataobj->sesskey = sesskey();
-        $dataobj->title = get_string('addresourceoractivity');
-        $dataobj->course = $course->id;
-        $dataobj->modules = $modules;
-
-        $data = json_encode($dataobj);
+        print_r($data); die();
 
         $script = "
             require(['core_course/modchooser'], function(ModChooser) {

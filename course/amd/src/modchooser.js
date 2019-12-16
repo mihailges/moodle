@@ -36,7 +36,6 @@ define(
         Y,
         $,
         chooserDialogue,
-        PubSub,
         ActivityChooserEvents
     ) {
 
@@ -48,8 +47,6 @@ define(
         SITETOPIC: 'div.sitetopic'
     };
 
-    var modChooserData = null;
-
     /**
      * The current section ID.
      *
@@ -59,10 +56,6 @@ define(
      * @default null
      */
     var sectionid = null;
-
-    var setModChooserData = function(data) {
-        modChooserData = data;
-    };
 
     /**
      * Display the module chooser
@@ -82,13 +75,11 @@ define(
             // The block site menu has a sectionid of 0
             sectionid = 0;
         }
+        // Append the section parameter to the add module url.
+        data.options.forEach((option) => {
+            option.urls.addoption += '&section=' + sectionid;
+        });
 
-        //var dialogue = $('.modchooserdialoguebody');
-        var content = $('.modchooserdialoguebody').detach();
-        var title = $('.modchoosertitle');
-        var urlParams = {
-            section:  sectionid
-        };
         chooserDialogue.displayChooser(e, data);
     };
 
@@ -142,19 +133,6 @@ define(
     };
 
     /**
-     * Helper function to set the value of a hidden radio button when a
-     * selection is made.
-     *
-     * @method option_selected
-     * @param {String} thisoption The selected option value
-     * @private
-     */
-    var optionSelected = function(thisoption) {
-        // Add the sectionid to the URL.
-        chooserDialogue.updateHiddenRadioValue('jump', thisoption.value + '&section=' + sectionid);
-    };
-
-    /**
      * Set up the activity chooser.
      *
      * @method initializer
@@ -171,7 +149,6 @@ define(
     };
 
     return /** @alias module:core/notification */{
-        init: initializer,
-        setModChooserData: setModChooserData
+        init: initializer
     };
 });

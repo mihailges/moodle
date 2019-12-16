@@ -31,7 +31,7 @@
 <div role="gridcell" tabindex="0" aria-label="{{label}}" class="module" data-region="chooser-option-container">
     <div class="modinfo" data-region="chooser-option-info-container">
         <span class="modicon">
-            <a href="{{value}}" aria-label="{{#str}} addnew, moodle, {{label}} {{/str}}" tabindex="0" data-action="add-chooser-option">
+            <a href="{{urls.addoption}}" aria-label="{{#str}} addnew, moodle, {{label}} {{/str}}" tabindex="0" data-action="add-chooser-option">
                 {{#icon}}
                     {{>core/pix_icon}}
                 {{/icon}}
@@ -49,7 +49,7 @@
     </div>
     <div class="modsummary" data-region="chooser-option-summary-container" aria-labelledby="modsummary_label" aria-describedby="modsumary_desc">
         <div class="content" data-region="chooser-option-summary-content-container">
-            <div class="heading" style="margin-bottom: 25px;">
+            <div class="heading">
                 <h5 id="modsummary_label">
                     {{#icon}}
                         {{>core/pix_icon}}
@@ -65,7 +65,7 @@
             <button data-action="close-chooser-option-summary" class="closemodsummary btn btn-secondary" tabindex="-1">
                 {{#str}} back {{/str}}
             </button>
-            <a href="{{value}}" data-action="add-chooser-option" class="addmodule btn btn-primary" tabindex="-1">
+            <a href="{{urls.addoption}}" data-action="add-chooser-option" class="addmodule btn btn-primary" tabindex="-1">
                 {{#str}} add {{/str}}
             </a>
         </div>

@@ -148,11 +148,11 @@ class core_course_renderer extends plugin_renderer_base {
         }
 
         $title = get_string('addresourceoractivity');
-        $modchooserdata = new \core_course\external\course_module_chooser_exporter($course, $title, $modules);
-        print_r($modchooserdata); die();
+        $related = [
+            'context' => context_course::instance($course->id)
+        ];
+        $modchooserdata = new \core_course\external\course_module_chooser_exporter($title, $modules, $related);
         $data = json_encode($modchooserdata->export($OUTPUT));
-
-        print_r($data); die();
 
         $script = "
             require(['core_course/modchooser'], function(ModChooser) {
@@ -160,7 +160,8 @@ class core_course_renderer extends plugin_renderer_base {
                     ModChooser.init(modChooserData);
                 }
             );";
-         $this->page->requires->js_amd_inline($script);
+
+        $this->page->requires->js_amd_inline($script);
     }
 
     /**

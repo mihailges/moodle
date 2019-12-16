@@ -11145,7 +11145,10 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
   overflow-y: auto; }
 
 .modchoosercontainer .modulescontainer .module .modsummary .content .heading {
-  margin-bottom: 25px; }
+  margin-bottom: 1.5rem; }
+
+.modchoosercontainer .modulescontainer .module .modsummary .content .description {
+  margin-bottom: 2rem; }
 
 .modchoosercontainer .modulescontainer .module .modsummary .actions {
   width: 100%;

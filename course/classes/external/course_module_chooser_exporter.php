@@ -42,8 +42,6 @@ class course_module_chooser_exporter extends exporter {
     private $title;
     /** @var array $modules Array containing the available modules */
     private $modules;
-    /** @var array $course The course object */
-    private $course;
 
     /**
      * Constructor.
@@ -55,14 +53,13 @@ class course_module_chooser_exporter extends exporter {
      * @param array $related The related data for the export.
      */
     public function __construct(
-        object $course,
         string $title,
-        ?array $modules
-
+        ?array $modules,
+        array $related = []
     ) {
         $this->title = $title;
-        $this->modules = ['dsadas'];
-        $this->course = $course;
+        $this->modules = $modules;
+        return parent::__construct([], $related);
     }
 
     /**
@@ -78,25 +75,24 @@ class course_module_chooser_exporter extends exporter {
                 'default' => null,
                 'null' => NULL_ALLOWED
             ],
-            'modules' => [
+            'options' => [
                 'multiple' => true,
                 'optional' => true,
                 'type' => [
                     'label' => ['type' => PARAM_TEXT],
                     'description' => ['type' => PARAM_TEXT],
                     'urls' => [
-                        'add_module' => [
-                            'type' => PARAM_URL,
-                            'optional' => true,
-                            'default' => null,
-                            'null' => NULL_ALLOWED
-                        ],
-                        'module_icon' => [
-                            'type' => PARAM_URL,
-                            'optional' => true,
-                            'default' => null,
-                            'null' => NULL_ALLOWED
+                        'type' => [
+                            'addoption' => [
+                                'type' => PARAM_URL
+                            ]
                         ]
+                    ],
+                    'icon' => [
+                        'type' => PARAM_RAW,
+                        'optional' => true,
+                        'default' => null,
+                        'null' => NULL_ALLOWED
                     ]
                 ]
             ]
@@ -112,8 +108,6 @@ class course_module_chooser_exporter extends exporter {
     protected function get_other_values(renderer_base $output) {
         $title = $this->title;
 
-        $context = \context_course::instance($this->course->id);
-
         $options = new \stdClass();
         $options->trusted = false;
         $options->noclean = false;
@@ -123,9 +117,10 @@ class course_module_chooser_exporter extends exporter {
         $options->newlines = false;
         $options->overflowdiv = false;
 
+        $context = $this->related['context'];
+
         $modulesData = [];
         foreach ($this->modules as $module) {
-            //print_r($module); die();
             $customiconurl = null;
 
             // The property 'name' may contain more than just the module, in which case we need to extract the true module name.
@@ -138,12 +133,9 @@ class course_module_chooser_exporter extends exporter {
                 $customiconurl = str_replace('&amp;', '&', $matches[1]);
             }
 
-            if (isset($module->help)) {
-                $description = '';
-                if (!empty($module->help)) {
-                    list($description) = external_format_text((string) $module->help, FORMAT_MARKDOWN,
-                        $context->id, null, null, null, $options);
-                }
+            if (isset($module->help) || !empty($module->help)) {
+                list($description) = external_format_text((string) $module->help, FORMAT_MARKDOWN,
+                    $context->id, null, null, null, $options);
             } else {
                 $description = get_string('nohelpforactivityorresource', 'moodle');
             }
@@ -154,67 +146,26 @@ class course_module_chooser_exporter extends exporter {
                 'label' => $module->title->out(),
                 'description' => $description,
                 'urls' => [
-                    'add_module' => $module->link->out(false),
-                    'module_icon' => $icon->export_for_template($output)
-                ]
+                    'addoption' => $module->link->out(false),
+                ],
+                'icon' => $icon->export_for_template($output)
             ];
         }
 
-
-       // print_r($modulesData); die();
-
-//        $modulesData = array_map(function($module) use ($context, $options, $output) {
-//            $customiconurl = null;
-//            print_r($module); die();
-//
-//            // The property 'name' may contain more than just the module, in which case we need to extract the true module name.
-//            $modulename = $module->name;
-//            if ($colon = strpos($modulename, ':')) {
-//                $modulename = substr($modulename, 0, $colon);
-//            }
-//            if (preg_match('/src="([^"]*)"/i', $module->icon, $matches)) {
-//                // Use the custom icon.
-//                $customiconurl = str_replace('&amp;', '&', $matches[1]);
-//            }
-//
-//            if (isset($module->help)) {
-//                $description = '';
-//                if (!empty($module->help)) {
-//                    list($description) = external_format_text((string) $module->help, FORMAT_MARKDOWN,
-//                        $context->id, null, null, null, $options);
-//                }
-//            } else {
-//                $description = get_string('nohelpforactivityorresource', 'moodle');
-//            }
-//
-//            $icon = new \pix_icon('icon', '', $modulename, ['class' => 'icon']);
-//
-//            return [
-//                'label' => $module->title,
-//                'description' => $description,
-//                'urls' => [
-//                    'add_module' => $module->link->out(false),
-//                    'module_icon' => $icon->export_for_template($output)
-//                ]
-//            ];
-//        }, $this->modules);
-
         return [
             'title' => $title,
-            'modules' => $modulesData
+            'options' => $modulesData
         ];
-
     }
 
-//    /**
-//     * Returns a list of objects that are related.
-//     *
-//     * @return array
-//     */
-//    protected static function define_related() {
-//        return [
-//            'urlfactory' => 'mod_forum\local\factories\url',
-//            'context' => 'context'
-//        ];
-//    }
+    /**
+     * Returns a list of objects that are related.
+     *
+     * @return array
+     */
+    protected static function define_related() {
+        return [
+            'context' => 'context'
+        ];
+    }
 }

@@ -64,6 +64,7 @@ function resource_display_embed($resource, $cm, $course, $file) {
     global $CFG, $PAGE, $OUTPUT;
 
     $clicktoopen = resource_get_clicktoopen($file, $resource->revision);
+    print_r($file);
 
     $context = context_module::instance($cm->id);
     $moodleurl = moodle_url::make_pluginfile_url($context->id, 'mod_resource', 'content', $resource->revision,
@@ -105,7 +106,6 @@ function resource_display_embed($resource, $cm, $course, $file) {
     echo $code;
 
     resource_print_intro($resource, $cm, $course);
-
     echo $OUTPUT->footer();
     die;
 }

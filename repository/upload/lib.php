@@ -178,6 +178,14 @@ class repository_upload extends repository {
             throw new moodle_exception('upload_error_invalid_file', 'repository_upload', '', $record->filename);
         }
 
+        $fileextension = pathinfo($item->filename, PATHINFO_EXTENSION);
+        $filetypes = core_filetypes::get_types();
+        $item->hasextension = !empty($filetypes[$fileextension]);
+        
+        if (empty(pathinfo($record->filename, PATHINFO_EXTENSION))) {
+            throw new moodle_exception('missingextension', 'repository');
+        }
+
         if ($this->mimetypes != '*') {
             // check filetype
             $filemimetype = file_storage::mimetype($_FILES[$elname]['tmp_name'], $record->filename);

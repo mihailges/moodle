@@ -166,6 +166,7 @@ $string['manage'] = 'Manage repositories';
 $string['manageinstances'] = 'Manage instances';
 $string['manageurl'] = 'Manage';
 $string['manageuserrepository'] = 'Manage individual repository';
+$string['missingextension'] = 'The file must have an extension.';
 $string['missingsourcekey'] = 'The source key is missing. This key must also be provided to retrieve the file.';
 $string['moving'] = 'Moving';
 $string['name'] = 'Name';

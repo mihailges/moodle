@@ -113,7 +113,8 @@ class core_files_renderer extends plugin_renderer_base {
                 array('invalidjson', 'repository'), array('popupblockeddownload', 'repository'),
                 array('unknownoriginal', 'repository'), array('confirmdeletefolder', 'repository'),
                 array('confirmdeletefilewithhref', 'repository'), array('confirmrenamefolder', 'repository'),
-                array('confirmrenamefile', 'repository'), array('newfolder', 'repository'), array('edit', 'moodle'),
+                array('confirmrenamefile', 'repository'), array('newfolder', 'repository'),
+                array('edit', 'moodle'), array('originalextensionchange', 'repository'),
                 ['nofilesselected', 'repository'], ['confirmdeleteselectedfile', 'repository'],
                 ['selectall', 'moodle'], ['deselectall', 'moodle'], ['selectallornone', 'form'],
             )

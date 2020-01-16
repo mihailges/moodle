@@ -187,6 +187,7 @@ $string['norepositoriesexternalavailable'] = 'Sorry, none of your current reposi
 $string['notyourinstances'] = 'You can not view/edit repository instances of another user';
 $string['off'] = 'Enabled but hidden';
 $string['original'] = 'Original';
+$string['originalextensionchange'] = 'The original file extension has been modified as a part of the file name change. Are you sure you want to make this change?';
 $string['openpicker'] = 'Choose a file...';
 $string['operation'] = 'Operation';
 $string['on'] = 'Enabled and visible';

@@ -27,6 +27,7 @@ import * as ModalEvents from 'core/modal_events';
 import selectors from 'core_course/local/chooser/selectors';
 import * as Templates from 'core/templates';
 import {end, arrowLeft, arrowRight, arrowUp, arrowDown, home, tab, enter, space} from 'core/key_codes';
+import {debounce} from 'core/utils';
 
 /**
  * Given an event from the main module 'page' navigate to it's help section via a carousel.
@@ -63,6 +64,7 @@ const carouselPageTo = async(e, mappedModules, modal, carousel) => {
  * @param {Map} mappedModules A map of all of the modules we are working with with K: mod_name V: {Object}
  */
 const registerListenerEvents = (modal, mappedModules) => {
+    const searchInput = modal.getBody()[0].querySelector(selectors.actions.search);
 
     modal.getBody()[0].addEventListener('click', async(e) => {
         const carousel = $(selectors.regions.carousel);
@@ -84,10 +86,24 @@ const registerListenerEvents = (modal, mappedModules) => {
                 await caller.focus();
             });
         }
+        // The "clear search" button is triggered.
+        if (e.target.matches(selectors.actions.clearSearch)) {
+            // Clear the entered search query in the search bar and hide the search results container.
+            searchInput.value = "";
+            searchInput.focus();
+            toggleSearchResultsView(modal, mappedModules, searchInput.value);
+        }
     });
 
     // Register event listeners related to the keyboard navigation controls.
-    initKeyboardNavigation(modal, mappedModules);
+    const chooserOptions = modal.getBody()[0].querySelector(selectors.regions.chooserOptions);
+    initKeyboardNavigation(modal, mappedModules, chooserOptions);
+
+    // The search input is triggered.
+    searchInput.addEventListener('input', debounce(() => {
+        // Display the search results.
+        toggleSearchResultsView(modal, mappedModules, searchInput.value);
+    }, 300));
 };
 
 /**
@@ -96,15 +112,14 @@ const registerListenerEvents = (modal, mappedModules) => {
  * @method initKeyboardNavigation
  * @param {Promise} modal Our modal that we are working with
  * @param {Map} mappedModules A map of all of the modules we are working with with K: mod_name V: {Object}
+ * @param {HTMLElement} chooserOptionsContainer The section that contains the chooser items
  */
-const initKeyboardNavigation = (modal, mappedModules) => {
-
-    const chooserOptions = modal.getBody()[0].querySelectorAll(selectors.regions.chooserOption.container);
+const initKeyboardNavigation = (modal, mappedModules, chooserOptionsContainer) => {
+    const chooserOptions = chooserOptionsContainer.querySelectorAll(selectors.regions.chooserOption.container);
 
     Array.from(chooserOptions).forEach((element) => {
         return element.addEventListener('keyup', async(e) => {
 
-            const chooserOptions = document.querySelector(selectors.regions.chooserOptions);
             // Check for enter/ space triggers for showing the help.
             if (e.keyCode === enter || e.keyCode === space) {
                 if (e.target.matches(selectors.actions.optionActions.showSummary)) {
@@ -121,7 +136,7 @@ const initKeyboardNavigation = (modal, mappedModules) => {
                 if (!e.target.matches(selectors.actions.optionActions.showSummary)) {
                     const currentOption = e.target.closest(selectors.regions.chooserOption.container);
                     const nextOption = currentOption.nextElementSibling;
-                    const firstOption = chooserOptions.firstElementChild;
+                    const firstOption = chooserOptionsContainer.firstElementChild;
                     clickErrorHandler(nextOption, firstOption);
                 }
             }
@@ -131,24 +146,25 @@ const initKeyboardNavigation = (modal, mappedModules) => {
                 if (!e.target.matches(selectors.actions.optionActions.showSummary)) {
                     const currentOption = e.target.closest(selectors.regions.chooserOption.container);
                     const previousOption = currentOption.previousElementSibling;
-                    const lastOption = chooserOptions.lastElementChild;
+                    const lastOption = chooserOptionsContainer.lastElementChild;
                     clickErrorHandler(previousOption, lastOption);
                 }
             }
 
             if (e.keyCode === home) {
-                const firstOption = chooserOptions.firstElementChild;
+                const firstOption = chooserOptionsContainer.firstElementChild;
                 firstOption.focus();
             }
 
             if (e.keyCode === end) {
-                const lastOption = chooserOptions.lastElementChild;
+                const lastOption = chooserOptionsContainer.lastElementChild;
                 lastOption.focus();
             }
 
             if (e.keyCode === tab) {
                 // We want the user to get focus on the close button if they tab through an entire module.
-                if (e.target.matches(selectors.regions.chooserOption.container) && e.target !== chooserOptions.firstElementChild) {
+                if (e.target.matches(selectors.regions.chooserOption.container) &&
+                        e.target !== chooserOptionsContainer.firstElementChild) {
                     const closeBtn = modal.getModal()[0].querySelector(selectors.actions.hide);
                     closeBtn.focus();
                 }
@@ -170,6 +186,115 @@ const clickErrorHandler = (item, fallback) => {
     } else {
         fallback.focus();
     }
+};
+
+/**
+ * Render the search results in a defined container
+ *
+ * @method renderSearchResults
+ * @param {Object} modal Our created modal for the section
+ * @param {Object} searchResultsData Data containing the module items that satisfy the search criteria
+ * @param {HTMLElement} searchResultsContainer The container where the data should be rendered
+ */
+const renderSearchResults = async(modal, searchResultsData, searchResultsContainer) => {
+    const searchResultsNumber = searchResultsData.length;
+    const templateData = {
+        'searchresultsnumber': searchResultsNumber,
+        'searchresults': searchResultsData
+    };
+    // Build up the html & js ready to place into the help section.
+    const {html, js} = await Templates.renderForPromise('core_course/chooser-search-results', templateData);
+    await Templates.replaceNodeContents(searchResultsContainer, html, js);
+};
+
+/**
+ * Toggle (display/hide) the search results depending on the value of the search query
+ *
+ * @method toggleSearchResultsView
+ * @param {Object} modal Our created modal for the section
+ * @param {Map} mappedModules A map of all of the modules we are working with with K: mod_name V: {Object}
+ * @param {String} searchQuery The search query
+ */
+const toggleSearchResultsView = async(modal, mappedModules, searchQuery) => {
+    const searchActive = searchQuery.length > 0;
+    const searchResultsContainer = modal.getBody()[0].querySelector(selectors.regions.searchResults);
+
+    if (searchActive) {
+        const searchResultsData = searchModules(mappedModules, searchQuery);
+        await renderSearchResults(modal, searchResultsData, searchResultsContainer);
+        const searchResultItemsContainer = searchResultsContainer.querySelector(selectors.regions.searchResultItems);
+        // Register keyboard events on the created search result items.
+        initKeyboardNavigation(modal, mappedModules, searchResultItemsContainer);
+    }
+
+    toggleSearchResultsContainer(modal, searchActive);
+    toggleClearSearchButton(modal, searchActive);
+};
+
+/**
+ * Toggle (display/hide) the "clear search" button in the activity chooser search bar
+ *
+ * @method toggleClearSearchButton
+ * @param {Object} modal Our created modal for the section
+ * @param {Boolean} active Whether the search mode is activated
+ */
+const toggleClearSearchButton = (modal, active) => {
+    const clearSearchutton = modal.getBody()[0].querySelector(selectors.actions.clearSearch);
+    if (active) {
+        clearSearchutton.style.display = "block";
+    } else {
+        clearSearchutton.style.display = "none";
+    }
+};
+
+/**
+ * Toggle (display/hide) the search results container
+ *
+ * @method toggleSearchResultsContainer
+ * @param {Object} modal Our created modal for the section
+ * @param {Boolean} active Whether the search mode is activated
+ */
+const toggleSearchResultsContainer = (modal, active) => {
+    const searchResultsContainer = modal.getBody()[0].querySelector(selectors.regions.searchResults);
+    const chooserOptionsContainer = modal.getBody()[0].querySelector(selectors.regions.chooserOptions);
+
+    if (active) {
+        chooserOptionsContainer.setAttribute('hidden', 'hidden');
+        chooserOptionsContainer.classList.remove("d-flex");
+        searchResultsContainer.removeAttribute('hidden');
+    } else {
+        searchResultsContainer.setAttribute('hidden', 'hidden');
+        chooserOptionsContainer.removeAttribute('hidden');
+        chooserOptionsContainer.classList.add("d-flex");
+    }
+};
+
+/**
+ * Return the list of modules which have a name or description that matches the given search term.
+ *
+ * @method searchModules
+ * @param {Array} modules List of available modules
+ * @param {String} searchTerm The search term to match
+ * @return {Array}
+ */
+const searchModules = (modules, searchTerm) => {
+    if (searchTerm === '') {
+        return modules;
+    }
+
+    searchTerm = searchTerm.toLowerCase();
+
+    const searchResults = [];
+
+    modules.forEach((activity) => {
+        const activityName = activity.label.toLowerCase();
+        const activityDesc = activity.description.toLowerCase();
+        if (activityName.includes(searchTerm) || activityDesc.includes(searchTerm)) {
+            searchResults.push(activity);
+        }
+    });
+
+    return searchResults;
 };
 
 /**

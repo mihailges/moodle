@@ -32,10 +32,32 @@
         }
     }
 }}
+
 <div data-region="carousel" class="carousel slide">
     <div class="carousel-inner" aria-live="polite">
         <div class="carousel-item active" data-region="modules">
             <div class="modchoosercontainer" data-region="chooser-container" tabindex="0" role="grid" aria-rowcount="1" aria-label="{{#str}} activitymodules {{/str}}">
+                <div class="searchcontainer">
+                    <div class="searchbar input-group">
+                        <div class="searchbaritem search">
+                            {{#pix}} a/search, core {{/pix}}
+                        </div>
+                        <input type="text"
+                               data-action="search"
+                               class="form-control form-control-lg searchinput"
+                               placeholder="{{#str}} search {{/str}}"
+                               name="search"
+                               aria-label="{{#str}} searchactivities {{/str}}"
+                        >
+                        <div class="searchbaritem cancel">
+                            <button class="btn p-0" data-action="clearsearch" aria-label="{{#str}} clearsearch {{/str}}">
+                                {{#pix}} e/cancel_solid_circle, core {{/pix}}
+                            </button>
+                        </div>
+                    </div>
+                    <div class="searchresultscontainer" data-region="search-results-container" role="grid" aria-rowcount="1" hidden="hidden">
+                    </div>
+                </div>
                 <div class="optionscontainer d-flex flex-wrap mw-100 p-3 position-relative" role="row" data-region="chooser-options-container">
                     {{#default}}
                         {{>core_course/chooser_item}}

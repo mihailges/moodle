@@ -1992,4 +1992,42 @@ class behat_course extends behat_base {
         $this->ensure_node_is_visible($node);
         $node->click();
     }
+
+    /**
+     * Makes sure a certain activity item exist in the activity chooser search results area.
+     *
+     * @Given /^I should see "(?P<element_string>(?:[^"]|\\")*)" activity in the activity chooser search results area$/
+     * @param string $module The name of the activity
+     */
+    public function i_should_see_activity_item_in_search_results_area(string $module) {
+        $searchresultsareanode = $this->find('css', '.searchresultitemscontainer');
+        $exception = new ExpectationException('"' . $module .
+            '" activity item can not be found in the activity chooser search results area', $this->getSession());
+        $this->find('xpath', "//div[@aria-label='{$module}']", $exception,
+            $searchresultsareanode );
+    }
+
+    /**
+     * Makes sure user can see the exact number of activity items in the activity chooser search results area.
+     *
+     * @Given /^I should see "(?P<elementscount_number>\d+)" activities in the activity chooser search results area$/
+     * @param int $elementscount The number of activity items in the chooser search results area
+     * @throws ExpectationException Thrown by behat_base::find
+     */
+    public function i_should_see_activity_items_in_search_results_area(int $elementscount) {
+        $xpath = "//div[@data-region='chooser-option-container']";
+        $searchresultsareanode = $this->find('css', '.searchresultitemscontainer');
+        $elements = [];
+
+        try {
+            $elements = $this->find_all('xpath', $xpath, false, $searchresultsareanode);
+        } catch (ElementNotFoundException $e) {
+            // Swallow exception. The number of displayed search results is 0.
+        }
+
+        if (count($elements) != $elementscount) {
+            throw new ExpectationException('Found '.count($elements).
+                ' items in the activity chooser search results area. Expected '.$elementscount, $this->getSession());
+        }
+    }
 }

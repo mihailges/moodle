@@ -66,7 +66,7 @@ const registerListenerEvents = (modal, mappedModules) => {
 
     modal.getBody()[0].addEventListener('click', async(e) => {
         const carousel = $(selectors.regions.carousel);
-        carousel.carousel();
+        carousel.carousel({interval: false});
         carousel.off('keydown.bs.carousel');
         carousel.carousel('pause');
         if (e.target.closest(selectors.actions.optionActions.showSummary)) {
@@ -109,7 +109,7 @@ const initKeyboardNavigation = (modal, mappedModules) => {
             if (e.keyCode === enter || e.keyCode === space) {
                 if (e.target.matches(selectors.actions.optionActions.showSummary)) {
                     const carousel = $(selectors.regions.carousel);
-                    carousel.carousel();
+                    carousel.carousel({interval: false});
                     carousel.off('keydown.bs.carousel');
                     carousel.carousel('pause');
                     await carouselPageTo(e, mappedModules, modal, carousel);
@@ -196,7 +196,7 @@ export const displayChooser = async(origin, modal, sectionModules) => {
         try {
             // Just in case a user shuts the chooser on the help screen set it back to default.
             const carousel = $(selectors.regions.carousel);
-            carousel.carousel();
+            carousel.carousel({interval: false});
             carousel.carousel(0);
 
             origin.focus();

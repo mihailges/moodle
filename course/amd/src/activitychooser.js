@@ -68,14 +68,7 @@ export const init = async(courseid) => {
  * @param {Number} courseid Course ID for the course we want modules for
  * @return {Object} The result of the Web service
  */
-const fetchModules = async(courseid) => {
-    const [
-        data
-    ] = await Promise.all([
-        Repository.activityModules(courseid)
-    ]);
-    return data;
-};
+const fetchModules = async courseid => await Repository.activityModules(courseid);
 
 /**
  * Find all the sections on a page
@@ -186,20 +179,15 @@ const templateDataBuilder = (data) => {
  * @return {Object} The modal for the calling section with everything already set up
  */
 const buildModal = async(data) => {
-    const [
-        modal,
-    ] = await Promise.all([
-        ModalFactory.create({
-            type: ModalFactory.types.DEFAULT,
-            title: getString('addresourceoractivity'),
-            body: Templates.render('core_course/chooser', data),
-            large: true,
-            templateContext: {
-                classes: 'modchooser'
-            }
-        })
-    ]);
-    return modal;
+    return ModalFactory.create({
+        type: ModalFactory.types.DEFAULT,
+        title: getString('addresourceoractivity'),
+        body: Templates.render('core_course/chooser', data),
+        large: true,
+        templateContext: {
+            classes: 'modchooser'
+        }
+    });
 };
 
 /**

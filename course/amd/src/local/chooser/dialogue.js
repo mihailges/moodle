@@ -47,7 +47,6 @@ const carouselPageTo = async(e, mappedModules, modal, carousel) => {
     await Templates.replaceNodeContents(help, html, js);
     // Trigger the transition between 'pages'.
     carousel.carousel('next');
-    carousel.carousel('pause');
 
     carousel.on('slid.bs.carousel', () => {
         const helpContent = help.querySelector(selectors.regions.chooserSummary.description);
@@ -66,9 +65,11 @@ const registerListenerEvents = (modal, mappedModules) => {
 
     modal.getBody()[0].addEventListener('click', async(e) => {
         const carousel = $(selectors.regions.carousel);
-        carousel.carousel({interval: false});
-        carousel.off('keydown.bs.carousel');
-        carousel.carousel('pause');
+        carousel.carousel({
+            interval: false,
+            pause: true,
+            keyboard: false
+        });
         if (e.target.closest(selectors.actions.optionActions.showSummary)) {
             await carouselPageTo(e, mappedModules, modal, carousel);
         }
@@ -109,9 +110,11 @@ const initKeyboardNavigation = (modal, mappedModules) => {
             if (e.keyCode === enter || e.keyCode === space) {
                 if (e.target.matches(selectors.actions.optionActions.showSummary)) {
                     const carousel = $(selectors.regions.carousel);
-                    carousel.carousel({interval: false});
-                    carousel.off('keydown.bs.carousel');
-                    carousel.carousel('pause');
+                    carousel.carousel({
+                        interval: false,
+                        pause: true,
+                        keyboard: false
+                    });
                     await carouselPageTo(e, mappedModules, modal, carousel);
                 }
             }
@@ -196,7 +199,11 @@ export const displayChooser = async(origin, modal, sectionModules) => {
         try {
             // Just in case a user shuts the chooser on the help screen set it back to default.
             const carousel = $(selectors.regions.carousel);
-            carousel.carousel({interval: false});
+            carousel.carousel({
+                interval: false,
+                pause: true,
+                keyboard: false
+            });
             carousel.carousel(0);
 
             origin.focus();

@@ -71,8 +71,6 @@ export const init2 = courseId => {
 
 const fetchModuleDataFunction = courseId => {
     let innerPromise = null;
-    window.console.log("innerPromise");
-    window.console.log(innerPromise);
 
     return () => {
         if (!innerPromise) {
@@ -97,20 +95,16 @@ const registerEventHandlers = (data) => {
     events.forEach((event) => {
         document.addEventListener(event, async(e) => {
             if (e.target.closest(selectors.elements.sectionmodchooser)) {
+                const caller = e.target.closest(selectors.elements.sectionmodchooser);
+                const sectionid = caller.dataset.sectionid;
+
                 const data2 = await data();
-                window.console.log(data2);
-                const allSections = fetchSections();
 
-                const sectionIds = fetchSectionIds(allSections);
-
-                const builtModuleData = sectionIdMapper(data2, sectionIds);
+                const builtModuleData = sectionIdMapper(data2, sectionid);
 
                 const modalMap = await modalMapper(builtModuleData);
 
-                const caller = e.target.closest(selectors.elements.sectionmodchooser);
-                const sectionid = caller.dataset.sectionid;
-                const modal = modalMap.get(sectionid);
-                ChooserDialogue.displayChooser(caller, modal, builtModuleData.get(sectionid));
+                ChooserDialogue.displayChooser(caller, modalMap, builtModuleData);
             }
         });
     });
@@ -161,17 +155,13 @@ const fetchSectionIds = (sections) => {
  * @param {Array} sectionIds All of the sections we need to build modal data for
  * @return {Map} A map of K: sectionID V: [modules] with URL's built
  */
-const sectionIdMapper = (webServiceData, sectionIds) => {
-    const builtDataMap = new Map();
-    sectionIds.forEach((id) => {
-        // We need to take a fresh deep copy of the original data as an object is a reference type.
-        const newData = JSON.parse(JSON.stringify(webServiceData));
-        newData.allmodules.forEach((module) => {
-            module.urls.addoption += '&section=' + id;
-        });
-        builtDataMap.set(id, newData.allmodules);
+const sectionIdMapper = (webServiceData, id) => {
+    // We need to take a fresh deep copy of the original data as an object is a reference type.
+    const newData = JSON.parse(JSON.stringify(webServiceData));
+    newData.allmodules.forEach((module) => {
+        module.urls.addoption += '&section=' + id;
     });
-    return builtDataMap;
+    return newData.allmodules;
 };
 
 /**
@@ -182,24 +172,10 @@ const sectionIdMapper = (webServiceData, sectionIds) => {
  * @return {Map} A map of K: sectionID V: {Modal} with the modal being prebuilt
  */
 const modalMapper = async(builtModuleData) => {
-    const modalMap = new Map();
-    const iter = builtModuleData.entries();
-    // We need to use a iterator structure as it is a blocking structure.
-    let result = iter.next();
-    while (!result.done) {
-        let sectionId = result.value[0];
-        let modules = result.value[1];
+    // Run a call off to a new func for filtering favs & recommended.
+    const templateData = templateDataBuilder(builtModuleData);
 
-        // Run a call off to a new func for filtering favs & recommended.
-        const templateData = templateDataBuilder(modules);
-        // This may be stuck here :/
-        const modal = await buildModal(templateData);
-        modalMap.set(sectionId, modal);
-
-        result = iter.next();
-    }
-
-    return modalMap;
+    return await buildModal(templateData);
 };
 
 /**

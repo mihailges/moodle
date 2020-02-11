@@ -122,15 +122,10 @@ const sectionIdMapper = (webServiceData, id) => {
  * Build a modal for each section ID and store it into a map for quick access
  *
  * @method modalBuilder
- * @param {Map} builtModuleData our map of section ID's & modules to generate modals for
- * @return {Map} A map of K: sectionID V: {Modal} with the modal being prebuilt
+ * @param {Map} data our map of section ID's & modules to generate modals for
+ * @return {Object} TODO
  */
-const modalBuilder = async(builtModuleData) => {
-    // Run a call off to a new func for filtering favs & recommended.
-    const templateData = templateDataBuilder(builtModuleData);
-
-    return await buildModal(templateData);
-};
+const modalBuilder = data => buildModal(templateDataBuilder(data));
 
 /**
  * Given an array of modules we want to figure out where & how to place them into our template object
@@ -144,10 +139,10 @@ const templateDataBuilder = (data) => {
     // const favourites = data.filter(mod => mod.favourite === true);
     // Switching for the active tab.
     // foo ? foo : bar
-    const builtData = {
+
+    return {
         'default': data,
     };
-    return builtData;
 };
 
 /**

@@ -65,12 +65,12 @@ const registerListenerEvents = (modal, mappedModules) => {
         keyboard: false
     });
 
-    modal.getBody()[0].addEventListener('click', async(e) => {
+    modal.getBody()[0].addEventListener('click', (e) => {
         if (e.target.closest(selectors.actions.optionActions.showSummary)) {
             const module = e.target.closest(selectors.regions.chooserOption.container);
             const moduleName = module.dataset.modname;
             const moduleData = mappedModules.get(moduleName);
-            await carouselPageTo(carousel, moduleData);
+            carouselPageTo(carousel, moduleData);
         }
 
         // From the help screen go back to the module overview.
@@ -101,7 +101,7 @@ const initKeyboardNavigation = (modal, mappedModules) => {
     const chooserOptions = modal.getBody()[0].querySelectorAll(selectors.regions.chooserOption.container);
 
     Array.from(chooserOptions).forEach((element) => {
-        return element.addEventListener('keyup', async(e) => {
+        return element.addEventListener('keyup', (e) => {
             const chooserOptions = document.querySelector(selectors.regions.chooserOptions);
 
             // Check for enter/ space triggers for showing the help.
@@ -116,7 +116,7 @@ const initKeyboardNavigation = (modal, mappedModules) => {
                         pause: true,
                         keyboard: false
                     });
-                    await carouselPageTo(carousel, moduleData);
+                    carouselPageTo(carousel, moduleData);
                 }
             }
 
@@ -184,7 +184,7 @@ const clickErrorHandler = (item, fallback) => {
  * @param {Object} modal Our created modal for the section
  * @param {Array} sectionModules An array of all of the built module information
  */
-export const displayChooser = async(origin, modal, sectionModules) => {
+export const displayChooser = (origin, modal, sectionModules) => {
 
     // Make a map so we can quickly fetch a specific module's object for either rendering or searching.
     const mappedModules = new Map();
@@ -193,7 +193,7 @@ export const displayChooser = async(origin, modal, sectionModules) => {
     });
 
     // Register event listeners.
-    await registerListenerEvents(modal, mappedModules);
+    registerListenerEvents(modal, mappedModules);
 
     // We want to focus on the action select when the dialog is closed.
     modal.getRoot().on(ModalEvents.hidden, () => {

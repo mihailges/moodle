@@ -51,7 +51,7 @@ export default {
         carousel: getDataSelector('region', 'carousel'),
         help: getDataSelector('region', 'help'),
         modules: getDataSelector('region', 'modules'),
-        getModuleSelector: modname => `[role="gridcell"][data-modname="${modname}"]`
+        getModuleSelector: modname => `[role="menuitem"][data-modname="${modname}"]`
     },
     actions: {
         optionActions: {

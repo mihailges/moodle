@@ -26,7 +26,7 @@ import $ from 'jquery';
 import * as ModalEvents from 'core/modal_events';
 import selectors from 'core_course/local/chooser/selectors';
 import * as Templates from 'core/templates';
-import {end, arrowLeft, arrowRight, arrowUp, arrowDown, home, tab, enter, space} from 'core/key_codes';
+import {end, arrowLeft, arrowRight, home, enter, space} from 'core/key_codes';
 
 /**
  * Given an event from the main module 'page' navigate to it's help section via a carousel.
@@ -121,44 +121,63 @@ const initKeyboardNavigation = (modal, mappedModules) => {
             }
 
             // Next.
-            if (e.keyCode === arrowRight || e.keyCode === arrowDown) {
-                if (!e.target.matches(selectors.actions.optionActions.showSummary)) {
-                    const currentOption = e.target.closest(selectors.regions.chooserOption.container);
-                    const nextOption = currentOption.nextElementSibling;
-                    const firstOption = chooserOptions.firstElementChild;
-                    clickErrorHandler(nextOption, firstOption);
-                }
+            if (e.keyCode === arrowRight) {
+                const currentOption = e.target.closest(selectors.regions.chooserOption.container);
+                const nextOption = currentOption.nextElementSibling;
+                const firstOption = chooserOptions.firstElementChild;
+                const toFocusOption = clickErrorHandler(nextOption, firstOption);
+                focusChooserOption(toFocusOption, currentOption);
             }
 
             // Previous.
-            if (e.keyCode === arrowLeft || e.keyCode === arrowUp) {
-                if (!e.target.matches(selectors.actions.optionActions.showSummary)) {
-                    const currentOption = e.target.closest(selectors.regions.chooserOption.container);
-                    const previousOption = currentOption.previousElementSibling;
-                    const lastOption = chooserOptions.lastElementChild;
-                    clickErrorHandler(previousOption, lastOption);
-                }
+            if (e.keyCode === arrowLeft) {
+                const currentOption = e.target.closest(selectors.regions.chooserOption.container);
+                const previousOption = currentOption.previousElementSibling;
+                const lastOption = chooserOptions.lastElementChild;
+                const toFocusOption = clickErrorHandler(previousOption, lastOption);
+                focusChooserOption(toFocusOption, currentOption);
             }
 
             if (e.keyCode === home) {
+                const currentOption = e.target.closest(selectors.regions.chooserOption.container);
                 const firstOption = chooserOptions.firstElementChild;
-                firstOption.focus();
+                focusChooserOption(firstOption, currentOption);
             }
 
             if (e.keyCode === end) {
+                const currentOption = e.target.closest(selectors.regions.chooserOption.container);
                 const lastOption = chooserOptions.lastElementChild;
-                lastOption.focus();
-            }
-
-            if (e.keyCode === tab) {
-                // We want the user to get focus on the close button if they tab through an entire module.
-                if (e.target.matches(selectors.regions.chooserOption.container) && e.target !== chooserOptions.firstElementChild) {
-                    const closeBtn = modal.getModal()[0].querySelector(selectors.actions.hide);
-                    closeBtn.focus();
-                }
+                focusChooserOption(lastOption, currentOption);
             }
         });
     });
+};
+
+/**
+ * Focus on a chooser option element and remove the previous chooser element from the focus order
+ *
+ * @method focusChooserOption
+ * @param {HTMLElement} currentChooserOption The current chooser option element that we want to focus
+ * @param {HTMLElement} previousChooserOption The previous focused option element
+ */
+const focusChooserOption = (currentChooserOption, previousChooserOption = false) => {
+    if (previousChooserOption !== false) {
+        const previousChooserOptionLink = previousChooserOption.querySelector(selectors.actions.addChooser);
+        const previousChooserOptionHelp = previousChooserOption.querySelector(selectors.actions.optionActions.showSummary);
+        // Set tabindex to -1 to remove the previous chooser option element from the focus order.
+        previousChooserOption.tabIndex = -1;
+        previousChooserOptionLink.tabIndex = -1;
+        previousChooserOptionHelp.tabIndex = -1;
+    }
+
+    const currentChooserOptionLink = currentChooserOption.querySelector(selectors.actions.addChooser);
+    const currentChooserOptionHelp = currentChooserOption.querySelector(selectors.actions.optionActions.showSummary);
+    // Set tabindex to 0 to add current chooser option element to the focus order.
+    currentChooserOption.tabIndex = 0;
+    currentChooserOptionLink.tabIndex = 0;
+    currentChooserOptionHelp.tabIndex = 0;
+    // Focus the current chooser option element.
+    currentChooserOption.focus();
 };
 
 /**
@@ -170,9 +189,9 @@ const initKeyboardNavigation = (modal, mappedModules) => {
  */
 const clickErrorHandler = (item, fallback) => {
     if (item !== null) {
-        item.focus();
+        return item;
     } else {
-        fallback.focus();
+        return fallback;
     }
 };
 
@@ -198,6 +217,13 @@ export const displayChooser = (origin, modal, sectionModules) => {
     // We want to focus on the action select when the dialog is closed.
     modal.getRoot().on(ModalEvents.hidden, () => {
         modal.destroy();
+    });
+
+    // We want to focus on the first chooser option element as soon as the modal is opened.
+    modal.getRoot().on(ModalEvents.shown, () => {
+        modal.getModal()[0].tabIndex = -1;
+        const firstChooserOption = modal.getBody()[0].querySelector(selectors.regions.chooserOption.container);
+        focusChooserOption(firstChooserOption);
     });
 
     modal.show();

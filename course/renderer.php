@@ -158,7 +158,7 @@ class core_course_renderer extends plugin_renderer_base {
             return '';
         }
 
-        $this->page->requires->js_call_amd('core_course/activitychooser', 'init2', [$courseid]);
+        $this->page->requires->js_call_amd('core_course/activitychooser', 'init', [$courseid]);
 
         return '';
     }

@@ -35,40 +35,23 @@ import Pending from 'core/pending';
  * Set up the activity chooser.
  *
  * @method init
- * @param {Number} courseid Course ID to use later on in fetchModules()
+ * @param {Number} courseId Course ID to use later on in fetchModules()
  */
-export const init = async(courseid) => {
-    // Add a deferred promise, mainly for Behat purposes.
-    let pendingPromise = new Pending();
-
-    // Fetch all the modules available for a given course.
-    const webserviceData = await fetchModules(courseid);
-
-    const allSections = fetchSections();
-
-    const sectionIds = fetchSectionIds(allSections);
-
-    const builtModuleData = sectionIdMapper(webserviceData, sectionIds);
-
-    const modalMap = await modalMapper(builtModuleData);
-
-    // User interaction handlers.
-    registerListenerEvents(modalMap, builtModuleData);
-
-    enableInteraction(allSections);
-
-    // All of our base setup is done, let's call it done.
-    pendingPromise.resolve();
-};
-
-export const init2 = courseId => {
+export const init = courseId => {
     const pendingPromise = new Pending();
 
-    registerEventHandlers(fetchModuleDataFunction(courseId));
+    registerListenerEvents(fetchModuleDataFunction(courseId));
 
     pendingPromise.resolve();
 };
 
+/**
+ * Call the activity webservice so we get an array of modules
+ *
+ * @method fetchModuleDataFunction
+ * @param {Number} courseId Course ID for the course we want modules for
+ * @return {Object} The result of the Web service
+ */
 const fetchModuleDataFunction = courseId => {
     let innerPromise = null;
 
@@ -82,7 +65,14 @@ const fetchModuleDataFunction = courseId => {
         return innerPromise;
     };
 };
-const registerEventHandlers = (data) => {
+
+/**
+ * Once a selection has been made make the modal & module information and pass it along
+ *
+ * @method registerListenerEvents
+ * @param {Function} curriedData TODO
+ */
+const registerListenerEvents = (curriedData) => {
     const events = [
         'click',
         CustomEvents.events.activate,
@@ -98,62 +88,26 @@ const registerEventHandlers = (data) => {
                 const caller = e.target.closest(selectors.elements.sectionmodchooser);
                 const sectionid = caller.dataset.sectionid;
 
-                const data2 = await data();
+                const webserviceData = await curriedData();
 
-                const builtModuleData = sectionIdMapper(data2, sectionid);
+                const builtModuleData = sectionIdMapper(webserviceData, sectionid);
 
-                const modalMap = await modalMapper(builtModuleData);
+                const sectionModal = await modalBuilder(builtModuleData);
 
-                ChooserDialogue.displayChooser(caller, modalMap, builtModuleData);
+                ChooserDialogue.displayChooser(caller, sectionModal, builtModuleData);
             }
         });
     });
 };
-/**
- * Call the activity webservice so we get an array of modules
- *
- * @method fetchModules
- * @param {Number} courseid Course ID for the course we want modules for
- * @return {Object} The result of the Web service
- */
-const fetchModules = async courseid => await Repository.activityModules(courseid);
 
 /**
- * Find all the sections on a page
- *
- * @method fetchModules
- * @return {Array} The result of querySelectors that have been spread into a array
- */
-const fetchSections = () => {
-    const sections = document.querySelectorAll(`${selectors.elements.section}[role="region"]`);
-    const siteTopic = document.querySelectorAll(selectors.elements.sitetopic);
-    const siteMenu = document.querySelectorAll(selectors.elements.sitemenu);
-
-    return [...sections, ...siteTopic, ...siteMenu];
-};
-
-/**
- * Given a NodeList of HTMLElement nodes find their ID's
- *
- * @method fetchSectionIds
- * @param {Array} sections The sections to fetch ID's for
- * @return {Array} Array of section ID's we'll use for maps
- */
-const fetchSectionIds = (sections) => {
-    return Array.from(sections).map((section) => {
-        const button = section.querySelector(`${selectors.elements.sectionmodchooser}`);
-        return button.dataset.sectionid ? button.dataset.sectionid : undefined;
-    });
-};
-
-/**
- * Given the web service data and an array of section ID's we want to make deep copies
+ * Given the web service data and an ID we want to make a deep copy
  * of the WS data then add on the section ID to the addoption URL
  *
  * @method sectionIdMapper
  * @param {Object} webServiceData Our original data from the Web service call
- * @param {Array} sectionIds All of the sections we need to build modal data for
- * @return {Map} A map of K: sectionID V: [modules] with URL's built
+ * @param {Array} id The ID of the section we need to append to the links
+ * @return {Array} [modules] with URL's built
  */
 const sectionIdMapper = (webServiceData, id) => {
     // We need to take a fresh deep copy of the original data as an object is a reference type.
@@ -167,11 +121,11 @@ const sectionIdMapper = (webServiceData, id) => {
 /**
  * Build a modal for each section ID and store it into a map for quick access
  *
- * @method modalMapper
+ * @method modalBuilder
  * @param {Map} builtModuleData our map of section ID's & modules to generate modals for
  * @return {Map} A map of K: sectionID V: {Modal} with the modal being prebuilt
  */
-const modalMapper = async(builtModuleData) => {
+const modalBuilder = async(builtModuleData) => {
     // Run a call off to a new func for filtering favs & recommended.
     const templateData = templateDataBuilder(builtModuleData);
 
@@ -212,49 +166,5 @@ const buildModal = async(data) => {
         templateContext: {
             classes: 'modchooser'
         }
-    });
-};
-
-/**
- * Now all of our setup is done we want to ensure a user can actually select a section to add a module to
- * Once a selection has been made pick out the modal & module information and pass it along
- *
- * @method registerListenerEvents
- * @param {Map} modalMap The map of modals ready to pick from when a user clicks 'Add activity'
- * @param {Map} modulesMap The map of K: sectionID V: [modules] we need to pass along so we can fetch a specific modules data
- */
-const registerListenerEvents = (modalMap, modulesMap) => {
-    const events = [
-        'click',
-        CustomEvents.events.activate,
-        CustomEvents.events.keyboardActivate
-    ];
-
-    CustomEvents.define(document, events);
-
-    // Display module chooser event listeners.
-    events.forEach((event) => {
-        document.addEventListener(event, (e) => {
-            if (e.target.closest(selectors.elements.sectionmodchooser)) {
-                const caller = e.target.closest(selectors.elements.sectionmodchooser);
-                const sectionid = caller.dataset.sectionid;
-                const modal = modalMap.get(sectionid);
-                ChooserDialogue.displayChooser(caller, modal, modulesMap.get(sectionid));
-            }
-        });
-    });
-};
-
-/**
- * We run this last in the file as this will now allow users to select a section to add a module to
- * The assumption is that everything is set up and ready to go
- *
- * @method enableInteraction
- * @param {Array} sections The sections we need to find buttons in so we can enable the button
- */
-const enableInteraction = (sections) => {
-    Array.from(sections).map((section) => {
-        const button = section.querySelector(selectors.elements.sectionmodchooser);
-        button.disabled = false;
     });
 };

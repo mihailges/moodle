@@ -92,15 +92,10 @@ const fetchSections = () => {
  * @return {Array} Array of section ID's we'll use for maps
  */
 const fetchSectionIds = (sections) => {
-    const sectionIds = Array.from(sections).map((section) => {
+    return Array.from(sections).map((section) => {
         const button = section.querySelector(`${selectors.elements.sectionmodchooser}`);
-        try {
-            return button.dataset.sectionid;
-        } catch (e) {
-            // eslint-disable-line
-        }
+        return button.dataset.sectionid ? button.dataset.sectionid : undefined;
     });
-    return sectionIds;
 };
 
 /**

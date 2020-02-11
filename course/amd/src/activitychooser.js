@@ -53,7 +53,7 @@ export const init = async(courseid) => {
     const modalMap = await modalMapper(builtModuleData);
 
     // User interaction handlers.
-    registerEventHandlers(modalMap, builtModuleData);
+    registerListenerEvents(modalMap, builtModuleData);
 
     enableInteraction(allSections);
 
@@ -116,7 +116,7 @@ const sectionIdMapper = (webServiceData, sectionIds) => {
     const builtDataMap = new Map();
     sectionIds.forEach((id) => {
         // We need to take a fresh deep copy of the original data as an object is a reference type.
-        let newData = JSON.parse(JSON.stringify(webServiceData));
+        const newData = JSON.parse(JSON.stringify(webServiceData));
         newData.allmodules.forEach((module) => {
             module.urls.addoption += '&section=' + id;
         });
@@ -194,11 +194,11 @@ const buildModal = async(data) => {
  * Now all of our setup is done we want to ensure a user can actually select a section to add a module to
  * Once a selection has been made pick out the modal & module information and pass it along
  *
- * @method registerEventHandlers
+ * @method registerListenerEvents
  * @param {Map} modalMap The map of modals ready to pick from when a user clicks 'Add activity'
  * @param {Map} modulesMap The map of K: sectionID V: [modules] we need to pass along so we can fetch a specific modules data
  */
-const registerEventHandlers = (modalMap, modulesMap) => {
+const registerListenerEvents = (modalMap, modulesMap) => {
     const events = [
         'click',
         CustomEvents.events.activate,

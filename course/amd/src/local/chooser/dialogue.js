@@ -32,22 +32,18 @@ import {end, arrowLeft, arrowRight, arrowUp, arrowDown, home, tab, enter, space}
  * Given an event from the main module 'page' navigate to it's help section via a carousel.
  *
  * @method carouselPageTo
- * @param {Event} e Triggering Event
- * @param {Map} mappedModules A map of all of the modules we are working with with K: mod_name V: {Object}
- * @param {Promise} modal Our modal that we are working with
  * @param {jQuery} carousel Our initialized carousel to manipulate
+ * @param {Object} moduleData Data of the module to carousel to
  */
-const carouselPageTo = async(e, mappedModules, modal, carousel) => {
-    // Get the systems name for the module just clicked.
-    const module = e.target.closest(selectors.regions.chooserOption.container);
-    const moduleName = module.dataset.modname;
+const carouselPageTo = async(carousel, moduleData) => {
     // Build up the html & js ready to place into the help section.
-    const {html, js} = await Templates.renderForPromise('core_course/chooser_help', mappedModules.get(moduleName));
-    const help = modal.getBody()[0].querySelector(selectors.regions.help);
+    const {html, js} = await Templates.renderForPromise('core_course/chooser_help', moduleData);
+    const help = carousel.find(selectors.regions.help)[0];
+
     await Templates.replaceNodeContents(help, html, js);
+
     // Trigger the transition between 'pages'.
     carousel.carousel('next');
-
     carousel.on('slid.bs.carousel', () => {
         const helpContent = help.querySelector(selectors.regions.chooserSummary.description);
         helpContent.focus();
@@ -71,7 +67,10 @@ const registerListenerEvents = (modal, mappedModules) => {
 
     modal.getBody()[0].addEventListener('click', async(e) => {
         if (e.target.closest(selectors.actions.optionActions.showSummary)) {
-            await carouselPageTo(e, mappedModules, modal, carousel);
+            const module = e.target.closest(selectors.regions.chooserOption.container);
+            const moduleName = module.dataset.modname;
+            const moduleData = mappedModules.get(moduleName);
+            await carouselPageTo(carousel, moduleData);
         }
 
         // From the help screen go back to the module overview.
@@ -103,18 +102,21 @@ const initKeyboardNavigation = (modal, mappedModules) => {
 
     Array.from(chooserOptions).forEach((element) => {
         return element.addEventListener('keyup', async(e) => {
-
             const chooserOptions = document.querySelector(selectors.regions.chooserOptions);
+
             // Check for enter/ space triggers for showing the help.
             if (e.keyCode === enter || e.keyCode === space) {
                 if (e.target.matches(selectors.actions.optionActions.showSummary)) {
+                    const module = e.target.closest(selectors.regions.chooserOption.container);
+                    const moduleName = module.dataset.modname;
+                    const moduleData = mappedModules.get(moduleName);
                     const carousel = $(modal.getBody()[0].querySelector(selectors.regions.carousel));
                     carousel.carousel({
                         interval: false,
                         pause: true,
                         keyboard: false
                     });
-                    await carouselPageTo(e, mappedModules, modal, carousel);
+                    await carouselPageTo(carousel, moduleData);
                 }
             }
 
@@ -210,7 +212,6 @@ export const displayChooser = async(origin, modal, sectionModules) => {
             // eslint-disable-line
         }
     });
-
 
     modal.show();
 };

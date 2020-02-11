@@ -16,13 +16,13 @@
 /**
  * A type of dialogue used as for choosing modules in a course.
  *
- * @module     core_course/modchooser
+ * @module     core_course/activitychooser
  * @package    core_course
  * @copyright  2020 Mathew May <mathew.solutions>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-import * as ChooserDialogue from 'core_course/chooser_dialogue';
+import * as ChooserDialogue from 'core_course/local/chooser/dialogue';
 import CustomEvents from 'core/custom_interaction_events';
 import * as Repository from 'core_course/local/chooser/repository';
 import selectors from 'core_course/local/chooser/selectors';
@@ -35,7 +35,7 @@ import Pending from 'core/pending';
  * Set up the activity chooser.
  *
  * @method init
- * @param {int} courseid Course ID to use later on in fetchModules()
+ * @param {Number} courseid Course ID to use later on in fetchModules()
  */
 export const init = async(courseid) => {
     // Add a deferred promise, mainly for Behat purposes.
@@ -65,7 +65,7 @@ export const init = async(courseid) => {
  * Call the activity webservice so we get an array of modules
  *
  * @method fetchModules
- * @param {int} courseid Course ID for the course we want modules for
+ * @param {Number} courseid Course ID for the course we want modules for
  * @return {Object} The result of the Web service
  */
 const fetchModules = async(courseid) => {

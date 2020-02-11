@@ -26,7 +26,7 @@ import ajax from 'core/ajax';
  * Fetch all the information on modules we'll need in the activity chooser.
  *
  * @method activityModules
- * @param {int} courseid What course to fetch the modules for
+ * @param {Number} courseid What course to fetch the modules for
  * @return {object} jQuery promise
  */
 export const activityModules = (courseid) => {

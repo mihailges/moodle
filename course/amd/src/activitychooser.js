@@ -229,7 +229,7 @@ const registerEventHandlers = (modalMap, modulesMap) => {
  */
 const enableInteraction = (sections) => {
     Array.from(sections).map((section) => {
-        const button = section.querySelector(`${selectors.elements.sectionmodchooser}`);
+        const button = section.querySelector(selectors.elements.sectionmodchooser);
         button.disabled = false;
     });
 };

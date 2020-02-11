@@ -62,14 +62,14 @@ const carouselPageTo = async(e, mappedModules, modal, carousel) => {
  * @param {Map} mappedModules A map of all of the modules we are working with with K: mod_name V: {Object}
  */
 const registerListenerEvents = (modal, mappedModules) => {
+    const carousel = $(modal.getBody()[0].querySelector(selectors.regions.carousel));
+    carousel.carousel({
+        interval: false,
+        pause: true,
+        keyboard: false
+    });
 
     modal.getBody()[0].addEventListener('click', async(e) => {
-        const carousel = $(selectors.regions.carousel);
-        carousel.carousel({
-            interval: false,
-            pause: true,
-            keyboard: false
-        });
         if (e.target.closest(selectors.actions.optionActions.showSummary)) {
             await carouselPageTo(e, mappedModules, modal, carousel);
         }
@@ -78,11 +78,10 @@ const registerListenerEvents = (modal, mappedModules) => {
         if (e.target.matches(selectors.actions.closeOption)) {
             // Trigger the transition between 'pages'.
             carousel.carousel('prev');
-            carousel.on('slid.bs.carousel', async() => {
-                const module = e.target.dataset.modname;
-                const allModules = document.querySelector(selectors.regions.modules);
-                const caller = allModules.querySelector(`[role="gridcell"][data-modname=${module}]`);
-                await caller.focus();
+            carousel.on('slid.bs.carousel', () => {
+                const allModules = modal.getBody()[0].querySelector(selectors.regions.modules);
+                const caller = allModules.querySelector(selectors.regions.getModuleSelector(e.target.dataset.modname));
+                caller.focus();
             });
         }
     });
@@ -109,7 +108,7 @@ const initKeyboardNavigation = (modal, mappedModules) => {
             // Check for enter/ space triggers for showing the help.
             if (e.keyCode === enter || e.keyCode === space) {
                 if (e.target.matches(selectors.actions.optionActions.showSummary)) {
-                    const carousel = $(selectors.regions.carousel);
+                    const carousel = $(modal.getBody()[0].querySelector(selectors.regions.carousel));
                     carousel.carousel({
                         interval: false,
                         pause: true,
@@ -198,7 +197,7 @@ export const displayChooser = async(origin, modal, sectionModules) => {
     modal.getRoot().on(ModalEvents.hidden, () => {
         try {
             // Just in case a user shuts the chooser on the help screen set it back to default.
-            const carousel = $(selectors.regions.carousel);
+            const carousel = $(modal.getBody()[0].querySelector(selectors.regions.carousel));
             carousel.carousel({
                 interval: false,
                 pause: true,

@@ -61,6 +61,60 @@ export const init = async(courseid) => {
     pendingPromise.resolve();
 };
 
+export const init2 = courseId => {
+    const pendingPromise = new Pending();
+
+    registerEventHandlers(fetchModuleDataFunction(courseId));
+
+    pendingPromise.resolve();
+};
+
+const fetchModuleDataFunction = courseId => {
+    let innerPromise = null;
+    window.console.log("innerPromise");
+    window.console.log(innerPromise);
+
+    return () => {
+        if (!innerPromise) {
+            innerPromise = new Promise((resolve) => {
+                resolve(Repository.activityModules(courseId));
+            });
+        }
+
+        return innerPromise;
+    };
+};
+const registerEventHandlers = (data) => {
+    const events = [
+        'click',
+        CustomEvents.events.activate,
+        CustomEvents.events.keyboardActivate
+    ];
+
+    CustomEvents.define(document, events);
+
+    // Display module chooser event listeners.
+    events.forEach((event) => {
+        document.addEventListener(event, async(e) => {
+            if (e.target.closest(selectors.elements.sectionmodchooser)) {
+                const data2 = await data();
+                window.console.log(data2);
+                const allSections = fetchSections();
+
+                const sectionIds = fetchSectionIds(allSections);
+
+                const builtModuleData = sectionIdMapper(data2, sectionIds);
+
+                const modalMap = await modalMapper(builtModuleData);
+
+                const caller = e.target.closest(selectors.elements.sectionmodchooser);
+                const sectionid = caller.dataset.sectionid;
+                const modal = modalMap.get(sectionid);
+                ChooserDialogue.displayChooser(caller, modal, builtModuleData.get(sectionid));
+            }
+        });
+    });
+};
 /**
  * Call the activity webservice so we get an array of modules
  *

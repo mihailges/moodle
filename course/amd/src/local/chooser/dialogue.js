@@ -27,6 +27,7 @@ import * as ModalEvents from 'core/modal_events';
 import selectors from 'core_course/local/chooser/selectors';
 import * as Templates from 'core/templates';
 import {end, arrowLeft, arrowRight, home, enter, space} from 'core/key_codes';
+import {addIconToContainer} from 'core/loadingicon';
 
 /**
  * Given an event from the main module 'page' navigate to it's help section via a carousel.
@@ -35,19 +36,25 @@ import {end, arrowLeft, arrowRight, home, enter, space} from 'core/key_codes';
  * @param {jQuery} carousel Our initialized carousel to manipulate
  * @param {Object} moduleData Data of the module to carousel to
  */
-const carouselPageTo = async(carousel, moduleData) => {
-    // Build up the html & js ready to place into the help section.
-    const {html, js} = await Templates.renderForPromise('core_course/chooser_help', moduleData);
+const carouselPageTo = (carousel, moduleData) => {
     const help = carousel.find(selectors.regions.help)[0];
+    help.innerHTML = '';
 
-    await Templates.replaceNodeContents(help, html, js);
+    addIconToContainer(help)
+
+    // Build up the html & js ready to place into the help section.
+    .then(() => {
+        return Templates.renderForPromise('core_course/chooser_help', moduleData);
+    })
+    .then(({html, js}) => Templates.replaceNodeContents(help, html, js))
+    .then(() => {
+        help.querySelector(selectors.regions.chooserSummary.description).focus();
+        return help;
+    })
+    .catch(Notification.exception);
 
     // Trigger the transition between 'pages'.
     carousel.carousel('next');
-    carousel.on('slid.bs.carousel', () => {
-        const helpContent = help.querySelector(selectors.regions.chooserSummary.description);
-        helpContent.focus();
-    });
 };
 
 /**
@@ -58,15 +65,10 @@ const carouselPageTo = async(carousel, moduleData) => {
  * @param {Map} mappedModules A map of all of the modules we are working with with K: mod_name V: {Object}
  */
 const registerListenerEvents = (modal, mappedModules) => {
-    const carousel = $(modal.getBody()[0].querySelector(selectors.regions.carousel));
-    carousel.carousel({
-        interval: false,
-        pause: true,
-        keyboard: false
-    });
-
-    modal.getBody()[0].addEventListener('click', (e) => {
+    const bodyClickListener = e => {
         if (e.target.closest(selectors.actions.optionActions.showSummary)) {
+            const carousel = $(modal.getBody()[0].querySelector(selectors.regions.carousel));
+
             const module = e.target.closest(selectors.regions.chooserOption.container);
             const moduleName = module.dataset.modname;
             const moduleData = mappedModules.get(moduleName);
@@ -75,6 +77,8 @@ const registerListenerEvents = (modal, mappedModules) => {
 
         // From the help screen go back to the module overview.
         if (e.target.matches(selectors.actions.closeOption)) {
+            const carousel = $(modal.getBody()[0].querySelector(selectors.regions.carousel));
+
             // Trigger the transition between 'pages'.
             carousel.carousel('prev');
             carousel.on('slid.bs.carousel', () => {
@@ -83,22 +87,50 @@ const registerListenerEvents = (modal, mappedModules) => {
                 caller.focus();
             });
         }
-    });
+    };
+
+    modal.getBodyPromise()
+
+    // The return value of getBodyPromise is a jquery object containing the body NodeElement.
+    .then(body => body[0])
+
+    // Set up the carousel.
+    .then(body => {
+        $(body.querySelector(selectors.regions.carousel))
+            .carousel({
+                interval: false,
+                pause: true,
+                keyboard: false
+            });
+
+        return body;
+    })
+
+    // Add the listener for clicks on the body.
+    .then(body => {
+        body.addEventListener('click', bodyClickListener);
+        return body;
+    })
 
     // Register event listeners related to the keyboard navigation controls.
-    initKeyboardNavigation(modal, mappedModules);
+    .then(body => {
+        initKeyboardNavigation(body, mappedModules);
+        return body;
+    })
+    .catch();
+
 };
 
 /**
  * Initialise the keyboard navigation controls for the chooser.
  *
  * @method initKeyboardNavigation
- * @param {Promise} modal Our modal that we are working with
+ * @param {NodeElement} body Our modal that we are working with
  * @param {Map} mappedModules A map of all of the modules we are working with with K: mod_name V: {Object}
  */
-const initKeyboardNavigation = (modal, mappedModules) => {
+const initKeyboardNavigation = (body, mappedModules) => {
 
-    const chooserOptions = modal.getBody()[0].querySelectorAll(selectors.regions.chooserOption.container);
+    const chooserOptions = body.querySelectorAll(selectors.regions.chooserOption.container);
 
     Array.from(chooserOptions).forEach((element) => {
         return element.addEventListener('keyup', (e) => {
@@ -110,7 +142,7 @@ const initKeyboardNavigation = (modal, mappedModules) => {
                     const module = e.target.closest(selectors.regions.chooserOption.container);
                     const moduleName = module.dataset.modname;
                     const moduleData = mappedModules.get(moduleName);
-                    const carousel = $(modal.getBody()[0].querySelector(selectors.regions.carousel));
+                    const carousel = $(body.querySelector(selectors.regions.carousel));
                     carousel.carousel({
                         interval: false,
                         pause: true,
@@ -186,6 +218,7 @@ const focusChooserOption = (currentChooserOption, previousChooserOption = false)
  * @method clickErrorHandler
  * @param {HTMLElement} item What we want to check exists
  * @param {HTMLElement} fallback If we dont match anything fallback the focus
+ * @return {String}
  */
 const clickErrorHandler = (item, fallback) => {
     if (item !== null) {
@@ -222,8 +255,15 @@ export const displayChooser = (origin, modal, sectionModules) => {
     // We want to focus on the first chooser option element as soon as the modal is opened.
     modal.getRoot().on(ModalEvents.shown, () => {
         modal.getModal()[0].tabIndex = -1;
-        const firstChooserOption = modal.getBody()[0].querySelector(selectors.regions.chooserOption.container);
-        focusChooserOption(firstChooserOption);
+
+        modal.getBodyPromise()
+        .then(body => {
+            const firstChooserOption = body[0].querySelector(selectors.regions.chooserOption.container);
+            focusChooserOption(firstChooserOption);
+
+            return;
+        })
+        .catch(Notification.exception);
     });
 
     modal.show();

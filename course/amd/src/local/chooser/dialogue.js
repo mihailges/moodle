@@ -28,6 +28,7 @@ import selectors from 'core_course/local/chooser/selectors';
 import * as Templates from 'core/templates';
 import {end, arrowLeft, arrowRight, home, enter, space} from 'core/key_codes';
 import {addIconToContainer} from 'core/loadingicon';
+import {debounce} from 'core/utils';
 
 /**
  * Given an event from the main module 'page' navigate to it's help section via a carousel.
@@ -87,6 +88,15 @@ const registerListenerEvents = (modal, mappedModules) => {
                 caller.focus();
             });
         }
+
+        // The "clear search" button is triggered.
+        if (e.target.matches(selectors.actions.clearSearch)) {
+            // Clear the entered search query in the search bar and hide the search results container.
+            const searchInput = modal.getBody()[0].querySelector(selectors.actions.search);
+            searchInput.value = "";
+            searchInput.focus();
+            toggleSearchResultsView(modal.getBody()[0], mappedModules, searchInput.value);
+        }
     };
 
     modal.getBodyPromise()
@@ -112,9 +122,21 @@ const registerListenerEvents = (modal, mappedModules) => {
         return body;
     })
 
+    // Add the listener for clicks on the body.
+    .then(body => {
+        const searchInput = body.querySelector(selectors.actions.search);
+        // The search input is triggered.
+        searchInput.addEventListener('input', debounce(() => {
+            // Display the search results.
+            toggleSearchResultsView(body, mappedModules, searchInput.value);
+        }, 300));
+        return body;
+    })
+
     // Register event listeners related to the keyboard navigation controls.
     .then(body => {
-        initKeyboardNavigation(body, mappedModules);
+        const chooserOptions = body.querySelector(selectors.regions.chooserOptions);
+        initKeyboardNavigation(body, mappedModules, chooserOptions);
         return body;
     })
     .catch();
@@ -127,14 +149,14 @@ const registerListenerEvents = (modal, mappedModules) => {
  * @method initKeyboardNavigation
  * @param {NodeElement} body Our modal that we are working with
  * @param {Map} mappedModules A map of all of the modules we are working with with K: mod_name V: {Object}
+ * @param {HTMLElement} chooserOptionsContainer The section that contains the chooser items
  */
-const initKeyboardNavigation = (body, mappedModules) => {
+const initKeyboardNavigation = (body, mappedModules, chooserOptionsContainer) => {
 
-    const chooserOptions = body.querySelectorAll(selectors.regions.chooserOption.container);
+    const chooserOptions = chooserOptionsContainer.querySelectorAll(selectors.regions.chooserOption.container);
 
     Array.from(chooserOptions).forEach((element) => {
         return element.addEventListener('keyup', (e) => {
-            const chooserOptions = document.querySelector(selectors.regions.chooserOptions);
 
             // Check for enter/ space triggers for showing the help.
             if (e.keyCode === enter || e.keyCode === space) {
@@ -156,7 +178,7 @@ const initKeyboardNavigation = (body, mappedModules) => {
             if (e.keyCode === arrowRight) {
                 const currentOption = e.target.closest(selectors.regions.chooserOption.container);
                 const nextOption = currentOption.nextElementSibling;
-                const firstOption = chooserOptions.firstElementChild;
+                const firstOption = chooserOptionsContainer.firstElementChild;
                 const toFocusOption = clickErrorHandler(nextOption, firstOption);
                 focusChooserOption(toFocusOption, currentOption);
             }
@@ -165,20 +187,20 @@ const initKeyboardNavigation = (body, mappedModules) => {
             if (e.keyCode === arrowLeft) {
                 const currentOption = e.target.closest(selectors.regions.chooserOption.container);
                 const previousOption = currentOption.previousElementSibling;
-                const lastOption = chooserOptions.lastElementChild;
+                const lastOption = chooserOptionsContainer.lastElementChild;
                 const toFocusOption = clickErrorHandler(previousOption, lastOption);
                 focusChooserOption(toFocusOption, currentOption);
             }
 
             if (e.keyCode === home) {
                 const currentOption = e.target.closest(selectors.regions.chooserOption.container);
-                const firstOption = chooserOptions.firstElementChild;
+                const firstOption = chooserOptionsContainer.firstElementChild;
                 focusChooserOption(firstOption, currentOption);
             }
 
             if (e.keyCode === end) {
                 const currentOption = e.target.closest(selectors.regions.chooserOption.container);
-                const lastOption = chooserOptions.lastElementChild;
+                const lastOption = chooserOptionsContainer.lastElementChild;
                 focusChooserOption(lastOption, currentOption);
             }
         });
@@ -194,22 +216,35 @@ const initKeyboardNavigation = (body, mappedModules) => {
  */
 const focusChooserOption = (currentChooserOption, previousChooserOption = false) => {
     if (previousChooserOption !== false) {
-        const previousChooserOptionLink = previousChooserOption.querySelector(selectors.actions.addChooser);
-        const previousChooserOptionHelp = previousChooserOption.querySelector(selectors.actions.optionActions.showSummary);
-        // Set tabindex to -1 to remove the previous chooser option element from the focus order.
-        previousChooserOption.tabIndex = -1;
-        previousChooserOptionLink.tabIndex = -1;
-        previousChooserOptionHelp.tabIndex = -1;
+        toggleFocusableChoserOption(previousChooserOption, false);
     }
 
-    const currentChooserOptionLink = currentChooserOption.querySelector(selectors.actions.addChooser);
-    const currentChooserOptionHelp = currentChooserOption.querySelector(selectors.actions.optionActions.showSummary);
-    // Set tabindex to 0 to add current chooser option element to the focus order.
-    currentChooserOption.tabIndex = 0;
-    currentChooserOptionLink.tabIndex = 0;
-    currentChooserOptionHelp.tabIndex = 0;
-    // Focus the current chooser option element.
+    toggleFocusableChoserOption(currentChooserOption, true);
     currentChooserOption.focus();
+};
+
+/**
+ * Add or remove a chooser option from the focus order.
+ *
+ * @method focusChooserOption
+ * @param {HTMLElement} chooserOption The chooser option element which should be added or removed from the focus order
+ * @param {Boolean} isFocusable Whether the chooser element is focusable or not
+ */
+const toggleFocusableChoserOption = (chooserOption, isFocusable) => {
+    const chooserOptionLink = chooserOption.querySelector(selectors.actions.addChooser);
+    const chooserOptionHelp = chooserOption.querySelector(selectors.actions.optionActions.showSummary);
+
+    if (isFocusable) {
+        // Set tabindex to 0 to add current chooser option element to the focus order.
+        chooserOption.tabIndex = 0;
+        chooserOptionLink.tabIndex = 0;
+        chooserOptionHelp.tabIndex = 0;
+    } else {
+        // Set tabindex to -1 to remove the previous chooser option element from the focus order.
+        chooserOption.tabIndex = -1;
+        chooserOptionLink.tabIndex = -1;
+        chooserOptionHelp.tabIndex = -1;
+    }
 };
 
 /**
@@ -226,6 +261,119 @@ const clickErrorHandler = (item, fallback) => {
     } else {
         return fallback;
     }
+};
+
+/**
+ * Render the search results in a defined container
+ *
+ * @method renderSearchResults
+ * @param {HTMLElement} searchResultsContainer The container where the data should be rendered
+ * @param {Object} searchResultsData Data containing the module items that satisfy the search criteria
+ */
+const renderSearchResults = async(searchResultsContainer, searchResultsData) => {
+    const searchResultsNumber = searchResultsData.length;
+    const templateData = {
+        'searchresultsnumber': searchResultsNumber,
+        'searchresults': searchResultsData
+    };
+    // Build up the html & js ready to place into the help section.
+    const {html, js} = await Templates.renderForPromise('core_course/chooser-search-results', templateData);
+    await Templates.replaceNodeContents(searchResultsContainer, html, js);
+};
+
+/**
+ * Toggle (display/hide) the search results depending on the value of the search query
+ *
+ * @method toggleSearchResultsView
+ * @param {NodeElement} modalBody The body of the created modal for the section
+ * @param {Map} mappedModules A map of all of the modules we are working with with K: mod_name V: {Object}
+ * @param {String} searchQuery The search query
+ */
+const toggleSearchResultsView = async(modalBody, mappedModules, searchQuery) => {
+    const searchActive = searchQuery.length > 0;
+    const searchResultsContainer = modalBody.querySelector(selectors.regions.searchResults);
+
+    if (searchActive) {
+        const searchResultsData = searchModules(mappedModules, searchQuery);
+        await renderSearchResults(searchResultsContainer, searchResultsData);
+        const searchResultItemsContainer = searchResultsContainer.querySelector(selectors.regions.searchResultItems);
+        const firstSearchResultItem = searchResultItemsContainer.querySelector(selectors.regions.chooserOption.container);
+        if (firstSearchResultItem) {
+            // Set the first result item to be focusable.
+            toggleFocusableChoserOption(firstSearchResultItem, true);
+            // Register keyboard events on the created search result items.
+            initKeyboardNavigation(modalBody, mappedModules, searchResultItemsContainer);
+        }
+    }
+
+    toggleSearchResultsContainer(modalBody, searchActive);
+    toggleClearSearchButton(modalBody, searchActive);
+};
+
+/**
+ * Toggle (display/hide) the "clear search" button in the activity chooser search bar
+ *
+ * @method toggleClearSearchButton
+ * @param {NodeElement} modalBody The body of the created modal for the section
+ * @param {Boolean} active Whether the search mode is activated
+ */
+const toggleClearSearchButton = (modalBody, active) => {
+    const clearSearchutton = modalBody.querySelector(selectors.actions.clearSearch);
+    if (active) {
+        clearSearchutton.style.display = "block";
+    } else {
+        clearSearchutton.style.display = "none";
+    }
+};
+
+/**
+ * Toggle (display/hide) the search results container
+ *
+ * @method toggleSearchResultsContainer
+ * @param {NodeElement} modalBody The body of the created modal for the section
+ * @param {Boolean} active Whether the search mode is activated
+ */
+const toggleSearchResultsContainer = (modalBody, active) => {
+    const searchResultsContainer = modalBody.querySelector(selectors.regions.searchResults);
+    const chooserOptionsContainer = modalBody.querySelector(selectors.regions.chooserOptions);
+
+    if (active) {
+        chooserOptionsContainer.setAttribute('hidden', 'hidden');
+        chooserOptionsContainer.classList.remove("d-flex");
+        searchResultsContainer.removeAttribute('hidden');
+    } else {
+        searchResultsContainer.setAttribute('hidden', 'hidden');
+        chooserOptionsContainer.removeAttribute('hidden');
+        chooserOptionsContainer.classList.add("d-flex");
+    }
+};
+
+/**
+ * Return the list of modules which have a name or description that matches the given search term.
+ *
+ * @method searchModules
+ * @param {Array} modules List of available modules
+ * @param {String} searchTerm The search term to match
+ * @return {Array}
+ */
+const searchModules = (modules, searchTerm) => {
+    if (searchTerm === '') {
+        return modules;
+    }
+
+    searchTerm = searchTerm.toLowerCase();
+
+    const searchResults = [];
+
+    modules.forEach((activity) => {
+        const activityName = activity.label.toLowerCase();
+        const activityDesc = activity.description.toLowerCase();
+        if (activityName.includes(searchTerm) || activityDesc.includes(searchTerm)) {
+            searchResults.push(activity);
+        }
+    });
+
+    return searchResults;
 };
 
 /**

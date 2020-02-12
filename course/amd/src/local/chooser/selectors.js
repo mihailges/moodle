@@ -51,7 +51,9 @@ export default {
         carousel: getDataSelector('region', 'carousel'),
         help: getDataSelector('region', 'help'),
         modules: getDataSelector('region', 'modules'),
-        getModuleSelector: modname => `[role="menuitem"][data-modname="${modname}"]`
+        getModuleSelector: modname => `[role="menuitem"][data-modname="${modname}"]`,
+        searchResults: getDataSelector('region', 'search-results-container'),
+        searchResultItems: getDataSelector('region', 'search-result-items-container'),
     },
     actions: {
         optionActions: {
@@ -59,7 +61,9 @@ export default {
         },
         addChooser: getDataSelector('action', 'add-chooser-option'),
         closeOption: getDataSelector('action', 'close-chooser-option-summary'),
-        hide: getDataSelector('action', 'hide')
+        hide: getDataSelector('action', 'hide'),
+        search: getDataSelector('action', 'search'),
+        clearSearch: getDataSelector('action', 'clearsearch'),
     },
     elements: {
         section: '.section',

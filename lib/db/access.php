@@ -2479,5 +2479,25 @@ $capabilities = array(
         'archetypes' => [
             'manager' => CAP_ALLOW,
         ]
-    ]
+    ],
+
+    // Content bank capabilities.
+    'moodle/contentbank:view' => array(
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(
+            'manager' => CAP_ALLOW,
+            'coursecreator' => CAP_ALLOW,
+        )
+    ),
+
+    'moodle/contentbank:upload' => array(
+        'riskbitmask' => RISK_SPAM,
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(
+            'manager' => CAP_ALLOW,
+            'coursecreator' => CAP_ALLOW,
+        )
+    )
 );

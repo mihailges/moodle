@@ -89,25 +89,25 @@ Feature: Display and choose from the available activities in course
 
   Scenario: Teacher can not see a "clear" button if a search query is not entered in the activity chooser search bar
     When I click on "Add an activity or resource" "button" in the "Topic 1" "section"
-    Then "//button[@data-action='clearsearch']" "xpath_element" should not exist
+    Then "Clear search input" "button" should not exist
 
   Scenario: Teacher can see a "clear" button after entering a search query in the activity chooser search bar
     Given I click on "Add an activity or resource" "button" in the "Topic 1" "section"
     When I set the field "search" to "Search query"
-    Then "//button[@data-action='clearsearch']" "xpath_element" should exist
+    Then "Clear search input" "button" should not exist
 
   Scenario: Teacher can not see a "clear" button if the search query is removed in the activity chooser search bar
     Given I click on "Add an activity or resource" "button" in the "Topic 1" "section"
     And I set the field "search" to "Search query"
-    And "//button[@data-action='clearsearch']" "xpath_element" should exist
+    And "Clear search input" "button" should exist
     When I set the field "search" to ""
-    Then "//button[@data-action='clearsearch']" "xpath_element" should not exist
+    Then "Clear search input" "button" should not exist
 
   Scenario: Teacher can instantly remove the search query from the activity search bar by clicking on the "clear" button
     Given I click on "Add an activity or resource" "button" in the "Topic 1" "section"
     And I set the field "search" to "Search query"
     And I should see "results found"
-    When I click on "//button[@data-action='clearsearch']" "xpath_element"
+    When I click on "Clear search input" "button"
     Then I should not see "Search query"
     And ".searchresultscontainer" "css_element" should not exist
     And ".optionscontainer" "css_element" should exist

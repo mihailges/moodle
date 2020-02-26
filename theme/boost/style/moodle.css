@@ -10666,40 +10666,32 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
 .modchoosercontainer.noscroll {
   overflow-y: hidden; }
 
-.modchooser .searchcontainer .searchbar .searchbaritem {
-  display: flex;
-  align-items: center;
-  padding: 0 .75rem;
-  border: 1px solid #dee2e6; }
-  .modchooser .searchcontainer .searchbar .searchbaritem i {
-    color: #868e96;
-    margin: 0; }
-
-.modchooser .searchcontainer .searchbar .searchbaritem.search {
-  border-right: none;
-  border-top-left-radius: .3rem;
-  border-bottom-left-radius: .3rem; }
-  .modchooser .searchcontainer .searchbar .searchbaritem.search i {
-    font-size: 17px; }
-
 .modchooser .searchcontainer .searchbar .searchinput {
-  padding: .5rem 0;
-  border-left: none;
-  border-right: none;
   font-size: inherit;
-  border-top: 1px solid #dee2e6;
-  border-bottom: 1px solid #dee2e6; }
+  border: 1px solid #dee2e6;
+  border-top-left-radius: .3rem;
+  border-bottom-left-radius: .3rem;
+  border-right: none; }
 
-.modchooser .searchcontainer .searchbar .searchbaritem.cancel {
+.modchooser .searchcontainer .searchbar .searchbar-append {
+  align-items: center;
+  border: 1px solid #dee2e6;
   border-left: none;
   border-top-right-radius: .3rem;
   border-bottom-right-radius: .3rem; }
-  .modchooser .searchcontainer .searchbar .searchbaritem.cancel button {
-    line-height: 0;
-    display: none; }
-  .modchooser .searchcontainer .searchbar .searchbaritem.cancel i {
-    font-size: 21px;
+  .modchooser .searchcontainer .searchbar .searchbar-append i {
+    color: #868e96;
+    margin: 0;
+    vertical-align: middle; }
+  .modchooser .searchcontainer .searchbar .searchbar-append .clear i {
+    height: 23px;
+    width: 23px;
+    font-size: 23px;
     pointer-events: none; }
+  .modchooser .searchcontainer .searchbar .searchbar-append .search-icon i {
+    height: 20px;
+    width: 20px;
+    font-size: 20px; }
 
 .modchoosercontainer .optionscontainer,
 .modchoosercontainer .searchresultitemscontainer {

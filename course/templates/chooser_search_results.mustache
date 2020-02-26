@@ -32,9 +32,8 @@
         }
     }
 }}
-
-<p class="m-t-1">{{#str}} resultsfound, moodle, {{searchresultsnumber}} {{/str}}</p>
-<div class="searchresultitemscontainer d-flex flex-wrap mw-100 position-relative m-t-1" role="menubar" data-region="search-result-items-container">
+<p class="mt-4 px-3">{{#str}} resultsfound, moodle, {{searchresultsnumber}} {{/str}}</p>
+<div class="searchresultitemscontainer d-flex flex-wrap mw-100 position-relative mt-4" role="menubar" data-region="search-result-items-container">
     {{#searchresults}}
         {{>core_course/chooser_item}}
     {{/searchresults}}

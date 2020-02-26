@@ -236,7 +236,6 @@ const initTabsKeyboardNavigation = (body) => {
  * @param {HTMLElement} chooserOptionsContainer The section that contains the chooser items
  */
 const initChooserOptionsKeyboardNavigation = (body, mappedModules, chooserOptionsContainer) => {
-
     const chooserOptions = chooserOptionsContainer.querySelectorAll(selectors.regions.chooserOption.container);
 
     Array.from(chooserOptions).forEach((element) => {
@@ -360,9 +359,8 @@ const clickErrorHandler = (item, fallback) => {
  * @param {Object} searchResultsData Data containing the module items that satisfy the search criteria
  */
 const renderSearchResults = async(searchResultsContainer, searchResultsData) => {
-    const searchResultsNumber = searchResultsData.length;
     const templateData = {
-        'searchresultsnumber': searchResultsNumber,
+        'searchresultsnumber': searchResultsData.length,
         'searchresults': searchResultsData
     };
     // Build up the html & js ready to place into the help section.
@@ -374,17 +372,17 @@ const renderSearchResults = async(searchResultsContainer, searchResultsData) => 
  * Toggle (display/hide) the search results depending on the value of the search query
  *
  * @method toggleSearchResultsView
- * @param {NodeElement} modalBody The body of the created modal for the section
+ * @param {HTMLElement} modalBody The body of the created modal for the section
  * @param {Map} mappedModules A map of all of the modules we are working with with K: mod_name V: {Object}
  * @param {String} searchQuery The search query
  */
 const toggleSearchResultsView = async(modalBody, mappedModules, searchQuery) => {
-    const searchActive = searchQuery.length > 0;
     const searchResultsContainer = modalBody.querySelector(selectors.regions.searchResults);
     const chooserContainer = modalBody.querySelector(selectors.regions.chooser);
-    const clearSearchButton = modalBody.querySelector(selectors.actions.clearSearch);
+    const clearSearchButton = modalBody.querySelector(selectors.elements.clearsearch);
+    const searchIcon = modalBody.querySelector(selectors.elements.searchicon);
 
-    if (searchActive) { // Search query is present.
+    if (searchQuery.length > 0) { // Search query is present.
         const searchResultsData = searchModules(mappedModules, searchQuery);
         await renderSearchResults(searchResultsContainer, searchResultsData);
         const searchResultItemsContainer = searchResultsContainer.querySelector(selectors.regions.searchResultItems);
@@ -396,14 +394,16 @@ const toggleSearchResultsView = async(modalBody, mappedModules, searchQuery) => 
             initChooserOptionsKeyboardNavigation(modalBody, mappedModules, searchResultItemsContainer);
         }
         // Display the "clear" search button in the activity chooser search bar.
-        clearSearchButton.style.display = "block";
+        searchIcon.classList.add('d-none');
+        clearSearchButton.classList.remove('d-none');
         // Hide the default chooser options container.
         chooserContainer.setAttribute('hidden', 'hidden');
         // Display the search results container.
         searchResultsContainer.removeAttribute('hidden');
     } else { // Search query is not present.
         // Hide the "clear" search button in the activity chooser search bar.
-        clearSearchButton.style.display = "none";
+        clearSearchButton.classList.add('d-none');
+        searchIcon.classList.remove('d-none');
         // Hide the search results container.
         searchResultsContainer.setAttribute('hidden', 'hidden');
         // Display the default chooser options container.
@@ -423,14 +423,11 @@ const searchModules = (modules, searchTerm) => {
     if (searchTerm === '') {
         return modules;
     }
-
     searchTerm = searchTerm.toLowerCase();
-
     const searchResults = [];
-
     modules.forEach((activity) => {
-        const activityName = activity.label.toLowerCase();
-        const activityDesc = activity.description.toLowerCase();
+        const activityName = activity.title.toLowerCase();
+        const activityDesc = activity.help.toLowerCase();
         if (activityName.includes(searchTerm) || activityDesc.includes(searchTerm)) {
             searchResults.push(activity);
         }
@@ -443,7 +440,7 @@ const searchModules = (modules, searchTerm) => {
  * Disable the focus of all chooser options in a specific container (section).
  *
  * @method disableFocusAllChooserOptions
- * @param {NodeElement} sectionChooserOptions The section that contains the chooser items
+ * @param {HTMLElement} sectionChooserOptions The section that contains the chooser items
  */
 const disableFocusAllChooserOptions = (sectionChooserOptions) => {
     const allChooserOptions = sectionChooserOptions.querySelectorAll(selectors.regions.chooserOption.container);
@@ -482,7 +479,6 @@ export const displayChooser = (origin, modal, sectionModules) => {
 
         modal.getBodyPromise()
         .then(body => {
-
             $(selectors.elements.tab).on('shown.bs.tab', (e) => {
                 const activeSectionId = e.target.getAttribute("href");
                 const activeSectionChooserOptions = body[0]

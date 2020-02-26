@@ -37,26 +37,8 @@
     <div class="carousel-inner" aria-live="polite">
         <div class="carousel-item p-4 active" data-region="modules">
             <div class="modchoosercontainer" aria-label="{{#str}} activitymodules {{/str}}">
-                <div class="searchcontainer m-b-1">
-                    <div class="searchbar input-group">
-                        <div class="searchbaritem search">
-                            {{#pix}} a/search, core {{/pix}}
-                        </div>
-                        <input type="text"
-                               data-action="search"
-                               class="form-control form-control-lg searchinput"
-                               placeholder="{{#str}} search {{/str}}"
-                               name="search"
-                               aria-label="{{#str}} searchactivities {{/str}}"
-                        >
-                        <div class="searchbaritem cancel">
-                            <button class="btn p-0" data-action="clearsearch" aria-label="{{#str}} clearsearch {{/str}}">
-                                {{#pix}} e/cancel_solid_circle, core {{/pix}}
-                            </button>
-                        </div>
-                    </div>
-                    <div class="searchresultscontainer" data-region="search-results-container" hidden="hidden">
-                    </div>
+                <div class="searchcontainer mb-3">
+                    {{>core_course/chooser_search}}
                 </div>
                 <div data-region="chooser-container">
                     <ul class="nav nav-tabs mb-2" id="activities-{{uniqid}}" role="tablist">
@@ -107,30 +89,24 @@
                     </ul>
                     <div class="tab-content" id="tabbed-activities-{{uniqid}}">
                         <div class="tab-pane {{#favouritesFirst}}active{{/favouritesFirst}}" id="starred-{{uniqid}}" data-region="favourites" role="tabpanel" aria-labelledby="starred-tab-{{uniqid}}">
-                            <div class="modchoosercontainer" data-region="chooser-container" aria-label="{{#str}} activitymodules {{/str}}">
-                                <div class="optionscontainer d-flex flex-wrap mw-100 p-3 position-relative" role="menubar" data-region="chooser-options-container" data-render="favourites-area">
-                                        {{#favourites}}
-                                        {{>core_course/chooser_item}}
-                                    {{/favourites}}
-                                </div>
+                            <div class="optionscontainer d-flex flex-wrap mw-100 p-3 position-relative" role="menubar" data-region="chooser-options-container" data-render="favourites-area">
+                                    {{#favourites}}
+                                    {{>core_course/chooser_item}}
+                                {{/favourites}}
                             </div>
                         </div>
                         <div class="tab-pane {{#recommendedFirst}}active{{/recommendedFirst}}" id="recommended-{{uniqid}}" data-region="recommended" role="tabpanel" aria-labelledby="recommended-tab-{{uniqid}}">
-                            <div class="modchoosercontainer" data-region="chooser-container" aria-label="{{#str}} activitymodules {{/str}}">
-                                <div class="optionscontainer d-flex flex-wrap mw-100 p-3 position-relative" role="menubar" data-region="chooser-options-container">
-                                    {{#recommended}}
-                                        {{>core_course/chooser_item}}
-                                    {{/recommended}}
-                                </div>
+                            <div class="optionscontainer d-flex flex-wrap mw-100 p-3 position-relative" role="menubar" data-region="chooser-options-container">
+                                {{#recommended}}
+                                    {{>core_course/chooser_item}}
+                                {{/recommended}}
                             </div>
                         </div>
                         <div class="tab-pane {{#fallback}}active{{/fallback}}" id="all-{{uniqid}}" data-region="default" role="tabpanel" aria-labelledby="all-tab-{{uniqid}}">
-                            <div class="modchoosercontainer" data-region="chooser-container" aria-label="{{#str}} activitymodules {{/str}}">
-                                <div class="optionscontainer d-flex flex-wrap mw-100 p-3 position-relative" role="menubar" data-region="chooser-options-container">
-                                    {{#default}}
-                                        {{>core_course/chooser_item}}
-                                    {{/default}}
-                                </div>
+                            <div class="optionscontainer d-flex flex-wrap mw-100 p-3 position-relative" role="menubar" data-region="chooser-options-container">
+                                {{#default}}
+                                    {{>core_course/chooser_item}}
+                                {{/default}}
                             </div>
                         </div>
                     </div>

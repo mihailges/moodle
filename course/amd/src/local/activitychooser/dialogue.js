@@ -215,15 +215,15 @@ const initTabsKeyboardNavigation = (body) => {
             if (e.keyCode === arrowRight) {
                 const nextLink = e.target.parentElement.nextElementSibling;
                 if (nextLink === null) {
-                    e.srcElement.tabIndex = -1;
+                    e.target.tabIndex = -1;
                     firstLink.tabIndex = 0;
                     firstLink.focus();
                 } else if (nextLink.firstElementChild.classList.contains('d-none')) {
-                    e.srcElement.tabIndex = -1;
+                    e.target.tabIndex = -1;
                     lastLink.tabIndex = 0;
                     lastLink.focus();
                 } else {
-                    e.srcElement.tabIndex = -1;
+                    e.target.tabIndex = -1;
                     nextLink.firstElementChild.tabIndex = 0;
                     nextLink.firstElementChild.focus();
                 }
@@ -231,26 +231,26 @@ const initTabsKeyboardNavigation = (body) => {
             if (e.keyCode === arrowLeft) {
                 const previousLink = e.target.parentElement.previousElementSibling;
                 if (previousLink === null) {
-                    e.srcElement.tabIndex = -1;
+                    e.target.tabIndex = -1;
                     lastLink.tabIndex = 0;
                     lastLink.focus();
                 } else if (previousLink.firstElementChild.classList.contains('d-none')) {
-                    e.srcElement.tabIndex = -1;
+                    e.target.tabIndex = -1;
                     firstLink.tabIndex = 0;
                     firstLink.focus();
                 } else {
-                    e.srcElement.tabIndex = -1;
+                    e.target.tabIndex = -1;
                     previousLink.firstElementChild.tabIndex = 0;
                     previousLink.firstElementChild.focus();
                 }
             }
             if (e.keyCode === home) {
-                e.srcElement.tabIndex = -1;
+                e.target.tabIndex = -1;
                 firstLink.tabIndex = 0;
                 firstLink.focus();
             }
             if (e.keyCode === end) {
-                e.srcElement.tabIndex = -1;
+                e.target.tabIndex = -1;
                 lastLink.tabIndex = 0;
                 lastLink.focus();
             }

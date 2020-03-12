@@ -2212,7 +2212,7 @@ function xmldb_main_upgrade($oldversion) {
         upgrade_main_savepoint(true, 2020013000.01);
     }
 
-    if ($oldversion < 2020022100.01) {
+    if ($oldversion < 2020030600.01) {
 
         // Define table to store contentbank_content.
         $table = new xmldb_table('contentbank_content');
@@ -2243,7 +2243,7 @@ function xmldb_main_upgrade($oldversion) {
             $dbman->create_table($table);
         }
         // Main savepoint reached.
-        upgrade_main_savepoint(true, 2020022100.01);
+        upgrade_main_savepoint(true, 2020030600.01);
     }
 
     return true;

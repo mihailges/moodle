@@ -106,9 +106,12 @@ class mysql_lock_factory implements lock_factory {
      * Hard coded to false and workaround inconsistent support in different
      * versions of MySQL / MariaDB.
      *
+     * @deprecated since Moodle 3.9.
      * @return boolean - false
      */
     public function supports_recursion() {
+        debugging('The function supports_recursion() is deprecated. Please use get_lock() instead to determine
+            whether multiple locks for the same resource can be held from a single process .', DEBUG_DEVELOPER);
         return false;
     }
 

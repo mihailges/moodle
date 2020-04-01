@@ -76,9 +76,12 @@ class installation_lock_factory implements lock_factory {
     /**
      * Multiple locks for the same resource cannot be held from a single process.
      *
+     * @deprecated since Moodle 3.9.
      * @return boolean - False
      */
     public function supports_recursion() {
+        debugging('The function supports_recursion() is deprecated. Please use get_lock() instead to determine
+            whether multiple locks for the same resource can be held from a single process .', DEBUG_DEVELOPER);
         return false;
     }
 

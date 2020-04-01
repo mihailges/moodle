@@ -2,6 +2,8 @@ This files describes API changes in core libraries and APIs,
 information provided here is intended especially for developers.
 
 === 3.9 ===
+* The function extend_lock() from the lock_factory interface has been deprecated without replacement including the related
+  implementations.
 * The function supports_recursion() from the lock_factory interface has been deprecated including the related implementations.
   Please use get_lock() to determine whether multiple locks for the same resource can be held by a single process.
 * behat_data_generators::the_following_exist() has been removed, please use

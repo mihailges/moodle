@@ -8,6 +8,7 @@ information provided here is intended especially for developers.
   of 'scrollable' is true.
 * The `$CFG->behat_retart_browser_after` configuration setting has been removed.
   The browser session is now restarted between all tests.
+* The function extend() from the lock class has been deprecated without replacement.
 * The function extend_lock() from the lock_factory interface has been deprecated without replacement including the related
   implementations.
 * The function supports_recursion() from the lock_factory interface has been deprecated including the related implementations.

@@ -113,18 +113,18 @@ class media_videojs_testcase extends advanced_testcase {
         $this->assertRegExp('~mediaplugin_videojs~', $content);
         $this->assertRegExp('~</video>~', $content);
         $this->assertRegExp('~title="Test &amp; file"~', $content);
-        $this->assertRegExp('~style="max-width:' . $CFG->media_default_width . 'px;~', $content);
+        $this->assertRegExp('~style="width: ' . $CFG->media_default_width . 'px;~', $content);
 
         // Repeat sending the specific size to the manager.
         $content = $manager->embed_url($url, 'New file', 123, 50, $embedoptions);
-        $this->assertRegExp('~style="max-width:123px;~', $content);
+        $this->assertRegExp('~style="width: 123px;~', $content);
 
         // Repeat without sending the size and with unchecked setting to limit the video size.
         set_config('limitsize', false, 'media_videojs');
 
         $manager = core_media_manager::instance();
         $content = $manager->embed_url($url, 'Test & file', 0, 0, $embedoptions);
-        $this->assertNotRegExp('~style="max-width:~', $content);
+        $this->assertNotRegExp('~style="width: ~', $content);
     }
 
     /**
@@ -142,7 +142,7 @@ class media_videojs_testcase extends advanced_testcase {
         $this->assertRegExp('~</video>~', $content);
         $this->assertRegExp('~title="Watch this one"~', $content);
         $this->assertNotRegExp('~<track\b~i', $content);
-        $this->assertRegExp('~style="max-width:' . $CFG->media_default_width . 'px;~', $content);
+        $this->assertRegExp('~style="width: ' . $CFG->media_default_width . 'px;~', $content);
     }
 
     /**
@@ -204,7 +204,7 @@ class media_videojs_testcase extends advanced_testcase {
         $this->assertRegExp('~mediaplugin_videojs~', $content);
         $this->assertRegExp('~</video>~', $content);
         $this->assertRegExp('~title="some_filename.mp4"~', $content);
-        $this->assertRegExp('~style="max-width:' . $CFG->media_default_width . 'px;~', $content);
+        $this->assertRegExp('~style="width: ' . $CFG->media_default_width . 'px;~', $content);
         // Unsupported text and tracks are preserved.
         $this->assertRegExp('~Unsupported text~', $content);
         $this->assertRegExp('~<track\b~i', $content);
@@ -217,7 +217,7 @@ class media_videojs_testcase extends advanced_testcase {
         $this->assertRegExp('~mediaplugin_videojs~', $content);
         $this->assertRegExp('~</video>~', $content);
         $this->assertRegExp('~<source\b~', $content);
-        $this->assertRegExp('~style="max-width:123px;~', $content);
+        $this->assertRegExp('~style="width: 123px;~', $content);
         $this->assertNotRegExp('~width="~', $content);
         $this->assertNotRegExp('~height="~', $content);
 
@@ -232,7 +232,7 @@ class media_videojs_testcase extends advanced_testcase {
         $this->assertNotRegExp('~</video>~', $content);
         $this->assertRegExp('~</audio>~', $content);
         $this->assertRegExp('~title="some_filename.mp3"~', $content);
-        $this->assertRegExp('~style="max-width:' . $CFG->media_default_width . 'px;~', $content);
+        $this->assertRegExp('~style="width: ' . $CFG->media_default_width . 'px;~', $content);
         // Unsupported text and tracks are preserved.
         $this->assertRegExp('~Unsupported text~', $content);
         $this->assertRegExp('~<track\b~i', $content);

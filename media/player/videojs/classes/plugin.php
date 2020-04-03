@@ -197,7 +197,7 @@ class media_videojs_plugin extends core_media_player_native {
         if ($responsive) {
             self::pick_video_size($width, $height);
             if ($width) {
-                $text = html_writer::div($text, null, ['style' => 'max-width:' . $width . 'px;']);
+                $text = html_writer::div($text, null, ['style' => "width: {$width}px;"]);
             }
         }
 

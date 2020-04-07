@@ -33,7 +33,9 @@ require_capability('moodle/contentbank:access', $context);
 
 $title = get_string('contentbank');
 \core_contentbank\helper::get_page_ready($context, $title);
-
+if ($PAGE->course) {
+    require_login($PAGE->course->id);
+}
 $PAGE->set_url('/contentbank/index.php');
 $PAGE->set_context($context);
 $PAGE->set_title($title);

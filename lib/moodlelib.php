@@ -530,11 +530,6 @@ define('EMAIL_VIA_ALWAYS', 1);
  */
 define('EMAIL_VIA_NO_REPLY_ONLY', 2);
 
-// Content bank feature constants.
-// Used for contentbank plugin_supports() to report features that are, or are not, supported by a content bank contentype.
-/** True if contenttype can be uploaded */
-define('CB_CAN_UPLOAD', 'upload');
-
 // PARAMETER HANDLING.
 
 /**

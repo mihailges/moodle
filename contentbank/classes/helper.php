@@ -44,7 +44,7 @@ class helper {
      * @param bool $internal     True if is an internal page, false otherwise.
      */
     public static function get_page_ready(\context $context, string $title, bool $internal = false): void {
-        global $PAGE;
+        global $PAGE, $DB;
 
         $PAGE->set_context($context);
         $cburl = new \moodle_url('/contentbank/index.php', ['contextid' => $context->id]);
@@ -52,20 +52,19 @@ class helper {
         switch ($context->contextlevel) {
             case CONTEXT_COURSE:
                 $courseid = $context->instanceid;
-                require_login($courseid);
+                $course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
+                $PAGE->set_course($course);
                 \navigation_node::override_active_url(new \moodle_url('/course/view.php', ['id' => $courseid]));
                 $PAGE->navbar->add($title, $cburl);
                 $PAGE->set_pagelayout('incourse');
                 break;
             case CONTEXT_COURSECAT:
-                require_login();
                 $coursecat = $context->instanceid;
                 \navigation_node::override_active_url(new \moodle_url('/course/index.php', ['categoryid' => $coursecat]));
                 $PAGE->navbar->add($title, $cburl);
                 $PAGE->set_pagelayout('coursecategory');
                 break;
             default:
-                require_login();
                 if ($node = $PAGE->navigation->find('contentbank', \global_navigation::TYPE_CUSTOM)) {
                     $node->make_active();
                 }

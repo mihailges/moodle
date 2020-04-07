@@ -38,6 +38,9 @@ use moodle_url;
  */
 abstract class contenttype {
 
+    /** Plugin implements uploading feature */
+    const CAN_UPLOAD = 'upload';
+
     /** @var stdClass This content's context. **/
     protected $context = null;
 
@@ -249,7 +252,7 @@ abstract class contenttype {
     }
 
     /**
-     * Returns user has access capability for the main content bank and content itself.
+     * Returns user has access capability for the main content bank and the content itself (base on is_access_allowed from plugin).
      *
      * @return bool     True if content could be accessed. False otherwise.
      */
@@ -258,7 +261,7 @@ abstract class contenttype {
         $capability = $classname.":access";
         $hascapabilities = has_capability('moodle/contentbank:access', $this->context)
             && has_capability($capability, $this->context);
-        return $hascapabilities && $this->is_content_accessible();
+        return $hascapabilities && $this->is_access_allowed();
     }
 
     /**
@@ -266,7 +269,7 @@ abstract class contenttype {
      *
      * @return bool     True if content could be accessed. False otherwise.
      */
-    abstract protected function is_content_accessible(): bool;
+    abstract protected function is_access_allowed(): bool;
 
     /**
      * Returns the user has permission to upload new content.
@@ -275,6 +278,10 @@ abstract class contenttype {
      * @return bool     True if content could be uploaded. False otherwise.
      */
     final static function can_upload(\context $context = null): bool {
+        if (!static::is_feature_supported(self::CAN_UPLOAD)) {
+            return false;
+        }
+
         $classname = explode('\\', static::class);
         $pluginname = str_replace('_', '/', $classname[0]);
 
@@ -289,11 +296,28 @@ abstract class contenttype {
     }
 
     /**
+     * Returns the plugin supports the feature.
+     *
+     * @param string $feature Feature code e.g CAN_UPLOAD
+     * @return bool     True if content could be uploaded. False otherwise.
+     */
+    final public static function is_feature_supported(string $feature): bool {
+        return in_array($feature, static::get_implemented_features());
+    }
+
+    /**
+     * Return an array of implemented features by the plugins.
+     *
+     * @return array
+     */
+    abstract public static function get_implemented_features(): array;
+
+    /**
      * Returns plugin allows uploading.
      *
      * @return bool     True if plugin allows uploading. False otherwise.
      */
-    protected static function is_upload_allowed(): bool {
+    public static function is_upload_allowed(): bool {
         // Plugins can overwrite this function to add any check they need.
         return true;
     }

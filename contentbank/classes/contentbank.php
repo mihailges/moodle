@@ -60,13 +60,13 @@ class contentbank {
     public function load_all_supported_extensions(): array {
         $extensionscache = \cache::make('core', 'contentbank_enabled_extensions');
         $supportedextensions = $extensionscache->get('enabled_extensions');
-        if (empty($supportedextensions)) {
+        if ($supportedextensions === false) {
             // Load all enabled extensions.
             $supportedextensions = [];
             foreach ($this->get_enabled_content_types() as $type) {
                 $classname = "\\contenttype_$type\\contenttype";
                 if (class_exists($classname) &&
-                    plugin_supports('contenttype', $type, CB_CAN_UPLOAD)) {
+                    $classname::is_feature_supported($classname::CAN_UPLOAD)) {
                     $extensions = $classname::get_manageable_extensions();
                     foreach ($extensions as $extension) {
                         if (array_key_exists($extension, $supportedextensions)) {
@@ -91,10 +91,10 @@ class contentbank {
     public function load_context_supported_extensions(\context $context = null): array {
         $extensionscache = \cache::make('core', 'contentbank_context_extensions');
 
-        $supportedextensions = $this->load_all_supported_extensions();
         $contextextensions = $extensionscache->get($context->id);
-        if (empty($contextextensions)) {
+        if ($contextextensions === false) {
             $contextextensions = [];
+            $supportedextensions = $this->load_all_supported_extensions();
             foreach ($supportedextensions as $extension => $types) {
                 foreach ($types as $type) {
                     $classname = "\\contenttype_$type\\contenttype";

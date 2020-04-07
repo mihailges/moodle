@@ -2221,8 +2221,8 @@ function xmldb_main_upgrade($oldversion) {
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('name', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
         $table->add_field('contenttype', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('instanceid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
         $table->add_field('contextid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('instanceid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
         $table->add_field('configdata', XMLDB_TYPE_TEXT, null, null, null, null, null);
         $table->add_field('usercreated', XMLDB_TYPE_CHAR, '255', null, null, null, null);
         $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
@@ -2237,7 +2237,7 @@ function xmldb_main_upgrade($oldversion) {
 
         // Adding indexes to table contentbank_content.
         $table->add_index('name', XMLDB_INDEX_NOTUNIQUE, ['name']);
-        $table->add_index('instance', XMLDB_INDEX_NOTUNIQUE, ['contenttype', 'instanceid']);
+        $table->add_index('instance', XMLDB_INDEX_NOTUNIQUE, ['contextid', 'contenttype', 'instanceid']);
 
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);

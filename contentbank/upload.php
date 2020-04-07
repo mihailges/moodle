@@ -34,7 +34,9 @@ require_capability('moodle/contentbank:upload', $context);
 
 $title = get_string('contentbank');
 \core_contentbank\helper::get_page_ready($context, $title, true);
-
+if ($PAGE->course) {
+    require_login($PAGE->course->id);
+}
 $returnurl = new \moodle_url('/contentbank/index.php', ['contextid' => $contextid]);
 
 $PAGE->set_url('/contentbank/upload.php');

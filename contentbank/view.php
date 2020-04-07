@@ -39,7 +39,9 @@ if (!$plugin || !$plugin->is_enabled()) {
 
 $title = get_string('contentbank');
 \core_contentbank\helper::get_page_ready($context, $title, true);
-
+if ($PAGE->course) {
+    require_login($PAGE->course->id);
+}
 $returnurl = new \moodle_url('/contentbank/index.php', ['contextid' => $context->id]);
 
 $PAGE->set_url(new \moodle_url('/contentbank/view.php', ['id' => $id]));

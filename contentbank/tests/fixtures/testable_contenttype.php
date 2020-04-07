@@ -76,8 +76,17 @@ class contenttype extends \core_contentbank\contenttype {
      *
      * @return bool     True if content could be accessed. False otherwise.
      */
-    protected function is_content_accessible(): bool {
+    protected function is_access_allowed(): bool {
         return true;
+    }
+
+    /**
+     * Return an array of implemented features by this plugin.
+     *
+     * @return array
+     */
+    public static function get_implemented_features(): array {
+        return [];
     }
 
     /**

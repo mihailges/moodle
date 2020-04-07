@@ -32,7 +32,6 @@ $capabilities = [
             'manager' => CAP_ALLOW,
             'coursecreator' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
-            'teacher' => CAP_ALLOW,
         )
     ),
     'contenttype/h5p:upload' => [
@@ -43,7 +42,6 @@ $capabilities = [
             'manager' => CAP_ALLOW,
             'coursecreator' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
-            'teacher' => CAP_ALLOW,
         ]
     ],
 ];

@@ -47,7 +47,7 @@ class contenttype_h5p_contenttype_plugin_testcase extends advanced_testcase {
 
         // Teacher can upload in the course but not at system level.
         $course = $this->getDataGenerator()->create_course();
-        $teacher = $this->getDataGenerator()->create_and_enrol($course, 'teacher');
+        $teacher = $this->getDataGenerator()->create_and_enrol($course, 'editingteacher');
         $coursecontext = \context_course::instance($course->id);
         $this->setUser($teacher);
         $this->assertTrue(contenttype_h5p\contenttype::can_upload($coursecontext));
@@ -58,5 +58,37 @@ class contenttype_h5p_contenttype_plugin_testcase extends advanced_testcase {
         $this->setUser($user);
         $this->assertFalse(contenttype_h5p\contenttype::can_upload($coursecontext));
         $this->assertFalse(contenttype_h5p\contenttype::can_upload($systemcontext));
+    }
+
+    /**
+     * Tests for uploaded file.
+     */
+    public function test_upload_file() {
+        $this->resetAfterTest();
+
+        // Create content.
+        $record = new stdClass();
+        $record->name = 'Test content';
+        $record->contenttype = contenttype_h5p\contenttype::COMPONENT;
+        $record->contextid = \context_system::instance()->id;
+        $record->configdata = '';
+        $content = contenttype_h5p\contenttype::create_content($record);
+
+        // Create a dummy file.
+        $filename = 'content.h5p';
+        $dummy = array(
+            'contextid' => \context_system::instance()->id,
+            'component' => 'contentbank',
+            'filearea' => 'public',
+            'itemid' => $content->get_id(),
+            'filepath' => '/',
+            'filename' => $filename
+        );
+        $fs = get_file_storage();
+        $fs->create_file_from_string($dummy, 'dummy content');
+
+        $file = $content->get_file();
+        $this->assertInstanceOf(\stored_file::class, $file);
+        $this->assertEquals($filename, $file->get_filename());
     }
 }

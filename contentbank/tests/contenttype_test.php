@@ -110,61 +110,17 @@ class core_contenttype_contenttype_testcase extends \advanced_testcase {
     }
 
     /**
-     * Tests can_upload behavior.
+     * Tests can_upload behaviorno implemented upload feature.
      */
-    public function test_can_upload() {
+    public function test_no_implemented_feature() {
         $this->resetAfterTest();
 
         $systemcontext = \context_system::instance();
 
         // Admins can upload.
         $this->setAdminUser();
-        $this->assertTrue(contenttype::can_upload($systemcontext));
-
-        // Teacher can upload in the course but not at system level.
-        $course = $this->getDataGenerator()->create_course();
-        $teacher = $this->getDataGenerator()->create_and_enrol($course, 'teacher');
-        $coursecontext = \context_course::instance($course->id);
-        $this->setUser($teacher);
-        $this->assertTrue(contenttype::can_upload($coursecontext));
-        $this->assertFalse(contenttype::can_upload($systemcontext));
-
-        // Users can't upload.
-        $user = $this->getDataGenerator()->create_user();
-        $this->setUser($user);
-        $this->assertFalse(contenttype::can_upload($coursecontext));
-        $this->assertFalse(contenttype::can_upload($systemcontext));
-    }
-
-    /**
-     * Tests for uploaded file.
-     */
-    public function test_upload_file() {
-        $this->resetAfterTest();
-
-        // Create content.
-        $record = new stdClass();
-        $record->name = 'Test content';
-        $record->contenttype = testable::COMPONENT;
-        $record->contextid = \context_system::instance()->id;
-        $record->configdata = '';
-        $content = testable::create_content($record);
-
-        // Create a dummy file.
-        $filename = 'content.h5p';
-        $dummy = array(
-            'contextid' => \context_system::instance()->id,
-            'component' => 'contentbank',
-            'filearea' => 'public',
-            'itemid' => $content->get_id(),
-            'filepath' => '/',
-            'filename' => $filename
-        );
-        $fs = get_file_storage();
-        $fs->create_file_from_string($dummy, 'dummy content');
-
-        $file = $content->get_file();
-        $this->assertInstanceOf(\stored_file::class, $file);
-        $this->assertEquals($filename, $file->get_filename());
+        $this->assertEmpty(testable::get_implemented_features());
+        $this->assertFalse(testable::is_feature_supported(testable::CAN_UPLOAD));
+        $this->assertFalse(testable::can_upload($systemcontext));
     }
 }

@@ -73,23 +73,24 @@ class core_contentbank_testcase extends advanced_testcase {
     public function get_extension_supporters_provider() {
         return [
             'H5P first' => [['.h5p' => ['h5p', 'testable']], '.h5p', 'h5p'],
-            'Download first' => [['.h5p' => ['testable', 'h5p']], '.h5p', 'testable'],
+            'Testable first (but upload not implemented)' => [['.h5p' => ['testable', 'h5p']], '.h5p', 'h5p'],
         ];
     }
 
-    /**
-     * Returns mock for load_all_supported_extensions() function.
-     *
-     * @param   array   $supporters    The configuration for the tours to create
-     */
-    public function mock_supported_extensions(array $supporters) {
-        $mock = $this->getMockBuilder(\core_contentbank\contentbank::class)
-            ->setMethods(['load_all_supported_extensions'])
-            ->getMock();
-        $mock->method('load_all_supported_extensions')
-            ->willReturn($supporters);
-        return $mock;
-    }
+//    /**
+//     * Returns mock for load_all_supported_extensions() function.
+//     *
+//     * @param   array   $supporters    The configuration for the tours to create
+//     */
+//    public function mock_supported_extensions(array $supporters) {
+//        return new \core_contentbank\contentbank();
+//        $mock = $this->getMockBuilder(\core_contentbank\contentbank::class)
+//            ->setMethods(['load_all_supported_extensions'])
+//            ->getMock();
+//        $mock->method('load_all_supported_extensions')
+//            ->willReturn($supporters);
+//        return $mock;
+//    }
 
     /**
      * Tests for get_extension_supporter() function with admin permissions.
@@ -101,15 +102,15 @@ class core_contentbank_testcase extends advanced_testcase {
      */
     public function test_get_extension_supporter_for_admins(array $supporters, string $extension, string $expected) {
         $this->resetAfterTest();
-        $mock = $this->mock_supported_extensions($supporters);
 
+        $cb = new \core_contentbank\contentbank();
         $expectedsupporters = [$extension => $expected];
 
         $systemcontext = context_system::instance();
 
         // All contexts allowed for admins.
         $this->setAdminUser();
-        $contextsupporters = $mock->load_context_supported_extensions($systemcontext);
+        $contextsupporters = $cb->load_context_supported_extensions($systemcontext);
         $this->assertEquals($expectedsupporters, $contextsupporters);
     }
 
@@ -123,8 +124,8 @@ class core_contentbank_testcase extends advanced_testcase {
      */
     public function test_get_extension_supporter_for_users(array $supporters, string $extension, string $expected) {
         $this->resetAfterTest();
-        $mock = $this->mock_supported_extensions($supporters);
 
+        $cb = new \core_contentbank\contentbank();
         $systemcontext = context_system::instance();
 
         // Set a user with no permissions.
@@ -132,7 +133,7 @@ class core_contentbank_testcase extends advanced_testcase {
         $this->setUser($user);
 
         // Users with no capabilities can't upload content.
-        $contextsupporters = $mock->load_context_supported_extensions($systemcontext);
+        $contextsupporters = $cb->load_context_supported_extensions($systemcontext);
         $this->assertEquals([], $contextsupporters);
     }
 
@@ -146,17 +147,17 @@ class core_contentbank_testcase extends advanced_testcase {
      */
     public function test_get_extension_supporter_for_teachers(array $supporters, string $extension, string $expected) {
         $this->resetAfterTest();
-        $mock = $this->mock_supported_extensions($supporters);
 
+        $cb = new \core_contentbank\contentbank();
         $expectedsupporters = [$extension => $expected];
 
         $course = $this->getDataGenerator()->create_course();
-        $teacher = $this->getDataGenerator()->create_and_enrol($course, 'teacher');
+        $teacher = $this->getDataGenerator()->create_and_enrol($course, 'editingteacher');
         $this->setUser($teacher);
         $coursecontext = context_course::instance($course->id);
 
         // Teachers has permission in their context to upload supported by H5P content type.
-        $contextsupporters = $mock->load_context_supported_extensions($coursecontext);
+        $contextsupporters = $cb->load_context_supported_extensions($coursecontext);
         $this->assertEquals($expectedsupporters, $contextsupporters);
     }
 
@@ -170,12 +171,12 @@ class core_contentbank_testcase extends advanced_testcase {
      */
     public function test_get_extension_supporter(array $supporters, string $extension, string $expected) {
         $this->resetAfterTest();
-        $mock = $this->mock_supported_extensions($supporters);
 
+        $cb = new \core_contentbank\contentbank();
         $systemcontext = context_system::instance();
         $this->setAdminUser();
 
-        $supporter = $mock->get_extension_supporter($extension, $systemcontext);
+        $supporter = $cb->get_extension_supporter($extension, $systemcontext);
         $this->assertEquals($expected, $supporter);
     }
 }

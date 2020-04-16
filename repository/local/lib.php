@@ -54,6 +54,7 @@ class repository_local extends repository {
         $filearea = null;
         $filepath = null;
         $component = null;
+        $encodedpath1 = $encodedpath;
 
         if (!empty($encodedpath)) {
             $params = json_decode(base64_decode($encodedpath), true);
@@ -91,7 +92,10 @@ class repository_local extends repository {
             // if file doesn't exist, build path nodes root of current context
             $fileinfo = $browser->get_file_info($context, null, null, null, null, null);
         }
+
         $ret['list'] = $this->get_non_empty_children($fileinfo, $extensions);
+               // $ret['list'] = $encodedpath1;
+
 
         // build path navigation
         $path = array();

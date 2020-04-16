@@ -70,6 +70,73 @@ class file_info_context_system extends file_info_context_coursecat {
         return null;
     }
 
+    protected function get_area_contentbank_public($itemid, $filepath, $filename) {
+         global $CFG;
+
+         if (!isloggedin()) {
+             return null;
+         }
+
+//         if (is_null($itemid)) {
+//             // go to parent, we do not use itemids here in private area
+//             return null;
+//         }
+
+         $fs = get_file_storage();
+
+         $filepath = is_null($filepath) ? '/' : $filepath;
+         $filename = is_null($filename) ? '.' : $filename;
+
+         if (!$storedfile = $fs->get_file($this->context->id, 'contentbank', 'public', $itemid, $filepath, $filename)) {
+             if ($filepath === '/' and $filename === '.') {
+                 // root dir does not exist yet
+                 $storedfile = new virtual_root_file($this->context->id, 'contentbank', 'public', $itemid);
+             } else {
+                 // not found
+                 return null;
+             }
+         }
+         $urlbase = $CFG->wwwroot.'/pluginfile.php';
+
+         //TODO: user quota from $CFG->userquota
+
+         return new file_info_stored($this->browser, $this->context, $storedfile, $urlbase, get_string('areauserpersonal', 'repository'), false, true, true, false);
+
+ //        global $CFG;
+ //
+ //        if (!isloggedin()) {
+ //            return null;
+ //        }
+ //
+ //        if (!has_any_capability(array('moodle/backup:backupcourse', 'moodle/restore:restorecourse'), $this->context)) {
+ //            return null;
+ //        }
+ //
+ //        if (is_null($itemid)) {
+ //            return $this;
+ //        }
+ //
+ //        $fs = get_file_storage();
+ //
+ //        $filepath = is_null($filepath) ? '/' : $filepath;
+ //        $filename = is_null($filename) ? '.' : $filename;
+ //        if (!$storedfile = $fs->get_file($this->context->id, 'backup', 'course', 0, $filepath, $filename)) {
+ //            if ($filepath === '/' && $filename === '.') {
+ //                $storedfile = new virtual_root_file($this->context->id, 'backup', 'course', 0);
+ //            } else {
+ //                // Not found.
+ //                return null;
+ //            }
+ //        }
+ //
+ //        $downloadable = has_capability('moodle/backup:downloadfile', $this->context);
+ //        $uploadable = has_capability('moodle/restore:uploadfile', $this->context);
+ //
+ //        $urlbase = $CFG->wwwroot . '/pluginfile.php';
+ //        return new file_info_stored($this->browser, $this->context, $storedfile, $urlbase,
+ //            get_string('coursebackup', 'repository'), false, $downloadable, $uploadable, false);
+     }
+
     /**
      * Gets a stored file for the backup course filearea directory.
      *

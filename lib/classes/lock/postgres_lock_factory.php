@@ -151,23 +151,18 @@ class postgres_lock_factory implements lock_factory {
      * @return boolean - true if a lock was obtained.
      */
     public function get_lock($resource, $timeout, $maxlifetime = 86400) {
-        $giveuptime = time() + $timeout;
 
         $token = $this->get_index_from_key($this->type . '_' . $resource);
+
+        if (isset($this->openlocks[$token])) {
+            return false;
+        }
 
         $params = array('locktype' => $this->dblockid,
                         'token' => $token);
 
-        $locked = false;
-
-        do {
-            $result = $this->db->get_record_sql('SELECT pg_try_advisory_lock(:locktype, :token) AS locked', $params);
-            $locked = $result->locked === 't';
-            if (!$locked && $timeout > 0) {
-                usleep(rand(10000, 250000)); // Sleep between 10 and 250 milliseconds.
-            }
-            // Try until the giveup time.
-        } while (!$locked && time() < $giveuptime);
+        $result = $this->db->get_record_sql('SELECT pg_try_advisory_lock(:locktype, :token) AS locked', $params);
+        $locked = $result->locked === 't';
 
         if ($locked) {
             $this->openlocks[$token] = 1;

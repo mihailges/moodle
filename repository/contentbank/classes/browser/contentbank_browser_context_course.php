@@ -1,0 +1,81 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Utility class for browsing of content bank files in the course context.
+ *
+ * @package    repository_contentbank
+ * @copyright  2020 Mihail Geshoski <mihail@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+namespace repository_contentbank\browser;
+
+defined('MOODLE_INTERNAL') || die();
+
+/**
+ * Represents the content bank browser in the course context.
+ *
+ * @package    repository_contentbank
+ * @copyright  2020 Mihail Geshoski <mihail@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class contentbank_browser_context_course extends contentbank_browser {
+
+    /**
+     * Constructor.
+     *
+     * @param \context_course $context The current context
+     */
+    public function __construct(\context_course $context) {
+        $this->context = $context;
+    }
+
+    /**
+     * Get the content bank browser class of the parent context. Currently used to generate the navigation path.
+     *
+     * @return contentbank_browser|null The content bank browser of the parent context
+     */
+    public function get_parent(): ?contentbank_browser {
+        $parentcontext = $this->context->get_parent_context();
+        if ($parentcontext instanceof \context_coursecat) {
+            return new contentbank_browser_context_coursecat($parentcontext);
+        }
+        return null;
+    }
+
+    /**
+     * Get the all relevant children contexts.
+     *
+     * @return array The array containing the relevant children contexts
+     */
+    protected function get_children_contexts(): array {
+        // The course context does not have any relevant child contexts.
+        return [];
+    }
+
+    /**
+     * The required condition to enable the user to view/access the content bank content in this context.
+     *
+     * @return array Whether the user can view/access the content bank content in the context
+     */
+    public function can_view_contentbank_content(): bool {
+        // The content bank repository should enable managers, teachers to share the content created in course context
+        // level all over the course. Therefore, by default, the content from the course context level should
+        // be available to managers, course creators and editing teachers enrolled in the course.
+        return has_capability('repository/contentbank:viewcontent', $this->context);
+    }
+}

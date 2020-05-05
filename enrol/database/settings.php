@@ -113,7 +113,8 @@ if ($ADMIN->fulltree) {
 
     require_once($CFG->dirroot.'/enrol/database/settingslib.php');
 
-    $settings->add(new enrol_database_admin_setting_category('enrol_database/defaultcategory', get_string('defaultcategory', 'enrol_database'), get_string('defaultcategory_desc', 'enrol_database')));
+    $settings->add(new admin_settings_coursecat_select('enrol_database/defaultcategory', get_string('defaultcategory', 'enrol_database'),
+        get_string('defaultcategory_desc', 'enrol_database'), 1));
 
     $settings->add(new admin_setting_configtext('enrol_database/templatecourse', get_string('templatecourse', 'enrol_database'), get_string('templatecourse_desc', 'enrol_database'), ''));
 }

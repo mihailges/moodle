@@ -27,20 +27,16 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Class implements new specialized setting for course categories that are loaded
  * only when required
+ *
+ * @deprecated since 3.9. Please use admin_settings_coursecat_select instead.
  * @author Darko Miletic
  *
  */
-class enrol_database_admin_setting_category extends admin_setting_configselect {
+class enrol_database_admin_setting_category extends admin_settings_coursecat_select {
     public function __construct($name, $visiblename, $description) {
+        debugging('enrol_database_admin_setting_category has been deprecated. Please use
+            admin_settings_coursecat_select instead', DEBUG_DEVELOPER);
+
         parent::__construct($name, $visiblename, $description, 1, null);
-    }
-
-    public function load_choices() {
-        if (is_array($this->choices)) {
-            return true;
-        }
-
-        $this->choices = make_categories_options();
-        return true;
     }
 }

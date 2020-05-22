@@ -1,4 +1,4 @@
-@repository @repository_contentbank @javascript
+@repository @repository_contentbank
 Feature: Search content bank files using the content bank files repository
   In order to find the content I need to select in the file picker
   As a user
@@ -31,6 +31,7 @@ Feature: Search content bank files using the content bank files repository
       | user     | course | role           |
       | teacher  | C1     | editingteacher |
 
+  @javascript
   Scenario: User can see a search field and reset search button in the content bank files repository
     Given I log in as "admin"
     And I am on "Course1" course homepage
@@ -42,6 +43,7 @@ Feature: Search content bank files using the content bank files repository
     Then "Search repository" "field" should be visible
     And "Refresh" "link" should be visible
 
+  @javascript @testtt
   Scenario: User can see search results when there is content that matches the search criteria
     Given I log in as "admin"
     And I am on "Course1" course homepage
@@ -52,6 +54,7 @@ Feature: Search content bank files using the content bank files repository
     And I select "Content bank" repository in file picker
     And I set the field "Search repository" to "content"
     When I press key "13" in the field "Search repository"
+    And I should see "coursecontent1.h5p" "file" in repository content area
     Then I should see "5" elements in repository content area
     And I should see "systemcontent.h5p" "file" in repository content area
     And I should see "categorycontent1.h5p" "file" in repository content area
@@ -59,6 +62,7 @@ Feature: Search content bank files using the content bank files repository
     And I should see "coursecontent1.h5p" "file" in repository content area
     And I should see "coursecontent2.h5p" "file" in repository content area
 
+  @javascript
   Scenario: User can see search results when there is content that matches the search criteria ignoring case sensitivity
     Given I log in as "admin"
     And I am on "Course1" course homepage
@@ -73,6 +77,7 @@ Feature: Search content bank files using the content bank files repository
     And I should see "coursecontent1.h5p" "file" in repository content area
     And I should see "coursecontent2.h5p" "file" in repository content area
 
+  @javascript
   Scenario: User can not see any search results when there is not a content that matches the search criteria
     Given I log in as "admin"
     And I am on "Course1" course homepage
@@ -86,6 +91,7 @@ Feature: Search content bank files using the content bank files repository
     Then I should see "0" elements in repository content area
     And I should see "No files available" in the ".filepicker .fp-content" "css_element"
 
+  @javascript
   Scenario: User can reset search criteria and see all content displayed prior the search action
     Given I log in as "admin"
     And I am on "Course1" course homepage
@@ -105,6 +111,7 @@ Feature: Search content bank files using the content bank files repository
     Then I should see "1" elements in repository content area
     And I should see "coursecontent1.h5p" "file" in repository content area
 
+  @javascript
   Scenario: Editing teacher can see search results when the content is available to him and matches the search criteria
     Given I log in as "teacher"
     And I am on "Course1" course homepage

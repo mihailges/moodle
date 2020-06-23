@@ -149,6 +149,7 @@ class postgres_lock_factory implements lock_factory {
 
     /**
      * Create and get a lock
+     *
      * @param string $resource - The identifier for the lock. Should use frankenstyle prefix.
      * @param int $timeout - The number of seconds to wait for a lock before giving up.
      * @param int $maxlifetime - Unused by this lock type.
@@ -159,8 +160,14 @@ class postgres_lock_factory implements lock_factory {
 
         $token = $this->get_index_from_key($this->type . '_' . $resource);
 
-        $params = array('locktype' => $this->dblockid,
-                        'token' => $token);
+        if (isset($this->openlocks[$token])) {
+            return false;
+        }
+
+        $params = [
+            'locktype' => $this->dblockid,
+            'token' => $token
+        ];
 
         $locked = false;
 

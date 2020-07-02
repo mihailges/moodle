@@ -30,6 +30,7 @@ import * as Templates from 'core/templates';
 import * as ModalFactory from 'core/modal_factory';
 import {get_string as getString} from 'core/str';
 import Pending from 'core/pending';
+import Notification from 'core/notification';
 
 // Set up some JS module wide constants that can be added to in the future.
 
@@ -133,7 +134,18 @@ const registerListenerEvents = (courseId, chooserConfig) => {
                 const sectionModal = buildModal(bodyPromise, footerData);
 
                 // Now we have a modal we should start fetching data.
-                const data = await fetchModuleData();
+                let data;
+                try {
+                    data = await fetchModuleData();
+                } catch(e) {
+                    sectionModal.then(modal => {
+                        bodyPromiseResolver();
+                        modal.hide();
+                        modal.destroy();
+                        Notification.exception(e);
+                    });
+                    return;
+                }
 
                 // Apply the section id to all the module instance links.
                 const builtModuleData = sectionIdMapper(data, caller.dataset.sectionid, caller.dataset.sectionreturnid);
@@ -149,6 +161,7 @@ const registerListenerEvents = (courseId, chooserConfig) => {
                     'core_course/activitychooser',
                     templateDataBuilder(builtModuleData, chooserConfig)
                 ));
+
             }
         });
     });

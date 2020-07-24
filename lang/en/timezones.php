@@ -128,7 +128,6 @@ $string['america/el_salvador'] = 'America/El_Salvador';
 $string['america/fort_nelson'] = 'America/Fort_Nelson';
 $string['america/fortaleza'] = 'America/Fortaleza';
 $string['america/glace_bay'] = 'America/Glace_Bay';
-$string['america/godthab'] = 'America/Godthab';
 $string['america/goose_bay'] = 'America/Goose_Bay';
 $string['america/grand_turk'] = 'America/Grand_Turk';
 $string['america/grenada'] = 'America/Grenada';
@@ -470,3 +469,5 @@ $string['europe/belfast'] = 'Europe/Belfast';
 $string['pacific/ponape'] = 'Pacific/Ponape';
 $string['pacific/truk'] = 'Pacific/Truk';
 $string['pacific/yap'] = 'Pacific/Yap';
+// Deprecated since Moodle 4.0.
+$string['america/godthab'] = 'America/Godthab';

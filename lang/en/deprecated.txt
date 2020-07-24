@@ -146,3 +146,4 @@ availablelicenses,core_admin
 managelicenses,core_admin
 userfilterplaceholder,core
 sitebackpackverify,core_badges
+america/godthab,core_timezones

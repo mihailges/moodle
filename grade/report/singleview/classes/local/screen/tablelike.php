@@ -221,7 +221,7 @@ abstract class tablelike extends screen {
         return html_writer::tag(
             'div',
             (new bulk_insert($this->item))->html(),
-            array('class' => 'singleview_bulk')
+            array('class' => 'singleview_bulk mb-3')
         );
     }
 

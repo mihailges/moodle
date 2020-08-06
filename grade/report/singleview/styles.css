@@ -1,7 +1,3 @@
-.path-grade-report-singleview div.reporttable {
-    text-align: center;
-}
-
 .path-grade-report-singleview div.groupselector,
 .path-grade-report-singleview div.reporttable form div.singleview_buttons,
 .path-grade-report-singleview div.selectitems {
@@ -72,12 +68,6 @@
     text-align: left;
 }
 
-.path-grade-report-singleview div.reporttable form div.singleview_bulk {
-    display: inline-block;
-    text-align: left;
-    margin-bottom: 1em;
-}
-
 .path-grade-report-singleview .singleview_bulk div > *,
 .path-grade-report-singleview .singleview_bulk fieldset > * {
     display: inline-block;
@@ -90,13 +80,4 @@
 .path-grade-report-singleview div.reporttable form .singleview_bulk input {
     margin-left: 10px;
     margin-right: 10px;
-}
-
-.path-grade-report-singleview .singleview_bulk > fieldset {
-    display: block;
-}
-
-.path-grade-report-singleview div.reporttable form .singleview_bulk > div.enable {
-    margin-bottom: 0.5em;
-    text-align: left;
 }

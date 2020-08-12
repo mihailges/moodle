@@ -1320,7 +1320,8 @@ class model {
      * @param int $perpage The max number of results to fetch. Ignored if $page is false.
      * @return array($total, \core_analytics\prediction[])
      */
-    public function get_predictions(\context $context, $skiphidden = true, $page = false, $perpage = 100) {
+    public function get_predictions(\context $context, $skiphidden = true, $page = false,
+            $perpage = DEFAULT_INSIGHTS_PER_PAGE) {
         global $DB, $USER;
 
         \core_analytics\manager::check_can_list_insights($context);
@@ -1387,7 +1388,7 @@ class model {
             }
 
             // Return paginated dataset - we cannot paginate in the DB because we post filter the list.
-            if ($page === false || ($current >= $offset && $current < $limit)) {
+            if ($page === false || ($current >= $offset && $current < $limit) || $limit === SHOW_ALL_INSIGHTS) {
                 // Replace \stdClass object by \core_analytics\prediction objects.
                 $prediction = new \core_analytics\prediction($predictiondata, $samplesdata[$sampleid]);
                 $predictions[$predictionid] = $prediction;

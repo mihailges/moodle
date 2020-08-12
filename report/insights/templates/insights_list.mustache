@@ -94,7 +94,10 @@
                 ]
             }
         ],
-        "noinsights": false
+        "noinsights": false,
+        "pagingbar": "",
+        "showinginsights": "Showing insights 1 to 100 of 1000",
+        "insightslink": "<a href='...'>Show all</a>"
     }
 }}
 
@@ -108,61 +111,73 @@
 
     <h2 class="mb-2">{{insightname}}</h2>
 
-    {{{insightdescription}}}
+    <p>{{{insightdescription}}}</p>
 
     {{^noinsights}}
-    {{#nostaticmodelnotification}}
-        <div class="mt-2">
-            {{> core/notification_info}}
+        {{#nostaticmodelnotification}}
+            <div class="mt-2">
+                {{> core/notification_info}}
+            </div>
+        {{/nostaticmodelnotification}}
+
+        {{{ pagingbar }}}
+
+        <div class="d-flex">
+            <div class="pr-3">
+                {{> report_insights/bulk_actions}}
+            </div>
+            <div class="ml-auto pl-3 align-self-end">
+                <span>{{{showinginsights}}} ({{{insightslink}}})</span>
+            </div>
         </div>
-    {{/nostaticmodelnotification}}
 
-    {{{ pagingbar }}}
+        {{#predictions}}
+            <table class="generaltable insights-list mt-3">
+                {{#showpredictionheading}}
+                    <caption>
+                        {{#str}}prediction, report_insights{{/str}}:
+                        <span class="{{#style}}table-{{style}}{{/style}}">
+                            {{#outcomeicon}}
+                                {{> core/pix_icon}}
+                            {{/outcomeicon}}
+                            {{predictiondisplayvalue}}
+                        </span>
+                    </caption>
+                {{/showpredictionheading}}
+                <thead>
+                    <tr class="d-flex">
+                        {{#multiplepredictions}}
+                            <th class="col-1{{^bulkactions}} hidden{{/bulkactions}}">
+                                {{{checkboxtoggleall}}}
+                            </th>
+                        {{/multiplepredictions}}
+                        {{^multiplepredictions}}
+                            <th class="col-1{{^bulkactions}} hidden{{/bulkactions}}">
+                        {{/multiplepredictions}}
+                        <th scope="col" class="col-8">{{#str}}description{{/str}}</th>
+                        <th scope="col" class="col-3">{{#str}}actions{{/str}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#insights}}
+                        {{> report_insights/insight}}
+                    {{/insights}}
+                </tbody>
+            </table>
+        {{/predictions}}
 
-    {{> report_insights/bulk_actions}}
+        <div class="d-flex">
+            <div class="pr-3">
+                {{#multiplepredictions}}
+                    {{> report_insights/bulk_actions}}
+                {{/multiplepredictions}}
+            </div>
+            <div class="ml-auto pl-3 align-self-start">
+                <span>{{{showinginsights}}} ({{{insightslink}}})</span>
+            </div>
+        </div>
 
-    {{#predictions}}
-
-        <table class="generaltable insights-list mt-3">
-            {{#showpredictionheading}}
-                <caption>
-                    {{#str}}prediction, report_insights{{/str}}:
-                    <span class="{{#style}}table-{{style}}{{/style}}">
-                        {{#outcomeicon}}
-                            {{> core/pix_icon}}
-                        {{/outcomeicon}}
-                        {{predictiondisplayvalue}}
-                    </span>
-                </caption>
-            {{/showpredictionheading}}
-            <thead>
-                <tr class="d-flex">
-                    {{#multiplepredictions}}
-                        <th class="col-xs-1{{^bulkactions}} hidden{{/bulkactions}}">
-                            {{{checkboxtoggleall}}}
-                        </th>
-                    {{/multiplepredictions}}
-                    {{^multiplepredictions}}
-                        <th class="col-xs-1{{^bulkactions}} hidden{{/bulkactions}}">
-                    {{/multiplepredictions}}
-                    <th scope="col" class="col-xs-8">{{#str}}description{{/str}}</th>
-                    <th scope="col" class="col-xs-3">{{#str}}actions{{/str}}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{#insights}}
-                    {{> report_insights/insight}}
-                {{/insights}}
-            </tbody>
-        </table>
-
-    {{/predictions}}
-
-    {{#multiplepredictions}}
-        {{> report_insights/bulk_actions}}
-    {{/multiplepredictions}}
-
-    {{{ pagingbar }}}
+        {{{ pagingbar }}}
     {{/noinsights}}
     {{#noinsights}}
         <div class="mt-2">

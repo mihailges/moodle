@@ -70,7 +70,8 @@ class insights_list implements \renderable, \templatable {
      * @param int $perpage The max number of results to fetch
      * @return void
      */
-    public function __construct(\core_analytics\model $model, \context $context, $othermodels, $page = 0, $perpage = 100) {
+    public function __construct(\core_analytics\model $model, \context $context, $othermodels, $page = 0,
+            $perpage = DEFAULT_INSIGHTS_PER_PAGE) {
         $this->model = $model;
         $this->context = $context;
         $this->othermodels = $othermodels;
@@ -214,7 +215,31 @@ class insights_list implements \renderable, \templatable {
             $data->modelselector = $modelselector->export_for_template($output);
         }
 
-        $data->pagingbar = $output->render(new \paging_bar($total, $this->page, $this->perpage, $PAGE->url));
+        $insightslinkparams = [
+            'contextid' => $this->context->id,
+            'modelid' => $this->model->get_id(),
+        ];
+
+        if ($this->perpage === SHOW_ALL_INSIGHTS) { // Showing all insights.
+            $data->showinginsights = get_string('showingallinsights', 'report_insights');
+            $data->insightslink = \html_writer::link(
+                new \moodle_url('/report/insights/insights.php', $insightslinkparams),
+                get_string('showperpage', 'moodle', DEFAULT_INSIGHTS_PER_PAGE));
+
+        } else { // Showing certain number of insights per page.
+            $a = new \stdClass;
+            $a->from = ($this->page * $this->perpage) + 1;
+            $a->to = min((($this->page + 1) * $this->perpage), $total);
+            $a->total = $total;
+            $data->showinginsights = get_string('showinginsightspage', 'report_insights', $a);
+
+            $insightslinkparams['perpage'] = SHOW_ALL_INSIGHTS;
+            $data->insightslink = \html_writer::link(
+                new \moodle_url('/report/insights/insights.php', $insightslinkparams),
+                get_string('showall', 'report_insights'));
+
+            $data->pagingbar = $output->render(new \paging_bar($total, $this->page, $this->perpage, $PAGE->url));
+        }
 
         return $data;
     }

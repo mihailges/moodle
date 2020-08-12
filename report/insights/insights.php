@@ -25,14 +25,16 @@
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 
+define('SHOW_ALL_INSIGHTS', -1);
+define('DEFAULT_INSIGHTS_PER_PAGE', 100);
+
 $contextid = required_param('contextid', PARAM_INT);
 $modelid = optional_param('modelid', false, PARAM_INT);
 $page = optional_param('page', 0, PARAM_INT);
-$perpage = optional_param('perpage', 100, PARAM_INT);
+$perpage = optional_param('perpage', DEFAULT_INSIGHTS_PER_PAGE, PARAM_INT);
 
-if ($perpage > 1000) {
-    $perpage = 1000;
-}
+// If showing all insights, set the page value to 0.
+$page = ($perpage === SHOW_ALL_INSIGHTS) ? 0 : $page;
 
 list($context, $course, $cm) = get_context_info_array($contextid);
 require_login($course, false, $cm);

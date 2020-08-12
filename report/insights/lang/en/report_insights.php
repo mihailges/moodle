@@ -45,4 +45,7 @@ $string['timecreated'] = 'Time predicted';
 $string['timerange'] = 'Analysis interval';
 $string['timerangewithdata'] = '{$a->timestart} to {$a->timeend}';
 $string['selectotherinsights'] = 'Select other insights...';
+$string['showall'] = 'Show all';
+$string['showingallinsights'] = 'Showing all insights';
+$string['showinginsightspage'] = 'Showing insights {$a->from} to {$a->to} of {$a->total}.';
 $string['privacy:metadata'] = 'The Insights plugin does not store any personal data.';

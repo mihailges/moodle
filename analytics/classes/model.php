@@ -1386,6 +1386,8 @@ class model {
                 continue;
             }
 
+            $allpredictionids[] = $predictionid;
+
             // Return paginated dataset - we cannot paginate in the DB because we post filter the list.
             if ($page === false || ($current >= $offset && $current < $limit)) {
                 // Replace \stdClass object by \core_analytics\prediction objects.
@@ -1402,7 +1404,7 @@ class model {
             return array();
         }
 
-        return [$current, $predictions];
+        return [$current, $predictions, $allpredictionids];
     }
 
     /**

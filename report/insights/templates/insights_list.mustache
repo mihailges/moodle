@@ -119,11 +119,15 @@
 
     {{{ pagingbar }}}
 
-    {{> report_insights/bulk_actions}}
+    <div class="mb-3">
+        {{> report_insights/bulk_actions}}
+    </div>
+
+    <div id="selected-insights" class="mb-1 mt-1"></div>
 
     {{#predictions}}
 
-        <table class="generaltable insights-list mt-3">
+        <table class="generaltable insights-list mt-1">
             {{#showpredictionheading}}
                 <caption>
                     {{#str}}prediction, report_insights{{/str}}:

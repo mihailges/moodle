@@ -123,7 +123,7 @@
         {{> report_insights/bulk_actions}}
     </div>
 
-    <div id="selected-insights" class="mb-1 mt-1"></div>
+    <div data-region="selected-users-info" data-alluserids="{{allpredictsionids}}" class="mb-1 mt-1 text-center"></div>
 
     {{#predictions}}
 
@@ -142,15 +142,15 @@
             <thead>
                 <tr class="d-flex">
                     {{#multiplepredictions}}
-                        <th class="col-xs-1{{^bulkactions}} hidden{{/bulkactions}}">
+                        <th class="col-1{{^bulkactions}} hidden{{/bulkactions}}">
                             {{{checkboxtoggleall}}}
                         </th>
                     {{/multiplepredictions}}
                     {{^multiplepredictions}}
-                        <th class="col-xs-1{{^bulkactions}} hidden{{/bulkactions}}">
+                        <th class="col-1{{^bulkactions}} hidden{{/bulkactions}}">
                     {{/multiplepredictions}}
-                    <th scope="col" class="col-xs-8">{{#str}}description{{/str}}</th>
-                    <th scope="col" class="col-xs-3">{{#str}}actions{{/str}}</th>
+                    <th scope="col" class="col-8">{{#str}}description{{/str}}</th>
+                    <th scope="col" class="col-3">{{#str}}actions{{/str}}</th>
                 </tr>
             </thead>
             <tbody>

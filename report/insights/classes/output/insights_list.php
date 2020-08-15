@@ -130,7 +130,7 @@ class insights_list implements \renderable, \templatable {
             if ($predictionsdata) {
                 list($total, $predictions, $allpredictsionids) = $predictionsdata;
 
-                $PAGE->requires->js_call_amd('report_insights/select_all_users', 'init', ['.insights-bulk-actions', json_encode($allpredictsionids)]);
+                $PAGE->requires->js_call_amd('report_insights/select_all_users', 'init');
 
                 if ($predictions) {
                     // No bulk actions if no predictions.
@@ -183,6 +183,8 @@ class insights_list implements \renderable, \templatable {
 
                     $data->predictions[] = $prediction;
                 }
+
+                $data->allpredictsionids = json_encode($allpredictsionids);
             }
 
             if (empty($insights) && $this->page == 0) {

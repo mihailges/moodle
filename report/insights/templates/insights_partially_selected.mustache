@@ -30,7 +30,7 @@
 
     Example context (json):
     {
-        "sampleimage": "<a href=\"#\">Link</a>",
+        "selectednumber": "<a href=\"#\">Link</a>",
         "sampledescription": "Sample description",
         "actions": [
             {
@@ -46,15 +46,5 @@
     }
 }}
 <div class="alert alert-secondary" role="alert">
-    {{#selected}}
-        <span>{{selectednumber}} insights are selected.</span>
-    {{/selected}}
-
-    {{#selectedallonpage}}
-        <span>All {{selectednumber}} insights on this page are selected. (<a class="select-all">Select all {{totalinsights}} insights</a>)</span>
-    {{/selectedallonpage}}
-
-    {{#selectedall}}
-        <span>All {{total}} are selected. (<a class="clear-all">Clear selection</a>)</span>
-    {{/selectedall}}
+    <span>{{selectednumber}} insights are selected.</span>
 </div>

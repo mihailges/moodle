@@ -1386,12 +1386,13 @@ class model {
                 continue;
             }
 
-            $allpredictionids[] = $predictionid;
+            $prediction = new \core_analytics\prediction($predictiondata, $samplesdata[$sampleid]);
+            $allpredictions[$predictionid] = $prediction;
 
             // Return paginated dataset - we cannot paginate in the DB because we post filter the list.
             if ($page === false || ($current >= $offset && $current < $limit)) {
                 // Replace \stdClass object by \core_analytics\prediction objects.
-                $prediction = new \core_analytics\prediction($predictiondata, $samplesdata[$sampleid]);
+                // $prediction = new \core_analytics\prediction($predictiondata, $samplesdata[$sampleid]);
                 $predictions[$predictionid] = $prediction;
             } else {
                 unset($predictions[$predictionid]);
@@ -1404,7 +1405,7 @@ class model {
             return array();
         }
 
-        return [$current, $predictions, $allpredictionids];
+        return [$current, $predictions, $allpredictions];
     }
 
     /**

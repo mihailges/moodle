@@ -26,8 +26,15 @@
  *
  * @module report_insights/actions
  */
-define(['jquery', 'core/str', 'core/ajax', 'core/notification', 'core/url', 'core/modal_factory', 'core/modal_events'],
-        function($, Str, Ajax, Notification, Url, ModalFactory, ModalEvents) {
+define(['jquery',
+        'core/str',
+        'core/ajax',
+        'core/notification',
+        'core/url',
+        'core/modal_factory',
+        'core/modal_events',
+        'report_insights/select_all_users'],
+        function($, Str, Ajax, Notification, Url, ModalFactory, ModalEvents, selectAllUsers) {
 
     return {
 
@@ -47,7 +54,7 @@ define(['jquery', 'core/str', 'core/ajax', 'core/notification', 'core/url', 'cor
              * @param  {String} actionName
              * @return {Promise}
              */
-            var executeAction = function(predictionIds, predictionContainers, actionName) {
+            var executeAction = function(predictionIds, actionName) {
 
                 return Ajax.call([
                     {
@@ -61,6 +68,11 @@ define(['jquery', 'core/str', 'core/ajax', 'core/notification', 'core/url', 'cor
                     // Remove the selected elements from the list.
 
                     var tableNode = false;
+
+                    predictionIds.forEach(function(predictionId) {
+
+                    });
+
                     predictionContainers.forEach(function(el) {
                         if (tableNode === false) {
                             tableNode = el.closest('table');
@@ -85,14 +97,16 @@ define(['jquery', 'core/str', 'core/ajax', 'core/notification', 'core/url', 'cor
                 var actionName = action.data('bulk-actionname');
                 var actionVisibleName = action.text().trim();
 
-                var predictionIds = [];
-                var predictionContainers = [];
+                // var predictionIds = [];
+                // var predictionContainers = [];
+                //
+                // $('.insights-list input[data-togglegroup^="insight-bulk-action-"][data-toggle="slave"]:checked').each(function() {
+                //     var container = $(this).closest('tr[data-prediction-id]');
+                //     predictionContainers.push(container);
+                //     predictionIds.push(container.data('prediction-id'));
+                // });
 
-                $('.insights-list input[data-togglegroup^="insight-bulk-action-"][data-toggle="slave"]:checked').each(function() {
-                    var container = $(this).closest('tr[data-prediction-id]');
-                    predictionContainers.push(container);
-                    predictionIds.push(container.data('prediction-id'));
-                });
+               var predictionIds = selectAllUsers.selectedPredictions;
 
                 if (predictionIds.length === 0) {
                     // No items selected message.
@@ -123,7 +137,7 @@ define(['jquery', 'core/str', 'core/ajax', 'core/notification', 'core/url', 'cor
                     modal.show();
                     modal.getRoot().on(ModalEvents.save, function() {
                         // The action is now confirmed, sending an action for it.
-                        return executeAction(predictionIds, predictionContainers, actionName);
+                        return executeAction(predictionIds, actionName);
                     });
 
                     return modal;

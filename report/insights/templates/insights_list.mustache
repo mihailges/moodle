@@ -119,11 +119,15 @@
 
     {{{ pagingbar }}}
 
-    {{> report_insights/bulk_actions}}
+    <div class="mb-3">
+        {{> report_insights/bulk_actions}}
+    </div>
+
+    <div data-region="selected-predictions-info" data-allpredictionids="{{allpredictsionids}}" class="mb-1 mt-1 text-center"></div>
 
     {{#predictions}}
 
-        <table class="generaltable insights-list mt-3">
+        <table class="generaltable insights-list mt-1">
             {{#showpredictionheading}}
                 <caption>
                     {{#str}}prediction, report_insights{{/str}}:
@@ -138,15 +142,15 @@
             <thead>
                 <tr class="d-flex">
                     {{#multiplepredictions}}
-                        <th class="col-xs-1{{^bulkactions}} hidden{{/bulkactions}}">
+                        <th class="col-1{{^bulkactions}} hidden{{/bulkactions}}">
                             {{{checkboxtoggleall}}}
                         </th>
                     {{/multiplepredictions}}
                     {{^multiplepredictions}}
-                        <th class="col-xs-1{{^bulkactions}} hidden{{/bulkactions}}">
+                        <th class="col-1{{^bulkactions}} hidden{{/bulkactions}}">
                     {{/multiplepredictions}}
-                    <th scope="col" class="col-xs-8">{{#str}}description{{/str}}</th>
-                    <th scope="col" class="col-xs-3">{{#str}}actions{{/str}}</th>
+                    <th scope="col" class="col-8">{{#str}}description{{/str}}</th>
+                    <th scope="col" class="col-3">{{#str}}actions{{/str}}</th>
                 </tr>
             </thead>
             <tbody>

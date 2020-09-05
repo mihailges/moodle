@@ -128,11 +128,13 @@ class insights_list implements \renderable, \templatable {
             $predictionvalues = array();
             $insights = array();
             if ($predictionsdata) {
-                list($total, $predictions) = $predictionsdata;
+                list($total, $predictions, $allpredictions) = $predictionsdata;
+
+                $PAGE->requires->js_call_amd('report_insights/insights', 'init');
 
                 if ($predictions) {
                     // No bulk actions if no predictions.
-                    $data->bulkactions = actions_exporter::add_bulk_actions($target, $output, $predictions, $this->context);
+                    $data->bulkactions = actions_exporter::add_bulk_actions($target, $output, $allpredictions, $this->context);
                 }
 
                 $data->multiplepredictions = count($predictions) > 1 ? true : false;
@@ -181,6 +183,8 @@ class insights_list implements \renderable, \templatable {
 
                     $data->predictions[] = $prediction;
                 }
+
+                $data->allpredictsionids = json_encode(array_keys($allpredictions));
             }
 
             if (empty($insights) && $this->page == 0) {

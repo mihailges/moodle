@@ -188,6 +188,7 @@ class insight implements \renderable, \templatable {
         $toggle = new \core\output\checkbox_toggleall('insight-bulk-action-' . $predictedvalue, false, [
             'id' => 'id-select-' . $data->predictionid,
             'name' => 'select-' . $data->predictionid,
+            'value' => $data->predictionid,
             'label' => get_string('selectprediction', 'report_insights', $data->sampledescription),
             'labelclasses' => 'accesshide',
         ]);

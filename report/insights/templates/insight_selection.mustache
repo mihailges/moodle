@@ -46,22 +46,4 @@
     }
 }}
 
-<div class="d-inline-flex">
-    <div class="pr-2 align-self-center">
-        <span>{{{insightsselected}}}</span>
-    </div>
-<div>
-<div>
-    <div class="dropdown">
-        <button class="btn btn-sm btn-secondary dropdown-toggle rounded" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            {{#pix}}i/moremenu{{/pix}}
-        </button>
-        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            {{#actions}}
-            <a class="dropdown-item" data-action="{{action}}" data-togglegroup={{togglegroup}}>
-                {{{text}}}
-            </a>
-            {{/actions}}
-        </div>
-    </div>
-</div>
+<div data-region="insight-selection" data-togglegroup="{{togglegroup}}" data-allpredictions="{{allpredictions}}" class="mb-1 mt-3 text-center"></div>

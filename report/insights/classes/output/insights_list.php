@@ -130,8 +130,6 @@ class insights_list implements \renderable, \templatable {
             if ($predictionsdata) {
                 list($total, $predictions, $allpredictions) = $predictionsdata;
 
-                $PAGE->requires->js_call_amd('report_insights/insights', 'init');
-
                 if ($predictions) {
                     // No bulk actions if no predictions.
                     $data->bulkactions = actions_exporter::add_bulk_actions($target, $output, $allpredictions, $this->context);
@@ -167,8 +165,9 @@ class insights_list implements \renderable, \templatable {
                 // Ok, now we have all the data we want, put it into a format that mustache can handle.
                 foreach ($predictionvalues as $key => $prediction) {
                     if (isset($insights[$key])) {
+                        $togglegroup = "insight-bulk-action-{$key}";
 
-                        $toggleall = new \core\output\checkbox_toggleall('insight-bulk-action-' . $key, true, [
+                        $toggleall = new \core\output\checkbox_toggleall($togglegroup, true, [
                             'id' => 'id-toggle-all-' . $key,
                             'name' => 'toggle-all-' . $key,
                             'label' => get_string('selectall'),
@@ -177,14 +176,16 @@ class insights_list implements \renderable, \templatable {
                         ]);
                         $prediction['checkboxtoggleall'] = $output->render($toggleall);
 
+                        $insightselection = new \report_insights\output\insight_selection(
+                            array_keys($allpredictions), $togglegroup);
+                        $prediction['insightselection'] = $output->render($insightselection);
+
                         $prediction['predictedvalue'] = $key;
                         $prediction['insights'] = $insights[$key];
                     }
 
                     $data->predictions[] = $prediction;
                 }
-
-                $data->allpredictsionids = json_encode(array_keys($allpredictions));
             }
 
             if (empty($insights) && $this->page == 0) {

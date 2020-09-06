@@ -15,7 +15,7 @@
 
 /**
  *
- * @module     report_insights/insights
+ * @module     report_insights/insight_selection
  * @package    report_insights
  * @copyright  2020 Mihail Geshoski <mihail@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -28,18 +28,26 @@ import Templates from 'core/templates';
 import {get_string as getString} from 'core/str';
 import LocalStorage from 'core/localstorage';
 
-const SELECTORS = {
-    CONTAINERS: {
-        SELECTED_PREDICTIONS_INFO: '[data-region="selected-predictions-info"]',
-        PREDICTION_CHECKBOX_ELEMENT: 'input[type="checkbox"][data-toggle="slave"][data-togglegroup="insight-bulk-action-1.00"]'
-    },
-    ACTIONS: {
-        SELECT_ALL_EXISTING: '[data-action="select-all-existing"]',
-        CLEAR_ALL: '[data-action="clear-all-selected"]',
-    }
+const ACTIONS = {
+    SELECT_ALL: 'select-all',
+    CLEAR_ALL: 'clear-selection'
 };
 
-const toggleGroup = 'insight-bulk-action-1.00';
+const getDataSelector = (name, value) => {
+    return `[data-${name}="${value}"]`;
+};
+
+const getPredictionCheckboxSelector = (toggleGroup) => {
+    return `input[type="checkbox"]${getDataSelector('toggle', 'slave')}${getDataSelector('togglegroup', toggleGroup)}`;
+};
+
+const getInsightSelectionContainerSelector = (toggleGroup) => {
+    return `${getDataSelector('region', 'insight-selection')}${getDataSelector('togglegroup', toggleGroup)}`;
+};
+
+const getActionElementSelector = (action, toggleGroup) => {
+    return `${getDataSelector('action', action)}${getDataSelector('togglegroup', toggleGroup)}`;
+};
 
 export const getSelectedPredictions = () => {
     const selectedPredictions = JSON.parse(LocalStorage.get('selectedPredictions'));
@@ -50,9 +58,9 @@ export const setSelectedPredictions = (selectedPredictions) => {
     LocalStorage.set('selectedPredictions', JSON.stringify(selectedPredictions));
 };
 
-const getAllPredictions = () => {
-    const selectedPredictionsInfo = document.querySelector(SELECTORS.CONTAINERS.SELECTED_PREDICTIONS_INFO);
-    return JSON.parse(selectedPredictionsInfo.dataset.allpredictionids);
+const getAllPredictions = (toggleGroup) => {
+    const insightSelectionContainer = document.querySelector(getInsightSelectionContainerSelector(toggleGroup));
+    return JSON.parse(insightSelectionContainer.dataset.allpredictions);
 };
 
 /**
@@ -60,7 +68,7 @@ const getAllPredictions = () => {
  *
  * @method registerListenerEvents
  */
-const registerListenerEvents = () => {
+const registerListenerEvents = (toggleGroup) => {
     PubSub.subscribe(CheckboxToggleAll.events.checkboxToggled, (data) => {
         if (data.toggleGroupName === toggleGroup) {
             handlePredictionToggle(data);
@@ -70,21 +78,21 @@ const registerListenerEvents = () => {
     document.addEventListener('click', async (e) => {
 
         // All existing insights are selected.
-        if (e.target.matches(SELECTORS.ACTIONS.SELECT_ALL_EXISTING)) {
-            const allPredictions = getAllPredictions();
+        if (e.target.matches(getActionElementSelector(ACTIONS.SELECT_ALL, toggleGroup))) {
+            const allPredictions = getAllPredictions(toggleGroup);
 
             setSelectedPredictions(allPredictions);
             CheckboxToggleAll.setGroupState(document, toggleGroup, true);
 
-            renderNotification(allPredictions);
+            renderNotification(allPredictions, toggleGroup);
         }
 
         // Insight selection is cleared.
-        if (e.target.matches(SELECTORS.ACTIONS.CLEAR_ALL)) {
+        if (e.target.matches(getActionElementSelector(ACTIONS.CLEAR_ALL, toggleGroup))) {
             setSelectedPredictions([]);
             CheckboxToggleAll.setGroupState(document, toggleGroup, false);
 
-            renderNotification([]);
+            renderNotification([], toggleGroup);
         }
     });
 };
@@ -116,7 +124,7 @@ const handlePredictionToggle = async (data) => {
 
     setSelectedPredictions(selectedPredictions);
 
-    renderNotification(selectedPredictions);
+    renderNotification(selectedPredictions, data.toggleGroupName);
 };
 
 /**
@@ -125,11 +133,10 @@ const handlePredictionToggle = async (data) => {
  * @method renderNotification
  * @param {Object} notificationData The object with the required data for the notification template.
  */
-const renderNotification = async (selectedPredictions) => {
-    const notificationData = await getTemplateData(selectedPredictions);
-    console.log(notificationData);
+const renderNotification = async (selectedPredictions, toggleGroup) => {
+    const notificationData = await getTemplateData(selectedPredictions, toggleGroup);
     const {html, js} = await Templates.renderForPromise('report_insights/insights_selected', notificationData);
-    await Templates.replaceNodeContents(SELECTORS.CONTAINERS.SELECTED_PREDICTIONS_INFO, html, js);
+    await Templates.replaceNodeContents(getInsightSelectionContainerSelector(toggleGroup), html, js);
 };
 
 /**
@@ -137,46 +144,52 @@ const renderNotification = async (selectedPredictions) => {
  *
  * @method clearNotification
  */
-const clearNotification = () => {
-    [...document.querySelectorAll(SELECTORS.CONTAINERS.SELECTED_PREDICTIONS_INFO)].map(container => container.innerHTML = '');
+const clearNotification = (toggleGroup) => {
+    [...document.querySelectorAll(getInsightSelectionContainerSelector(toggleGroup))].map(container => container.innerHTML = '');
 };
 
-const togglePredictionsOnLoad = () => {
+const togglePredictionsOnLoad = (toggleGroup) => {
     const selectedPredictions = getSelectedPredictions();
-    const predictionCheckboxElements = document.querySelectorAll(SELECTORS.CONTAINERS.PREDICTION_CHECKBOX_ELEMENT);
+    const predictionCheckboxElements = document.querySelectorAll(getPredictionCheckboxSelector(toggleGroup));
+    let selectedPredictionsOnPage = [];
 
     predictionCheckboxElements.forEach(predictionCheckboxElement => {
         const predictionId = parseInt(predictionCheckboxElement.value);
         if (selectedPredictions.indexOf(predictionId) > -1) {
-            predictionCheckboxElement.checked = true;
-            predictionCheckboxElement.dispatchEvent(new Event('change'));
+            selectedPredictionsOnPage.push(predictionCheckboxElement);
         }
     });
 
-    renderNotification(selectedPredictions);
+    if (predictionCheckboxElements.length === selectedPredictionsOnPage.length) {
+        CheckboxToggleAll.setGroupState(document, toggleGroup, true);
+    } else {
+        selectedPredictionsOnPage.map(selectedPrediction => selectedPrediction.checked = true);
+    }
+
+    renderNotification(selectedPredictions, toggleGroup);
 };
 
-const getTemplateData = async (selectedPredictions) => {
+const getTemplateData = async (selectedPredictions, toggleGroup) => {
     let actions = [];
-    const allPredictions = getAllPredictions();
+    const allPredictions = getAllPredictions(toggleGroup);
 
     if (selectedPredictions.length > 0) {
         actions.push({
-            action: 'clear-all-selected',
+            action: ACTIONS.CLEAR_ALL,
             togglegroup: toggleGroup,
             text: await getString('clearselection', 'report_insights')
         });
 
         if (selectedPredictions.length !== allPredictions.length) {
             actions.unshift({
-                action: 'select-all-existing',
+                action: ACTIONS.SELECT_ALL,
                 togglegroup: toggleGroup,
                 text: await getString('selectallinsights', 'report_insights', allPredictions.length)
             });
         }
     } else {
         actions.push({
-            action: 'select-all-existing',
+            action: ACTIONS.SELECT_ALL,
             togglegroup: toggleGroup,
             text: await getString('selectallinsights', 'report_insights', allPredictions.length)
         });
@@ -195,7 +208,7 @@ const getTemplateData = async (selectedPredictions) => {
  *
  * @method init
  */
-export const init = () => {
-    registerListenerEvents();
-    togglePredictionsOnLoad();
+export const init = (toggleGroup) => {
+    registerListenerEvents(toggleGroup);
+    togglePredictionsOnLoad(toggleGroup);
 };

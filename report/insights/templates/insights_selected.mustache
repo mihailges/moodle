@@ -48,20 +48,23 @@
 
 <div class="d-inline-flex">
     <div class="pr-2 align-self-center">
-        <span>{{{insightsselected}}}</span>
+        <span aria-live="polite">{{{insightsselected}}}</span>
     </div>
-<div>
-<div>
-    <div class="dropdown">
-        <button class="btn btn-sm btn-secondary dropdown-toggle rounded" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            {{#pix}}i/moremenu{{/pix}}
-        </button>
-        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            {{#actions}}
-            <a class="dropdown-item" data-action="{{action}}" data-togglegroup={{togglegroup}}>
-                {{{text}}}
-            </a>
-            {{/actions}}
-        </div>
-    </div>
+    <div>
+        <div>
+            <div class="dropdown">
+                <button class="btn btn-sm btn-secondary dropdown-toggle rounded" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    {{#pix}}i/moremenu{{/pix}}
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    {{#actions}}
+                        <li>
+                            <a class="dropdown-item" href="#" data-toggle="action" data-action="{{action}}" data-togglegroup={{togglegroup}}>
+                                {{{text}}}
+                            </a>
+                        </li>
+                    {{/actions}}
+                </ul>
+            </div>
+
 </div>

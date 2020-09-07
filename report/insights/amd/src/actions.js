@@ -33,8 +33,8 @@ define(['jquery',
         'core/url',
         'core/modal_factory',
         'core/modal_events',
-        'report_insights/insights'],
-        function($, Str, Ajax, Notification, Url, ModalFactory, ModalEvents, Insights) {
+        'report_insights/insight_selection'],
+        function($, Str, Ajax, Notification, Url, ModalFactory, ModalEvents, InsightSelection) {
 
     return {
 
@@ -96,7 +96,8 @@ define(['jquery',
                 var action = $(e.currentTarget);
                 var actionName = action.data('bulk-actionname');
                 var actionVisibleName = action.text().trim();
-                var predictionIds = Insights.getSelectedPredictions();
+                var toggleGroup = action.data('togglegroup');
+                var predictionIds = InsightSelection.getSelectedPredictions(toggleGroup);
 
                 if (predictionIds === undefined || predictionIds.length === 0) {
                     // No items selected message.

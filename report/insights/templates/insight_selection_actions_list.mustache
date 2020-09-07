@@ -46,16 +46,11 @@
     }
 }}
 
-<div data-region="insight-selection" data-togglegroup="{{togglegroup}}" data-allpredictions="{{allpredictions}}" class="d-inline-flex mb-1 mt-3 text-center">
-    <div data-region="insight-selection-info" class="pr-2 align-self-center">
-        <span aria-live="polite"></span>
-    </div>
-    <div data-region="insight-selection-actions">
-        <div class="dropdown">
-            <button class="btn btn-sm btn-secondary dropdown-toggle rounded" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="fa fa fa-ellipsis-h fa-fw"></i>
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton"></ul>
-        </div>
-    </div>
-</div>
+{{#actions}}
+    <li>
+        <a class="dropdown-item" href="#" data-toggle="action" data-action="{{action}}" data-togglegroup={{togglegroup}}>
+            {{{text}}}
+        </a>
+    </li>
+{{/actions}}
+

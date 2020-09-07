@@ -29,8 +29,8 @@ define(['jquery',
         'core/templates',
         'core/notification',
         'core/ajax',
-        'report_insights/insights'],
-        function($,Str, Log, ModalFactory, ModalEvents, Templates, Notification, Ajax, Insights) {
+        'report_insights/insight_selection'],
+        function($,Str, Log, ModalFactory, ModalEvents, Templates, Notification, Ajax, InsightSelection) {
 
     var SELECTORS = {
         BULKACTIONSELECT: "#formactionid"
@@ -71,7 +71,8 @@ define(['jquery',
             // Using an associative array in case there is more than 1 prediction for the same user.
             var users = {};
             var predictionToUserMapping = cTarget.data('prediction-to-user-id');
-            var selectedPredictions = Insights.getSelectedPredictions();
+            var toggleGroup = cTarget.data('togglegroup');
+            var selectedPredictions = InsightSelection.getSelectedPredictions(toggleGroup);
 
             selectedPredictions.forEach(function(predictionId) {
                 if (typeof predictionToUserMapping[predictionId] === 'undefined') {

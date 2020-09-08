@@ -26,8 +26,15 @@
  *
  * @module report_insights/actions
  */
-define(['jquery', 'core/str', 'core/ajax', 'core/notification', 'core/url', 'core/modal_factory', 'core/modal_events'],
-        function($, Str, Ajax, Notification, Url, ModalFactory, ModalEvents) {
+define(['jquery',
+        'core/str',
+        'core/ajax',
+        'core/notification',
+        'core/url',
+        'core/modal_factory',
+        'core/modal_events',
+        'report_insights/insight_selection'],
+        function($, Str, Ajax, Notification, Url, ModalFactory, ModalEvents, InsightSelection) {
 
     return {
 
@@ -47,7 +54,7 @@ define(['jquery', 'core/str', 'core/ajax', 'core/notification', 'core/url', 'cor
              * @param  {String} actionName
              * @return {Promise}
              */
-            var executeAction = function(predictionIds, predictionContainers, actionName) {
+            var executeAction = function(predictionIds, actionName) {
 
                 return Ajax.call([
                     {
@@ -61,11 +68,16 @@ define(['jquery', 'core/str', 'core/ajax', 'core/notification', 'core/url', 'cor
                     // Remove the selected elements from the list.
 
                     var tableNode = false;
-                    predictionContainers.forEach(function(el) {
-                        if (tableNode === false) {
-                            tableNode = el.closest('table');
+
+                    predictionIds.forEach(function(predictionId) {
+                        var predictionTableRow = $('tr[data-prediction-id="' + predictionId + '"]');
+                        if (!predictionTableRow.length) {
+                            return;
                         }
-                        el.remove();
+                        if (tableNode === false) {
+                            tableNode = predictionTableRow.closest('table');
+                        }
+                        predictionTableRow.remove();
                     });
 
                     if (tableNode.find('tbody > tr').length === 0) {
@@ -84,17 +96,10 @@ define(['jquery', 'core/str', 'core/ajax', 'core/notification', 'core/url', 'cor
                 var action = $(e.currentTarget);
                 var actionName = action.data('bulk-actionname');
                 var actionVisibleName = action.text().trim();
+                var toggleGroup = action.data('togglegroup');
+                var predictionIds = InsightSelection.getSelectedPredictions(toggleGroup);
 
-                var predictionIds = [];
-                var predictionContainers = [];
-
-                $('.insights-list input[data-togglegroup^="insight-bulk-action-"][data-toggle="slave"]:checked').each(function() {
-                    var container = $(this).closest('tr[data-prediction-id]');
-                    predictionContainers.push(container);
-                    predictionIds.push(container.data('prediction-id'));
-                });
-
-                if (predictionIds.length === 0) {
+                if (predictionIds === undefined || predictionIds.length === 0) {
                     // No items selected message.
                     return this;
                 }
@@ -123,7 +128,7 @@ define(['jquery', 'core/str', 'core/ajax', 'core/notification', 'core/url', 'cor
                     modal.show();
                     modal.getRoot().on(ModalEvents.save, function() {
                         // The action is now confirmed, sending an action for it.
-                        return executeAction(predictionIds, predictionContainers, actionName);
+                        return executeAction(predictionIds, actionName);
                     });
 
                     return modal;

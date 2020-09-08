@@ -24,10 +24,12 @@
 
 $string['actionsaved'] = 'Your feedback of \'{$a}\' has been saved.';
 $string['confirmbulkaction'] = 'Are you sure you want to flag the {$a->nitems} selected predictions as {$a->action}?';
+$string['clearselection'] = 'Clear selection';
 $string['disabledmodel'] = 'This model has been disabled by an administrator.';
 $string['indicators'] = 'Indicators';
 $string['insight'] = 'Insight';
 $string['insights'] = 'Insights';
+$string['insightsselected'] = '<b>{$a->nselected}</b> insights selected out of <b>{$a->ntotal}</b>.';
 $string['justpredictions'] = 'Please note that the following insights are only predictions. It is not possible to predict the future with any certainty. The insights are provided so that action can be taken as necessary to prevent any negative predictions becoming reality.';
 $string['outcome'] = 'Outcome';
 $string['outcomenegative'] = 'Negative outcome';

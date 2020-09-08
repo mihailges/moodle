@@ -262,6 +262,9 @@ abstract class course_enrolments extends \core_analytics\local\target\binary {
         // Send a message for all the students.
         $attrs = array(
             'data-bulk-sendmessage' => '1',
+            'data-toggle' => 'action',
+            'data-action' => 'toggle',
+            'disabled' => 'disabled',
             'data-prediction-to-user-id' => json_encode($userids)
         );
         $actions[] = new \core_analytics\bulk_action(self::MESSAGE_ACTION_NAME, new \moodle_url(''),

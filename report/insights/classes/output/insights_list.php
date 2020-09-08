@@ -176,8 +176,9 @@ class insights_list implements \renderable, \templatable {
                         ]);
                         $prediction['checkboxtoggleall'] = $output->render($toggleall);
 
+                        $insightsselectionid = md5("{$data->contextid}{$data->modelid}{$togglegroup}");
                         $insightselection = new \report_insights\output\insight_selection(
-                            array_keys($allpredictions), $togglegroup);
+                            array_keys($allpredictions), $togglegroup, $insightsselectionid);
                         $prediction['insightselection'] = $output->render($insightselection);
 
                         $prediction['predictedvalue'] = $key;

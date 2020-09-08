@@ -92,9 +92,16 @@
 
     {{{insightdescription}}}
 
-    {{> report_insights/bulk_actions }}
+    <div class="d-flex mb-2">
+        <div class="pr-3 mb-1">
+            {{> report_insights/bulk_actions}}
+        </div>
+        <div class="ml-auto pl-3 align-self-end">
+            {{{insightselection}}}
+        </div>
+    </div>
 
-    <table class="generaltable insights-list mt-3">
+    <table class="generaltable insights-list mt-1">
         {{#showpredictionheading}}
             <caption>
                 {{#str}}prediction, report_insights{{/str}}:

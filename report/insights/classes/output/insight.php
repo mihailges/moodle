@@ -173,9 +173,11 @@ class insight implements \renderable, \templatable {
             );
         }
 
+        $togglegroup = "insight-bulk-action-{$predictedvalue}";
+
         // This is only rendered in report_insights/insight_details template. We need it to automatically enable
         // the bulk action buttons in report/insights/prediction.php.
-        $toggleall = new \core\output\checkbox_toggleall('insight-bulk-action-' . $predictedvalue, true, [
+        $toggleall = new \core\output\checkbox_toggleall($togglegroup, true, [
             'id' => 'id-toggle-all-' . $predictedvalue,
             'name' => 'toggle-all-' . $predictedvalue,
             'classes' => 'hidden',
@@ -185,7 +187,7 @@ class insight implements \renderable, \templatable {
         ]);
         $data->hiddencheckboxtoggleall = $output->render($toggleall);
 
-        $toggle = new \core\output\checkbox_toggleall('insight-bulk-action-' . $predictedvalue, false, [
+        $toggle = new \core\output\checkbox_toggleall($togglegroup, false, [
             'id' => 'id-select-' . $data->predictionid,
             'name' => 'select-' . $data->predictionid,
             'value' => $data->predictionid,
@@ -193,6 +195,11 @@ class insight implements \renderable, \templatable {
             'labelclasses' => 'accesshide',
         ]);
         $data->toggleslave = $output->render($toggle);
+
+        $insightsselectionid = md5("{$data->contextid}{$data->modelid}{$data->predictionid}{$togglegroup}");
+        $insightselection = new \report_insights\output\insight_selection(
+            [$predictiondata->id], $togglegroup, $insightsselectionid);
+        $data->insightselection = $output->render($insightselection);
 
         return $data;
     }

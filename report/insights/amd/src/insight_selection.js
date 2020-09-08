@@ -60,6 +60,8 @@ const getSelectors = (toggleGroup) => {
  * @param {String} toggleGroup The name of the toggle group
  */
 const selectedPredictionsStorageKey = (toggleGroup) => {
+    // const insightSelectionContainer = document.querySelector(getSelectors(toggleGroup).containers.insightSelection);
+    // return `${insightSelectionContainer.dataset.uniqueid}-${toggleGroup}`;
     return `${document.body.id}-${toggleGroup}`;
 };
 

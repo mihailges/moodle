@@ -46,15 +46,22 @@ class insight_selection implements \renderable, \templatable {
     protected $togglegroup;
 
     /**
+     * @var string
+     */
+    protected $uniqueidentifier;
+
+    /**
      * Constructor
      *
      * @param array $allpredictionids
      * @param string $togglegroup
+     * @param string $uniqueidentifier
      * @return void
      */
-    public function __construct(array $allpredictionids, string $togglegroup) {
+    public function __construct(array $allpredictionids, string $togglegroup, string $uniqueidentifier) {
         $this->allpredictionids = $allpredictionids;
         $this->togglegroup = $togglegroup;
+        $this->uniqueidentifier = $uniqueidentifier;
     }
 
     /**
@@ -70,8 +77,10 @@ class insight_selection implements \renderable, \templatable {
         $data = new \stdClass();
         $data->togglegroup = $this->togglegroup;
         $data->allpredictions = json_encode($this->allpredictionids);
+        $data->uniqueidentifier = $this->uniqueidentifier;
 
-        $PAGE->requires->js_call_amd('report_insights/insight_selection', 'init', [$this->togglegroup]);
+        $PAGE->requires->js_call_amd('report_insights/insight_selection', 'init',
+            [$this->togglegroup]);
 
         return $data;
     }

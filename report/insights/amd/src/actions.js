@@ -52,9 +52,10 @@ define(['jquery',
              * @param  {Array}  predictionIds
              * @param  {Array}  predictionContainers
              * @param  {String} actionName
+             * @param  {String} toggleGroup
              * @return {Promise}
              */
-            var executeAction = function(predictionIds, actionName) {
+            var executeAction = function(predictionIds, actionName, toggleGroup) {
 
                 return Ajax.call([
                     {
@@ -65,29 +66,41 @@ define(['jquery',
                         }
                     }
                 ])[0].then(function() {
-                    // Remove the selected elements from the list.
 
+                    // Clear all selected predictions.
+                    InsightSelection.setSelectedPredictions([], toggleGroup);
                     var tableNode = false;
-
-                    predictionIds.forEach(function(predictionId) {
-                        var predictionTableRow = $('tr[data-prediction-id="' + predictionId + '"]');
-                        if (!predictionTableRow.length) {
-                            return;
-                        }
-                        if (tableNode === false) {
-                            tableNode = predictionTableRow.closest('table');
-                        }
-                        predictionTableRow.remove();
-                    });
-
-                    if (tableNode.find('tbody > tr').length === 0) {
-                        let params = {
-                            contextid: tableNode.closest('div.insight-container').data('context-id'),
-                            modelid: tableNode.closest('div.insight-container').data('model-id')
-                        };
-                        window.location.assign(Url.relativeUrl("report/insights/insights.php", params, false));
-                    }
+                    // Reload the page.
+                    let params = {
+                        contextid: tableNode.closest('div.insight-container').data('context-id'),
+                        modelid: tableNode.closest('div.insight-container').data('model-id')
+                    };
+                    window.location.assign(Url.relativeUrl("report/insights/insights.php", params, false));
                     return;
+
+                    // // Remove the selected elements from the list.
+                    //
+                    // var tableNode = false;
+                    //
+                    // predictionIds.forEach(function(predictionId) {
+                    //     var predictionTableRow = $('tr[data-prediction-id="' + predictionId + '"]');
+                    //     if (!predictionTableRow.length) {
+                    //         return;
+                    //     }
+                    //     if (tableNode === false) {
+                    //         tableNode = predictionTableRow.closest('table');
+                    //     }
+                    //     predictionTableRow.remove();
+                    // });
+                    //
+                    // if (tableNode.find('tbody > tr').length === 0) {
+                    //     let params = {
+                    //         contextid: tableNode.closest('div.insight-container').data('context-id'),
+                    //         modelid: tableNode.closest('div.insight-container').data('model-id')
+                    //     };
+                    //     window.location.assign(Url.relativeUrl("report/insights/insights.php", params, false));
+                    // }
+                    // return;
                 }).catch(Notification.exception);
             };
 
@@ -128,7 +141,7 @@ define(['jquery',
                     modal.show();
                     modal.getRoot().on(ModalEvents.save, function() {
                         // The action is now confirmed, sending an action for it.
-                        return executeAction(predictionIds, actionName);
+                        return executeAction(predictionIds, actionName, toggleGroup);
                     });
 
                     return modal;

@@ -113,7 +113,7 @@ class block_social_activities extends block_list {
 
                     $editbuttons = html_writer::tag('div',
                         $courserenderer->course_section_cm_edit_actions($actions, $mod, array('donotenhance' => true)),
-                        array('class' => 'buttons')
+                        array('class' => 'buttons ml-auto align-self-end')
                     );
                 } else {
                     $editbuttons = '';

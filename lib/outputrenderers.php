@@ -1801,7 +1801,7 @@ class core_renderer extends renderer_base {
             if (!empty($icons[$key])) { //test if the content has an assigned icon
                 $item .= html_writer::tag('div', $icons[$key], array('class' => 'icon column c0'));
             }
-            $item .= html_writer::tag('div', $string, array('class' => 'column c1'));
+            $item .= html_writer::tag('div', $string, array('class' => 'column c1 d-flex'));
             $item .= html_writer::end_tag('li');
             $lis[] = $item;
             $row = 1 - $row; // Flip even/odd.

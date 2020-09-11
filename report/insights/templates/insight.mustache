@@ -30,6 +30,9 @@
 
     Example context (json):
     {
+        "predictionid": 1,
+        "toggleslave": <input type="checkbox" value="1" data-action="toggle" data-toggle="slave">
+        "hasbulkactions": true,
         "sampleimage": "<a href=\"#\">Link</a>",
         "sampledescription": "Sample description",
         "actions": [
@@ -46,7 +49,7 @@
     }
 }}
 <tr data-prediction-id="{{predictionid}}" class="d-flex">
-    <td class="insight-checkbox-cell col-1{{^bulkactions}} hidden{{/bulkactions}}">
+    <td class="insight-checkbox-cell col-1{{^hasbulkactions}} hidden{{/hasbulkactions}}">
         {{{toggleslave}}}
     </td>
     <td class="col-8">

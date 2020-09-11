@@ -49,6 +49,9 @@
                 "multiplepredictions": "true",
                 "insights": [
                     {
+                        "predictionid": 1,
+                        "toggleslave": <input type="checkbox" value="1" data-action="toggle" data-toggle="slave">
+                        "hasbulkactions": true,
                         "sampleimage": "<a href=\"#\">Link</a>",
                         "sampledescription": "Sample description",
                         "actions": [
@@ -63,6 +66,9 @@
                             }
                         ]
                     }, {
+                        "predictionid": 2,
+                        "toggleslave": <input type="checkbox" value="2" data-action="toggle" data-toggle="slave">
+                        "hasbulkactions": true,
                         "sampleimage": "<a href=\"#\">Link</a>",
                         "sampledescription": "Sample description",
                         "actions": [
@@ -94,7 +100,13 @@
                 ]
             }
         ],
-        "noinsights": false
+        "noinsights": false,
+        "insightselection": {
+            "uniqueid": "12345",
+            "togglegroup": "toggle-group-name",
+            "allinsights": "{}",
+            "displayactionselement": true
+        },
     }
 }}
 
@@ -108,7 +120,7 @@
 
     <h2 class="mb-2">{{insightname}}</h2>
 
-    {{{insightdescription}}}
+    <p>{{{insightdescription}}}</p>
 
     {{^noinsights}}
     {{#nostaticmodelnotification}}
@@ -119,11 +131,17 @@
 
     {{{ pagingbar }}}
 
-    {{> report_insights/bulk_actions}}
-
     {{#predictions}}
+        <div class="d-flex mb-2">
+            <div class="pr-3 mb-1">
+                {{> report_insights/bulk_actions}}
+            </div>
+            <div class="ml-auto pl-3 align-self-end">
+                {{{insightselection}}}
+            </div>
+        </div>
 
-        <table class="generaltable insights-list mt-3">
+        <table class="generaltable insights-list mt-1">
             {{#showpredictionheading}}
                 <caption>
                     {{#str}}prediction, report_insights{{/str}}:
@@ -138,15 +156,15 @@
             <thead>
                 <tr class="d-flex">
                     {{#multiplepredictions}}
-                        <th class="col-xs-1{{^bulkactions}} hidden{{/bulkactions}}">
+                        <th class="col-1{{^bulkactions}} hidden{{/bulkactions}}">
                             {{{checkboxtoggleall}}}
                         </th>
                     {{/multiplepredictions}}
                     {{^multiplepredictions}}
-                        <th class="col-xs-1{{^bulkactions}} hidden{{/bulkactions}}">
+                        <th class="col-1{{^bulkactions}} hidden{{/bulkactions}}">
                     {{/multiplepredictions}}
-                    <th scope="col" class="col-xs-8">{{#str}}description{{/str}}</th>
-                    <th scope="col" class="col-xs-3">{{#str}}actions{{/str}}</th>
+                    <th scope="col" class="col-8">{{#str}}description{{/str}}</th>
+                    <th scope="col" class="col-3">{{#str}}actions{{/str}}</th>
                 </tr>
             </thead>
             <tbody>
@@ -156,11 +174,17 @@
             </tbody>
         </table>
 
+        <div class="d-flex">
+            <div class="pr-3 mb-2">
+                {{#multiplepredictions}}
+                    {{> report_insights/bulk_actions}}
+                {{/multiplepredictions}}
+            </div>
+            <div class="ml-auto pl-3 align-self-start">
+                {{{insightselection}}}
+            </div>
+        </div>
     {{/predictions}}
-
-    {{#multiplepredictions}}
-        {{> report_insights/bulk_actions}}
-    {{/multiplepredictions}}
 
     {{{ pagingbar }}}
     {{/noinsights}}

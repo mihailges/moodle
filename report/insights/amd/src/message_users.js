@@ -21,9 +21,16 @@
  * @copyright  2019 David Monllao
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-define(['jquery', 'core/str', 'core/log', 'core/modal_factory', 'core/modal_events', 'core/templates',
-    'core/notification', 'core/ajax'],
-        function($, Str, Log, ModalFactory, ModalEvents, Templates, Notification, Ajax) {
+define(['jquery',
+        'core/str',
+        'core/log',
+        'core/modal_factory',
+        'core/modal_events',
+        'core/templates',
+        'core/notification',
+        'core/ajax',
+        'report_insights/insight_selection'],
+        function($,Str, Log, ModalFactory, ModalEvents, Templates, Notification, Ajax, InsightSelection) {
 
     var SELECTORS = {
         BULKACTIONSELECT: "#formactionid"
@@ -64,11 +71,10 @@ define(['jquery', 'core/str', 'core/log', 'core/modal_factory', 'core/modal_even
             // Using an associative array in case there is more than 1 prediction for the same user.
             var users = {};
             var predictionToUserMapping = cTarget.data('prediction-to-user-id');
+            var toggleGroup = cTarget.data('togglegroup');
+            var selectedPredictions = InsightSelection.getSelectedInsights(toggleGroup);
 
-            var checkedSelector = '.insights-list input[data-togglegroup^="insight-bulk-action"][data-toggle="slave"]:checked';
-            $(checkedSelector).each(function(index, value) {
-                var predictionId = $(value).closest('tr[data-prediction-id]').data('prediction-id');
-
+            selectedPredictions.forEach(function(predictionId) {
                 if (typeof predictionToUserMapping[predictionId] === 'undefined') {
                     Log.error('Unknown user for prediction ' + predictionId);
                     return;

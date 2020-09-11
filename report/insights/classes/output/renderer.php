@@ -51,12 +51,12 @@ class renderer extends plugin_renderer_base {
     }
 
     /**
-     * Renders an insight
+     * Renders the insight details.
      *
      * @param renderable $renderable
      * @return string HTML
      */
-    protected function render_insight(renderable $renderable) {
+    protected function render_insight_details(renderable $renderable) {
         $data = $renderable->export_for_template($this);
         $renderable->get_model()->get_target()->add_bulk_actions_js();
         return parent::render_from_template('report_insights/insight_details', $data);

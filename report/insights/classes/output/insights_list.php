@@ -129,10 +129,21 @@ class insights_list implements \renderable, \templatable {
             $insights = array();
             if ($predictionsdata) {
                 list($total, $predictions) = $predictionsdata;
+                // Whether the total number of predictions is greater than the defined number of predictions per page.
+                $canpaginate = $total > $this->perpage;
 
-                if ($predictions) {
+                if ($canpaginate) { // The predictions data can be paginated.
+                    // Get all existing predictions. This data will be later used for the bulk selection.
+                    $allpredictionsdata = $this->model->get_predictions($this->context, true, false);
+                    list(, $allpredictions) = $allpredictionsdata;
+                } else { // The predictions data cannot be paginated.
+                    $allpredictions = $predictions;
+                }
+
+                if ($allpredictions) {
                     // No bulk actions if no predictions.
-                    $data->bulkactions = actions_exporter::add_bulk_actions($target, $output, $predictions, $this->context);
+                    $data->bulkactions = actions_exporter::add_bulk_actions($target, $output, $allpredictions,
+                        $this->context);
                 }
 
                 $data->multiplepredictions = count($predictions) > 1 ? true : false;
@@ -149,7 +160,8 @@ class insights_list implements \renderable, \templatable {
                         $predictionvalues[$predictedvalue] = $preddata;
                     }
 
-                    $insightrenderable = new \report_insights\output\insight($prediction, $this->model, true, $this->context);
+                    $insightrenderable = new \report_insights\output\insight($prediction, $this->model, true,
+                        $this->context, isset($data->bulkactions));
                     $insights[$predictedvalue][] = $insightrenderable->export_for_template($output);
                 }
 
@@ -165,8 +177,9 @@ class insights_list implements \renderable, \templatable {
                 // Ok, now we have all the data we want, put it into a format that mustache can handle.
                 foreach ($predictionvalues as $key => $prediction) {
                     if (isset($insights[$key])) {
+                        $togglegroup = "insight-bulk-action-{$key}";
 
-                        $toggleall = new \core\output\checkbox_toggleall('insight-bulk-action-' . $key, true, [
+                        $toggleall = new \core\output\checkbox_toggleall($togglegroup, true, [
                             'id' => 'id-toggle-all-' . $key,
                             'name' => 'toggle-all-' . $key,
                             'label' => get_string('selectall'),
@@ -174,6 +187,14 @@ class insights_list implements \renderable, \templatable {
                             'checked' => false
                         ]);
                         $prediction['checkboxtoggleall'] = $output->render($toggleall);
+
+                        // Generate a unique ID which will be later used by the bulk selection functionality.
+                        $uniqieid = md5($data->contextid . $data->modelid . $togglegroup);
+                        // Render the insight selection area. Display the bulk action options only if the predictions
+                        // data can be paginated.
+                        $insightselection = new \report_insights\output\insight_selection(
+                            $uniqieid, $togglegroup, array_keys($allpredictions), $canpaginate);
+                        $prediction['insightselection'] = $output->render($insightselection);
 
                         $prediction['predictedvalue'] = $key;
                         $prediction['insights'] = $insights[$key];
@@ -217,7 +238,9 @@ class insights_list implements \renderable, \templatable {
 
         // Add the 'perpage' parameter to the url which is later used to generate the pagination links.
         $url->param('perpage', $this->perpage);
-        $data->pagingbar = $output->render(new \paging_bar($total, $this->page, $this->perpage, $url));
+        if ($canpaginate) {
+            $data->pagingbar = $output->render(new \paging_bar($total, $this->page, $this->perpage, $url));
+        }
 
         return $data;
     }

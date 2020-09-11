@@ -26,8 +26,15 @@
  *
  * @module report_insights/actions
  */
-define(['jquery', 'core/str', 'core/ajax', 'core/notification', 'core/url', 'core/modal_factory', 'core/modal_events'],
-        function($, Str, Ajax, Notification, Url, ModalFactory, ModalEvents) {
+define(['jquery',
+        'core/str',
+        'core/ajax',
+        'core/notification',
+        'core/url',
+        'core/modal_factory',
+        'core/modal_events',
+        'report_insights/insight_selection'],
+        function($, Str, Ajax, Notification, Url, ModalFactory, ModalEvents, InsightSelection) {
 
     return {
 
@@ -43,56 +50,39 @@ define(['jquery', 'core/str', 'core/ajax', 'core/notification', 'core/url', 'cor
              * Executes the provided action.
              *
              * @param  {Array}  predictionIds
-             * @param  {Array}  predictionContainers
-             * @param  {String} actionName
+             * @param  {Object} actionElement
              * @return {Promise}
              */
-            var executeAction = function(predictionIds, predictionContainers, actionName) {
+            var executeAction = function(predictionIds, actionElement) {
 
                 return Ajax.call([
                     {
                         methodname: 'report_insights_action_executed',
                         args: {
                             predictionids: predictionIds,
-                            actionname: actionName
+                            actionname: actionElement.data('bulk-actionname')
                         }
                     }
                 ])[0].then(function() {
-                    // Remove the selected elements from the list.
+                    // Once the action has been finished, reset the selected insights.
+                    InsightSelection.setSelectedInsights([], actionElement.data('togglegroup'));
 
-                    var tableNode = false;
-                    predictionContainers.forEach(function(el) {
-                        if (tableNode === false) {
-                            tableNode = el.closest('table');
-                        }
-                        el.remove();
-                    });
+                    let params = {
+                        contextid: actionElement.closest('div.insight-container').data('context-id'),
+                        modelid: actionElement.closest('div.insight-container').data('model-id')
+                    };
+                    // Reload the insight report page to display the latest state.
+                    window.location.assign(Url.relativeUrl("report/insights/insights.php", params, false));
 
-                    if (tableNode.find('tbody > tr').length === 0) {
-                        let params = {
-                            contextid: tableNode.closest('div.insight-container').data('context-id'),
-                            modelid: tableNode.closest('div.insight-container').data('model-id')
-                        };
-                        window.location.assign(Url.relativeUrl("report/insights/insights.php", params, false));
-                    }
-                    return;
                 }).catch(Notification.exception);
             };
 
             $(rootNode + ' [data-bulk-actionname]').on('click', function(e) {
                 e.preventDefault();
                 var action = $(e.currentTarget);
-                var actionName = action.data('bulk-actionname');
                 var actionVisibleName = action.text().trim();
-
-                var predictionIds = [];
-                var predictionContainers = [];
-
-                $('.insights-list input[data-togglegroup^="insight-bulk-action-"][data-toggle="slave"]:checked').each(function() {
-                    var container = $(this).closest('tr[data-prediction-id]');
-                    predictionContainers.push(container);
-                    predictionIds.push(container.data('prediction-id'));
-                });
+                // Get the selected insights.
+                var predictionIds = InsightSelection.getSelectedInsights(action.data('togglegroup'));
 
                 if (predictionIds.length === 0) {
                     // No items selected message.
@@ -123,7 +113,7 @@ define(['jquery', 'core/str', 'core/ajax', 'core/notification', 'core/url', 'cor
                     modal.show();
                     modal.getRoot().on(ModalEvents.save, function() {
                         // The action is now confirmed, sending an action for it.
-                        return executeAction(predictionIds, predictionContainers, actionName);
+                        return executeAction(predictionIds, action);
                     });
 
                     return modal;

@@ -128,19 +128,6 @@ class auth_plugin_shibboleth extends auth_plugin_base {
             }
         }
 
-         // Provide an API to modify the information to fit the Moodle internal
-        // data representation
-        if (
-              $this->config->convert_data
-              && $this->config->convert_data != ''
-              && is_readable($this->config->convert_data)
-            ) {
-
-            // Include a custom file outside the Moodle dir to
-            // modify the variable $moodleattributes
-            include($this->config->convert_data);
-        }
-
         return $result;
     }
 
@@ -267,10 +254,7 @@ class auth_plugin_shibboleth extends auth_plugin_base {
                 (new moodle_url('/auth/shibboleth/README.txt'))->out()), 'notifyproblem');
             return;
         }
-        if ($this->config->convert_data and $this->config->convert_data != '' and !is_readable($this->config->convert_data)) {
-            echo $OUTPUT->notification(get_string("auth_shib_convert_data_warning", "auth_shibboleth"), 'notifyproblem');
-            return;
-        }
+
         if (isset($this->config->organization_selection) && empty($this->config->organization_selection) &&
                 isset($this->config->alt_login) && $this->config->alt_login == 'on') {
 

@@ -1,6 +1,11 @@
 This files describes API changes in /auth/shibboleth/*,
 information provided here is intended especially for developers.
 
+=== 3.10 ===
+
+* Removed the 'auth_shibboleth/convert_data' setting and any related usages as this feature introduces security
+  vulnerabilities. Therefore, the ability to further modify the data provided by Shibboleth will no longer be available.
+
 === 3.5.2 ===
 
 * Moved the public function unserializesession in auth/shibboleth/logout.php to auth/shibboleth/classes/helper.php and

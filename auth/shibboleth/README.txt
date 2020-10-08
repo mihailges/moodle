@@ -177,59 +177,6 @@ form that sends 'username' and 'password' to moodle/login/index.php. Set this
 web page then als alternate login page.
 Consult the Moodle documentation for further instructions and requirements.
 
-How to customize the way the Shibboleth user data is used in Moodle
---------------------------------------------------------------------------------
-Among the Shibboleth settings in Moodle there is a field that should contain a
-path to a php file that can be used as data manipulation hook.
-You can use this if you want to further process the way your Shibboleth
-attributes are used in Moodle.
-
-Example 1: Your Shibboleth federation uses an attribute that specifies the
-           user's preferred language, but the content of this attribute is not
-           compatible with the Moodle data representation, e.g. the Shibboleth
-           attribute contains 'German' but Moodle needs a two letter value like
-           'de'.
-Example 2: The country, city and street are provided in one Shibboleth attribute
-           and you want these values to be used in the Moodle user profile. So
-           You have to parse the corresponding attribute to fill the user fields.
-
-If you want to use this hook you have to be a skilled PHP programmer. It is
-strongly recommended that you take a look at the file
-moodle/auth/shibboleth/auth.php, especially the function 'get_userinfo'
-where this file is included.
-The context of the file is the same as within this login function. So you
-can directly edit the object $result.
-
-Example file:
-
---
-<?php
-
-    // Set the zip code and the adress
-    if ($_SERVER[$this->config->field_map_address] != '')
-    {
-        // $address contains something like 'SWITCH$Limmatquai 138$CH-8021 Zurich'
-        // We want to split this up to get:
-        // institution, street, zipcode, city and country
-        $address = $_SERVER[$this->config->field_map_address];
-        list($institution, $street, $zip_city) = explode('$', $address);
-        preg_match('/ (.+)/', $zip_city, $regs);
-        $city = $regs[1];
-
-        preg_match('/(.+)-/',$zip_city, $regs);
-        $country = $regs[1];
-
-        $result["address"] = $street;
-        $result["city"] = $city;
-        $result["country"] = $country;
-        $result["department"] = $institution;
-        $result["description"] = "I am a Shibboleth user";
-
-    }
-
-?>
---
-
 How to upgrade your Service Provider to 2.x
 -------------------------------------------------------------------------------
 

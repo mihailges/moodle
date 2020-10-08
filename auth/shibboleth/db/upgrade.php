@@ -47,5 +47,13 @@ function xmldb_auth_shibboleth_upgrade($oldversion) {
     // Automatically generated Moodle v3.9.0 release upgrade line.
     // Put any upgrade step following this.
 
+    if ($oldversion < 2021052501) {
+        // Unset the removed 'auth_shibboleth/convert_data' setting.
+        unset_config('convert_data', 'auth_shibboleth');
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2021052501);
+    }
+
     return true;
 }

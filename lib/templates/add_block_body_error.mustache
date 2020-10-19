@@ -15,28 +15,24 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template core/add_block_body
+    @template core/add_block_body_error
 
-    Template for the body of the add block modal.
+    Template for the error displayed in the add block modal.
 
-    Context variables required for this template:
-    * blocks - list of blocks containing name and title
-    * url - base url for links back to same page.
+    Variables required for this template:
+    * errormessage - The error message
 
     Example context (json):
     {
-        "blocks" : [ { "name": "test", "title": "Test block" } ],
-        "url" : "?a=b"
+        "errormessage": "Error"
     }
-
 }}
-<div class="list-group">
-{{#blocks}}
-    <a href="{{url}}&amp;bui_addblock={{name}}" class="list-group-item list-group-item-action">{{title}}</a>
-{{/blocks}}
-{{^blocks}}
-    <div class="alert alert-primary" role="alert">
-        {{#str}} noblockstoaddhere {{/str}}
-    </div>
-{{/blocks}}
+<div class="alert alert-danger" role="alert">
+    <p class="font-weight-bold">
+        <i class="fa fa-exclamation-circle fa-fw text-danger"></i>
+        {{#str}} addblockerror {{/str}}
+    </p>
+    <p class="text-break">
+        {{{errormessage}}}
+    </p>
 </div>

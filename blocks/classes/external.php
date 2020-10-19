@@ -291,4 +291,80 @@ class core_block_external extends external_api {
             )
         );
     }
+
+    /**
+     * Returns description of get_page_addable_blocks parameters.
+     *
+     * @return external_function_parameters
+     * @since Moodle 3.10
+     */
+    public static function get_page_addable_blocks_parameters() {
+        return new external_function_parameters(
+            [
+                'pagecontextid' => new external_value(PARAM_INT, 'The context ID of the page.'),
+                'pagetype' => new external_value(PARAM_RAW, 'The type of the page.'),
+                'pagelayout' => new external_value(PARAM_RAW, 'The layout of the page.')
+            ]
+        );
+    }
+
+    /**
+     * Returns the addable blocks in a given page.
+     *
+     * @param int $pagecontextid The context ID of the page
+     * @param string $pagetype The type of the page
+     * @param string $pagelayout The layout of the page
+     * @return array The blocks list
+     * @since Moodle 3.10
+     */
+    public static function get_page_addable_blocks($pagecontextid, $pagetype, $pagelayout) {
+        global $PAGE;
+
+        $params = self::validate_parameters(self::get_page_addable_blocks_parameters(),
+            [
+                'pagecontextid' => $pagecontextid,
+                'pagetype' => $pagetype,
+                'pagelayout' => $pagelayout
+            ]
+        );
+
+        $context = context::instance_by_id($params['pagecontextid']);
+        // Validate the context. This will also set the context in $PAGE.
+        self::validate_context($context);
+
+        // We need to manually set the page layout and page type.
+        $PAGE->set_pagelayout($params['pagelayout']);
+        $PAGE->set_pagetype($params['pagetype']);
+        // Firstly, we need to load all currently existing page blocks to later determine which blocks are addable.
+        $PAGE->blocks->load_blocks(false);
+        $PAGE->blocks->create_all_block_instances();
+
+        $addableblocks = $PAGE->blocks->get_addable_blocks();
+
+        return array_map(function($block) {
+            return [
+                'name' => $block->name,
+                'title' => get_string('pluginname', "block_{$block->name}")
+            ];
+        }, $addableblocks);
+    }
+
+    /**
+     * Returns description of get_page_addable_blocks result values.
+     *
+     * @return external_multiple_structure
+     * @since Moodle 3.10
+     */
+    public static function get_page_addable_blocks_returns() {
+
+        return new external_multiple_structure(
+            new external_single_structure(
+                [
+                    'name' => new external_value(PARAM_RAW, 'The name of the block.'),
+                    'title' => new external_value(PARAM_RAW, 'The title of the block.'),
+                ]
+            ),
+            'List of addable blocks in a given page.'
+        );
+    }
 }

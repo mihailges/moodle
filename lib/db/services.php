@@ -2609,6 +2609,16 @@ $functions = array(
         'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE),
     ),
 
+    'core_block_get_page_addable_blocks' => array(
+        'classname'     => 'core_block_external',
+        'methodname'    => 'get_page_addable_blocks',
+        'description'   => 'Returns all addable blocks in a given page.',
+        'type'          => 'read',
+        'capabilities'  => 'moodle/site:manageblocks',
+        'ajax'          => true,
+        'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE),
+    ),
+
     // Filters functions.
     'core_filters_get_available_in_context' => array(
         'classname'   => 'core_filters\external',

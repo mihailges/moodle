@@ -49,6 +49,7 @@ $string['addactivity'] = 'Add an activity...';
 $string['addactivitytosection'] = 'Add an activity to section \'{$a}\'';
 $string['addadmin'] = 'Add admin';
 $string['addblock'] = 'Add a block';
+$string['addblockerror'] = 'Failed to display the available blocks for this page.';
 $string['addcomment'] = 'Add a comment...';
 $string['addcountertousername'] = 'Create user by adding number to username';
 $string['addcreator'] = 'Add course creator';

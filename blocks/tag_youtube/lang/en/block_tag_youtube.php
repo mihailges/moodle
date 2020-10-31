@@ -38,6 +38,7 @@ $string['howtodiy'] = 'How-to & DIY';
 $string['includeonlyvideosfromplaylist'] = 'Include only videos from the playlist with id';
 $string['music'] = 'Music';
 $string['newspolitics'] = 'News & Politics';
+$string['nonprofitactivism'] = 'Nonprofits & Activism';
 $string['numberofvideos'] = 'Number of videos';
 $string['peopleblogs'] = 'People & Blogs';
 $string['petsanimals'] = 'Pets & Animals';

@@ -44,7 +44,7 @@ class block_tag_flickr extends block_base {
     }
 
     function get_content() {
-        global $CFG, $USER;
+        global $CFG, $OUTPUT;
 
         //note: do NOT include files at the top of this file
         require_once($CFG->libdir . '/filelib.php');
@@ -70,6 +70,17 @@ class block_tag_flickr extends block_base {
             return $this->content;
         }
 
+        // Flickr licenses.
+        $licenses = [
+            'Attribution-NonCommercial-ShareAlike' => 1,
+            'Attribution-NonCommercial' => 2,
+            'Attribution-NonCommercial-NoDerivs' => 3,
+            'Attribution' => 4,
+            'Attribution-ShareAlike' => 5,
+            'Attribution-NoDerivs' => 6,
+            'No known copyright restrictions' => 7
+        ];
+
         //include related tags in the photo query ?
         $tagscsv = $tagobject->name;
         if (!empty($this->config->includerelatedtags)) {
@@ -91,6 +102,8 @@ class block_tag_flickr extends block_base {
             $sortby = $this->config->sortby;
         }
 
+        $photos = [];
+
         //pull photos from a specific photoset
         if(!empty($this->config->photoset)){
 
@@ -99,17 +112,18 @@ class block_tag_flickr extends block_base {
             $request .= '&photoset_id='.$this->config->photoset;
             $request .= '&per_page='.$numberofphotos;
             $request .= '&format=php_serial';
+            $request .= '&license=' . implode(',', $licenses);
+            $request .= '&media=photos';
 
             $response = $this->fetch_request($request);
-
             $search = unserialize($response);
 
-            foreach ($search['photoset']['photo'] as $p){
-                $p['owner'] = $search['photoset']['owner'];
+            if (isset($search['photoset'])) {
+                foreach ($search['photoset']['photo'] as $key => $value){
+                    $search['photoset']['photo'][$key]['owner'] = $search['photoset']['owner'];
+                }
+                $photos = array_values($search['photoset']['photo']);
             }
-
-            $photos = array_values($search['photoset']['photo']);
-
         }
         //search for photos tagged with $tagscsv
         else{
@@ -120,17 +134,37 @@ class block_tag_flickr extends block_base {
             $request .= '&per_page='.$numberofphotos;
             $request .= '&sort='.$sortby;
             $request .= '&format=php_serial';
+            $request .= '&license=' . implode(',', $licenses);
+            $request .= '&media=photos';
 
             $response = $this->fetch_request($request);
-
             $search = unserialize($response);
-            $photos = array_values($search['photos']['photo']);
+
+            if (isset($search['photos'])) {
+                $photos = array_values($search['photos']['photo']);
+            }
         }
 
+        $this->content = new stdClass;
+        $this->content->footer = '';
 
-        if(strcmp($search['stat'], 'ok') != 0) return; //if no results were returned, exit...
+        if ($search['stat'] == 'ok') {
+            $text = '<ul class="inline-list">';
+            foreach ($photos as $photo) {
+                $text .= '<li><a href="http://www.flickr.com/photos/' . $photo['owner'] . '/' . $photo['id'] .
+                    '/" title="'.s($photo['title']).'">';
+                $text .= '<img alt="'.s($photo['title']).'" class="flickr-photos" src="'. $this->build_photo_url($photo, 'square') ."\" /></a></li>\n";
+            }
+            $text .= "</ul>\n";
 
-        //Accessibility: render the list of photos
+            $this->content->text = $text;
+        }
+
+        if (strcmp($search['stat'], 'fail') == 0 && isset($search['message'])) {
+            $this->content->text = $OUTPUT->notification($search['message'], 'error');
+        }
+        if (strcmp($search['stat'], 'ok') != 0) return; //if no results were returned, exit...
+
         $text = '<ul class="inline-list">';
          foreach ($photos as $photo) {
             $text .= '<li><a href="http://www.flickr.com/photos/' . $photo['owner'] . '/' . $photo['id'] . '/" title="'.s($photo['title']).'">';

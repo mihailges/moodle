@@ -91,6 +91,17 @@ class block_tag_flickr extends block_base {
             $sortby = $this->config->sortby;
         }
 
+        // Flickr licenses.
+        $licenses = [
+            'Attribution-NonCommercial-ShareAlike' => 1,
+            'Attribution-NonCommercial' => 2,
+            'Attribution-NonCommercial-NoDerivs' => 3,
+            'Attribution' => 4,
+            'Attribution-ShareAlike' => 5,
+            'Attribution-NoDerivs' => 6,
+            'No known copyright restrictions' => 7
+        ];
+
         //pull photos from a specific photoset
         if(!empty($this->config->photoset)){
 
@@ -99,6 +110,8 @@ class block_tag_flickr extends block_base {
             $request .= '&photoset_id='.$this->config->photoset;
             $request .= '&per_page='.$numberofphotos;
             $request .= '&format=php_serial';
+            $request .= '&license=' . implode(',', $licenses);
+            $request .= '&media=photos';
 
             $response = $this->fetch_request($request);
 
@@ -120,6 +133,8 @@ class block_tag_flickr extends block_base {
             $request .= '&per_page='.$numberofphotos;
             $request .= '&sort='.$sortby;
             $request .= '&format=php_serial';
+            $request .= '&license=' . implode(',', $licenses);
+            $request .= '&media=photos';
 
             $response = $this->fetch_request($request);
 

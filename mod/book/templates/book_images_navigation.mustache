@@ -45,25 +45,26 @@
         "chapterclass": "dimmed_text"
     }
 }}
-{{#navigation}}
-    <div class="navtop border-top py-3 clearfix">
-        {{{navigation}}}
-    </div>
-{{/navigation}}
-<div class="box generalbox book_content {{#ischapterhidden}} dimmed_text {{/ischapterhidden}} py-3">
-    {{#chaptertitle}}
-        <h3>{{chaptertitle}}</h3>
-	{{/chaptertitle}}
-    {{#chaptersubtitle}}
-        <h4>{{chaptersubtitle}}</h4>
-    {{/chaptersubtitle}}
-    {{{chaptertext}}}
+<div class="navimages">
+    {{#hasprevious}}
+        <a href="{{{prevurl}}}" title="{{#str}} navprevtitle, book, {{prevtitle}} {{/str}}" class="bookprev">
+            {{#isrighttoleft}}{{#pix}} nav_next, mod_book, {{#str}} navprevtitle, book, {{prevtitle}} {{/str}}{{/pix}}{{/isrighttoleft}}
+            {{^isrighttoleft}}{{#pix}} nav_prev, mod_book, {{#str}} navprevtitle, book, {{prevtitle}} {{/str}} {{/pix}}{{/isrighttoleft}}</a>
+    {{/hasprevious}}
+
+    {{#hasnext}}
+        <a href="{{{nexturl}}}" title="{{#str}} navnexttitle, book, {{nexttitle}} {{/str}}" class="booknext">
+            {{#isrighttoleft}}
+                {{#pix}} nav_prev, mod_book, {{#str}} navnexttitle, book, {{nexttitle}} {{/str}} {{/pix}}
+            {{/isrighttoleft}}
+            {{^isrighttoleft}}
+                {{#pix}} nav_next, mod_book, {{#str}} navnexttitle, book, {{nexttitle}} {{/str}} {{/pix}}
+            {{/isrighttoleft}}
+        </a>
+    {{/hasnext}}
+    {{^hasnext}}
+        <a href="{{{returnurl}}}" title="{{#str}}navexit, book{{/str}}" class="bookexit">
+            {{#pix}} nav_exit, mod_book, {{#str}} navexit, book {{/str}} {{/pix}}
+        </a>
+    {{/hasnext}}
 </div>
-{{#taglist}}
-    {{{taglist}}}
-{{/taglist}}
-{{#navigation}}
-    <div class="navbottom border-bottom py-3 clearfix">
-        {{{navigation}}}
-    </div>
-{{/navigation}}

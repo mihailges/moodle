@@ -45,25 +45,20 @@
         "chapterclass": "dimmed_text"
     }
 }}
-{{#navigation}}
-    <div class="navtop border-top py-3 clearfix">
-        {{{navigation}}}
-    </div>
-{{/navigation}}
-<div class="box generalbox book_content {{#ischapterhidden}} dimmed_text {{/ischapterhidden}} py-3">
-    {{#chaptertitle}}
-        <h3>{{chaptertitle}}</h3>
-	{{/chaptertitle}}
-    {{#chaptersubtitle}}
-        <h4>{{chaptersubtitle}}</h4>
-    {{/chaptersubtitle}}
-    {{{chaptertext}}}
+<div class="navtext">
+    {{#hasprevious}}
+        <a href="{{{prevurl}}}" title="{{#str}}navprev, book {{/str}}" class="bookprev">
+            <span>◄ {{#str}}navprev, book {{/str}}: <span class="chaptername">{{prevtitle}}</span></span>
+        </a>
+    {{/hasprevious}}
+    {{#hasnext}}
+        <a href="{{{nexturl}}}" title="{{#str}} navnext, book {{/str}}" class="booknext">
+            <span>{{#str}}navnext, book {{/str}}: <span class="chaptername">{{nexttitle}} ►</span></span>
+        </a>
+    {{/hasnext}}
+    {{^hasnext}}
+        <a href="{{{returnurl}}}" title="{{#str}}navexit, book {{/str}}" class="booknext">
+            <span><span class="chaptername">{{#str}}navexit, book {{/str}} ▲</span>
+        </a>
+    {{/hasnext}}
 </div>
-{{#taglist}}
-    {{{taglist}}}
-{{/taglist}}
-{{#navigation}}
-    <div class="navbottom border-bottom py-3 clearfix">
-        {{{navigation}}}
-    </div>
-{{/navigation}}

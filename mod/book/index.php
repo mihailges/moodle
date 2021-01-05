@@ -50,11 +50,11 @@ echo $OUTPUT->header();
 \mod_book\event\course_module_instance_list_viewed::create_from_course($course)->trigger();
 
 $renderer = $PAGE->get_renderer('mod_book');
-// Get all the appropriate data.
-if (!$books = get_all_instances_in_course('book', $course)) {
-    echo $renderer->render_no_book_instances_in_course($course);
-} else {
-    echo $renderer->render_book_instances_in_course($course, $books);
-}
 
+$page = new mod_book\output\index_book_page($course);
+$content = $renderer->render($page);
+
+// Get all the appropriate data.
+//echo $renderer->render_book_instances_in_course($course, $books);
+echo $content;
 echo $OUTPUT->footer();

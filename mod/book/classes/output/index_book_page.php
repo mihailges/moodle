@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Class containing data for the view book page.
+ * Class containing data for the index book page.
  *
  * @package    mod_book
  * @copyright  2019 Mihail Geshoski
@@ -31,15 +31,14 @@ use renderer_base;
 use stdClass;
 use templatable;
 use context_module;
-use mod_book\local\factories\renderer_factory as renderer_factory;
 
 /**
- * Class containing data for the view book page.
+ * Class containing data for the index book page.
  *
  * @copyright  2019 Mihail Geshoski
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class view_book_page implements renderable, templatable {
+class index_book_page implements renderable, templatable {
 
     /** @var object The course object. */
     protected $course;
@@ -61,12 +60,8 @@ class view_book_page implements renderable, templatable {
      * @param object $chapter The book chapter object.
      * @param bool $edit If editing is enabled.
      */
-    public function __construct($course, $book, $cm, $chapter, $edit) {
+    public function __construct($course) {
         $this->course = $course;
-        $this->book = $book;
-        $this->cm = $cm;
-        $this->chapter = $chapter;
-        $this->edit = $edit;
     }
 
     /**
@@ -78,32 +73,34 @@ class view_book_page implements renderable, templatable {
     public function export_for_template(renderer_base $output) {
         global $OUTPUT;
 
-        $context = context_module::instance($this->cm->id);
-        $chapters = book_preload_chapters($this->book);
-
         $data = new stdClass();
-        $navigationrenderer = renderer_factory::get_navigation_renderer($this->course, $this->book, $this->cm,
-            $this->chapter, $this->edit);
-        $data->navigation = $navigationrenderer ? $navigationrenderer->render() : null;
+        $data->issectionscourseformat = $usersections = course_format_uses_sections($this->course->format);
+        $data->formatname = $data->issectionscourseformat ?
+            get_string('sectionname', 'format_' . $this->course->format) :
+            get_string('lastmodified');
+        $data->courseformat = $this->course->format;
+        $books = get_all_instances_in_course('book', $this->course);
 
-        if (!$this->book->customtitles) {
-            if (!$this->chapter->subchapter) {
-                $data->chaptertitle = book_get_chapter_title($this->chapter->id, $chapters, $this->book, $context);
-            } else {
-                $data->chaptertitle = book_get_chapter_title($chapters[$this->chapter->id]->parent, $chapters,
-                        $this->book, $context);
-                $data->chaptersubtitle = book_get_chapter_title($this->chapter->id, $chapters, $this->book, $context);
+        $currentsection = '';
+        $data->books = array_map(function($book) use ($usersections, &$currentsection) {
+            $context = context_module::instance($book->coursemodule);
+            $isfirstsection = false;
+            if (!$iscurrentsection = $book->section == $currentsection) {
+                $isfirstsection = ($currentsection == '');
+                $currentsection = $book->section;
             }
-        }
-        if (\core_tag_tag::is_enabled('mod_book', 'book_chapters')) {
-            $data->taglist = $OUTPUT->tag_list(\core_tag_tag::get_item_tags('mod_book',
-                    'book_chapters', $this->chapter->id), null, 'book-tags');
-        }
-        $chaptertext = file_rewrite_pluginfile_urls($this->chapter->content, 'pluginfile.php', $context->id,
-                'mod_book', 'chapter', $this->chapter->id);
-        $data->chaptertext = format_text($chaptertext, $this->chapter->contentformat, array('noclean' => true,
-                'overflowdiv' => true, 'context' => $context));
-        $data->ischapterhidden = $this->chapter->hidden;
+            return array(
+                'iscurrentsection' => $iscurrentsection,
+                'isfirstsection' => $isfirstsection,
+                'hassection' => !empty($book->section),
+                'sectionname' => get_section_name($this->course, $book->section),
+                'timemodified' => userdate($book->timemodified),
+                'isvisible' => $book->visible,
+                'url' => new \moodle_url('view.php', array('id' => $context->instanceid)),
+                'name' => format_string($book->name),
+                'description' => format_module_intro('book', $book, $context->instanceid)
+            );
+        }, get_all_instances_in_course('book', $this->course));
 
         return $data;
     }

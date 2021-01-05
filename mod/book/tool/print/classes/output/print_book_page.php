@@ -31,6 +31,7 @@ use renderer_base;
 use stdClass;
 use templatable;
 use context_module;
+use mod_book\local\factories\renderer_factory as renderer_factory;
 
 /**
  * Class containing data for the print book page.
@@ -88,7 +89,9 @@ class print_book_page implements renderable, templatable {
         $data->modulename = format_string($this->book->name, true, array('context' => $context));
         $data->username = fullname($USER, true);
         $data->printdate = userdate(time());
-        $data->toc = $output->render_print_book_toc($chapters, $this->book, $this->cm);
+        $data->toc = renderer_factory::get_toc_renderer($this->book->numbering, $chapters, $this->cm,
+            false)->render();
+        //$data->toc = $output->render_print_book_toc($chapters, $this->book, $this->cm);
         foreach ($chapters as $ch) {
             list($chaptercontent, $chaptervisible) = $output->render_print_book_chapter($ch, $chapters, $this->book,
                     $this->cm);

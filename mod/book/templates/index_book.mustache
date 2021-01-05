@@ -1,0 +1,91 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more comments.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_book/view_book
+
+    View book page.
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * navigationclass string The navigation css class.
+    * navigation string The HTML of the data requests table.
+    * chaptertitle string The title of the chapter.
+    * chaptersubtitle string The title of the subchapter.
+    * chaptertext string The content text of the chapter.
+    * taglist string The HTML of the list of the chapter's related tags.
+    * chapterclass string The chapter css class.
+
+    Example context (json):
+    {
+        "navigationclass": "navtext",
+        "navigation": "<a title='Next' class='booknext' href='#'></a>",
+        "chaptertitle": "Chapter title",
+        "chaptersubtitle": "Subchapter title",
+        "chaptertext": "Chapter text",
+        "taglist": "<div class='tag_list'></div>",
+        "chapterclass": "dimmed_text"
+    }
+}}
+<table class="generaltable mod_index">
+    <thead class="">
+        <tr>
+            <th class="{{#issectionscourseformat}} text-center {{/issectionscourseformat}} {{^issectionscourseformat}} text-left {{/issectionscourseformat}}">
+                {{formatname}}
+            </th>
+            <th class="text-left">
+                {{#str}}name{{/str}}
+            </th>
+            <th class="text-left">
+                {{#str}}moduleintro{{/str}}
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#books}}
+            {{^iscurrentsection}}
+                {{^isfirstsection}}
+                    <tr class="bg-light"><td colspan="3" class="divider"></td></tr>
+                {{/isfirstsection}}
+            {{/iscurrentsection}}
+            <tr>
+                <td class="{{#issectionscourseformat}} text-center {{/issectionscourseformat}} {{^issectionscourseformat}} text-left {{/issectionscourseformat}}">
+                    {{#issectionscourseformat}}
+                        {{^iscurrentsection}}
+                            {{#hassection}}
+                                {{{sectionname}}}
+                            {{/hassection}}
+                        {{/iscurrentsection}}
+                    {{/issectionscourseformat}}
+                    {{^issectionscourseformat}}
+                        <span class="smallinfo">{{{timemodified}}}</span>
+                    {{/issectionscourseformat}}
+                </td>
+                <td class="text-left">
+                    <a href="{{url}}" {{^isvisible}} class="dimmed" {{/isvisible}}>{{{name}}}</a>
+                </td>
+                <td class="text-left">
+                    {{{description}}}
+                </td>
+            </tr>
+        {{/books}}
+    </tbody>
+</table>

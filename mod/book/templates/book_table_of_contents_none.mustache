@@ -45,25 +45,27 @@
         "chapterclass": "dimmed_text"
     }
 }}
-{{#navigation}}
-    <div class="navtop border-top py-3 clearfix">
-        {{{navigation}}}
-    </div>
-{{/navigation}}
-<div class="box generalbox book_content {{#ischapterhidden}} dimmed_text {{/ischapterhidden}} py-3">
-    {{#chaptertitle}}
-        <h3>{{chaptertitle}}</h3>
-	{{/chaptertitle}}
-    {{#chaptersubtitle}}
-        <h4>{{chaptersubtitle}}</h4>
-    {{/chaptersubtitle}}
-    {{{chaptertext}}}
+<div class="book_toc_none clearfix">
+    <ul>
+        {{#chaptersdata}}
+            <li>
+                <div class="d-flex">
+                    {{#iscurrent}}
+                        <strong {{#ishidden}} class="dimmed_text" {{/ishidden}}>
+                            {{title}}
+                        </strong>
+                    {{/iscurrent}}
+                    {{^iscurrent}}
+                        <a href="{{{url}}}" title="{{titleunescaped}}" {{#ishidden}} class="dimmed_text" {{/ishidden}}>
+                            {{title}}
+                        </a>
+                    {{/iscurrent}}
+                    {{#editmode}}
+                        {{> mod_book/book_toc_action_list }}
+                    {{/editmode}}
+                </div>
+            </li>
+
+        {{/chaptersdata}}
+    </ul>
 </div>
-{{#taglist}}
-    {{{taglist}}}
-{{/taglist}}
-{{#navigation}}
-    <div class="navbottom border-bottom py-3 clearfix">
-        {{{navigation}}}
-    </div>
-{{/navigation}}

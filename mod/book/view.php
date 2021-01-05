@@ -126,9 +126,6 @@ book_add_fake_block($chapters, $chapter, $book, $cm, $edit);
 // Initialize renderer.
 $renderer = $PAGE->get_renderer('mod_book');
 
-$page = new mod_book\output\view_book_page($course, $book, $cm, $chapter, $edit);
-$content = $renderer->render($page);
-
 // We need to discover if this is the last chapter to mark activity as completed.
 $islastchapter = false;
 if (!$renderer->nextchapterid) {
@@ -149,5 +146,7 @@ if ($book->intro) {
     echo $OUTPUT->box(format_module_intro('book', $book, $cm->id), 'generalbox', 'intro');
 }
 
-echo $content;
+$page = new mod_book\output\view_book_page($course, $book, $cm, $chapter, $edit);
+echo $renderer->render($page);
+
 echo $OUTPUT->footer();

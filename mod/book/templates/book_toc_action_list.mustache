@@ -1,0 +1,120 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more comments.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_book/view_book
+
+    View book page.
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * navigationclass string The navigation css class.
+    * navigation string The HTML of the data requests table.
+    * chaptertitle string The title of the chapter.
+    * chaptersubtitle string The title of the subchapter.
+    * chaptertext string The content text of the chapter.
+    * taglist string The HTML of the list of the chapter's related tags.
+    * chapterclass string The chapter css class.
+
+    Example context (json):
+    {
+        "navigationclass": "navtext",
+        "navigation": "<a title='Next' class='booknext' href='#'></a>",
+        "chaptertitle": "Chapter title",
+        "chaptersubtitle": "Subchapter title",
+        "chaptertext": "Chapter text",
+        "taglist": "<div class='tag_list'></div>",
+        "chapterclass": "dimmed_text"
+    }
+}}
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more comments.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_book/book_toc_action_list
+
+    View book page.
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * navigationclass string The navigation css class.
+    * navigation string The HTML of the data requests table.
+    * chaptertitle string The title of the chapter.
+    * chaptersubtitle string The title of the subchapter.
+    * chaptertext string The content text of the chapter.
+    * taglist string The HTML of the list of the chapter's related tags.
+    * chapterclass string The chapter css class.
+
+    Example context (json):
+    {
+        "navigationclass": "navtext",
+        "navigation": "<a title='Next' class='booknext' href='#'></a>",
+        "chaptertitle": "Chapter title",
+        "chaptersubtitle": "Subchapter title",
+        "chaptertext": "Chapter text",
+        "taglist": "<div class='tag_list'></div>",
+        "chapterclass": "dimmed_text"
+    }
+}}
+
+{{#actionlist}}
+    <div class="action-list d-flex ml-auto">
+        {{#moveupurl}}
+            <a href="{{{moveupurl}}}" title="{{#str}} movechapterup, mod_book, {{titleunescaped}} {{/str}}">{{#pix}}t/up, moodle, {{#str}} movechapterup, mod_book, {{title}} {{/str}}{{/pix}}</a>
+        {{/moveupurl}}
+        {{#movedownurl}}
+            <a href="{{{movedownurl}}}" title="{{#str}} movechapterdown, mod_book, {{titleunescaped}} {{/str}}">{{#pix}}t/down, moodle, {{#str}} movechapterdown, mod_book, {{title}} {{/str}}{{/pix}}</a>
+        {{/movedownurl}}
+        <a href="{{{editurl}}}" title="{{#str}} editchapter, mod_book, {{titleunescaped}} {{/str}}">
+            {{#pix}}t/edit, moodle, {{#str}} editchapter, mod_book, {{title}} {{/str}}{{/pix}}</a>
+        <a class="action-icon" href="{{{deleteurl}}}" title="{{#str}} deletechapter, mod_book, {{titleunescaped}} {{/str}}">
+            {{#pix}}t/delete, moodle, {{#str}} deletechapter, mod_book, {{title}} {{/str}}{{/pix}}</a>
+        {{#ishidden}}
+            <a href="{{{displaytoggleurl}}}" title="{{#str}} showchapter, mod_book, {{titleunescaped}} {{/str}}">
+                {{#pix}}t/show, moodle, {{#str}} showchapter, mod_book, {{title}} {{/str}}{{/pix}}</a>
+        {{/ishidden}}
+        {{^ishidden}}
+            <a href="{{{displaytoggleurl}}}" title="{{#str}} hidechapter, mod_book, {{titleunescaped}} {{/str}}">
+                {{#pix}}t/hide, moodle, {{#str}} hidechapter, mod_book, {{title}} {{/str}}{{/pix}}</a>
+        {{/ishidden}}
+        <a href="{{{addurl}}}" title="{{#str}} addafterchapter, mod_book, {{titleunescaped}} {{/str}}">
+            {{#pix}}add, mod_book, {{#str}} addafterchapter, mod_book, {{title}} {{/str}}{{/pix}}
+        </a>
+    </div>
+{{/actionlist}}

@@ -45,25 +45,3 @@
         "chapterclass": "dimmed_text"
     }
 }}
-{{#navigation}}
-    <div class="navtop border-top py-3 clearfix">
-        {{{navigation}}}
-    </div>
-{{/navigation}}
-<div class="box generalbox book_content {{#ischapterhidden}} dimmed_text {{/ischapterhidden}} py-3">
-    {{#chaptertitle}}
-        <h3>{{chaptertitle}}</h3>
-	{{/chaptertitle}}
-    {{#chaptersubtitle}}
-        <h4>{{chaptersubtitle}}</h4>
-    {{/chaptersubtitle}}
-    {{{chaptertext}}}
-</div>
-{{#taglist}}
-    {{{taglist}}}
-{{/taglist}}
-{{#navigation}}
-    <div class="navbottom border-bottom py-3 clearfix">
-        {{{navigation}}}
-    </div>
-{{/navigation}}

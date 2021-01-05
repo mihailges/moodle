@@ -71,19 +71,19 @@
 }
 
 /* Text style links */
-.navtop.navtext .chaptername,
-.navbottom.navtext .chaptername {
+.navtop .navtext .chaptername,
+.navbottom .navtext .chaptername {
     font-weight: bolder;
 }
 
-.navtop.navtext a,
-.navbottom.navtext a {
+.navtop .navtext a,
+.navbottom .navtext a {
     display: inline-block;
     max-width: 45%;
 }
 
-.navtop.navtext a.bookprev,
-.navbottom.navtext a.bookprev {
+.navtop .navtext a.bookprev,
+.navbottom .navtext a.bookprev {
     float: left;
     text-align: left;
 }
@@ -99,15 +99,15 @@ a.booknext span:after {
         text-align: center;
     }
 
-    .navtop.navtext a,
-    .navbottom.navtext a {
+    .navtop .navtext a,
+    .navbottom .navtext a {
         display: block;
         max-width: 100%;
         margin: auto;
     }
 
-    .navtop.navtext a.bookprev,
-    .navbottom.navtext a.bookprev {
+    .navtop .navtext a.bookprev,
+    .navbottom .navtext a.bookprev {
         float: none;
     }
 }

@@ -271,6 +271,11 @@ XPATH
 .//*[@data-fieldtype = 'date_selector']
     [ancestor::div[@data-groupname]/descendant::p[contains(normalize-space(.), %locator%)]]
 XPATH
+        ,
+            'date_time_selector' => <<<XPATH
+.//*[@data-fieldtype = 'date_time_selector']
+    [ancestor::div[@data-groupname]/descendant::p[contains(normalize-space(.), %locator%)]]
+XPATH
         ],
     ];
 

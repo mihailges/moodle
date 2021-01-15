@@ -39,4 +39,18 @@ require_once(__DIR__  . '/behat_form_date_selector.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class behat_form_date_time_selector extends behat_form_date_selector {
+
+    /**
+     * Maps the date field identifiers with the values to be assigned to them.
+     *
+     * @param int $timestamp The UNIX timestamp
+     * @return array
+     */
+    protected function field_values_mapper(int $timestamp): array {
+        return array_merge(parent::field_values_mapper($timestamp), [
+            'hour' => date('G', $timestamp),
+            'minute' => (int) date('i', $timestamp)
+        ]);
+    }
+
 }

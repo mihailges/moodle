@@ -267,6 +267,10 @@ XPATH
 .//descendant::span[@data-inplaceeditable][descendant::a[%titleMatch%]]
 XPATH
         ,
+            'date_selector' => <<<XPATH
+.//*[@data-fieldtype = 'date_selector']
+    [ancestor::div[@data-groupname]/descendant::p[contains(normalize-space(.), %locator%)]]
+XPATH
         ],
     ];
 

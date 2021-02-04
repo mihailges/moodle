@@ -1,0 +1,11 @@
+#secondarynavnav {
+    opacity: 0;
+    height: $secondarynav-height;
+    &.observed {
+        opacity: 1;
+    }
+    .nav-link {
+        height: calc(#{$secondarynav-height} - 1px - 0.5rem);
+    }
+}
+

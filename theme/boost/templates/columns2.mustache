@@ -62,7 +62,11 @@
 
     <div id="page" class="container-fluid d-print-block">
         {{{ output.full_header }}}
-
+        {{#secondarynavigation}}
+            <nav id="secondarynavnav" class="navbar navbar-light navbar-expand w-100 p-0">
+                {{{ secondarynavigation }}}
+            </nav>
+        {{/secondarynavigation}}
         <div id="page-content" class="row pb-3 d-print-block">
             <div id="region-main-box" class="col-12">
                 {{#hasregionmainsettingsmenu}}

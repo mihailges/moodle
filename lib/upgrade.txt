@@ -10,6 +10,9 @@ information provided here is intended especially for developers.
 * Behat now supports date and time selection from the datetime form element. Examples:
     - I set the field "<field_string>" to "##15 March 2021 08:15##"
     - I set the field "<field_string>" to "##first day of January last year noon##"
+* The behat transformation 'string time to timestamp' no longer supports datetime format. If provided, the format must
+  be strftime compatible. Example:
+    - I should see "##tomorrow noon##%A, %d %B %Y, %I:%M %p##"
 
 === 3.9.3 ===
 * New DML function $DB->delete_records_subquery() to delete records based on a subquery in a way

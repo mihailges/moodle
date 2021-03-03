@@ -1,0 +1,143 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Google Drive repository helpers.
+ *
+ * @package    repository_googledocs
+ * @copyright  2021 Mihail Geshoski <mihail@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+namespace repository_googledocs;
+
+use repository_googledocs\browser\googledocs_root_content;
+use repository_googledocs\browser\googledocs_shared_drives_content;
+use repository_googledocs\browser\googledocs_drive_content;
+
+/**
+ * Helper class for the googledocs repository.
+ *
+ * @package    repository_googledocs
+ * @copyright  2021 Mihail Geshoski <mihail@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class helper {
+
+    /** @var string Defines the path node identifier for the repository root. */
+    const REPOSITORY_ROOT_ID = 'repository_root';
+
+    /** @var string Defines the path node identifier for the my drive root. */
+    const MY_DRIVE_ROOT_ID = 'root';
+
+    /** @var string Defines the path node identifier for the shared drives root. */
+    const SHARED_DRIVES_ROOT_ID = 'shared_drives_root';
+
+    /** @var string Defines the path node identifier for the content search root. */
+    const SEARCH_ROOT_ID = 'search';
+
+    /**
+     * Generates a safe path to a node.
+     *
+     * Typically, a node will be id|name of the node.
+     *
+     * @param string $id The ID of the node
+     * @param string $name The name of the node, will be URL encoded
+     * @param string $root The path to append the node on (must be a result of this function)
+     * @return string The path to the node
+     */
+    public static function build_node_path(string $id, string $name = '', string $root = ''): string {
+        $path = $id;
+        if (!empty($name)) {
+            $path .= '|' . urlencode($name);
+        }
+        if (!empty($root)) {
+            $path = trim($root, '/') . '/' . $path;
+        }
+        return $path;
+    }
+
+    /**
+     * Returns information about a node in a path.
+     *
+     * @param string $node The node string to extrat information from
+     * @return array The array containing the information about the node
+     * @see self::build_node_path()
+     */
+    public static function explode_node_path(string $node): array {
+        if (strpos($node, '|') !== false) {
+            list($id, $name) = explode('|', $node, 2);
+            $name = urldecode($name);
+        } else {
+            $id = $node;
+            $name = '';
+        }
+        $id = urldecode($id);
+
+        return array(
+            0 => $id,
+            1 => $name,
+            'id' => $id,
+            'name' => $name
+        );
+    }
+
+    /**
+     * Returns the relevant googledocs content browser class depending on the given path.
+     *
+     * @param rest $service The rest API object
+     * @param string $path The current path
+     * @return googledocs_content|null The googledocs repository content browser
+     */
+    public static function get_browser(rest $service, string $path): ?googledocs_content {
+        $pathnodes = explode('/', $path);
+        $currentnode = self::explode_node_path(array_pop($pathnodes));
+
+        // Return the relevant content browser class based on the ID of the current path node.
+        switch ($currentnode['id']) {
+            case self::REPOSITORY_ROOT_ID:
+                return new googledocs_root_content($service, $path, false);
+            case self::SHARED_DRIVES_ROOT_ID:
+                return new googledocs_shared_drives_content($service, $path);
+            default:
+                return new googledocs_drive_content($service, $path);
+        }
+    }
+
+    /**
+     * Wrapper function to perform an API call and also catch and handle potential exceptions.
+     *
+     * @param rest $service The rest API object
+     * @param string $api The name of the API call
+     * @param array $params The parameters required by the API call
+     * @return googledocs_content|null The content bank repository browser
+     * @throws \repository_exception
+     */
+    public static function request(rest $service, string $api, array $params) {
+        try {
+            // Retrieving files and folders.
+            $response = $service->call($api, $params);
+        } catch (\Exception $e) {
+            if ($e->getCode() == 403 && strpos($e->getMessage(), 'Access Not Configured') !== false) {
+                // This is raised when the service Drive API has not been enabled on Google APIs control panel.
+                throw new \repository_exception('servicenotenabled', 'repository_googledocs');
+            }
+            throw $e;
+        }
+
+        return $response;
+    }
+}

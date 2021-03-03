@@ -51,7 +51,10 @@ class rest extends \core\oauth2\rest {
                     'pageSize' => PARAM_INT,
                     'pageToken' => PARAM_RAW,
                     'q' => PARAM_RAW,
-                    'spaces' => PARAM_RAW
+                    'spaces' => PARAM_RAW,
+                    'supportsAllDrives' => PARAM_RAW,
+                    'includeItemsFromAllDrives' => PARAM_RAW,
+                    'corpora' => PARAM_RAW
                 ],
                 'response' => 'json'
             ],
@@ -123,6 +126,17 @@ class rest extends \core\oauth2\rest {
                 ],
                 'response' => 'json'
             ],
+            'shared_drives_list' => [
+                'endpoint' => 'https://www.googleapis.com/drive/v3/drives',
+                'method' => 'get',
+                'args' => [
+                    'pageSize' => PARAM_INT,
+                    'pageToken' => PARAM_RAW,
+                    'q' => PARAM_RAW,
+                    'useDomainAdminAccess' => PARAM_RAW
+                ],
+                'response' => 'json'
+            ]
         ];
     }
 }

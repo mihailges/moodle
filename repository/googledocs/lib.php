@@ -28,6 +28,9 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/repository/lib.php');
 require_once($CFG->libdir . '/filebrowser/file_browser.php');
 
+use repository_googledocs\helper;
+use repository_googledocs\googledocs_content_search;
+
 /**
  * Google Docs Plugin
  *
@@ -54,6 +57,18 @@ class repository_googledocs extends repository {
      * Additional scopes required for drive.
      */
     const SCOPES = 'https://www.googleapis.com/auth/drive';
+
+    /** @var string Defines the path node identifier for the repository root. */
+    const REPOSITORY_ROOT_ID = 'repository_root';
+
+    /** @var string Defines the path node identifier for the my drive root. */
+    const MY_DRIVE_ROOT_ID = 'root';
+
+    /** @var string Defines the path node identifier for the shared drives root. */
+    const SHARED_DRIVES_ROOT_ID = 'shared_drives_root';
+
+    /** @var string Defines the path node identifier for the content search root. */
+    const SEARCH_ROOT_ID = 'search';
 
     /**
      * Constructor.
@@ -234,38 +249,44 @@ class repository_googledocs extends repository {
      */
     public function get_listing($path='', $page = '') {
         if (empty($path)) {
-            $path = $this->build_node_path('root', get_string('pluginname', 'repository_googledocs'));
+            $pluginname = get_string('pluginname', 'repository_googledocs');
+            $path = helper::build_node_path('repository_root', $pluginname);
         }
+
         if (!$this->issuer->get('enabled')) {
             // Empty list of files for disabled repository.
-            return ['dynload' => false, 'list' => [], 'nologin' => true];
+            return [
+                'dynload' => false,
+                'list' => [],
+                'nologin' => true
+            ];
         }
 
         // We analyse the path to extract what to browse.
         $trail = explode('/', $path);
         $uri = array_pop($trail);
-        list($id, $name) = $this->explode_node_path($uri);
+        list($id, $name) = helper::explode_node_path($uri);
 
-        // Handle the special keyword 'search', which we defined in self::search() so that
-        // we could set up a breadcrumb in the search results. In any other case ID would be
-        // 'root' which is a special keyword set up by Google, or a parent (folder) ID.
-        if ($id === 'search') {
-            return $this->search($name);
+        // Handle the special keyword 'search', so that we could set up a breadcrumb in the search results.
+        if ($id === self::SEARCH_ROOT_ID) {
+            // We need to deconstruct the node name in order to obtain the search term and pass it to the search
+            // function.
+            $query = str_replace(get_string('searchfor', 'repository_googledocs'), '', $name);
+            $query = trim(str_replace("'", "", $query));
+            return $this->search($query);
         }
 
-        // Query the Drive.
-        $q = "'" . str_replace("'", "\'", $id) . "' in parents";
-        $q .= ' AND trashed = false';
-        $results = $this->query($q, $path);
+        $service = new repository_googledocs\rest($this->get_user_oauth_client());
+        // Return the appropriate content browser based on the current path.
+        $browser = helper::get_browser($service, $path);
 
-        $ret = array();
-        $ret['dynload'] = true;
-        $ret['defaultreturntype'] = $this->default_returntype();
-        $ret['path'] = $this->build_breadcrumb($path);
-        $ret['list'] = $results;
-        $ret['manage'] = 'https://drive.google.com/';
-
-        return $ret;
+        return [
+            'dynload' => true,
+            'defaultreturntype' => $this->default_returntype(),
+            'path' => $browser->get_navigation(),
+            'list' => $browser->get_content_nodes($id, [$this, 'filter']),
+            'manage' => 'https://drive.google.com/'
+        ];
     }
 
     /**
@@ -276,21 +297,22 @@ class repository_googledocs extends repository {
      * @return array of results.
      */
     public function search($searchtext, $page = 0) {
-        $path = $this->build_node_path('root', get_string('pluginname', 'repository_googledocs'));
-        $str = get_string('searchfor', 'repository_googledocs', $searchtext);
-        $path = $this->build_node_path('search', $str, $path);
+        // Construct the path to the repository root.
+        $pluginname = get_string('pluginname', 'repository_googledocs');
+        $rootpath = helper::build_node_path(self::REPOSITORY_ROOT_ID, $pluginname);
+        // Construct the path to the search results node.
+        $name = get_string('searchfor', 'repository_googledocs') . " '{$searchtext}'";
+        $path = helper::build_node_path(self::SEARCH_ROOT_ID, $name, $rootpath);
 
-        // Query the Drive.
-        $q = "fullText contains '" . str_replace("'", "\'", $searchtext) . "'";
-        $q .= ' AND trashed = false';
-        $results = $this->query($q, $path);
+        $service = new repository_googledocs\rest($this->get_user_oauth_client());
+        $search = new googledocs_content_search($service, $path);
 
-        $ret = array();
-        $ret['dynload'] = true;
-        $ret['path'] = $this->build_breadcrumb($path);
-        $ret['list'] = $results;
-        $ret['manage'] = 'https://drive.google.com/';
-        return $ret;
+        return [
+            'dynload' => true,
+            'path' => $search->get_navigation(),
+            'list' => $search->get_content_nodes($searchtext, [$this, 'filter']),
+            'manage' => 'https://drive.google.com/'
+        ];
     }
 
     /**

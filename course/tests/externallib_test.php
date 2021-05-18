@@ -3066,6 +3066,7 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
                 'classification' => 'future',
                 'limit' => 2,
                 'offset' => 0,
+                'sort' => 'shortname ASC',
                 'expectedcourses' => [],
                 'expectednextoffset' => 0
             ],
@@ -3075,6 +3076,7 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
                 'classification' => 'future',
                 'limit' => 0,
                 'offset' => 0,
+                'sort' => 'shortname ASC',
                 'expectedcourses' => ['afuture', 'bfuture', 'cfuture', 'dfuture', 'efuture'],
                 'expectednextoffset' => 15
             ],
@@ -3083,6 +3085,7 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
                 'classification' => 'future',
                 'limit' => 2,
                 'offset' => 0,
+                'sort' => 'shortname ASC',
                 'expectedcourses' => ['afuture', 'bfuture'],
                 'expectednextoffset' => 4
             ],
@@ -3091,6 +3094,7 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
                 'classification' => 'future',
                 'limit' => 2,
                 'offset' => 2,
+                'sort' => 'shortname ASC',
                 'expectedcourses' => ['bfuture', 'cfuture'],
                 'expectednextoffset' => 7
             ],
@@ -3099,6 +3103,7 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
                 'classification' => 'future',
                 'limit' => 5,
                 'offset' => 0,
+                'sort' => 'shortname ASC',
                 'expectedcourses' => ['afuture', 'bfuture', 'cfuture', 'dfuture', 'efuture'],
                 'expectednextoffset' => 13
             ],
@@ -3107,6 +3112,7 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
                 'classification' => 'future',
                 'limit' => 10,
                 'offset' => 0,
+                'sort' => 'shortname ASC',
                 'expectedcourses' => ['afuture', 'bfuture', 'cfuture', 'dfuture', 'efuture'],
                 'expectednextoffset' => 15
             ],
@@ -3115,6 +3121,7 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
                 'classification' => 'future',
                 'limit' => 10,
                 'offset' => 5,
+                'sort' => 'shortname ASC',
                 'expectedcourses' => ['cfuture', 'dfuture', 'efuture'],
                 'expectednextoffset' => 15
             ],
@@ -3123,6 +3130,7 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
                 'classification' => 'all',
                 'limit' => 0,
                 'offset' => 0,
+                'sort' => 'shortname ASC',
                 'expectedcourses' => [
                     'afuture',
                     'ainprogress',
@@ -3147,6 +3155,7 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
                 'classification' => 'all',
                 'limit' => 5,
                 'offset' => 0,
+                'sort' => 'shortname ASC',
                 'expectedcourses' => [
                     'afuture',
                     'ainprogress',
@@ -3161,6 +3170,7 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
                 'classification' => 'all',
                 'limit' => 5,
                 'offset' => 5,
+                'sort' => 'shortname ASC',
                 'expectedcourses' => [
                     'bpast',
                     'cfuture',
@@ -3175,8 +3185,102 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
                 'classification' => 'all',
                 'limit' => 5,
                 'offset' => 50,
+                'sort' => 'shortname ASC',
                 'expectedcourses' => [],
                 'expectednextoffset' => 50
+            ],
+            'all limit and offset with sort ul.timeaccess desc' => [
+                'coursedata' => $coursedata,
+                'classification' => 'all',
+                'limit' => 5,
+                'offset' => 5,
+                'sort' => 'ul.timeaccess desc',
+                'expectedcourses' => [
+                    'ainprogress',
+                    'binprogress',
+                    'cinprogress',
+                    'dinprogress',
+                    'einprogress'
+                ],
+                'expectednextoffset' => 10
+            ],
+            'all limit and offset with sort sql injection for sort or 1==1' => [
+                'coursedata' => $coursedata,
+                'classification' => 'all',
+                'limit' => 5,
+                'offset' => 5,
+                'sort' => 'ul.timeaccess desc or 1==1',
+                'expectedcourses' => [],
+                'expectednextoffset' => 0,
+                'expectedexception' => 'Invalid $sort parameter in enrol_get_my_courses()'
+            ],
+            'all limit and offset with sql injection of sort a custom one' => [
+                'coursedata' => $coursedata,
+                'classification' => 'all',
+                'limit' => 5,
+                'offset' => 5,
+                'sort' => "ul.timeaccess LIMIT 1--",
+                'expectedcourses' => [],
+                'expectednextoffset' => 0,
+                'expectedexception' => 'Invalid $sort parameter in enrol_get_my_courses()'
+            ],
+            'all limit and offset with wrong sort direction' => [
+                'coursedata' => $coursedata,
+                'classification' => 'all',
+                'limit' => 5,
+                'offset' => 5,
+                'sort' => "ul.timeaccess abcdasc",
+                'expectedcourses' => [],
+                'expectednextoffset' => 0,
+                'expectedexception' => 'Invalid sort direction in $sort parameter in enrol_get_my_courses()'
+            ],
+            'all limit and offset with wrong sort param' => [
+                'coursedata' => $coursedata,
+                'classification' => 'all',
+                'limit' => 5,
+                'offset' => 5,
+                'sort' => "foobar",
+                'expectedcourses' => [],
+                'expectednextoffset' => 0,
+                'expectedexception' => 'Invalid $sort parameter in enrol_get_my_courses()'
+            ],
+            'all limit and offset with no sort direction for ul' => [
+                'coursedata' => $coursedata,
+                'classification' => 'all',
+                'limit' => 5,
+                'offset' => 5,
+                'sort' => "ul.timeaccess",
+                'expectedcourses' => [],
+                'expectednextoffset' => 0,
+                'expectedexception' => 'Invalid $sort parameter in enrol_get_my_courses()'
+            ],
+            'all limit and offset with valid field name and no prefix, test for ul' => [
+                'coursedata' => $coursedata,
+                'classification' => 'all',
+                'limit' => 5,
+                'offset' => 5,
+                'sort' => "timeaccess",
+                'expectedcourses' => [],
+                'expectednextoffset' => 0,
+                'expectedexception' => 'Invalid $sort parameter in enrol_get_my_courses()'
+            ],
+            'all limit and offset with valid field name and no prefix' => [
+                'coursedata' => $coursedata,
+                'classification' => 'all',
+                'limit' => 5,
+                'offset' => 5,
+                'sort' => "fullname",
+                'expectedcourses' => ['bpast', 'cpast', 'dfuture', 'dpast', 'efuture'],
+                'expectednextoffset' => 10,
+            ],
+            'all limit and offset with valid field name and no prefix and with sort direction' => [
+                'coursedata' => $coursedata,
+                'classification' => 'all',
+                'limit' => 5,
+                'offset' => 5,
+                'sort' => "fullname desc",
+                'expectedcourses' => ['bpast', 'cpast', 'dfuture', 'dpast', 'efuture'],
+                'expectednextoffset' => 10,
             ],
         ];
     }
@@ -3189,16 +3293,20 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
      * @param string $classification Timeline classification
      * @param int $limit Maximum number of results
      * @param int $offset Offset the unfiltered courses result set by this amount
+     * @param string $sort sort the courses
      * @param array $expectedcourses Expected courses in result
      * @param int $expectednextoffset Expected next offset value in result
+     * @param string $expectedexception Expected exception string
      */
     public function test_get_enrolled_courses_by_timeline_classification(
         $coursedata,
         $classification,
         $limit,
         $offset,
+        $sort,
         $expectedcourses,
-        $expectednextoffset
+        $expectednextoffset,
+        $expectedexception = null
     ) {
         $this->resetAfterTest();
         $generator = $this->getDataGenerator();
@@ -3219,23 +3327,31 @@ class core_course_externallib_testcase extends externallib_advanced_testcase {
         // filtering is done.
         // E.g. In our example if an offset of 2 is given then it would mean the first
         // two courses (afuture, ainprogress) are ignored.
-        $result = core_course_external::get_enrolled_courses_by_timeline_classification(
-            $classification,
-            $limit,
-            $offset,
-            'shortname ASC'
-        );
-        $result = external_api::clean_returnvalue(
-            core_course_external::get_enrolled_courses_by_timeline_classification_returns(),
-            $result
-        );
+        try {
+            $result = core_course_external::get_enrolled_courses_by_timeline_classification(
+                $classification,
+                $limit,
+                $offset,
+                $sort
+            );
+            if (isset($expectedexception)) {
+                $this->fail('Exception occured');
+            } else {
+                $result = external_api::clean_returnvalue(
+                    core_course_external::get_enrolled_courses_by_timeline_classification_returns(),
+                    $result
+                );
 
-        $actual = array_map(function($course) {
-            return $course['shortname'];
-        }, $result['courses']);
+                $actual = array_map(function($course) {
+                    return $course['shortname'];
+                }, $result['courses']);
 
-        $this->assertEquals($expectedcourses, $actual);
-        $this->assertEquals($expectednextoffset, $result['nextoffset']);
+                $this->assertEqualsCanonicalizing($expectedcourses,$actual);
+                $this->assertEquals($expectednextoffset, $result['nextoffset']);
+            }
+        } catch (coding_exception $e) {
+            $this->assertEquals('Coding error detected, it must be fixed by a programmer: ' . $expectedexception, $e->getMessage());
+        }
     }
 
     /**

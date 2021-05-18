@@ -602,28 +602,66 @@ function enrol_get_my_courses($fields = null, $sort = null, $limit = 0, $coursei
     $orderby = "";
     $sort    = trim($sort);
     $sorttimeaccess = false;
-    $allowedsortprefixes = array('c', 'ul', 'ue');
     if (!empty($sort)) {
+        // Allowed prefixes and field names.
+        $allowedprefixesandfields = [
+            'c' => array_keys($DB->get_columns('course')),
+            'ue' => array_keys($DB->get_columns('user_enrolments')),
+            'ul' => array_keys($DB->get_columns('user_lastaccess')),
+        ];
         $rawsorts = explode(',', $sort);
         $sorts = array();
         foreach ($rawsorts as $rawsort) {
             $rawsort = trim($rawsort);
-            if (preg_match('/^ul\.(\S*)\s(asc|desc)/i', $rawsort, $matches)) {
-                if (strcasecmp($matches[2], 'asc') == 0) {
-                    $sorts[] = 'COALESCE(ul.' . $matches[1] . ', 0) ASC';
-                } else {
-                    $sorts[] = 'COALESCE(ul.' . $matches[1] . ', 0) DESC';
-                }
-                $sorttimeaccess = true;
-            } else if (strpos($rawsort, '.') !== false) {
-                $prefix = explode('.', $rawsort);
-                if (in_array($prefix[0], $allowedsortprefixes)) {
-                    $sorts[] = trim($rawsort);
-                } else {
+            // If more than 2 values present then throw coding_exception.
+            $sortparams = explode(' ', $rawsort);
+            $field = trim($sortparams[0]);
+            $sortdirection = isset($sortparams[1]) ? trim($sortparams[1]) : '';
+
+            if (isset($sortparams[2])) {
+                throw new coding_exception('Invalid $sort parameter in enrol_get_my_courses()');
+            }
+            // Check the sort ordering if present, at the beginning.
+            if (!empty($sortdirection) && (preg_match("/^(asc|desc)$/i", $sortdirection) === 0)) {
+                throw new coding_exception('Invalid sort direction in $sort parameter in enrol_get_my_courses()');
+            }
+            // The field has a prefix.
+            if (strpos($field, '.') !== false) {
+                $fieldparams = explode('.', $field);
+                $prefix = $fieldparams[0];
+                $fieldname = $fieldparams[1];
+                // Check whether the prefix and the field exist.
+                if (!array_key_exists($prefix, $allowedprefixesandfields) ||
+                        (!in_array($fieldname, $allowedprefixesandfields[$prefix]))) {
                     throw new coding_exception('Invalid $sort parameter in enrol_get_my_courses()');
                 }
+
+                if ($prefix === 'ul') {
+                    $sorts[] = "COALESCE(ul.{$fieldname}, 0) {$sortdirection}";
+                    $sorttimeaccess = true;
+                } else {
+                    $sorts[] = $rawsort;
+                }
             } else {
-                $sorts[] = 'c.'.trim($rawsort);
+                // Check if the field name matches with $allowedprefixesandfields.
+                $found = false;
+                foreach (array_keys($allowedprefixesandfields) as $prefix) {
+                    if (!in_array($field, $allowedprefixesandfields[$prefix])) {
+                        continue;
+                    }
+                    if ($prefix === 'ul') {
+                        $sorts[] = "COALESCE(ul.{$field}, 0) {$sortdirection}";
+                        $sorttimeaccess = true;
+                    } else {
+                        $sorts[] = "{$prefix}.{$rawsort}";
+                    }
+                    $found = true;
+                    break;
+                }
+                if (!$found) {
+                    // The param is not found in $allowedprefixesandfields.
+                    throw new coding_exception('Invalid $sort parameter in enrol_get_my_courses()');
+                }
             }
         }
         $sort = implode(',', $sorts);

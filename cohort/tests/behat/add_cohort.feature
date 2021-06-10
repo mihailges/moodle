@@ -33,8 +33,8 @@ Feature: Add cohorts of users
     Then the following should exist in the "generaltable" table:
       | Name          | Cohort ID   | Description           |
       | My new cohort | mynewcohort | My new cohort is cool |
-    When I should see "Test cohort name"
-    Then I should see "333"
+    And I should see "Test cohort name"
+    And I should see "333"
     And I should see "Test cohort description"
     And I should see "Created manually"
 

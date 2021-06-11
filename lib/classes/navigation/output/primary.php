@@ -59,7 +59,7 @@ class primary implements renderable, templatable {
             'primary' => $this->get_primary_nav(),
             'custom' => $this->get_custom_menu($output),
             'lang' => $this->get_lang_menu($output),
-            'user' => $this->get_user_menu(),
+            'user' => $this->get_user_menu($output),
         ];
     }
 
@@ -116,8 +116,9 @@ class primary implements renderable, templatable {
      * @return array
      */
     protected function get_lang_menu(renderer_base $output): array {
-        // Early return if a lang menu does not exists.
-        if (empty($output->lang_menu())) {
+        // Early return if a lang menu does not exists or if the user is logged in (in this case the language menu
+        // will be displayed within the user menu).
+        if (empty($output->lang_menu()) || (isloggedin() && !isguestuser())) {
             return [];
         }
 
@@ -143,11 +144,13 @@ class primary implements renderable, templatable {
 
     /**
      * Get/Generate the user menu.
+     *
      * This is leveraging the data from user_get_user_navigation_info and the logic in $OUTPUT->user_menu()
      *
+     * @param renderer_base $output
      * @return array
      */
-    public function get_user_menu(): array {
+    public function get_user_menu(renderer_base $output): array {
         global $CFG, $USER, $PAGE;
         require_once($CFG->dirroot . '/user/lib.php');
 
@@ -214,9 +217,41 @@ class primary implements renderable, templatable {
             return $value;
         }, $info->navitems);
 
+        // Include the language menu as a submenu within the user menu.
+        if (!empty($output->lang_menu())) {
+            $currentlang = current_language();
+            $langs = get_string_manager()->get_list_of_translations();
+            $submenutitle = '';
+            $submenuitems = [];
+
+            foreach ($langs as $langtype => $langname) {
+                // Whether this language is currently active.
+                $isactive = $langtype == $currentlang;
+                // Use the name of the active language as a submenu title.
+                $submenutitle = $isactive ? $langname : $submenutitle;
+                $submenuitems[] = (object) [
+                    'title' => $langname,
+                    'link' => true,
+                    'url' => $isactive ? new \moodle_url('#') :
+                        new \moodle_url($this->page->url, ['lang' => $langtype]),
+                ];
+            }
+            // Add the language submenu and its contents to the user menu items.
+            $modifiedarray[] = (object) [
+                'itemtype' => 'submenu',
+                'uniqueid' => uniqid(),
+                'title' => get_string('language'),
+                'displayedtitle' => $submenutitle,
+                'pixicon' => 'i/language',
+                'divider' => false,
+                'submenu' => true,
+                'items' => $submenuitems,
+            ];
+        }
+
         // Add dividers after the first item and before the last item.
         $modifiedarray[0]->divider = true;
-        $modifiedarray[count($info->navitems) - 2]->divider = true;
+        $modifiedarray[count($modifiedarray) - 2]->divider = true;
         $usermenudata['items'] = $modifiedarray;
 
         return $usermenudata;

@@ -19962,6 +19962,8 @@ div.editor_atto_toolbar button .icon {
       align-items: center; }
     .navbar.fixed-top .usermenu .dropdown-toggle::after {
       display: none; }
+    .navbar.fixed-top .usermenu .submenu-btn > * {
+      pointer-events: none; }
   .navbar.fixed-top .moodle-actionmenu .menubar,
   .navbar.fixed-top .action-menu-trigger .dropdown {
     height: 100%;

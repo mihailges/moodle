@@ -33,6 +33,11 @@
         .dropdown-toggle::after {
             display: none;
         }
+        .submenu-btn {
+            > * {
+                pointer-events: none;
+            }
+        }
     }
     .moodle-actionmenu .menubar,
     .action-menu-trigger .dropdown {

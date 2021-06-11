@@ -55,5 +55,28 @@
             {{title}}
         </a>
     {{/link}}
+    {{#submenu}}
+        <a id="submenu-{{uniqueid}}" class="dropdown-item dropdown-toggle submenu-btn" data-toggle="collapse" data-target="#submenu-content-{{uniqueid}}" aria-expanded="false" aria-controls="submenu-content-{{uniqueid}}" title="{{title}}">
+            {{#pixicon}}
+                {{#pix}}{{pixicon}}{{/pix}}
+            {{/pixicon}}
+            {{^pixicon}}
+                {{#imgsrc}}<img aria-hidden="true" src="{{imgsrc}}" alt="{{title}}"/>{{/imgsrc}}
+            {{/pixicon}}
+            {{displayedtitle}}
+            <i class="icon fa fa-caret-down pl-1"></i>
+        </a>
+        <div id="submenu-content-{{uniqueid}}" class="submenu-content collapse" aria-labelledby="submenu-{{uniqueid}}">
+            {{#items}}
+                {{#link}}
+                    <a href="{{{url}}}" class="dropdown-item" role="menuitem">
+                        <span class="pl-5">
+                            {{title}}
+                        </span>
+                    </a>
+                {{/link}}
+            {{/items}}
+        </div>
+    {{/submenu}}
     {{#divider}}<div class="dropdown-divider" role="presentation"></div>{{/divider}}
 {{/items}}

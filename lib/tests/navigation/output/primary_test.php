@@ -50,16 +50,24 @@ class primary_test extends \advanced_testcase {
      * @dataProvider test_primary_export_provider
      * @param bool $withcustom Setup with custom menu
      * @param bool $withlang Setup with langs
+     * @param string $userloggedin The type of user ('admin' or 'guest') if creating setup with logged in user,
+     *                             otherwise consider the user as non-logged in
      * @param array $expecteditems An array of nodes expected with content in them.
      */
-    public function test_primary_export(bool $withcustom, bool $withlang, array $expecteditems) {
+    public function test_primary_export(bool $withcustom, bool $withlang, string $userloggedin, array $expecteditems) {
         global $PAGE, $CFG;
         if ($withcustom) {
             $CFG->custommenuitems = "Course search|/course/search.php
                 Google|https://google.com.au/
                 Netflix|https://netflix.com/au";
         }
-        $this->setAdminUser();
+        if ($userloggedin === 'admin') {
+            $this->setAdminUser();
+        } else if ($userloggedin === 'guest') {
+            $this->setGuestUser();
+        } else {
+            $this->setUser(0);
+        }
 
         // Mimic multiple langs installed. To trigger responses 'get_list_of_translations'.
         // Note: The text/title of the nodes generated will be 'English(fr), English(de)' but we don't care about this.
@@ -71,11 +79,21 @@ class primary_test extends \advanced_testcase {
 
         $primary = new primary($PAGE);
         $renderer = $PAGE->get_renderer('core');
-        $data = $primary->export_for_template($renderer);
+        $data = array_filter($primary->export_for_template($renderer));
+
+        // Assert that the number of returned menu items equals the expected result.
+        $this->assertCount(count($expecteditems), $data);
+        // Assert that returned menu items match the expected items.
         foreach ($data as $menutype => $value) {
-            if ($value) {
-                $this->assertTrue(in_array($menutype, $expecteditems));
-            }
+            $this->assertTrue(in_array($menutype, $expecteditems));
+        }
+        // When the user is logged and langs installed, make sure the lang menu is included as a part of the user menu.
+        if ($userloggedin && $withlang) {
+            $usermenulang = array_filter($data['user']['items'], function($usermenuitem) {
+                return $usermenuitem->title === get_string('language');
+            });
+            // Assert that the language menu exists within the user menu.
+            $this->assertNotEmpty($usermenulang);
         }
     }
 
@@ -86,17 +104,26 @@ class primary_test extends \advanced_testcase {
      */
     public function test_primary_export_provider(): array {
         return [
-            "Export the menu data with custom and lang menu" => [
-                true, true, ['primary', 'custom', 'lang', 'user']
+            "Export the menu data with custom and lang menu when a user is not logged in." => [
+                true, true, '', ['primary', 'custom', 'lang', 'user']
             ],
-            "Export the menu data with custom menu" => [
-                true, false, ['primary', 'custom', 'user']
+            "Export the menu data with custom and lang menu when an admin is logged in." => [
+                true, true, 'admin', ['primary', 'custom', 'user']
             ],
-            "Export the menu data with lang menu" => [
-                false, true, ['primary', 'lang', 'user']
+            "Export the menu data with custom and lang menu when a guest is logged in." => [
+                true, true, 'guest', ['primary', 'custom', 'lang', 'user']
             ],
-            "Export the menu data without the custom and lang menu" => [
-                false, false, ['primary', 'user']
+            "Export the menu data with custom menu when a user is not logged in." => [
+                true, false, '', ['primary', 'custom', 'user']
+            ],
+            "Export the menu data with lang menu when a guest logged in." => [
+                false, true, 'guest', ['primary', 'lang', 'user']
+            ],
+            "Export the menu data with lang menu when an admin is logged in." => [
+                false, true, 'admin', ['primary', 'user']
+            ],
+            "Export the menu data without the custom and lang menu when a user is not logged in." => [
+                false, false, '', ['primary', 'user']
             ],
         ];
     }

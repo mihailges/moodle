@@ -15,16 +15,25 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information
+ * Output the actionbar for this activity.
  *
- * @package    mod_survey
- * @copyright  1999 onwards Martin Dougiamas  {@link http://moodle.com}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_survey
+ * @copyright 2021 Sujith Haridasan <sujith@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+/**
+ * Renderer for the mod_survey tertiary nav
+ */
+class mod_survey_renderer extends plugin_renderer_base {
 
-$plugin->version   = 2021052501;       // The current module version (Date: YYYYMMDDXX).
-$plugin->requires  = 2021052500;    // Requires this Moodle version.
-$plugin->component = 'mod_survey';     // Full name of the plugin (used for diagnostics)
-$plugin->cron      = 0;
+    /**
+     * Renders the action bar for the mod_survey report page.
+     *
+     * @param \mod_survey\output\actionbar $actionbar Data for the template
+     * @return bool|string
+     */
+    public function response_actionbar( \mod_survey\output\actionbar $actionbar) {
+        return $this->render_from_template('mod_survey/response_action_bar', $actionbar->export_for_template($this));
+    }
+}

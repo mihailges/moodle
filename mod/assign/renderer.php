@@ -370,21 +370,6 @@ class mod_assign_renderer extends plugin_renderer_base {
         $o .= html_writer::table($t);
         $o .= $this->output->box_end();
 
-        // Link to the grading page.
-        $o .= html_writer::start_tag('center');
-        $o .= $this->output->container_start('submissionlinks');
-        $urlparams = array('id' => $summary->coursemoduleid, 'action' => 'grading');
-        $url = new moodle_url('/mod/assign/view.php', $urlparams);
-        $o .= html_writer::link($url, get_string('viewgrading', 'mod_assign'),
-            ['class' => 'btn btn-secondary']);
-        if ($summary->cangrade) {
-            $urlparams = array('id' => $summary->coursemoduleid, 'action' => 'grader');
-            $url = new moodle_url('/mod/assign/view.php', $urlparams);
-            $o .= html_writer::link($url, get_string('gradeverb'),
-                ['class' => 'btn btn-primary ml-1']);
-        }
-        $o .= $this->output->container_end();
-
         // Close the container and insert a spacer.
         $o .= $this->output->container_end();
         $o .= html_writer::end_tag('center');
@@ -1473,6 +1458,11 @@ class mod_assign_renderer extends plugin_renderer_base {
     public function render_grading_app(grading_app $app) {
         $context = $app->export_for_template($this);
         return $this->render_from_template('mod_assign/grading_app', $context);
+    }
+
+    public function submission_actionmenu($actionmenu) {
+        $context = $actionmenu->export_for_template($this);
+        return $this->render_from_template('mod_assign/submission_actionmenu', $context);
     }
 }
 

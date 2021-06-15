@@ -5781,6 +5781,14 @@ class assign {
         if ($this->has_visible_attachments()) {
             $postfix = $this->render_area_files('mod_assign', ASSIGN_INTROATTACHMENT_FILEAREA, 0);
         }
+
+        // Add grading buttons to the action menu.
+        if ($this->can_view_grades()) {
+            $actionbuttons = new \mod_assign\output\actionmenu($this->get_course_module()->id);
+            $renderedbuttons = $this->get_renderer()->submission_actionmenu($actionbuttons);
+            $PAGE->set_page_action($renderedbuttons);
+        }
+
         $o .= $this->get_renderer()->render(new assign_header($instance,
                                                       $this->get_context(),
                                                       $this->show_intro(),

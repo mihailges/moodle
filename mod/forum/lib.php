@@ -2599,6 +2599,23 @@ function forum_search_form($course, $search='') {
     return $output->render($forumsearch);
 }
 
+/**
+ * Retrieve HTML for the page action
+ *
+ * @param $forum
+ * @param $groupid
+ * @param $course
+ * @param string $search
+ * @return string
+ */
+function forum_actionbar($forum, $groupid, $course, $search='') {
+    global $PAGE;
+
+    $actionbar = new mod_forum\output\activity_actionbar($forum, $course, $groupid, $search);
+    $output = $PAGE->get_renderer('mod_forum');
+    $out = $output->render($actionbar);
+    return $out;
+}
 
 /**
  * @global object

@@ -105,7 +105,6 @@ $PAGE->set_context($forum->get_context());
 $PAGE->set_title($forum->get_name());
 $PAGE->add_body_class('forumtype-' . $forum->get_type());
 $PAGE->set_heading($course->fullname);
-$PAGE->set_button(forum_search_form($course, $search));
 
 if ($istypesingle && $displaymode == FORUM_MODE_NESTED_V2) {
     $PAGE->add_body_class('nested-v2-display-mode reset-style');
@@ -153,6 +152,14 @@ if (!empty($CFG->enablerssfeeds) && !empty($CFG->forum_enablerssfeeds) && $forum
     rss_add_http_header($forum->get_context(), 'mod_forum', $forumrecord, $rsstitle);
 }
 
+// Fetch the current groupid.
+$groupid = groups_get_activity_group($cm, true) ?: null;
+$rendererfactory = mod_forum\local\container::get_renderer_factory();
+// The elements for view action are rendered and added to the page.
+$actionbar = forum_actionbar($forum, $groupid, $course, $search);
+$PAGE->set_page_action($actionbar);
+
+// Output starts from here.
 echo $OUTPUT->header();
 echo $OUTPUT->heading(format_string($forum->get_name()), 2);
 
@@ -171,9 +178,6 @@ if ($sortorder) {
 
 $sortorder = get_user_preferences('forum_discussionlistsortorder', $discussionlistvault::SORTORDER_LASTPOST_DESC);
 
-// Fetch the current groupid.
-$groupid = groups_get_activity_group($cm, true) ?: null;
-$rendererfactory = mod_forum\local\container::get_renderer_factory();
 switch ($forum->get_type()) {
     case 'single':
         $forumgradeitem = forum_gradeitem::load_from_forum_entity($forum);

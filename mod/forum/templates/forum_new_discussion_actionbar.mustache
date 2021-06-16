@@ -15,20 +15,20 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template mod_forum/quick_search_form
-
-    This template renders the search form within forums.
-
-    Example context (json):
-    {
-        "action": "https://domain.example/mod/forum/search.php",
-        "helpicon": "<a class='btn'><i class='icon fa fa-question-circle'></i></a>",
-        "query": "find this post",
-        "inputname": "search"
-    }
+    @template mod_forum/forum_new_discussion_actionbar
+    Actions panel at the bottom of the assignment grading UI.
+    Classes required for JS:
+    * none
+    Data attributes required for JS:
+    * data-region
+    Context variables required for this template:
+    * see mod/forum/classes/output/activity_actionbar.php
 }}
-{{#helpicon}}
-    {{>core/help_icon}}
-{{/helpicon}}
-{{< core/search_input }}
-{{/ core/search_input }}
+
+{{#forum.capabilities.create}}
+    <a class="btn btn-primary mr-5" data-toggle="collapse" href="#collapseAddForm">
+        {{$discussion_create_text}}
+            {{#str}}addanewdiscussion, forum{{/str}}
+        {{/discussion_create_text}}
+    </a>
+{{/forum.capabilities.create}}

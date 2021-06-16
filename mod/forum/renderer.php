@@ -241,6 +241,26 @@ class mod_forum_renderer extends plugin_renderer_base {
     }
 
     /**
+     * Render the view action area.
+     *
+     * @param \mod_forum\output\activity_actionbar $actionbar
+     * @return string
+     */
+    public function render_activity_actionbar(\mod_forum\output\activity_actionbar $actionbar) {
+        return $this->render_from_template('mod_forum/forum_action_bar', $actionbar->export_for_template($this));
+    }
+
+    /**
+     * Render the subscription action area.
+     *
+     * @param \mod_forum\output\subscription_actionbar $subscription_actionbar
+     * @return bool|string
+     */
+    public function subscription_actionbar(\mod_forum\output\subscription_actionbar $subscription_actionbar) {
+        return $this->render_from_template('mod_forum/forum_subscription_action', $subscription_actionbar->export_for_template($this));
+    }
+
+    /**
      * Render big search form.
      *
      * @param \mod_forum\output\big_search_form $form The renderable.

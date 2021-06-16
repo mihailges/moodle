@@ -109,6 +109,10 @@ if (has_capability('mod/forum:managesubscriptions', $context) && \mod_forum\subs
     $updatesubscriptionsbutton = '';
     unset($USER->subscriptionsediting);
 }
+
+// Output starts from here.
+$actionbar = new \mod_forum\output\subscription_actionbar($id, $edit, $url);
+$PAGE->set_page_action($actionbar->get_response_result());
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('forum', 'forum').' '.$strsubscribers);
 if (!empty($updatesubscriptionsbutton)) {

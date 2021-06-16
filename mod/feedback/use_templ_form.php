@@ -28,6 +28,11 @@ if (!defined('MOODLE_INTERNAL')) {
 
 require_once($CFG->libdir.'/formslib.php');
 
+/**
+ * The mod_feedback_use_templ_form
+ *
+ * @deprecated since 4.0. New dynamic forms have been created instead.
+ */
 class mod_feedback_use_templ_form extends moodleform {
     public function definition() {
         $mform =& $this->_form;

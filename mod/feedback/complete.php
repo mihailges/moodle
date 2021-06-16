@@ -72,7 +72,9 @@ $PAGE->set_pagelayout('incourse');
 // Check if the feedback is open (timeopen, timeclose).
 if (!$feedbackcompletion->is_open()) {
     echo $OUTPUT->header();
-    echo $OUTPUT->heading(format_string($feedback->name));
+    if (!$PAGE->has_secondary_navigation()) {
+        echo $OUTPUT->heading(format_string($feedback->name));
+    }
     echo $OUTPUT->box_start('generalbox boxaligncenter');
     echo $OUTPUT->notification(get_string('feedback_is_not_open', 'feedback'));
     echo $OUTPUT->continue_button(course_get_url($courseid ?: $feedback->course));
@@ -104,7 +106,9 @@ $strfeedbacks = get_string("modulenameplural", "feedback");
 $strfeedback  = get_string("modulename", "feedback");
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading(format_string($feedback->name));
+if (!$PAGE->has_secondary_navigation()) {
+    echo $OUTPUT->heading(format_string($feedback->name));
+}
 
 if ($feedbackcompletion->is_empty()) {
     \core\notification::error(get_string('no_items_available_yet', 'feedback'));

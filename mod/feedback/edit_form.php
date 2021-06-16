@@ -29,6 +29,11 @@ if (!defined('MOODLE_INTERNAL')) {
 
 require_once($CFG->libdir.'/formslib.php');
 
+/**
+ * The feedback_edit_use_template_form
+ *
+ * @deprecated since 4.0 new dynamic forms created
+ */
 class feedback_edit_use_template_form extends moodleform {
 
     /**
@@ -97,6 +102,11 @@ class feedback_edit_use_template_form extends moodleform {
     }
 }
 
+/**
+ * The feedback_edit_create_template_form
+ *
+ * @deprecated since 4.0, new dynamic forms have been created instead.
+ */
 class feedback_edit_create_template_form extends moodleform {
 
     /**
@@ -110,10 +120,7 @@ class feedback_edit_create_template_form extends moodleform {
         $mform->setType('id', PARAM_INT);
         $mform->addElement('hidden', 'do_show');
         $mform->setType('do_show', PARAM_ALPHANUMEXT);
-        $mform->setConstant('do_show', 'templates');
-
-        //headline
-        $mform->addElement('header', 'creating_templates', get_string('creating_templates', 'feedback'));
+        $mform->setConstant('do_show', 'edit');
 
         // visible elements
         $elementgroup = array();
@@ -121,7 +128,7 @@ class feedback_edit_create_template_form extends moodleform {
         $elementgroup[] = $mform->createElement('text',
                                                  'templatename',
                                                  get_string('name', 'feedback'),
-                                                 array('size'=>'40', 'maxlength'=>'200'));
+                                                 ['maxlength' => '200']);
 
         if (has_capability('mod/feedback:createpublictemplate', context_system::instance())) {
             $elementgroup[] = $mform->createElement('checkbox',

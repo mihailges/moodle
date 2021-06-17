@@ -1017,6 +1017,7 @@ $string['wronguse'] = 'You can not use this page like that';
 $string['xhtml'] = 'XHTML';
 $string['youneedtoenrol'] = 'You need to enrol in this course before you can attempt this quiz';
 $string['yourfinalgradeis'] = 'Your final grade for this quiz is {$a}.';
+$string['backtoquizview'] = 'Back';
 
 // Deprecated since Moodle 3.8.
 $string['numattemptsmade'] = '{$a} attempts made on this quiz';

@@ -241,6 +241,8 @@ if (!$viewobj->quizhasquestions) {
 $viewobj->showbacktocourse = ($viewobj->buttontext === '' &&
         course_get_format($course)->has_view_page());
 
+$previeweditaction = new \mod_quiz\output\previeweditaction($id, $viewobj->canedit);
+$PAGE->set_page_action($previeweditaction->get_preview_edit_action());
 echo $OUTPUT->header();
 
 if (isguestuser()) {

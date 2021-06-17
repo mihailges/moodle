@@ -132,4 +132,8 @@ if ($attemptobj->is_last_page($page)) {
     $nextpage = $page + 1;
 }
 
+$context = context_module::instance($cmid);
+$canedit = has_capability('mod/quiz:manage', $context);
+$overwriteperview = new \mod_quiz\output\overwritepreview($cmid, $canedit);
+$PAGE->set_page_action($overwriteperview->get_preview_response());
 echo $output->attempt_page($attemptobj, $page, $accessmanager, $messages, $slots, $id, $nextpage);

@@ -187,6 +187,9 @@ $node = $PAGE->settingsnav->find('mod_quiz_edit', navigation_node::TYPE_SETTING)
 if ($node) {
     $node->make_active();
 }
+
+$overwriteedit = new \mod_quiz\output\overwriteedit($cmid);
+$PAGE->set_page_action($overwriteedit->get_preview_response());
 echo $OUTPUT->header();
 
 // Initialise the JavaScript.

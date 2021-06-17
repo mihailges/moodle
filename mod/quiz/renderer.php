@@ -1344,6 +1344,36 @@ class mod_quiz_renderer extends plugin_renderer_base {
                     array('id' => 'connection-error', 'style' => 'display: none;', 'role' => 'alert')) .
                     html_writer::tag('div', $ok, array('id' => 'connection-ok', 'style' => 'display: none;', 'role' => 'alert'));
     }
+
+    /**
+     * Get the rendered HTML for the action area of view.php
+     *
+     * @param \mod_quiz\output\previeweditaction $previeweditaction
+     * @return string rendered HTML for the action area of view.php
+     */
+    public function preview_edit_action(\mod_quiz\output\previeweditaction $previeweditaction) {
+        return $this->render_from_template('mod_quiz/quiz_preview_edit_action', $previeweditaction->export_for_template($this));
+    }
+
+    /**
+     * Get the rendered HTML for the action area of preview page
+     *
+     * @param \mod_quiz\output\overwritepreview $overwritepreview
+     * @return string rendered HTML for the preview page
+     */
+    public function overwrite_preview_action(\mod_quiz\output\overwritepreview $overwritepreview) {
+        return $this->render_from_template('mod_quiz/quiz_preview_edit_action', $overwritepreview->export_for_template($this));
+    }
+
+    /**
+     * Get the rendered HTML for the action area of the edit page.
+     *
+     * @param \mod_quiz\output\overwriteedit $overwriteedit
+     * @return string rendered HTML for the edit page
+     */
+    public function overwrite_edit_action(\mod_quiz\output\overwriteedit $overwriteedit) {
+        return $this->render_from_template('mod_quiz/quiz_preview_edit_action', $overwriteedit->export_for_template($this));
+    }
 }
 
 

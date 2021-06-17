@@ -42,11 +42,13 @@ $category = $DB->get_record('question_categories', array("id" => $catid, 'contex
 $PAGE->set_url($thispageurl);
 $PAGE->set_title($strexportquestions);
 $PAGE->set_heading($COURSE->fullname);
-echo $OUTPUT->header();
 
 // Print horizontal nav if needed.
 $renderer = $PAGE->get_renderer('core_question', 'bank');
-echo $renderer->extra_horizontal_navigation();
+$qbankaction = new \core_question\output\qbank_actionbar($cmid, $thispageurl);
+$PAGE->set_page_action($qbankaction->get_qbank_action());
+
+echo $OUTPUT->header();
 
 $export_form = new question_export_form($thispageurl,
         array('contexts' => $contexts->having_one_edit_tab_cap('export'), 'defaultcategory' => $pagevars['cat']));

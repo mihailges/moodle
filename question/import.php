@@ -71,11 +71,13 @@ if ($import_form->is_cancelled()){
 //==========
 $PAGE->set_title($txt->importquestions);
 $PAGE->set_heading($COURSE->fullname);
-echo $OUTPUT->header();
 
 // Print horizontal nav if needed.
 $renderer = $PAGE->get_renderer('core_question', 'bank');
-echo $renderer->extra_horizontal_navigation();
+$qbankaction = new \core_question\output\qbank_actionbar($cmid, $thispageurl);
+$PAGE->set_page_action($qbankaction->get_qbank_action());
+
+echo $OUTPUT->header();
 
 // file upload form sumitted
 if ($form = $import_form->get_data()) {

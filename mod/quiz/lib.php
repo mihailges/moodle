@@ -1745,7 +1745,8 @@ function quiz_extend_settings_navigation($settings, $quiznode) {
                 new moodle_url('/mod/quiz/edit.php', array('cmid'=>$PAGE->cm->id)),
                 navigation_node::TYPE_SETTING, null, 'mod_quiz_edit',
                 new pix_icon('t/edit', ''));
-        $quiznode->add_node($node, $beforekey);
+        $editquiznode = $quiznode->add_node($node, $beforekey);
+        $editquiznode->set_show_in_secondary_navigation(false);
     }
 
     if (has_capability('mod/quiz:preview', $PAGE->cm->context)) {
@@ -1754,7 +1755,8 @@ function quiz_extend_settings_navigation($settings, $quiznode) {
         $node = navigation_node::create(get_string('preview', 'quiz'), $url,
                 navigation_node::TYPE_SETTING, null, 'mod_quiz_preview',
                 new pix_icon('i/preview', ''));
-        $quiznode->add_node($node, $beforekey);
+        $previewnode = $quiznode->add_node($node, $beforekey);
+        $previewnode->set_show_in_secondary_navigation(false);
     }
 
     if (has_any_capability(array('mod/quiz:viewreports', 'mod/quiz:grade'), $PAGE->cm->context)) {

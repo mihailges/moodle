@@ -829,7 +829,8 @@ function survey_extend_settings_navigation($settings, $surveynode) {
 
         if (has_capability('mod/survey:download', $PAGE->cm->context)) {
             $url = new moodle_url('/mod/survey/report.php', array('id' => $PAGE->cm->id, 'action'=>'download'));
-            $surveynode->add(get_string('downloadresults', 'survey'), $url);
+            $downloadresultsnode = $surveynode->add(get_string('downloadresults', 'survey'), $url);
+            $downloadresultsnode->set_show_in_secondary_navigation(false);
         }
     }
 }

@@ -119,6 +119,8 @@ abstract class page_wiki {
 
     /**
      * This method prints the top of the page.
+     *
+     * @param string $actionbar
      */
     function print_header() {
         global $OUTPUT, $PAGE, $CFG, $USER, $SESSION;
@@ -126,12 +128,6 @@ abstract class page_wiki {
         $PAGE->set_heading($PAGE->course->fullname);
 
         $this->set_url();
-
-        if (!empty($this->page)) {
-            $actionbar = new \mod_wiki\output\actionbar($this->page->id, $PAGE->url);
-            $PAGE->set_page_action($actionbar->get_action_bar());
-        }
-
         if (isset($SESSION->wikipreviousurl) && is_array($SESSION->wikipreviousurl)) {
             $this->process_session_url();
         }
@@ -145,6 +141,11 @@ abstract class page_wiki {
         echo $OUTPUT->heading(format_string($wiki->name));
 
         echo $this->wikioutput->wiki_info();
+
+        if (!empty($this->page)) {
+            $actionbar = new \mod_wiki\output\action_bar($this->page->id, $PAGE->url);
+            echo $this->wikioutput->render_action_bar($actionbar);
+        }
 
         // tabs are associated with pageid, so if page is empty, tabs should be disabled
 //        if (!empty($this->page) && !empty($this->tabs)) {

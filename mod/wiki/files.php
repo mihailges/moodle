@@ -87,9 +87,6 @@ $PAGE->set_title(get_string('wikifiles', 'wiki'));
 $PAGE->set_heading($course->fullname);
 $PAGE->navbar->add(format_string(get_string('wikifiles', 'wiki')));
 
-$actionbar = new \mod_wiki\output\actionbar($pageid, $url);
-$PAGE->set_page_action($actionbar->get_action_bar());
-
 echo $OUTPUT->header();
 echo $OUTPUT->heading(format_string($wiki->name));
 
@@ -99,9 +96,12 @@ $completiondetails = \core_completion\cm_completion_details::get_instance($cminf
 $activitydates = \core\activity_dates::get_dates_for_module($cminfo, $USER->id);
 echo $OUTPUT->activity_information($cminfo, $completiondetails, $activitydates);
 
+$renderer = $PAGE->get_renderer('mod_wiki');
+
 echo $OUTPUT->box(format_module_intro('wiki', $wiki, $PAGE->cm->id), 'generalbox', 'intro');
 
-$renderer = $PAGE->get_renderer('mod_wiki');
+$actionbar = new \mod_wiki\output\action_bar($pageid, $PAGE->url);
+echo $renderer->render_action_bar($actionbar);
 
 //$tabitems = array('view' => 'view', 'edit' => 'edit', 'comments' => 'comments', 'history' => 'history', 'map' => 'map', 'files' => 'files', 'admin' => 'admin');
 //

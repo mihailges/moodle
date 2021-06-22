@@ -17,15 +17,17 @@
 namespace mod_wiki\output;
 
 use moodle_url;
+use templatable;
+use renderable;
 
 /**
- * Class responsible for generating the action bar elements for the wiki module pages.
+ * Renderable class for the action bar elements in the wiki activity pages.
  *
  * @package    mod_wiki
  * @copyright  2021 Mihail Geshoski <mihail@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class actionbar {
+class action_bar implements templatable, renderable {
 
     /** @var int $pageid The database module id. */
     private $pageid;
@@ -45,12 +47,27 @@ class actionbar {
     }
 
     /**
-     * Generate the output for the action bar.
+     * Export the data for the mustache template.
      *
-     * @return string The HTML code for the action bar.
+     * @param renderer_base $output renderer to be used to render the action bar elements.
+     * @return array
      */
-    public function get_action_bar() {
-        global $OUTPUT, $PAGE;
+    public function export_for_template(\renderer_base $output): array {
+
+        $urlselect = $this->get_action_selector();
+
+        return [
+            'urlselect' => $urlselect->export_for_template($output),
+        ];
+    }
+
+    /**
+     * Returns the URL selector object.
+     *
+     * @return \url_select The URL select object.
+     */
+    private function get_action_selector() {
+        global $PAGE;
 
         $menu = [];
 
@@ -89,8 +106,6 @@ class actionbar {
             $menu[$adminlink->out(false)] = get_string('admin', 'mod_wiki');
         }
 
-        $urlselect = new \url_select($menu, $this->currenturl->out(false), null, 'wikiactionselect');
-
-        return $OUTPUT->render($urlselect);
+        return new \url_select($menu, $this->currenturl->out(false), null, 'wikiactionselect');
     }
 }

@@ -56,9 +56,6 @@ $PAGE->set_title(get_string('course') . ': ' . $course->fullname);
 $PAGE->set_heading($course->fullname);
 $PAGE->force_settings_menu(true);
 
-$actionbar = new \mod_data\output\actionbar($data->id, $url);
-$PAGE->set_page_action($actionbar->get_fields_action_bar());
-
 // fill in missing properties needed for updating of instance
 $data->course     = $cm->course;
 $data->cmidnumber = $cm->idnumber;
@@ -118,7 +115,10 @@ if (!$form_export->is_submitted()) {
 //    $currenttab = 'presets';
 //    $currentgroup = groups_get_activity_group($cm);
 //    $groupmode = groups_get_activity_groupmode($cm);
-//    echo $OUTPUT->box(format_module_intro('data', $data, $cm->id), 'generalbox', 'intro');
+    echo $OUTPUT->box(format_module_intro('data', $data, $cm->id), 'generalbox', 'intro');
+
+    $actionbar = new \mod_data\output\actionbar($data->id, $url);
+    echo $actionbar->get_fields_action_bar();
 //
 //    include('tabs.php');
 }

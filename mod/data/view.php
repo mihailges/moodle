@@ -264,8 +264,6 @@ list($records, $maxcount, $totalcount, $page, $nowperpage, $sort, $mode) =
     data_search_entries($data, $cm, $context, $mode, $currentgroup, $search, $sort, $order, $page, $perpage, $advanced, $search_array, $record);
 
 $hasrecords = !empty($records);
-$actionbar = new \mod_data\output\actionbar($data->id, $pageurl);
-$PAGE->set_page_action($actionbar->get_view_action_bar($hasrecords));
 
 echo $OUTPUT->header();
 
@@ -298,6 +296,9 @@ if ($data->intro and empty($page) and empty($record) and $mode != 'single') {
     $options->noclean = true;
 }
 echo $OUTPUT->box(format_module_intro('data', $data, $cm->id), 'generalbox', 'intro');
+
+$actionbar = new \mod_data\output\actionbar($data->id, $pageurl);
+echo $actionbar->get_view_action_bar($hasrecords);
 
 $returnurl = $CFG->wwwroot . '/mod/data/view.php?d='.$data->id.'&amp;search='.s($search).'&amp;sort='.s($sort).'&amp;order='.s($order).'&amp;';
 groups_print_activity_menu($cm, $returnurl);

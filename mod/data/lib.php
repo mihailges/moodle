@@ -2303,8 +2303,9 @@ function data_delete_site_preset($name) {
  * @param stdClass $cm
  * @param stdClass $data
  * @param string $currenttab
+ * @param string $actionbar
  */
-function data_print_header($course, $cm, $data, $currenttab='') {
+function data_print_header($course, $cm, $data, $currenttab='', string $actionbar = '') {
 
     global $CFG, $displaynoticegood, $displaynoticebad, $OUTPUT, $PAGE, $USER;
 
@@ -2319,6 +2320,8 @@ function data_print_header($course, $cm, $data, $currenttab='') {
     echo $OUTPUT->activity_information($cminfo, $completiondetails, $activitydates);
 
     echo $OUTPUT->box(format_module_intro('data', $data, $cm->id), 'generalbox', 'intro');
+
+    echo $actionbar;
 
     // Groups needed for Add entry tab
     $currentgroup = groups_get_activity_group($cm);

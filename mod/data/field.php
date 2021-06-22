@@ -91,6 +91,9 @@ require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 require_capability('mod/data:managetemplates', $context);
 
+$actionbar = new \mod_data\output\actionbar($data->id, $PAGE->url);
+$fieldactionbar = $actionbar->get_fields_action_bar();
+
 /************************************
  *        Data Processing           *
  ***********************************/
@@ -194,7 +197,7 @@ switch ($mode) {
 
             } else {
 
-                data_print_header($course,$cm,$data, false);
+                data_print_header($course,$cm,$data, false, $fieldactionbar);
 
                 // Print confirmation message.
                 $field = data_get_field_from_id($fid, $data);
@@ -243,24 +246,21 @@ $PAGE->set_title(get_string('course') . ': ' . $course->fullname);
 $PAGE->set_heading($course->fullname);
 $PAGE->force_settings_menu(true);
 
-$actionbar = new \mod_data\output\actionbar($data->id, $url);
-$PAGE->set_page_action($actionbar->get_fields_action_bar());
-
 $PAGE->set_pagetype('mod-data-field-' . $newtype);
 if (($mode == 'new') && (!empty($newtype)) && confirm_sesskey()) {          ///  Adding a new field
-    data_print_header($course, $cm, $data,'fields');
+    data_print_header($course, $cm, $data,'fields', $fieldactionbar);
 
     $field = data_get_field_new($newtype, $data);
     $field->display_edit_field();
 
 } else if ($mode == 'display' && confirm_sesskey()) { /// Display/edit existing field
-    data_print_header($course, $cm, $data,'fields');
+    data_print_header($course, $cm, $data,'fields', $fieldactionbar);
 
     $field = data_get_field_from_id($fid, $data);
     $field->display_edit_field();
 
 } else {                                              /// Display the main listing of all fields
-    data_print_header($course, $cm, $data,'fields');
+    data_print_header($course, $cm, $data,'fields', $fieldactionbar);
 
     if (!$DB->record_exists('data_fields', array('dataid'=>$data->id))) {
         echo $OUTPUT->notification(get_string('nofieldindatabase','data'));  // nothing in database

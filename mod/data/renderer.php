@@ -86,6 +86,17 @@ class mod_data_renderer extends plugin_renderer_base {
     }
 
     /**
+     * Renders the action bar for the field/presets pages.
+     *
+     * @param \mod_data\output\fields_action_bar $actionbar
+     * @return string The HTML output
+     */
+    function render_fields_action_bar(\mod_data\output\fields_action_bar $actionbar): string {
+        $data = $actionbar->export_for_template($this);
+        return $this->render_from_template('mod_data/fields_action_bar', $data);
+    }
+
+    /**
      * Renders the action bar for the view page.
      *
      * @param \mod_data\output\view_action_bar $actionbar

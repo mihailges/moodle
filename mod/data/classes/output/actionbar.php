@@ -50,7 +50,7 @@ class actionbar {
      * @return string The HTML code for the action bar.
      */
     public function get_fields_action_bar(): string {
-        global $OUTPUT;
+        global $PAGE;
 
         $createfieldlink = new moodle_url('/mod/data/field.php', ['d' => $this->id]);
         $presetslink = new moodle_url('/mod/data/preset.php', ['d' => $this->id]);
@@ -61,8 +61,10 @@ class actionbar {
         ];
 
         $urlselect = new \url_select($menu, $this->currenturl->out(false), null, 'fieldactionselect');
+        $renderer = $PAGE->get_renderer('mod_data');
+        $fieldsactionbar = new \mod_data\output\fields_action_bar($urlselect);
 
-        return $OUTPUT->render($urlselect);
+        return $renderer->render_fields_action_bar($fieldsactionbar);
     }
 
     /**
@@ -126,8 +128,8 @@ class actionbar {
 
         $urlselect = new \url_select($menu, $this->currenturl->out(false), null, 'templatesactionselect');
         $renderer = $PAGE->get_renderer('mod_data');
-        $singleviewactionbar = new \mod_data\output\templates_action_bar($urlselect);
+        $templatesactionbar = new \mod_data\output\templates_action_bar($urlselect);
 
-        return $renderer->render_templates_action_bar($singleviewactionbar);
+        return $renderer->render_templates_action_bar($templatesactionbar);
     }
 }

@@ -823,3 +823,32 @@ function h5pactivity_fetch_recent_activity(array $submissions, int $courseid) : 
 
     return $recentactivity;
 }
+
+/**
+ * Extends the settings navigation with the H5P activity settings
+
+ * This function is called when the context for the page is an H5P activity. This is not called by AJAX
+ * so it is safe to rely on the $PAGE.
+ *
+ * @param settings_navigation $settingsnav {@link settings_navigation}
+ * @param navigation_node $h5pactivitynode {@link navigation_node}
+ */
+function h5pactivity_extend_settings_navigation(settings_navigation $settingsnav,
+        navigation_node $h5pactivitynode = null) {
+    global $PAGE, $USER;
+
+    $manager = manager::create_from_coursemodule($PAGE->cm);
+
+    // Attempts report.
+    if ($manager->can_view_all_attempts()) {
+        $attemptsreporturl = new moodle_url('/mod/h5pactivity/report.php', ['a' => $PAGE->cm->instance]);
+        $h5pactivitynode->add(get_string('attempts_report', 'h5pactivity'), $attemptsreporturl,
+            settings_navigation::TYPE_SETTING);
+    } else if ($manager->can_view_own_attempts() && $manager->count_attempts($USER->id)) {
+        $attemptsreporturl = new moodle_url('/mod/h5pactivity/report.php',
+            ['a' => $PAGE->cm->instance, 'userid' => $USER->id]);
+        $h5pactivitynode->add(get_string('attempts_report', 'h5pactivity'), $attemptsreporturl,
+            settings_navigation::TYPE_SETTING);
+    }
+
+}

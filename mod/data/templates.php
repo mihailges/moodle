@@ -35,7 +35,6 @@ $url = new moodle_url('/mod/data/templates.php');
 
 if ($id) {
     $url->param('id', $id);
-    $PAGE->set_url($url);
     if (! $cm = get_coursemodule_from_id('data', $id)) {
         print_error('invalidcoursemodule');
     }
@@ -48,7 +47,6 @@ if ($id) {
 
 } else {
     $url->param('d', $d);
-    $PAGE->set_url($url);
     if (! $data = $DB->get_record('data', array('id'=>$d))) {
         print_error('invalidid', 'data');
     }
@@ -61,6 +59,7 @@ if ($id) {
 }
 
 $url->param('mode', $mode);
+$PAGE->set_url($url);
 
 require_login($course, false, $cm);
 
@@ -243,6 +242,7 @@ if ($mode == 'listtemplate'){
 }
 
 // Print the main template.
+$switchelement = '';
 
 echo '<tr><td valign="top">';
 if ($mode != 'csstemplate' and $mode != 'jstemplate') {
@@ -321,15 +321,15 @@ if ($mode != 'csstemplate' and $mode != 'jstemplate') {
 
     echo '</select>';
     echo '</div>';
-    echo '<br /><br /><br /><br />';
-    echo '<input type="submit" class="btn btn-secondary" name="defaultform" value="'.get_string('resettemplate', 'data').'" />';
-    echo '<br /><br />';
+    // echo '<br /><br /><br /><br />';
+    // echo '<input type="submit" class="btn btn-secondary" name="defaultform" value="'.get_string('resettemplate', 'data').'" />';
+    // echo '<br /><br />';
     if ($usehtmleditor) {
         $switchlink = new moodle_url($PAGE->url, ['useeditor' => false]);
-        echo html_writer::link($switchlink, get_string('editordisable', 'data'));
+        $switchelement = html_writer::link($switchlink, get_string('editordisable', 'data'));
     } else {
         $switchlink = new moodle_url($PAGE->url, ['useeditor' => true]);
-        echo html_writer::link($switchlink, get_string('editorenable', 'data'), [
+        $switchelement = html_writer::link($switchlink, get_string('editorenable', 'data'), [
                 'id' => 'enabletemplateeditor',
             ]);
         $PAGE->requires->event_handler('#enabletemplateeditor', 'click', 'M.util.show_confirm_dialog', [
@@ -337,8 +337,8 @@ if ($mode != 'csstemplate' and $mode != 'jstemplate') {
             ]);
     }
 } else {
-    echo '<br /><br /><br /><br />';
-    echo '<input type="submit" class="btn btn-primary" name="defaultform" value="' . get_string('resettemplate', 'data') . '" />';
+    // echo '<br /><br /><br /><br />';
+    // echo '<input type="submit" class="btn btn-primary" name="defaultform" value="' . get_string('resettemplate', 'data') . '" />';
 }
 echo '</td>';
 
@@ -393,10 +393,16 @@ if ($mode == 'listtemplate'){
     echo '</tr>';
 }
 
-echo '<tr><td class="save_template" colspan="2">';
-echo '<input type="submit" class="btn btn-primary" value="'.get_string('savetemplate','data').'" />&nbsp;';
+echo '<tr>';
+echo '<td class="pt-4">';
+echo '<input type="submit" class="btn btn-secondary" name="defaultform" value="'.get_string('resettemplate', 'data').'" />';
+echo '<input type="submit" class="btn btn-primary ml-2" value="'.get_string('savetemplate','data').'" />';
+echo '</td>';
+echo '<td class="pt-4 text-right">';
+echo $switchelement;
+echo '</td>';
+echo '</tr></table>';
 
-echo '</td></tr></table>';
 
 
 echo $OUTPUT->box_end();

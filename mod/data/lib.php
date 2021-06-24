@@ -3638,6 +3638,7 @@ function data_extend_settings_navigation(settings_navigation $settings, navigati
             $defaultemplate = 'singletemplate';
         }
 
+        $datanode->add(get_string('fields', 'data'), new moodle_url('/mod/data/field.php', array('d'=>$data->id)));
         $templates = $datanode->add(get_string('templates', 'data'), new moodle_url('/mod/data/templates.php', array('d'=>$data->id)));
 
         $templatelist = array ('listtemplate', 'singletemplate', 'asearchtemplate', 'addtemplate', 'rsstemplate', 'csstemplate', 'jstemplate');
@@ -3645,7 +3646,6 @@ function data_extend_settings_navigation(settings_navigation $settings, navigati
             $templates->add(get_string($template, 'data'), new moodle_url('/mod/data/templates.php', array('d'=>$data->id,'mode'=>$template)));
         }
 
-        $datanode->add(get_string('fields', 'data'), new moodle_url('/mod/data/field.php', array('d'=>$data->id)));
         $presetsnode = $datanode->add(get_string('presets', 'data'), new moodle_url('/mod/data/preset.php', array('d'=>$data->id)));
         $presetsnode->set_show_in_secondary_navigation(false);
     }

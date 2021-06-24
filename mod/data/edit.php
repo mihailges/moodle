@@ -316,10 +316,17 @@ if ($data->addtemplate){
 foreach ($generalnotifications as $notification) {
     echo $OUTPUT->notification($notification);
 }
-echo $newtext;
+echo html_writer::div($newtext, 'd-flex');
+// echo $newtext;
 
-echo '<div class="mdl-align mt-1"><input type="submit" class="btn btn-primary" name="saveandview" ' .
-     'value="' . get_string('saveandview', 'data') . '" />&nbsp;';
+echo '<div class="mt-4 d-flex">';
+
+$redirectbackto = !empty($redirectbackto) ? $redirectbackto :
+    new \moodle_url('/mod/data/view.php', ['d' => $data->id]);
+echo html_writer::link($redirectbackto, get_string('cancel'), ['class' => 'btn btn-secondary']);
+
+echo '<input type="submit" class="btn btn-primary ml-2" name="saveandview" ' .
+     'value="' . get_string('save', 'data') . '" />';
 //if ($rid) {
 //    echo '&nbsp;<input type="submit" class="btn btn-primary" name="cancel" ' .
 //              'value="' . get_string('cancel') . '" onclick="javascript:history.go(-1)" />';
@@ -334,12 +341,9 @@ echo '<div class="mdl-align mt-1"><input type="submit" class="btn btn-primary" n
 if (!$rid && ((!$data->maxentries) ||
         has_capability('mod/data:manageentries', $context) ||
         (data_numentries($data) < ($data->maxentries - 1)))) {
-    echo '<input type="submit" class="btn btn-primary" name="saveandadd" ' .
-        'value="' . get_string('saveandadd', 'data') . '" />&nbsp;';
+    echo '<input type="submit" class="btn btn-primary ml-2" name="saveandadd" ' .
+        'value="' . get_string('saveandadd', 'data') . '" />';
 }
-$redirectbackto = !empty($redirectbackto) ? $redirectbackto :
-    new \moodle_url('/mod/data/view.php', ['d' => $data->id]);
-echo html_writer::link($redirectbackto, get_string('cancel'), ['class' => 'btn btn-secondary']);
 echo '</div>';
 echo $OUTPUT->box_end();
 echo '</div></form>';

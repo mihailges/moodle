@@ -25,6 +25,7 @@
 
 require_once('../../config.php');
 require_once('lib.php');
+require_once($CFG->dirroot.'/mod/data/preset_form.php');
 
 $id             = optional_param('id', 0, PARAM_INT);            // course module id
 $d              = optional_param('d', 0, PARAM_INT);             // database id
@@ -91,12 +92,56 @@ require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 require_capability('mod/data:managetemplates', $context);
 
+$form_export = new data_export_form(new moodle_url('/mod/data/preset.php'));
+$form_export->set_data(array('d' => $data->id));
+
+$form_importzip = new data_import_preset_zip_form();
+$form_importzip->set_data(array('d' => $data->id));
+
 $actionbar = new \mod_data\output\actionbar($data->id, $PAGE->url);
-$fieldactionbar = $actionbar->get_fields_action_bar();
+
+$PAGE->set_title(get_string('course') . ': ' . $course->fullname);
+$PAGE->set_heading($course->fullname);
 
 /************************************
  *        Data Processing           *
  ***********************************/
+$renderer = $PAGE->get_renderer('mod_data');
+
+if ($form_importzip->is_cancelled()) {
+    redirect(new moodle_url('/mod/data/field.php', ['d' => $data->id]));
+} else if ($formdata = $form_importzip->get_data()) {
+    data_print_header($course,$cm,$data, false);
+    $file = new stdClass;
+    $file->name = $form_importzip->get_new_filename('importfile');
+    $file->path = $form_importzip->save_temp_file('importfile');
+    $importer = new data_preset_upload_importer($course, $cm, $data, $file->path);
+    echo $renderer->import_setting_mappings($data, $importer);
+    echo $OUTPUT->footer();
+    exit(0);
+}
+//else if ($action == 'finishimport') {
+//    $overwritesettings = optional_param('overwritesettings', false, PARAM_BOOL);
+//    if (!$fullname) {
+//        $presetdir = $CFG->tempdir.'/forms/'.required_param('directory', PARAM_FILE);
+//        if (!file_exists($presetdir) || !is_dir($presetdir)) {
+//            print_error('cannotimport');
+//        }
+//        $importer = new data_preset_upload_importer($course, $cm, $data, $presetdir);
+//    } else {
+//        $importer = new data_preset_existing_importer($course, $cm, $data, $fullname);
+//    }
+//    $importer->import($overwritesettings);
+//    $strimportsuccess = get_string('importsuccess', 'data');
+//    $straddentries = get_string('addentries', 'data');
+//    $strtodatabase = get_string('todatabase', 'data');
+//    if (!$DB->get_records('data_records', array('dataid'=>$data->id))) {
+//        echo $OUTPUT->notification("$strimportsuccess <a href='edit.php?d=$data->id'>$straddentries</a> $strtodatabase", 'notifysuccess');
+//    } else {
+//        echo $OUTPUT->notification("$strimportsuccess", 'notifysuccess');
+//    }
+//}
+
 switch ($mode) {
 
     case 'add':    ///add a new field
@@ -197,7 +242,7 @@ switch ($mode) {
 
             } else {
 
-                data_print_header($course,$cm,$data, false, $fieldactionbar);
+                data_print_header($course,$cm,$data, false);
 
                 // Print confirmation message.
                 $field = data_get_field_from_id($fid, $data);
@@ -226,6 +271,24 @@ switch ($mode) {
         }
         break;
 
+    case 'import':
+        $fieldactionbar = $actionbar->get_fields_action_bar();
+        data_print_header($course,$cm,$data, false, $fieldactionbar);
+
+        echo $form_importzip->display();
+        echo $OUTPUT->footer();
+        exit;
+
+    case 'usepreset':
+        $fieldactionbar = $actionbar->get_fields_action_bar();
+        data_print_header($course,$cm,$data, false, $fieldactionbar);
+        $presets = data_get_available_presets($context);
+
+        $presets = new \mod_data\output\presets($data->id, $presets);
+        echo $renderer->render_presets($presets, false);
+        echo $OUTPUT->footer();
+        exit;
+
     default:
         break;
 }
@@ -242,24 +305,24 @@ foreach ($plugins as $plugin=>$fulldir){
     $menufield[$plugin] = get_string('pluginname', 'datafield_'.$plugin);    //get from language files
 }
 asort($menufield);    //sort in alphabetical order
-$PAGE->set_title(get_string('course') . ': ' . $course->fullname);
-$PAGE->set_heading($course->fullname);
+
 $PAGE->force_settings_menu(true);
 
 $PAGE->set_pagetype('mod-data-field-' . $newtype);
 if (($mode == 'new') && (!empty($newtype)) && confirm_sesskey()) {          ///  Adding a new field
-    data_print_header($course, $cm, $data,'fields', $fieldactionbar);
+    data_print_header($course, $cm, $data,'fields');
 
     $field = data_get_field_new($newtype, $data);
     $field->display_edit_field();
 
 } else if ($mode == 'display' && confirm_sesskey()) { /// Display/edit existing field
-    data_print_header($course, $cm, $data,'fields', $fieldactionbar);
+    data_print_header($course, $cm, $data,'fields');
 
     $field = data_get_field_from_id($fid, $data);
     $field->display_edit_field();
 
 } else {                                              /// Display the main listing of all fields
+    $fieldactionbar = $actionbar->get_fields_action_bar(true, true, true);
     data_print_header($course, $cm, $data,'fields', $fieldactionbar);
 
     if (!$DB->record_exists('data_fields', array('dataid'=>$data->id))) {
@@ -313,12 +376,12 @@ if (($mode == 'new') && (!empty($newtype)) && confirm_sesskey()) {          /// 
     }
 
 
-    echo '<div class="fieldadd">';
-    $popupurl = $CFG->wwwroot.'/mod/data/field.php?d='.$data->id.'&mode=new&sesskey='.  sesskey();
-    echo $OUTPUT->single_select(new moodle_url($popupurl), 'newtype', $menufield, null, array('' => 'choosedots'),
-        'fieldform', array('label' => get_string('newfield', 'data')));
-    echo $OUTPUT->help_icon('newfield', 'data');
-    echo '</div>';
+//    echo '<div class="fieldadd">';
+//    $popupurl = $CFG->wwwroot.'/mod/data/field.php?d='.$data->id.'&mode=new&sesskey='.  sesskey();
+//    echo $OUTPUT->single_select(new moodle_url($popupurl), 'newtype', $menufield, null, array('' => 'choosedots'),
+//        'fieldform', array('label' => get_string('newfield', 'data')));
+//    echo $OUTPUT->help_icon('newfield', 'data');
+//    echo '</div>';
 
     echo '<div class="sortdefault">';
     echo '<form id="sortdefault" action="'.$CFG->wwwroot.'/mod/data/field.php" method="get">';

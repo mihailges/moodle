@@ -29,16 +29,36 @@ use renderable;
  */
 class fields_action_bar implements templatable, renderable {
 
+    /** @var int $id The database module id. */
+    private $id;
+
     /** @var \url_select $urlselect The URL selector object. */
     private $urlselect;
+
+    /** @var \single_select $fieldselect The field selector object. */
+    private $fieldselect;
+
+    /** @var \single_button|null $saveaspresetbutton The save as preset single button object. */
+    private $saveaspresetbutton;
+
+    /** @var \single_button|null $exportpresetbutton The export preset single button object. */
+    private $exportpresetbutton;
 
     /**
      * The class constructor.
      *
+     * @param int $id The database module id
      * @param \url_select $urlselect The URL selector object
+     * @param \single_select $fieldselect The field selector object
+     * @param bool $urlselect The URL selector object
      */
-    public function __construct(\url_select $urlselect) {
+    public function __construct(int $id, \url_select $urlselect, ?\single_select $fieldselect = null,
+            ?\single_button $saveaspresetbutton = null, ?\single_button $exportpresetbutton = null) {
+        $this->id = $id;
         $this->urlselect = $urlselect;
+        $this->fieldselect = $fieldselect;
+        $this->saveaspresetbutton = $saveaspresetbutton;
+        $this->exportpresetbutton = $exportpresetbutton;
     }
 
     /**
@@ -49,8 +69,22 @@ class fields_action_bar implements templatable, renderable {
      */
     public function export_for_template(\renderer_base $output): array {
 
-        return [
+        $data = [
             'urlselect' => $this->urlselect->export_for_template($output),
         ];
+
+        if ($this->fieldselect) {
+            $data['fieldselect'] = $this->fieldselect->export_for_template($output);
+        }
+
+        if ($this->saveaspresetbutton) {
+            $data['saveaspreset'] = $this->saveaspresetbutton->export_for_template($output);
+        }
+
+        if ($this->exportpresetbutton) {
+            $data['exportpreset'] = $this->exportpresetbutton->export_for_template($output);
+        }
+
+        return $data;
     }
 }

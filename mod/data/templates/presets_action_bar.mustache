@@ -12,7 +12,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template mod_data/fields_action_bar
+    @template mod_data/presets_action_bar
     Actions menu at the top of the field/presets pages in the database activity.
     Classes required for JS:
     * none
@@ -24,28 +24,7 @@
 <div class="container-fluid mb-5">
     <div class="row">
         <div class="d-flex">
-            <div>
-                {{#urlselect}}
-                    {{>core/url_select}}
-                {{/urlselect}}
-            </div>
-            <div class='pl-2'>
-                {{#fieldselect}}
-                    {{>core/single_select}}
-                {{/fieldselect}}
-            </div>
-        </div>
-        <div class="ml-auto d-flex">
-            <div>
-                {{#saveaspreset}}
-                    {{>mod_data/save_as_preset}}
-                {{/saveaspreset}}
-            </div>
-            <div class="pl-2">
-                {{#exportpreset}}
-                    {{>core/single_button}}
-                {{/exportpreset}}
-            </div>
+            <a href="{{importpreseturl}}" class="btn btn-secondary">{{#str}}import, core{{/str}}</a>
         </div>
     </div>
 </div>

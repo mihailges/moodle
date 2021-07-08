@@ -34,18 +34,26 @@ class data_import_preset_zip_form extends moodleform {
         $this->_form->setType('action', PARAM_ALPHANUM);
         $this->_form->addElement('filepicker', 'importfile', get_string('chooseorupload', 'data'));
         $this->_form->addRule('importfile', null, 'required');
-        $this->_form->addElement('submit', 'uploadzip', get_string('import'));
+        //$this->_form->addElement('submit', 'uploadzip', get_string('import'));
+        $buttons = [
+            $this->_form->createElement('cancel'),
+            $this->_form->createElement('submit', 'submitbutton', get_string('save'))
+        ];
+        $this->_form->addGroup($buttons, 'buttonar', '', [' '], false);
     }
 }
 
 class data_export_form extends moodleform {
     public function definition() {
-        $this->_form->addElement('header', 'exportheading', get_string('exportaszip', 'data'));
+       // $this->_form->addElement('header', 'exportheading', get_string('exportaszip', 'data'));
         $this->_form->addElement('hidden', 'd');
         $this->_form->setType('d', PARAM_INT);
         $this->_form->addElement('hidden', 'action', 'export');
         $this->_form->setType('action', PARAM_ALPHANUM);
-        $this->_form->addElement('submit', 'export', get_string('export', 'data'));
+        $this->_form->addElement('html', html_writer::tag('input', null,
+            array('type' => 'submit', 'name' => 'export', 'value' => get_string('exportpreset', 'data'),
+                'class' => 'btn btn-secondary')));
+        // $this->_form->addElement('submit', 'export', get_string('export', 'data'));
     }
 }
 

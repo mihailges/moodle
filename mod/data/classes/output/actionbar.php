@@ -47,22 +47,64 @@ class actionbar {
     /**
      * Generate the output for the field related action bar.
      *
+     * @param \data_export_form $exportform The preset export form object.
      * @return string The HTML code for the action bar.
      */
-    public function get_fields_action_bar(): string {
-        global $PAGE;
+    public function get_fields_action_bar(bool $hasfieldselect = false, bool $hassaveaspreset = false,
+            bool $hasexportpreset = false): string {
+        global $PAGE, $DB;
 
         $createfieldlink = new moodle_url('/mod/data/field.php', ['d' => $this->id]);
-        $presetslink = new moodle_url('/mod/data/preset.php', ['d' => $this->id]);
+        $importlink = new moodle_url('/mod/data/field.php', ['d' => $this->id, 'mode' => 'import']);
+        $presetslink = new moodle_url('/mod/data/field.php', ['d' => $this->id, 'mode' => 'usepreset']);
 
         $menu = [
-            $createfieldlink->out(false) => get_string('createnewfields', 'mod_data'),
-            $presetslink->out(false) => get_string('usepredefinedset', 'mod_data'),
+            $createfieldlink->out(false) => get_string('createnewfield', 'mod_data'),
+            $importlink->out(false) => get_string('import', 'core'),
+            $presetslink->out(false) => get_string('usestandard', 'mod_data'),
         ];
 
         $urlselect = new \url_select($menu, $this->currenturl->out(false), null, 'fieldactionselect');
+
+        $fieldselect = null;
+        if ($hasfieldselect) {
+            // Get the list of possible fields (plugins).
+            $plugins = \core_component::get_plugin_list('datafield');
+            $menufield = [];
+
+            foreach ($plugins as $plugin => $fulldir) {
+                $menufield[$plugin] = get_string('pluginname', "datafield_{$plugin}");
+            }
+            asort($menufield);
+
+            $fieldselecturl = new moodle_url($this->currenturl, ['mode' => 'new', 'sesskey' => sesskey()]);
+            $fieldselect = new \single_select($fieldselecturl, 'newtype', $menufield, null, ['' => 'choosedots'],
+                'fieldform', ['label' => get_string('newfield', 'data')]);
+        }
+
+        $hasfields = $DB->record_exists('data_fields', ['dataid'=>$this->id]);
+
+        $saveaspresetbutton = null;
+        $exportpresetbutton = null;
+
+        if ($hasfields) {
+            if ($hassaveaspreset) {
+                $saveaspresetlink = new moodle_url('/mod/data/preset.php',
+                    ['d' => $this->id, 'action' => 'export']);
+                $saveaspresetbutton = new \single_button($saveaspresetlink,
+                    get_string('saveaspreset', 'mod_data'), 'post', false);
+            }
+
+            if ($hasexportpreset) {
+                $exportpresetlink = new moodle_url('/mod/data/presets.php',
+                    ['d' => $this->id, 'action' => 'export', 'sesskey' => sesskey()]);
+                $exportpresetbutton = new \single_button($exportpresetlink,
+                    get_string('exportpreset', 'mod_data'), 'get', false);
+            }
+        }
         $renderer = $PAGE->get_renderer('mod_data');
-        $fieldsactionbar = new \mod_data\output\fields_action_bar($urlselect);
+        $fieldsactionbar = new \mod_data\output\fields_action_bar($this->id, $urlselect, $fieldselect,
+            $saveaspresetbutton, $exportpresetbutton);
 
         return $renderer->render_fields_action_bar($fieldsactionbar);
     }
@@ -131,5 +173,19 @@ class actionbar {
         $templatesactionbar = new \mod_data\output\templates_action_bar($urlselect);
 
         return $renderer->render_templates_action_bar($templatesactionbar);
+    }
+
+    /**
+     * Generate the output for the action selector.
+     *
+     * @return string The HTML code for the action selector.
+     */
+    public function get_presets_action_bar() {
+        global $PAGE;
+
+        $renderer = $PAGE->get_renderer('mod_data');
+        $presetsactionbar = new \mod_data\output\presets_action_bar($this->id);
+
+        return $renderer->render_presets_action_bar($presetsactionbar);
     }
 }

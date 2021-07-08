@@ -117,8 +117,8 @@ if (!$form_export->is_submitted()) {
 //    $groupmode = groups_get_activity_groupmode($cm);
     echo $OUTPUT->box(format_module_intro('data', $data, $cm->id), 'generalbox', 'intro');
 
-    $actionbar = new \mod_data\output\actionbar($data->id, $url);
-    echo $actionbar->get_fields_action_bar();
+//    $actionbar = new \mod_data\output\actionbar($data->id, $url);
+//    echo $actionbar->get_fields_action_bar($form_export);
 //
 //    include('tabs.php');
 }
@@ -219,7 +219,8 @@ if (optional_param('sesskey', false, PARAM_BOOL) && confirm_sesskey()) {
             echo $OUTPUT->confirm($strwarning, new moodle_url('preset.php', $optionsyes), new moodle_url('preset.php', $optionsno));
             echo $OUTPUT->footer();
             exit(0);
-        } else if ($action == 'delete') {
+        } else if ($action == 'delete') {$confirm = optional_param('confirm', 1, PARAM_BOOL);
+
             $selectedpreset = new stdClass();
             foreach ($presets as $preset) {
                 if ($preset->shortname == $shortname) {

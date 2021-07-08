@@ -117,4 +117,26 @@ class mod_data_renderer extends plugin_renderer_base {
         $data = $actionbar->export_for_template($this);
         return $this->render_from_template('mod_data/templates_action_bar', $data);
     }
+
+    /**
+     * Renders the action bar for the preset page.
+     *
+     * @param \mod_data\output\presets_action_bar $actionbar
+     * @return string The HTML output
+     */
+    function render_presets_action_bar(\mod_data\output\presets_action_bar $actionbar): string {
+        $data = $actionbar->export_for_template($this);
+        return $this->render_from_template('mod_data/presets_action_bar', $data);
+    }
+
+    /**
+     * Renders the presets form in the preset page.
+     *
+     * @param \mod_data\output\presets_action_bar $actionbar
+     * @return string The HTML output
+     */
+    function render_presets(\mod_data\output\presets $presets): string {
+        $data = $presets->export_for_template($this);
+        return $this->render_from_template('mod_data/presets', $data);
+    }
 }

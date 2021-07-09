@@ -25,6 +25,7 @@
 <form method="post" action="{{formactionul}}" class="mt-4">
     <input type="hidden" name="d" value="{{d}}">
     <input type="hidden" name="sesskey" value="{{sesskey}}">
+    <input type="hidden" name="mode" value="usepreset">
     <input type="hidden" name="action" value="select">
     {{{presetstable}}}
     <input type="submit" name="selectpreset" value="{{#str}}save, core{{/str}}" class="btn btn-primary mt-2">

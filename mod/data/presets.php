@@ -99,6 +99,20 @@ if (optional_param('sesskey', false, PARAM_BOOL) && confirm_sesskey()) {
         exit(0);
     }
 
+    if ($form_importzip->is_cancelled()) {
+        redirect(new moodle_url('/mod/data/presets.php', ['d' => $data->id]));
+    } else if ($formdata = $form_importzip->get_data()) {
+        echo $OUTPUT->header();
+        echo $OUTPUT->heading(format_string($data->name), 2);
+        $file = new stdClass;
+        $file->name = $form_importzip->get_new_filename('importfile');
+        $file->path = $form_importzip->save_temp_file('importfile');
+        $importer = new data_preset_upload_importer($course, $cm, $data, $file->path);
+        echo $renderer->import_setting_mappings($data, $importer);
+        echo $OUTPUT->footer();
+        exit(0);
+    }
+
     echo $OUTPUT->header();
     echo $OUTPUT->heading(format_string($data->name), 2);
 
@@ -144,16 +158,6 @@ if (optional_param('sesskey', false, PARAM_BOOL) && confirm_sesskey()) {
         data_delete_site_preset($shortname);
         $strdeleted = get_string('deleted', 'data');
         echo $OUTPUT->notification("$shortname $strdeleted", 'notifysuccess');
-    } else if ($form_importzip->is_cancelled()) {
-        redirect(new moodle_url('/mod/data/presets.php', ['d' => $data->id]));
-    } else if ($formdata = $form_importzip->get_data()) {
-        $file = new stdClass;
-        $file->name = $form_importzip->get_new_filename('importfile');
-        $file->path = $form_importzip->save_temp_file('importfile');
-        $importer = new data_preset_upload_importer($course, $cm, $data, $file->path);
-        echo $renderer->import_setting_mappings($data, $importer);
-        echo $OUTPUT->footer();
-        exit(0);
     } else if ($action === 'finishimport') {
         $overwritesettings = optional_param('overwritesettings', false, PARAM_BOOL);
         if (!$fullname) {
@@ -196,7 +200,7 @@ if ($action === 'import') {
 } else {
     $actionbar = new \mod_data\output\actionbar($data->id, $url);
     echo $actionbar->get_presets_action_bar();
-    $presets = new \mod_data\output\presets($data->id, $presets, true);
+    $presets = new \mod_data\output\presets($data->id, $presets, new \moodle_url('/mod/data/presets.php'), true);
     echo $renderer->render_presets($presets);
 }
 

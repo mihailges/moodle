@@ -32,6 +32,8 @@ $d              = optional_param('d', 0, PARAM_INT);             // database id
 $fid            = optional_param('fid', 0 , PARAM_INT);          // update field id
 $newtype        = optional_param('newtype','',PARAM_ALPHA);      // type of the new field
 $mode           = optional_param('mode','',PARAM_ALPHA);
+$action         = optional_param('action','',PARAM_ALPHA);
+$fullname       = optional_param('fullname', '',PARAM_PATH); // directory the preset is in.
 $defaultsort    = optional_param('defaultsort', 0, PARAM_INT);
 $defaultsortdir = optional_param('defaultsortdir', 0, PARAM_INT);
 $cancel         = optional_param('cancel', 0, PARAM_BOOL);
@@ -120,27 +122,31 @@ if ($form_importzip->is_cancelled()) {
     echo $OUTPUT->footer();
     exit(0);
 }
-//else if ($action == 'finishimport') {
-//    $overwritesettings = optional_param('overwritesettings', false, PARAM_BOOL);
-//    if (!$fullname) {
-//        $presetdir = $CFG->tempdir.'/forms/'.required_param('directory', PARAM_FILE);
-//        if (!file_exists($presetdir) || !is_dir($presetdir)) {
-//            print_error('cannotimport');
-//        }
-//        $importer = new data_preset_upload_importer($course, $cm, $data, $presetdir);
-//    } else {
-//        $importer = new data_preset_existing_importer($course, $cm, $data, $fullname);
-//    }
-//    $importer->import($overwritesettings);
-//    $strimportsuccess = get_string('importsuccess', 'data');
-//    $straddentries = get_string('addentries', 'data');
-//    $strtodatabase = get_string('todatabase', 'data');
-//    if (!$DB->get_records('data_records', array('dataid'=>$data->id))) {
-//        echo $OUTPUT->notification("$strimportsuccess <a href='edit.php?d=$data->id'>$straddentries</a> $strtodatabase", 'notifysuccess');
-//    } else {
-//        echo $OUTPUT->notification("$strimportsuccess", 'notifysuccess');
-//    }
-//}
+
+
+if ($action == 'finishimport') {
+
+    data_print_header($course, $cm, $data, false);
+    $overwritesettings = optional_param('overwritesettings', false, PARAM_BOOL);
+    if (!$fullname) {
+        $presetdir = $CFG->tempdir.'/forms/'.required_param('directory', PARAM_FILE);
+        if (!file_exists($presetdir) || !is_dir($presetdir)) {
+            print_error('cannotimport');
+        }
+        $importer = new data_preset_upload_importer($course, $cm, $data, $presetdir);
+    } else {
+        $importer = new data_preset_existing_importer($course, $cm, $data, $fullname);
+    }
+    $importer->import($overwritesettings);
+    $strimportsuccess = get_string('importsuccess', 'data');
+    $straddentries = get_string('addentries', 'data');
+    $strtodatabase = get_string('todatabase', 'data');
+    if (!$DB->get_records('data_records', array('dataid'=>$data->id))) {
+        echo $OUTPUT->notification("$strimportsuccess <a href='edit.php?d=$data->id'>$straddentries</a> $strtodatabase", 'notifysuccess');
+    } else {
+        echo $OUTPUT->notification("$strimportsuccess", 'notifysuccess');
+    }
+}
 
 switch ($mode) {
 
@@ -280,11 +286,21 @@ switch ($mode) {
         exit;
 
     case 'usepreset':
+        if ($action === 'select') {
+            $fieldactionbar = $actionbar->get_fields_action_bar();
+            data_print_header($course,$cm,$data, false, $fieldactionbar);
+
+            $importer = new data_preset_existing_importer($course, $cm, $data, $fullname);
+            echo $renderer->import_setting_mappings($data, $importer);
+            echo $OUTPUT->footer();
+            exit;
+        }
+
         $fieldactionbar = $actionbar->get_fields_action_bar();
         data_print_header($course,$cm,$data, false, $fieldactionbar);
         $presets = data_get_available_presets($context);
 
-        $presets = new \mod_data\output\presets($data->id, $presets);
+        $presets = new \mod_data\output\presets($data->id, $presets, new \moodle_url('/mod/data/field.php'));
         echo $renderer->render_presets($presets, false);
         echo $OUTPUT->footer();
         exit;

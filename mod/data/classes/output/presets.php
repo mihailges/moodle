@@ -35,6 +35,9 @@ class presets implements templatable, renderable {
     /** @var array $presets The array containing the existing presets. */
     private $presets;
 
+    /** @var \moodle_url $formactionurl $presets The array containing the existing presets. */
+    private $formactionurl;
+
     /** @var bool $manage The array containing the existing presets. */
     private $manage;
 
@@ -43,9 +46,10 @@ class presets implements templatable, renderable {
      *
      * @param int $id The database module id
      */
-    public function __construct(int $id, array $presets, bool $manage = false) {
+    public function __construct(int $id, array $presets, \moodle_url $formactionurl, bool $manage = false) {
         $this->id = $id;
         $this->presets = $presets;
+        $this->formactionurl = $formactionurl;
         $this->manage = $manage;
     }
 
@@ -56,12 +60,11 @@ class presets implements templatable, renderable {
      * @return array
      */
     public function export_for_template(\renderer_base $output): array {
-        $formactionurl = new \moodle_url('/mod/data/presets.php');
 
         return [
             'd' => $this->id,
             'sesskey' => sesskey(),
-            'formactionul' => $formactionurl->out(),
+            'formactionul' => $this->formactionurl->out(),
             'presetstable' => $this->get_presets_table(),
         ];
     }

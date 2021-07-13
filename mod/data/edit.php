@@ -31,9 +31,9 @@ require_once("$CFG->libdir/form/filemanager.php");
 $id    = optional_param('id', 0, PARAM_INT);    // course module id
 $d     = optional_param('d', 0, PARAM_INT);    // database id
 $rid   = optional_param('rid', 0, PARAM_INT);    //record id
-$cancel   = optional_param('cancel', '', PARAM_RAW);    // cancel an add
 $mode ='addtemplate';    //define the mode for this page, only 1 mode available
 $tags = optional_param_array('tags', [], PARAM_TAGLIST);
+$redirectbackto = optional_param('backto', '', PARAM_LOCALURL); // The location to redirect back.
 
 $url = new moodle_url('/mod/data/edit.php');
 if ($rid !== 0) {
@@ -42,9 +42,6 @@ if ($rid !== 0) {
             'dataid' => $d,
         ), '*', MUST_EXIST);
     $url->param('rid', $rid);
-}
-if ($cancel !== '') {
-    $url->param('cancel', $cancel);
 }
 
 if ($id) {
@@ -73,6 +70,8 @@ if ($id) {
         print_error('invalidcoursemodule');
     }
 }
+
+$url->param('backto', $redirectbackto);
 
 require_login($course, false, $cm);
 
@@ -119,11 +118,6 @@ if (!has_capability('mod/data:manageentries', $context)) {
         print_error('noaccess','data');
     }
 }
-
-if ($cancel) {
-    redirect('view.php?d='.$data->id);
-}
-
 
 /// RSS and CSS and JS meta
 if (!empty($CFG->enablerssfeeds) && !empty($CFG->data_enablerssfeeds) && $data->rssarticles > 0) {
@@ -231,7 +225,10 @@ if ($datarecord = data_submitted() and confirm_sesskey()) {
 /// Print the page header
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading(format_string($data->name), 2);
+
+if (!$PAGE->include_secondary_navigation()) {
+    echo $OUTPUT->heading(format_string($data->name), 2);
+}
 
 // Render the activity information.
 $cminfo = cm_info::create($cm);
@@ -241,15 +238,6 @@ echo $OUTPUT->activity_information($cminfo, $completiondetails, $activitydates);
 
 echo $OUTPUT->box(format_module_intro('data', $data, $cm->id), 'generalbox', 'intro');
 groups_print_activity_menu($cm, $CFG->wwwroot.'/mod/data/edit.php?d='.$data->id);
-
-/// Print the tabs
-
-$currenttab = 'add';
-if ($rid) {
-    $editentry = true;  //used in tabs
-}
-include('tabs.php');
-
 
 /// Print the browsing interface
 
@@ -315,20 +303,20 @@ foreach ($generalnotifications as $notification) {
 }
 echo $newtext;
 
-echo '<div class="mdl-align mt-1"><input type="submit" class="btn btn-primary" name="saveandview" ' .
-     'value="' . get_string('saveandview', 'data') . '" />';
-if ($rid) {
-    echo '&nbsp;<input type="submit" class="btn btn-primary" name="cancel" ' .
-         'value="' . get_string('cancel') . '" onclick="javascript:history.go(-1)" />';
-} else {
-    if ((!$data->maxentries) ||
-            has_capability('mod/data:manageentries', $context) ||
-            (data_numentries($data) < ($data->maxentries - 1))) {
-        echo '&nbsp;<input type="submit" class="btn btn-primary" name="saveandadd" ' .
-             'value="' . get_string('saveandadd', 'data') . '" />';
-    }
+$redirectbackto = !empty($redirectbackto) ? $redirectbackto :
+    new \moodle_url('/mod/data/view.php', ['d' => $data->id]);
+$actionbuttons = html_writer::link($redirectbackto, get_string('cancel'), ['class' => 'btn btn-secondary']);
+$actionbuttons .= html_writer::empty_tag('input', ['type' => 'submit', 'name' => 'saveandview',
+    'value' => get_string('save'), 'class' => 'btn btn-primary ml-2']);
+
+if (!$rid && ((!$data->maxentries) ||
+        has_capability('mod/data:manageentries', $context) ||
+        (data_numentries($data) < ($data->maxentries - 1)))) {
+    $actionbuttons .= html_writer::empty_tag('input', ['type' => 'submit', 'name' => 'saveandadd',
+        'value' => get_string('saveandadd', 'data'), 'class' => 'btn btn-primary ml-2']);
 }
-echo '</div>';
+
+echo html_writer::div($actionbuttons, 'mdl-align mt-2');
 echo $OUTPUT->box_end();
 echo '</div></form>';
 

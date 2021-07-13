@@ -126,25 +126,36 @@ abstract class page_wiki {
         $PAGE->set_heading($PAGE->course->fullname);
 
         $this->set_url();
-
         if (isset($SESSION->wikipreviousurl) && is_array($SESSION->wikipreviousurl)) {
             $this->process_session_url();
         }
         $this->set_session_url();
 
         $this->create_navbar();
-        $this->setup_tabs();
 
         echo $OUTPUT->header();
         $wiki = $PAGE->activityrecord;
-        echo $OUTPUT->heading(format_string($wiki->name));
+        if (!$PAGE->has_secondary_navigation()) {
+            echo $OUTPUT->heading(format_string($wiki->name));
+        }
 
         echo $this->wikioutput->wiki_info();
 
-        // tabs are associated with pageid, so if page is empty, tabs should be disabled
-        if (!empty($this->page) && !empty($this->tabs)) {
-            echo $this->wikioutput->tabs($this->page, $this->tabs, $this->tabs_options);
+        if (!empty($this->page)) {
+            $this->print_action_bar($this->page->id, $PAGE->url);
         }
+    }
+
+    /**
+     * This method prints the action bar.
+     *
+     * @param int $pageid The page id.
+     * @param \moodle_url $pageurl The page url.
+     * @return string The HTML for the action bar.
+     */
+    protected function print_action_bar($pageid, $pageurl) {
+        $actionbar = new \mod_wiki\output\action_bar($pageid, $pageurl);
+        echo $this->wikioutput->render_action_bar($actionbar);
     }
 
     /**
@@ -302,13 +313,21 @@ class page_wiki_view extends page_wiki {
 
         $this->wikioutput->wiki_print_subwiki_selector($PAGE->activityrecord, $this->subwiki, $this->page, 'view');
 
-        if (!empty($this->page)) {
-            echo $this->wikioutput->prettyview_link($this->page);
-        }
-
         //echo $this->wikioutput->page_index();
 
         $this->print_pagetitle();
+    }
+
+    /**
+     * This method prints the action bar.
+     *
+     * @param int $pageid The page id.
+     * @param \moodle_url $pageurl The page url.
+     * @return string The HTML for the action bar.
+     */
+    protected function print_action_bar($pageid, $pageurl) {
+        $actionbar = new \mod_wiki\output\action_bar($pageid, $pageurl, true);
+        echo $this->wikioutput->render_action_bar($actionbar);
     }
 
     function print_content() {

@@ -78,7 +78,9 @@ if ($mform->is_cancelled()) {
 }
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading(format_string($folder->name));
+if (!$PAGE->has_secondary_navigation()) {
+    echo $OUTPUT->heading(format_string($folder->name));
+}
 echo $OUTPUT->box_start('generalbox foldertree');
 $mform->display();
 echo $OUTPUT->box_end();

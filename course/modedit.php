@@ -38,7 +38,9 @@ $type   = optional_param('type', '', PARAM_ALPHANUM); //TODO: hopefully will be 
 $sectionreturn = optional_param('sr', null, PARAM_INT);
 
 $url = new moodle_url('/course/modedit.php');
-$url->param('sr', $sectionreturn);
+if (!empty($sectionreturn)) {
+    $url->param('sr', $sectionreturn);
+}
 if (!empty($return)) {
     $url->param('return', $return);
 }

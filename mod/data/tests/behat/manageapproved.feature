@@ -32,14 +32,14 @@ Feature: Users can edit approved entries in database activities
       | Field name | Test field name |
       | Field description | Test field description |
     # To generate the default templates.
-    And I follow "Templates"
+    And I navigate to "Templates" in current page administration
     And I log out
     # Add an entry as a student.
     And I log in as "student1"
     And I am on "Course 1" course homepage
     And I add an entry to "Test database name" database with:
       | Test field name | Student entry |
-    And I press "Save and view"
+    And I press "Save"
     And I log out
     # Approve the student's entry as a teacher.
     And I log in as "teacher1"
@@ -67,14 +67,14 @@ Feature: Users can edit approved entries in database activities
       | Field name | Test field name |
       | Field description | Test field description |
     # To generate the default templates.
-    And I follow "Templates"
+    And I navigate to "Templates" in current page administration
     And I log out
     # Add an entry as a student.
     And I log in as "student1"
     And I am on "Course 1" course homepage
     And I add an entry to "Test database name" database with:
       | Test field name | Student entry |
-    And I press "Save and view"
+    And I press "Save"
     And I log out
     # Approve the student's entry as a teacher.
     And I log in as "teacher1"

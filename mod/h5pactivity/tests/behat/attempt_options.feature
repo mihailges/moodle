@@ -39,7 +39,7 @@ Feature: Attempts review settings.
     When I log in as "student1"
     And I am on "Course 1" course homepage
     And I follow "H5P package"
-    Then I should see "View my attempts"
+    Then "Attempts report" "link" should exist in current page administration
     And I should not see "This content is displayed in preview mode"
 
   Scenario: Student accessing an activity without attempt review
@@ -64,7 +64,7 @@ Feature: Attempts review settings.
     When I log in as "student1"
     And I am on "Course 1" course homepage
     And I follow "H5P package"
-    Then I should not see "View my attempts"
+    Then "Attempts report" "link" should not exist in current page administration
     And I should not see "This content is displayed in preview mode"
 
   Scenario: Student accessing an activity without tracking
@@ -88,7 +88,7 @@ Feature: Attempts review settings.
     When I log in as "student1"
     And I am on "Course 1" course homepage
     And I follow "H5P package"
-    Then I should not see "View my attempts"
+    Then "Attempts report" "link" should not exist in current page administration
     And I should see "This content is displayed in preview mode"
 
   Scenario: Teacher accessing an activity with attempt review
@@ -113,7 +113,7 @@ Feature: Attempts review settings.
     When I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "H5P package"
-    Then I should see "View all attempts (1 submitted)"
+    Then "Attempts report" "link" should exist in current page administration
     And I should see "This content is displayed in preview mode"
 
   Scenario: Teacher accessing an activity without attempt review
@@ -138,5 +138,5 @@ Feature: Attempts review settings.
     When I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "H5P package"
-    Then I should see "View all attempts (1 submitted)"
+    Then "Attempts report" "link" should exist in current page administration
     And I should see "This content is displayed in preview mode"

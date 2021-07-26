@@ -31,7 +31,7 @@ Feature: Restore Moodle 2 course backups with different user data settings
     And I am on "Course 1" course homepage
     And I add an entry to "Test database name" database with:
       | Test field name | Student entry |
-    And I press "Save and view"
+    And I press "Save"
     And I log out
     And I log in as "admin"
     And I backup "Course 1" course using this options:

@@ -34,7 +34,7 @@ Feature: Users can comment on wiki pages
     And I log in as "student1"
     And I am on "Course 1" course homepage
     And I follow "Test wiki name"
-    And I follow "Comments"
+    And I select "Comments" from the "jump" singleselect
     And I follow "Add comment"
     And I set the following fields to these values:
       | Comment | student 1 original comment |
@@ -60,7 +60,7 @@ Feature: Users can comment on wiki pages
     And I log in as "student2"
     And I am on "Course 1" course homepage
     And I follow "Test wiki name"
-    And I follow "Comments"
+    And I select "Comments" from the "jump" singleselect
     Then "Edit" "link" should not exist in the "wiki-comments" "table"
     And "Delete" "link" should not exist in the "wiki-comments" "table"
 
@@ -70,6 +70,6 @@ Feature: Users can comment on wiki pages
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "Test wiki name"
-    And I follow "Comments"
+    And I select "Comments" from the "jump" singleselect
     Then "Edit" "link" should not exist in the "wiki-comments" "table"
     And "Delete" "link" should exist in the "wiki-comments" "table"

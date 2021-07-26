@@ -35,7 +35,7 @@ Feature: A history of each wiki page is available
     When I log in as "student1"
     And I am on "Course 1" course homepage
     And I follow "Test wiki name"
-    And I follow "Edit"
+    And I select "Edit" from the "jump" singleselect
     And I set the following fields to these values:
       | HTML format | Second edition |
     And I press "Save"
@@ -43,25 +43,25 @@ Feature: A history of each wiki page is available
     And I log in as "student2"
     And I am on "Course 1" course homepage
     And I follow "Test wiki name"
-    And I follow "Edit"
+    And I select "Edit" from the "jump" singleselect
     And I set the following fields to these values:
       | HTML format | Third edition |
     And I press "Save"
-    And I follow "History"
+    And I select "History" from the "jump" singleselect
     # Checking that there are 3 history items (the first one is are th)
     And "//*[@id='region-main']/descendant::table/descendant::tr[4]" "xpath_element" should exist
     And I click on "1" "link" in the "Teacher 1" "table_row"
     And I should see "First edition"
     And I should see "Teacher 1"
-    And I follow "History"
+    And I select "History" from the "jump" singleselect
     And I click on "2" "link" in the "Student 1" "table_row"
     And I should see "Second edition"
     And I should see "Student 1"
-    And I follow "History"
+    And I select "History" from the "jump" singleselect
     And I click on "3" "link" in the "Student 2" "table_row"
     And I should see "Third edition"
     And I should see "Student 2" in the "region-main" "region"
-    And I follow "History"
+    And I select "History" from the "jump" singleselect
     And I click on "comparewith" "radio" in the "Student 1" "table_row"
     And I click on "compare" "radio" in the "Teacher 1" "table_row"
     And I press "Compare selected"

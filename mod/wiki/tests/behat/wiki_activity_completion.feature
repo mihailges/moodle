@@ -42,15 +42,15 @@ Feature: View activity completion information in the Wiki activity
     And I am on "Course 1" course homepage
     When I follow "Music history"
     Then "Music history" should have the "View" completion condition
-    And I click on "Edit" "link" in the "region-main" "region"
+    And I select "Edit" from the "jump" singleselect
     And "Music history" should have the "View" completion condition
-    And I follow "Comments"
+    And I select "Comments" from the "jump" singleselect
     And "Music history" should have the "View" completion condition
-    And I follow "Map"
+    And I select "Map" from the "jump" singleselect
     And "Music history" should have the "View" completion condition
-    And I follow "Files"
+    And I select "Files" from the "jump" singleselect
     And "Music history" should have the "View" completion condition
-    And I follow "Administration"
+    And I select "Administration" from the "jump" singleselect
     And "Music history" should have the "View" completion condition
 
   Scenario: View automatic completion items as a student

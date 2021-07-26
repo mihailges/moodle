@@ -47,7 +47,7 @@ Feature: A teacher can set a wiki to be collaborative or individual
     And I am on "Course 1" course homepage
     When I follow "Collaborative wiki name"
     Then I should see "Collaborative teacher1 edition"
-    And I follow "Edit"
+    And I select "Edit" from the "jump" singleselect
     And I set the following fields to these values:
       | HTML format | Collaborative student1 edition |
     And I press "Save"

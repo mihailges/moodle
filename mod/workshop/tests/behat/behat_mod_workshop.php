@@ -93,7 +93,7 @@ class behat_mod_workshop extends behat_base {
         $this->execute("behat_navigation::go_to_breadcrumb_location", $workshopname);
 
         $this->execute('behat_navigation::i_navigate_to_in_current_page_administration',
-            get_string('editassessmentform', 'workshop'));
+            get_string('assessmentform', 'workshop'));
 
         $this->execute("behat_forms::i_set_the_following_fields_to_these_values", $table);
 

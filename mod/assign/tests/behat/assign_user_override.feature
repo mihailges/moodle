@@ -62,7 +62,7 @@ Feature: Assign user override
   @javascript
   Scenario: Allow a user to have a different due date
     Given I am on the "Test assignment name" Activity page logged in as teacher1
-    When I navigate to "Edit settings" in current page administration
+    When I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Allow submissions from | disabled             |
       | Due date               | ##1 Jan 2000 08:00## |
@@ -89,7 +89,7 @@ Feature: Assign user override
   @javascript
   Scenario: Allow a user to have a different cut off date
     Given I am on the "Test assignment name" Activity page logged in as teacher1
-    When I navigate to "Edit settings" in current page administration
+    When I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Due date               | disabled             |
       | Allow submissions from | disabled             |
@@ -116,7 +116,7 @@ Feature: Assign user override
   @javascript
   Scenario: Allow a user to have a different start date
     Given I am on the "Test assignment name" Activity page logged in as teacher1
-    When I navigate to "Edit settings" in current page administration
+    When I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Due date               | disabled                 |
       | Allow submissions from | ##1 January 2030 08:00## |
@@ -214,7 +214,7 @@ Feature: Assign user override
   @javascript
   Scenario: Create a user override when the assignment is not available to the student
     Given I am on the "Test assignment name" Activity page logged in as teacher1
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And I set the field "Availability" to "Hide from students"
     And I click on "Save and display" "button"

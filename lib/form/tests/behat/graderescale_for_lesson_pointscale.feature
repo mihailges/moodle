@@ -49,6 +49,6 @@ Feature: Using the lesson activities which support point scale
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "Test lesson name"
-    When I navigate to "Edit settings" in current page administration
+    When I navigate to "Settings" in current page administration
     And I expand all fieldsets
     Then the "Maximum grade" "field" should be disabled

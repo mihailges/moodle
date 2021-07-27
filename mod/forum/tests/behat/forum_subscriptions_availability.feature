@@ -51,7 +51,7 @@ Feature: As a teacher I need to see an accurate list of subscribed users
     And I should see "Student 2"
     And I should see "Student 3"
     And I follow "Forced Forum 1"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And I click on "Add restriction..." "button"
     And I click on "Grouping" "button" in the "Add restriction..." "dialogue"
@@ -74,7 +74,7 @@ Feature: As a teacher I need to see an accurate list of subscribed users
       | section     | 1                              |
     And I am on "Course 1" course homepage
     And I follow "Forced Forum 2"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Subscription mode | Forced subscription |
       | Availability      | Show on course page |
@@ -98,7 +98,7 @@ Feature: As a teacher I need to see an accurate list of subscribed users
       | section     | 1                              |
     And I am on "Course 1" course homepage
     And I follow "Forced Forum 2"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Subscription mode | Forced subscription |
       | Availability      | Hide from students |
@@ -124,7 +124,7 @@ Feature: As a teacher I need to see an accurate list of subscribed users
     And I should see "Student 2"
     And I should see "Student 3"
     And I follow "Forced Forum 1"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And I click on "Add restriction..." "button"
     And I click on "Grouping" "button" in the "Add restriction..." "dialogue"

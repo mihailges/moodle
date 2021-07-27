@@ -122,7 +122,7 @@ Feature: Assign reset
     When I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "Test assignment name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
         | blindmarking | 1 |
     And I press "Save"

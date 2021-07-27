@@ -34,7 +34,7 @@ Feature: Using the forum activities which support point scale
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "Test forum name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And I set the field "Ratings > Aggregate type" to "Count of ratings"
     And I set the field "Ratings > Type" to "Point"
@@ -44,6 +44,6 @@ Feature: Using the forum activities which support point scale
     And I set the field "rating" to "30"
     And I am on "Course 1" course homepage
     And I follow "Test forum name"
-    When I navigate to "Edit settings" in current page administration
+    When I navigate to "Settings" in current page administration
     And I expand all fieldsets
     Then the "Maximum grade" "field" should be disabled

@@ -27,20 +27,20 @@ Feature: In an assignment, limit submittable file types
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "Test assignment name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     When I set the field "Accepted file types" to "image/png;doesntexist;.anything;unreal/mimetype;nodot"
     And I press "Save and display"
     And I should see "Unknown file types: .doesntexist, .anything, unreal/mimetype, .nodot"
     And I set the field "Accepted file types" to "image/png;spreadsheet"
     And I press "Save and display"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And the field "Accepted file types" matches value "image/png,spreadsheet"
     And I set the field "Accepted file types" to ""
     And I press "Choose"
     And I set the field "Image files" to "1"
     And I press "Save changes"
     And I press "Save and display"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     Then the field "Accepted file types" matches value "image"
 
   @javascript @_file_upload

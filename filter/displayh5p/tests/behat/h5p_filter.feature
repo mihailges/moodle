@@ -27,7 +27,7 @@ Feature: Render H5P content using filters
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "PageName1"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the field "Page content" to "<div>Go for it</div>https://moodle.h5p.com/content/1290772960722742119/embed"
     When I click on "Save and display" "button"
     And I wait until the page is ready
@@ -39,7 +39,7 @@ Feature: Render H5P content using filters
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "PageName1"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
 #   This content won't be displayed, so this scenario shouldn't be labeled as external.
     And I set the field "Page content" to "<a href='https://moodle.h5p.com/content/1290772960722742119/embed'>https://moodle.h5p.com/content/1290772960722742119/embed</a>"
     When I click on "Save and display" "button"
@@ -51,7 +51,7 @@ Feature: Render H5P content using filters
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "PageName1"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
 #   This content won't be displayed, so this scenario shouldn't be labeled as external.
     And I set the field "Page content" to "<a href='https://moodle.h5p.com/content/1290772960722742119/embed'>Here you are the content</a>"
     When I click on "Save and display" "button"
@@ -68,7 +68,7 @@ Feature: Render H5P content using filters
     And I upload "h5p/tests/fixtures/ipsums.h5p" file to "Select files" filemanager
     And I press "Save and return to course"
     And I follow "PageName1"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I click on "Insert H5P" "button" in the "#fitem_id_page" "css_element"
     And I click on "Browse repositories..." "button" in the "Insert H5P" "dialogue"
     And I click on "Server files" "link" in the ".fp-repo-area" "css_element"
@@ -105,7 +105,7 @@ Feature: Render H5P content using filters
     And I upload "h5p/tests/fixtures/ipsums.h5p" file to "Select files" filemanager
     And I press "Save and return to course"
     And I follow "PageName1"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I click on "Insert H5P" "button" in the "#fitem_id_page" "css_element"
     And I click on "Browse repositories..." "button" in the "Insert H5P" "dialogue"
     And I click on "Server files" "link" in the ".fp-repo-area" "css_element"
@@ -130,7 +130,7 @@ Feature: Render H5P content using filters
     And I upload "h5p/tests/fixtures/ipsums.h5p" file to "Select files" filemanager
     And I press "Save and return to course"
     And I follow "PageName1"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I click on "Insert H5P" "button" in the "#fitem_id_page" "css_element"
     And I click on "Browse repositories..." "button" in the "Insert H5P" "dialogue"
     And I click on "Server files" "link" in the ".fp-repo-area" "css_element"
@@ -154,7 +154,7 @@ Feature: Render H5P content using filters
     And I upload "h5p/tests/fixtures/ipsums.h5p" file to "Select files" filemanager
     And I press "Save and return to course"
     And I follow "PageName2"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I click on "Insert H5P" "button" in the "#fitem_id_page" "css_element"
     And I click on "Browse repositories..." "button" in the "Insert H5P" "dialogue"
     And I click on "Server files" "link" in the ".fp-repo-area" "css_element"
@@ -197,7 +197,7 @@ Feature: Render H5P content using filters
 # Add H5P content to the page.
     And I am on "Course 1" course homepage with editing mode on
     And I follow "PageName1"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     When I click on "Insert H5P" "button" in the "#fitem_id_page" "css_element"
     And I click on "Browse repositories..." "button" in the "Insert H5P" "dialogue"
     And I click on "Private files" "link" in the ".fp-repo-area" "css_element"

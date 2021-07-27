@@ -23,8 +23,7 @@ Feature: Region main settings menu
     And I am on "Course 1" course homepage
     And "#region-main-settings-menu [role=button]" "css_element" should not exist
     And I follow "Choice name"
-    And I click on "#region-main-settings-menu [role=button]" "css_element"
-    And I choose "Edit settings" in the open action menu
+    And I navigate to "Settings" in current page administration
     And I should see "Updating: Choice"
     And I navigate to course participants
     And I click on "#region-main-settings-menu [role=button]" "css_element"

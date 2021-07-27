@@ -25,7 +25,7 @@ Feature: Add h5ps to Atto
     And I change window size to "large"
     And I am on "Course 1" course homepage
     And I follow "PageName1"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I click on "Insert H5P" "button" in the "#fitem_id_page" "css_element"
     And I set the field with xpath "//input[@data-region='h5pfile']" to "https://moodle.h5p.com/content/1290772960722742119"
     And I click on "Insert H5P" "button" in the "Insert H5P" "dialogue"
@@ -44,7 +44,7 @@ Feature: Add h5ps to Atto
     And I click on "Save changes" "button"
     And I am on "Course 1" course homepage
     And I follow "PageName1"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I click on "Insert H5P" "button" in the "#fitem_id_page" "css_element"
     And I click on "Browse repositories..." "button" in the "Insert H5P" "dialogue"
     And I click on "Private files" "link" in the ".fp-repo-area" "css_element"
@@ -61,7 +61,7 @@ Feature: Add h5ps to Atto
     And I change window size to "large"
     And I am on "Course 1" course homepage
     And I follow "PageName1"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I click on "Insert H5P" "button" in the "#fitem_id_page" "css_element"
 #   This is not a real external URL, so this scenario shouldn't be labeled as external.
     And I set the field with xpath "//input[@data-region='h5pfile']" to "ftp://moodle.h5p.com/content/1290772960722742119"
@@ -78,7 +78,7 @@ Feature: Add h5ps to Atto
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "PageName1"
-    When I navigate to "Edit settings" in current page administration
+    When I navigate to "Settings" in current page administration
     Then "Insert H5P" "button" should not exist
 
   @javascript
@@ -89,7 +89,7 @@ Feature: Add h5ps to Atto
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "PageName1"
-    When I navigate to "Edit settings" in current page administration
+    When I navigate to "Settings" in current page administration
     And I click on "Insert H5P" "button"
     Then I should not see "H5P URL" in the "Insert H5P" "dialogue"
     And I should see "H5P file upload" in the "Insert H5P" "dialogue"
@@ -103,7 +103,7 @@ Feature: Add h5ps to Atto
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "PageName1"
-    When I navigate to "Edit settings" in current page administration
+    When I navigate to "Settings" in current page administration
     And I click on "Insert H5P" "button"
     Then I should not see "H5P file upload" in the "Insert H5P" "dialogue"
     And I should see "H5P URL" in the "Insert H5P" "dialogue"
@@ -117,7 +117,7 @@ Feature: Add h5ps to Atto
     And I click on "Save changes" "button"
     And I am on "Course 1" course homepage
     And I follow "PageName1"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I click on "Insert H5P" "button" in the "#fitem_id_page" "css_element"
 #   H5P file content
     And I click on "Browse repositories..." "button" in the "Insert H5P" "dialogue"
@@ -132,7 +132,7 @@ Feature: Add h5ps to Atto
     Then I should not see "reveal"
     And I should see "Cloudberries"
     And I switch to the main frame
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I click on ".h5p-placeholder" "css_element"
     And I click on "Insert H5P" "button" in the "#fitem_id_page" "css_element"
 #   External URL
@@ -153,7 +153,7 @@ Feature: Add h5ps to Atto
     And I click on "Save changes" "button"
     And I am on "Course 1" course homepage
     And I follow "PageName1"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I click on "Insert H5P" "button" in the "#fitem_id_page" "css_element"
     And I click on "Browse repositories..." "button" in the "Insert H5P" "dialogue"
     And I click on "Private files" "link" in the ".fp-repo-area" "css_element"
@@ -170,7 +170,7 @@ Feature: Add h5ps to Atto
     And I should not see "Embed"
     And I should not see "Rights of use"
     And I switch to the main frame
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I click on ".h5p-placeholder" "css_element"
     And I click on "Insert H5P" "button" in the "#fitem_id_page" "css_element"
     And I click on "H5P options" "link"
@@ -186,7 +186,7 @@ Feature: Add h5ps to Atto
     And I should not see "Embed"
     And I should not see "Rights of use"
     And I switch to the main frame
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I click on ".h5p-placeholder" "css_element"
     And I click on "Insert H5P" "button" in the "#fitem_id_page" "css_element"
 #   Embed and copyright buttons displayed. Download not displayed
@@ -209,7 +209,7 @@ Feature: Add h5ps to Atto
     And I change window size to "large"
     And I am on "Course 1" course homepage
     And I follow "PageName1"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I click on "Insert H5P" "button" in the "#fitem_id_page" "css_element"
     And I set the field with xpath "//input[@data-region='h5pfile']" to "https://moodle.h5p.com/content/1291366510035871129"
     And I click on "H5P options" "link"
@@ -221,7 +221,7 @@ Feature: Add h5ps to Atto
     And I should see "Far far away"
     And I should not see "Embed"
     And I switch to the main frame
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I click on ".h5p-placeholder" "css_element"
     And I click on "Insert H5P" "button" in the "#fitem_id_page" "css_element"
     And I click on "H5P options" "link"
@@ -241,7 +241,7 @@ Feature: Add h5ps to Atto
     And I click on "Save changes" "button"
     And I am on "Course 1" course homepage
     And I follow "PageName1"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I click on "Insert H5P" "button" in the "#fitem_id_page" "css_element"
     And I click on "Browse repositories..." "button" in the "Insert H5P" "dialogue"
     And I click on "Private files" "link" in the ".fp-repo-area" "css_element"

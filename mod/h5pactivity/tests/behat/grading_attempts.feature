@@ -61,7 +61,7 @@ Feature: Change grading options in an H5P activity
 
   @javascript
   Scenario: Change setting to first attempt
-    When I navigate to "Edit settings" in current page administration
+    When I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Grading method | First attempt |
     And I click on "Save and return to course" "button"
@@ -73,7 +73,7 @@ Feature: Change grading options in an H5P activity
 
   @javascript
   Scenario: Change setting to first attempt
-    When I navigate to "Edit settings" in current page administration
+    When I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Grading method | Last attempt |
     And I click on "Save and return to course" "button"
@@ -85,7 +85,7 @@ Feature: Change grading options in an H5P activity
 
   @javascript
   Scenario: Change setting to average attempt
-    When I navigate to "Edit settings" in current page administration
+    When I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Grading method | Average grade |
     And I click on "Save and return to course" "button"
@@ -97,7 +97,7 @@ Feature: Change grading options in an H5P activity
 
   @javascript
   Scenario: Change setting to manual grading
-    When I navigate to "Edit settings" in current page administration
+    When I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Grading method | Don't calculate a grade |
     And I click on "Save and return to course" "button"
@@ -109,7 +109,7 @@ Feature: Change grading options in an H5P activity
 
   @javascript
   Scenario: Disable tracking
-    When I navigate to "Edit settings" in current page administration
+    When I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Enable attempt tracking | No |
     And I click on "Save and return to course" "button"
@@ -122,7 +122,7 @@ Feature: Change grading options in an H5P activity
   @javascript
   Scenario: Reescale existing grades changing the maximum grade
     # First we set to average and recalculate grades.
-    When I navigate to "Edit settings" in current page administration
+    When I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Grading method | Average grade |
     And I click on "Save and return to course" "button"
@@ -135,7 +135,7 @@ Feature: Change grading options in an H5P activity
     # Now we modify the maximum grade with rescaling.
     When I am on "Course 1" course homepage
     And I follow "Awesome H5P package"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Rescale existing grades | Yes |
       | Maximum grade           | 50  |
@@ -149,7 +149,7 @@ Feature: Change grading options in an H5P activity
   @javascript
   Scenario: Change maximum grade without rescaling grade
     # First we set to average and recalculate grades.
-    When I navigate to "Edit settings" in current page administration
+    When I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Grading method | Average grade |
     And I click on "Save and return to course" "button"
@@ -162,7 +162,7 @@ Feature: Change grading options in an H5P activity
     # Now we modify the maximum grade with rescaling.
     When I am on "Course 1" course homepage
     And I follow "Awesome H5P package"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Rescale existing grades | No |
       | Maximum grade           | 50 |

@@ -66,7 +66,7 @@ Feature: Hide grader identities identity from students
     When I log in as "teacher1"
     And I follow "Course 1"
     And I follow "Test assignment name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I follow "Expand all"
     And I set the field "Hide grader identity from students" to "1"
     And I press "Save and return to course"

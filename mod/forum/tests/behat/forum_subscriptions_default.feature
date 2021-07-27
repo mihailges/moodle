@@ -22,7 +22,7 @@ Feature: A user can control their default discussion subscription settings
     And I log in as "admin"
     And I am on "Course 1" course homepage
     And I follow "Test forum name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Subscription mode | Optional subscription |
     And I press "Save and return to course"
@@ -65,7 +65,7 @@ Feature: A user can control their default discussion subscription settings
 
   Scenario: Creating a new discussion in an automatic forum follows forum subscription
     Given I follow "Test forum name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Subscription mode | Auto subscription |
     And I press "Save and return to course"
@@ -87,7 +87,7 @@ Feature: A user can control their default discussion subscription settings
   Scenario: Replying to an existing discussion in an automatic forum follows forum subscription
     Given I am on "Course 1" course homepage
     And I follow "Test forum name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Subscription mode | Optional subscription |
     And I press "Save and return to course"
@@ -112,7 +112,7 @@ Feature: A user can control their default discussion subscription settings
   @javascript
   Scenario: Replying to an existing discussion in an automatic forum which has been unsubscribed from follows user preferences
     Given I follow "Test forum name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Subscription mode | Auto subscription |
     And I press "Save and return to course"

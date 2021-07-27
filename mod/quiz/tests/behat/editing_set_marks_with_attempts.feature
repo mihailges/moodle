@@ -72,7 +72,7 @@ Feature: Edit quiz marks with attempts
     And I should not see "3.000"
     And I should not see "Total of marks: 5.000"
     And I follow "Quiz 1"
-    When I navigate to "Edit settings" in current page administration
+    When I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Decimal places in grades | 3 |
       | Decimal places in question grades | 5 |

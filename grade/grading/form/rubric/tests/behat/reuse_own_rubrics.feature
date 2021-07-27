@@ -21,7 +21,7 @@ Feature: Reuse my rubrics in other activities
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "Test assignment 1"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Grading method | Rubric |
     And I press "Save and return to course"
@@ -37,7 +37,7 @@ Feature: Reuse my rubrics in other activities
     And I am on "Course 1" course homepage
     And I am on "Course 1" course homepage
     And I follow "Test assignment 2"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Grading method | Rubric |
     And I press "Save and return to course"

@@ -23,7 +23,7 @@ Feature: View activity completion information in the URL resource
       | url      | Music history | URL description | C1     | url1     | https://moodle.org/ |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And I set the following fields to these values:
       | Enable completion tracking | Yes |
@@ -33,7 +33,7 @@ Feature: View activity completion information in the URL resource
   Scenario: View automatic completion items in automatic display mode
     Given I am on "Course 1" course homepage with editing mode on
     And I follow "Music history"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Display             | Automatic                                         |
       | Completion tracking | Show activity as complete when conditions are met |
@@ -52,7 +52,7 @@ Feature: View activity completion information in the URL resource
   Scenario: View automatic completion items in embed display mode
     Given I am on "Course 1" course homepage with editing mode on
     And I follow "Music history"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Display             | Embed                                             |
       | Completion tracking | Show activity as complete when conditions are met |
@@ -71,7 +71,7 @@ Feature: View activity completion information in the URL resource
   Scenario: View automatic completion items in open display mode
     Given I am on "Course 1" course homepage with editing mode on
     And I follow "Music history"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Display             | Open                                              |
       | Completion tracking | Show activity as complete when conditions are met |
@@ -90,7 +90,7 @@ Feature: View activity completion information in the URL resource
   Scenario: View automatic completion items in pop-up display mode
     Given I am on "Course 1" course homepage with editing mode on
     And I follow "Music history"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Display             | In pop-up                                         |
       | Completion tracking | Show activity as complete when conditions are met |
@@ -110,7 +110,7 @@ Feature: View activity completion information in the URL resource
   Scenario: Use manual completion
     Given I am on "Course 1" course homepage with editing mode on
     And I follow "Music history"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Display             | Automatic                                            |
       | Completion tracking | Students can manually mark the activity as completed |
@@ -130,7 +130,7 @@ Feature: View activity completion information in the URL resource
   @javascript
   Scenario Outline: The manual completion button will be shown on the course page for Open, In pop-up and New window display mode if the Show activity completion conditions is set to No
     Given I am on "Course 1" course homepage with editing mode on
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And I set the following fields to these values:
       | Enable completion tracking | Yes |

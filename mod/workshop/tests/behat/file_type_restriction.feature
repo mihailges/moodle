@@ -28,7 +28,7 @@ Feature: File types of the submission and feedback attachments can be limitted
     Given I log in as "teacher1"
     And I am on "Course1" course homepage
     And I follow "TestWorkshop"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And I set the field "Submission attachment allowed file types" to "image"
     And I press "Save and display"
@@ -68,7 +68,7 @@ Feature: File types of the submission and feedback attachments can be limitted
       | id_description__idx_0_editor | Aspect1 |
       | id_description__idx_1_editor | Aspect2 |
       | id_description__idx_2_editor |         |
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And I set the field "Maximum number of overall feedback attachments" to "2"
     And I set the field "Feedback attachment allowed file types" to "PHP"

@@ -30,7 +30,7 @@ Feature: Course overview block show users their progress on courses
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     And I follow "Test choice 1"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Completion tracking | Show activity as complete when conditions are met |
       | id_completionview   | 1                                                 |

@@ -103,7 +103,7 @@ Feature: Lesson group override
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     When I follow "Test lesson name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Re-takes allowed | 0 |
     And I press "Save and display"
@@ -146,7 +146,7 @@ Feature: Lesson group override
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     When I follow "Test lesson name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Password protected lesson | Yes |
       | id_password               | moodle_rules |
@@ -193,7 +193,7 @@ Feature: Lesson group override
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     When I follow "Test lesson name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | id_deadline_enabled | 1 |
       | deadline[day]       | 1 |
@@ -230,7 +230,7 @@ Feature: Lesson group override
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     When I follow "Test lesson name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | id_available_enabled | 1 |
       | available[day]       | 1 |
@@ -267,7 +267,7 @@ Feature: Lesson group override
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     When I follow "Test lesson name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Re-takes allowed | 1 |
     And I press "Save and display"
@@ -309,7 +309,7 @@ Feature: Lesson group override
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     When I follow "Test lesson name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | id_available_enabled | 1 |
       | available[day]       | 1 |

@@ -40,11 +40,11 @@ Feature: Group assignment submissions
     And "//tr[contains(., 'Student 2')][contains(., 'Default group')]" "xpath_element" should exist
     And "//tr[contains(., 'Student 3')][contains(., 'Default group')]" "xpath_element" should exist
     And I follow "Test assignment name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Group mode | Separate groups |
     And I press "Save and return to course"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Group mode | Separate groups |
     And I press "Save and display"
@@ -250,7 +250,7 @@ Feature: Group assignment submissions
     And I log in as "admin"
     And I am on "Course 1" course homepage with editing mode on
     And I follow "Test assignment name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Students submit in groups | Yes |
       | Grouping for student groups | Grouping 1 |
@@ -339,7 +339,7 @@ Feature: Group assignment submissions
     And I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     And I follow "Test assignment name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Require students to click the submit button | Yes |
       | Students submit in groups | Yes |

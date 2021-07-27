@@ -23,7 +23,7 @@ Feature: View activity completion information in the Workshop activity
       | workshop | Music history | Test workshop description | C1     | workshop1 | 1                  |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And I set the following fields to these values:
       | Enable completion tracking | Yes |
@@ -31,7 +31,7 @@ Feature: View activity completion information in the Workshop activity
     And I press "Save and display"
     And I turn editing mode on
     And I follow "Music history"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Completion tracking | Show activity as complete when conditions are met |
       | Require view        | 1                                                 |
@@ -97,7 +97,7 @@ Feature: View activity completion information in the Workshop activity
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "Music history"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And I set the field "Completion tracking" to "Students can manually mark the activity as completed"
     And I press "Save and display"

@@ -24,7 +24,7 @@ Feature: View activity completion information in the Page resource
       | intro       | A lesson learned in life |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And I set the following fields to these values:
       | Enable completion tracking | Yes |
@@ -34,7 +34,7 @@ Feature: View activity completion information in the Page resource
   Scenario: View automatic completion items
     Given I am on "Course 1" course homepage with editing mode on
     And I follow "Music history"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Completion tracking  | Show activity as complete when conditions are met |
       | completionview       | 1                                                 |
@@ -53,7 +53,7 @@ Feature: View activity completion information in the Page resource
   Scenario: Use manual completion
     Given I am on "Course 1" course homepage with editing mode on
     And I follow "Music history"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Completion tracking | Students can manually mark the activity as completed |
     And I press "Save and return to course"
@@ -71,14 +71,14 @@ Feature: View activity completion information in the Page resource
 
   Scenario: The manual completion button will not be shown on the course page if the Show activity completion conditions is set to No
     Given I am on "Course 1" course homepage with editing mode on
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And I set the following fields to these values:
       | Enable completion tracking | Yes |
       | Show activity completion conditions | No  |
     And I press "Save and display"
     And I follow "Music history"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Completion tracking | Students can manually mark the activity as completed |
     And I press "Save and return to course"

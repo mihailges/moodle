@@ -18,12 +18,12 @@ Feature: Configure page appearance
     Given I am on "Course 1" course homepage
     When I follow "PageName1"
     Then I should see "PageName1" in the "region-main" "region"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I follow "Appearance"
     When I click on "Display page name" "checkbox"
     And I press "Save and display"
     Then I should not see "PageName1" in the "region-main" "region"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I follow "Appearance"
     When I click on "Display page name" "checkbox"
     And I press "Save and display"
@@ -34,12 +34,12 @@ Feature: Configure page appearance
     Given I am on "Course 1" course homepage
     When I follow "PageName1"
     Then I should not see "PageDesc1" in the "region-main" "region"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I follow "Appearance"
     When I click on "Display page description" "checkbox"
     And I press "Save and display"
     Then I should see "PageDesc1" in the "region-main" "region"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I follow "Appearance"
     When I click on "Display page description" "checkbox"
     And I press "Save and display"
@@ -50,12 +50,12 @@ Feature: Configure page appearance
     Given I am on "Course 1" course homepage
     When I follow "PageName1"
     Then I should see "Last modified:" in the "region-main" "region"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I follow "Appearance"
     When I click on "Display last modified date" "checkbox"
     And I press "Save and display"
     Then I should not see "Last modified:" in the "region-main" "region"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I follow "Appearance"
     When I click on "Display last modified date" "checkbox"
     And I press "Save and display"

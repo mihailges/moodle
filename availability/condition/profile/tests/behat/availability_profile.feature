@@ -97,7 +97,7 @@ Feature: availability_profile
 
     # Edit it again and check the setting still works.
     When I follow "P1"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I expand all fieldsets
     Then the field "User profile field" matches value "Super field"
     And the field "Value to compare against" matches value "Bananaman"

@@ -42,7 +42,7 @@ Feature: Display the IMS content package description in the IMSCP and optionally
     And I click on "Save and display" "button"
     And I am on "Course 1" course homepage
     And I follow "Test IMS content package"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And the following fields match these values:
       | Display description on course page | |
     And I set the following fields to these values:
@@ -63,7 +63,7 @@ Feature: Display the IMS content package description in the IMSCP and optionally
     And I click on "Save and display" "button"
     And I am on "Course 1" course homepage
     And I follow "Test IMS content package"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And the following fields match these values:
       | Display description on course page | |
     And I press "Save and return to course"

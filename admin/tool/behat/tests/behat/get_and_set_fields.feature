@@ -56,14 +56,14 @@ Feature: Verify that all form fields values can be get and set
     And I press "Save"
     Then I should see "Student page contents" in the "region-main" "region"
     # Select (multi-select) - Checking "I set the field".
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I expand all fieldsets
     # Checkbox - Checking "I set the field" and "The field matches value" ticked.
     And I set the field "Force format" to "1"
     And I press "Save and return to course"
     And I should see "Test this one"
     And I follow "Test this one"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And the field "Force format" matches value "1"
     And the field "Force format" does not match value ""
@@ -72,7 +72,7 @@ Feature: Verify that all form fields values can be get and set
     And I press "Save and return to course"
     And I should see "Test this one"
     And I follow "Test this one"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And the field "Force format" matches value ""
     And the field "Force format" does not match value "1"
@@ -82,7 +82,7 @@ Feature: Verify that all form fields values can be get and set
     And I press "Save and return to course"
     And I should see "Test this one"
     And I follow "Test this one"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And the following fields match these values:
       | Force format | 1 |
@@ -94,7 +94,7 @@ Feature: Verify that all form fields values can be get and set
     And I press "Save and return to course"
     And I should see "Test this one"
     And I follow "Test this one"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And the following fields match these values:
       | Force format | |
@@ -106,7 +106,7 @@ Feature: Verify that all form fields values can be get and set
     # Select (simple) - Checking "I set the field".
     And I set the field "Group mode" to "Separate groups"
     And I press "Save and display"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And the following fields match these values:
       | Default format | NWiki |
       | Group mode | Separate groups |
@@ -127,7 +127,7 @@ Feature: Verify that all form fields values can be get and set
       | allowupdate      | 1                            |
     And I am on "Course 1" course homepage
     And I follow "Test choice name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the field "Option 1" to "one"
     And I set the field "Option 2" to "two"
     And I set the field "Option 3" to "three"
@@ -140,12 +140,12 @@ Feature: Verify that all form fields values can be get and set
     And the field "two" matches value ""
     # Check if field xpath set/match works.
     And I am on "Course 1" course homepage
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the field with xpath "//input[@id='id_idnumber']" to "Course id number"
     And the field with xpath "//input[@name='idnumber']" matches value "Course id number"
     And the field with xpath "//input[@name='idnumber']" does not match value ""
     And I press "Save and display"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And the field "Course ID number" matches value "Course id number"
 
   Scenario: with JS disabled all form fields getters and setters works as expected
@@ -176,7 +176,7 @@ Feature: Verify that all form fields values can be get and set
     And the "available[day]" "field" should be enabled
     And the field "deadline[enabled]" matches value "1"
     And I press "Save and display"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And the field "available[enabled]" matches value "1"
     And the "available[day]" "field" should be enabled
     And the field "deadline[enabled]" matches value "1"
@@ -185,12 +185,12 @@ Feature: Verify that all form fields values can be get and set
     # Advanced checkbox - Checking "I set the field" and "The field matches value" ticked.
     And I am on "Course 1" course homepage
     And I follow "Test this one"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the field "Display description on course page" to "1"
     And I press "Save and return to course"
     And I should see "Test this one"
     And I follow "Test this one"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And the field "Display description on course page" matches value "1"
     And the field "Display description on course page" does not match value ""
     # Advanced checkbox - Checking "I set the field" and "The field matches value" unticked.
@@ -198,7 +198,7 @@ Feature: Verify that all form fields values can be get and set
     And I press "Save and return to course"
     And I should see "Test this one"
     And I follow "Test this one"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And the field "Display description on course page" matches value ""
     And the field "Display description on course page" does not match value "1"
     # Advanced checkbox - Checking "I set the following fields to these values:" and "The following fields match these values" ticked.
@@ -207,7 +207,7 @@ Feature: Verify that all form fields values can be get and set
     And I press "Save and return to course"
     And I should see "Test this one"
     And I follow "Test this one"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And the following fields match these values:
       | Display description on course page | 1 |
     And the following fields do not match these values:
@@ -218,7 +218,7 @@ Feature: Verify that all form fields values can be get and set
     And I press "Save and return to course"
     And I should see "Test this one"
     And I follow "Test this one"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And the following fields match these values:
       | Display description on course page | |
     And the following fields do not match these values:

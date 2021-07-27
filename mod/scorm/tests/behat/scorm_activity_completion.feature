@@ -18,7 +18,7 @@ Feature: View activity completion in the SCORM activity
       | teacher1 | C1 | editingteacher |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And I set the following fields to these values:
       | Enable completion tracking | Yes |
@@ -100,7 +100,7 @@ Feature: View activity completion in the SCORM activity
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "Music history"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And I set the field "Completion tracking" to "Students can manually mark the activity as completed"
     And I press "Save and display"

@@ -33,7 +33,7 @@ Feature: Set availability dates for an assignment
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "Assignment name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I follow "Expand all"
     # Set 'Allow submissions from' to tomorrow at noon.
     And I set the field "Allow submissions from" to "##tomorrow noon##"
@@ -50,7 +50,7 @@ Feature: Set availability dates for an assignment
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "Assignment name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I follow "Expand all"
     # Set 'Allow submissions from' to the first day of this month at noon.
     And I set the field "Allow submissions from" to "##first day of this month noon##"
@@ -71,7 +71,7 @@ Feature: Set availability dates for an assignment
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "Assignment name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I follow "Expand all"
     # Set 'Allow submissions from' to now.
     And I set the field "Allow submissions from" to "##now##"
@@ -103,7 +103,7 @@ Feature: Set availability dates for an assignment
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "Assignment name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I follow "Expand all"
     # Set 'Allow submissions from' to 3 days ago.
     And I set the field "Allow submissions from" to "##3 days ago##"
@@ -138,7 +138,7 @@ Feature: Set availability dates for an assignment
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "Assignment name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I follow "Expand all"
     # Set 'Allow submissions from' to 3 days ago.
     And I set the field "Allow submissions from" to "##3 days ago##"

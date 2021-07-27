@@ -29,7 +29,7 @@ Feature: Assignment with no calendar capabilites
       | assign     | Test assignment name   | Test assignment description  | C1     | 1       | assign1  |
     And I am on "Course 1" course homepage
     And I follow "Test assignment name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Allow submissions from | ##1 January 2017##          |
       | Due date               | ##1 February 2017##         |
@@ -40,7 +40,7 @@ Feature: Assignment with no calendar capabilites
     When I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     And I follow "Test assignment name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Allow submissions from | ##1 January 2018##  |
       | Due date               | ##1 February 2018## |

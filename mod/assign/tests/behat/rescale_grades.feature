@@ -38,7 +38,7 @@ Feature: Check that the assignment grade can be rescaled when the max grade is c
     And I follow "Test assignment name"
 
   Scenario: Update the max grade for an assignment without rescaling existing grades
-    Given I navigate to "Edit settings" in current page administration
+    Given I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And I set the field "Rescale existing grades" to "No"
     And I set the field "Maximum grade" to "80"
@@ -47,14 +47,14 @@ Feature: Check that the assignment grade can be rescaled when the max grade is c
     Then "Student 1" row "Grade" column of "generaltable" table should contain "40.00"
 
   Scenario: Update an assignment without touching the max grades
-    Given I navigate to "Edit settings" in current page administration
+    Given I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And I set the field "Rescale existing grades" to "No"
     And I set the field "Maximum grade" to "80"
     And I press "Save and display"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I press "Save and display"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And I set the field "Rescale existing grades" to "Yes"
     And I set the field "Maximum grade" to "80"
@@ -63,7 +63,7 @@ Feature: Check that the assignment grade can be rescaled when the max grade is c
     Then "Student 1" row "Grade" column of "generaltable" table should contain "40.00"
 
   Scenario: Update the max grade for an assignment rescaling existing grades
-    Given I navigate to "Edit settings" in current page administration
+    Given I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And I set the field "Rescale existing grades" to "Yes"
     And I set the field "Maximum grade" to "50"
@@ -76,7 +76,7 @@ Feature: Check that the assignment grade can be rescaled when the max grade is c
     And I click on "Grade" "link" in the "Student 2" "table_row"
     And I wait until the page is ready
     And I follow "Assignment: Test assignment name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And I set the field "Rescale existing grades" to "Yes"
     And I set the field "Maximum grade" to "50"

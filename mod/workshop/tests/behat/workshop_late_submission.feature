@@ -50,7 +50,7 @@ Feature: Workshop 'Late submissions are allowed' task
     And I am on "Course1" course homepage
     When I follow "TestWorkshop1"
     Then I should see "Late submissions are allowed"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I follow "Expand all"
     And I set the field "id_submissionend_day" to "1"
     And I set the field "id_submissionend_month" to "January"

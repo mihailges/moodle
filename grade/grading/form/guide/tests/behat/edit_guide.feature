@@ -33,7 +33,7 @@ Feature: Marking guides can be created and edited
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "Test assignment 1 name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Grading method  | Marking guide               |
     And I press "Save and return to course"

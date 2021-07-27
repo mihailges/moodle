@@ -18,7 +18,7 @@ Feature: View activity completion in the assignment activity
       | teacher1 | C1     | editingteacher |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And I set the following fields to these values:
       | Enable completion tracking | Yes |
@@ -52,7 +52,7 @@ Feature: View activity completion in the assignment activity
   @javascript
   Scenario: The manual completion button will not be shown on the course page if the Show activity completion conditions is set to No
     Given I am on "Course 1" course homepage with editing mode on
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And I set the field "Show activity completion conditions" to "No"
     And I press "Save and display"
@@ -87,7 +87,7 @@ Feature: View activity completion in the assignment activity
   Scenario: View automatic completion items as a teacher
     Given I am on "Course 1" course homepage
     And I follow "Music history"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And I set the following fields to these values:
       | Completion tracking | Show activity as complete when conditions are met |
@@ -103,7 +103,7 @@ Feature: View activity completion in the assignment activity
   Scenario: View automatic completion items as a student
     Given I am on "Course 1" course homepage
     And I follow "Music history"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And I set the following fields to these values:
       | assignsubmission_onlinetext_enabled | 1                                                 |

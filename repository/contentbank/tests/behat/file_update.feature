@@ -22,7 +22,7 @@ Feature: Updating a file in the content bank after using in a course
   Scenario: Referenced files is the default option and updates alias as well
     Given I am on "Course1" course homepage
     And I follow "PageName1"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I click on "Insert H5P" "button" in the "#fitem_id_page" "css_element"
     And I click on "Browse repositories..." "button" in the "Insert H5P" "dialogue"
     And I select "Content bank" repository in file picker
@@ -63,7 +63,7 @@ Feature: Updating a file in the content bank after using in a course
   Scenario: Copied files should not be updated if the original is edited
     Given I am on "Course1" course homepage
     And I follow "PageName1"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I click on "Insert H5P" "button" in the "#fitem_id_page" "css_element"
     And I click on "Browse repositories..." "button" in the "Insert H5P" "dialogue"
     And I select "Content bank" repository in file picker

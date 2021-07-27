@@ -68,7 +68,7 @@ Feature: Assign user override
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     When I follow "Test assignment name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Allow submissions from | disabled             |
       | Due date               | ##1 Jan 2000 08:00## |
@@ -97,7 +97,7 @@ Feature: Assign user override
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     When I follow "Test assignment name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Due date               | disabled             |
       | Allow submissions from | disabled             |
@@ -126,7 +126,7 @@ Feature: Assign user override
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     When I follow "Test assignment name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Due date               | disabled                 |
       | Allow submissions from | ##1 January 2030 08:00## |
@@ -233,7 +233,7 @@ Feature: Assign user override
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     And I follow "Test assignment name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And I set the field "Availability" to "Hide from students"
     And I click on "Save and display" "button"

@@ -77,7 +77,7 @@ Feature: Multiple option choice response
     And I should see "Limit: 1"
     And I am on "Course 1" course homepage with editing mode on
     And I follow "Choice name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Limit the number of responses allowed | No |
     And I press "Save and return to course"

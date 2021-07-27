@@ -25,12 +25,12 @@ Feature: Allow to mark course as completed without cron for activity completion 
       | description                         | Test assignment description |
     And I log in as "admin"
     And I am on "Completion course" course homepage
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And I set the field "Enable completion tracking" to "Yes"
     And I click on "Save and display" "button"
     And I follow "Test assignment name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I follow "Expand all"
     And I set the field "Completion tracking" to "Show activity as complete when conditions are met"
     And I set the field "completionusegrade" to "1"
@@ -48,7 +48,7 @@ Feature: Allow to mark course as completed without cron for activity completion 
     Given I log in as "teacher1"
     And I am on "Completion course" course homepage
     And I follow "Test assignment name"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I follow "Expand all"
     And I set the field "Completion tracking" to "Students can manually mark the activity as completed"
     And I press "Save and return to course"
@@ -88,7 +88,7 @@ Feature: Allow to mark course as completed without cron for activity completion 
       | description                         | Test assignment description |
     And I am on "Completion course" course homepage
     And I follow "Test assignment name2"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I follow "Expand all"
     And I set the field "Completion tracking" to "Show activity as complete when conditions are met"
     And I set the field "completionusegrade" to "1"

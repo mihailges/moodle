@@ -5809,35 +5809,9 @@ class assign {
             $o .= $this->get_renderer()->render($summary);
         }
         $grade = $this->get_user_grade($USER->id, false);
-        $submission = $this->get_user_submission($USER->id, false);
 
         if ($this->can_view_submission($USER->id)) {
-            // Figure out if we are team or solitary submission.
-            $teamsubmission = null;
-            if ($instance->teamsubmission) {
-                $teamsubmission = $this->get_group_submission($USER->id, 0, false);
-            }
-
-            $showsubmit = ($this->submissions_open($USER->id)
-                && $this->show_submit_button($submission, $teamsubmission, $USER->id));
-            $showedit = ($this->is_any_submission_plugin_enabled()) && $this->can_edit_submission($USER->id);
-
-            // The method get_group_submission() says that it returns a stdClass, but it can return false >_>.
-            if ($teamsubmission === false) {
-                $teamsubmission = new stdClass();
-            }
-            // Same goes for get_user_submission().
-            if ($submission === false) {
-                $submission = new stdClass();
-            }
-            $actionbuttons = new \mod_assign\output\user_submission_actionmenu(
-                $this->get_course_module()->id,
-                $showsubmit,
-                $showedit,
-                $submission,
-                $teamsubmission
-            );
-            $o .= $this->get_renderer()->render($actionbuttons);
+            $o .= $this->view_submission_action_bar($instance, $USER);
             $o .= $this->view_student_summary($USER, true);
         }
 
@@ -5846,6 +5820,44 @@ class assign {
         \mod_assign\event\submission_status_viewed::create_from_assign($this)->trigger();
 
         return $o;
+    }
+
+    /**
+     * The action bar displayed in the submissions page.
+     *
+     * @param stdClass $instance The settings for the current instance of this assignment
+     * @param stdClass $user The user to print the action bar for
+     * @return string
+     */
+    public function view_submission_action_bar(stdClass $instance, stdClass $user) {
+        $submission = $this->get_user_submission($user->id, false);
+        // Figure out if we are team or solitary submission.
+        $teamsubmission = null;
+        if ($instance->teamsubmission) {
+            $teamsubmission = $this->get_group_submission($user->id, 0, false);
+        }
+
+        $showsubmit = ($this->submissions_open($user->id)
+            && $this->show_submit_button($submission, $teamsubmission, $user->id));
+        $showedit = ($this->is_any_submission_plugin_enabled()) && $this->can_edit_submission($user->id);
+
+        // The method get_group_submission() says that it returns a stdClass, but it can return false >_>.
+        if ($teamsubmission === false) {
+            $teamsubmission = new stdClass();
+        }
+        // Same goes for get_user_submission().
+        if ($submission === false) {
+            $submission = new stdClass();
+        }
+        $actionbuttons = new \mod_assign\output\user_submission_actionmenu(
+            $this->get_course_module()->id,
+            $showsubmit,
+            $showedit,
+            $submission,
+            $teamsubmission
+        );
+
+        return $this->get_renderer()->render($actionbuttons);
     }
 
     /**

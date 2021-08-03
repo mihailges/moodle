@@ -191,7 +191,7 @@ if (file_exists($CFG->dirroot.'/mod/scorm/datamodels/'.$scorm->version.'.js')) {
 }
 
 echo $OUTPUT->header();
-if (!empty($scorm->displayactivityname)) {
+if (!empty($scorm->displayactivityname) && !$PAGE->has_secondary_navigation()) {
     echo $OUTPUT->heading(format_string($scorm->name));
 }
 

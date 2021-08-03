@@ -78,9 +78,11 @@
             {{>core/url_select}}
         {{/urlselect}}
         </div>
-        <div class="col-sm-6">
-            <a class="btn btn-primary" href="{{{addoverride.link}}}">{{addoverride.text}}</a>
-        </div>
+        {{#addoverride}}
+            <div class="col-sm-6">
+                <a class="btn btn-primary" href="{{{addoverride.link}}}">{{addoverride.text}}</a>
+            </div>
+        {{/addoverride}}
     </div>
 </div>
 

@@ -57,7 +57,7 @@ Feature: Lesson reset
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "Test lesson name"
-    And I navigate to "Reports > Overview" in current page administration
+    And I navigate to "Reports" in current page administration
     And I should see "Sam1 Student1"
     And I am on "Course 1" course homepage
     And I navigate to "Reset" in current page administration
@@ -67,14 +67,13 @@ Feature: Lesson reset
     And I press "Continue"
     And I am on "Course 1" course homepage
     And I follow "Test lesson name"
-    And I navigate to "Reports > Overview" in current page administration
+    And I navigate to "Reports" in current page administration
     Then I should see "No attempts have been made on this lesson"
 
   @javascript
   Scenario: Use course reset to remove user overrides.
-    When I follow "Test lesson name"
-    And I navigate to "User overrides" in current page administration
-    And I press "Add user override"
+    When I navigate to "Overrides" in current page administration
+    And I follow "Add user override"
     And I set the following fields to these values:
         | Override user    | Student1  |
         | Re-takes allowed | 1 |
@@ -88,13 +87,13 @@ Feature: Lesson reset
     And I press "Continue"
     And I am on "Course 1" course homepage
     And I follow "Test lesson name"
-    And I navigate to "User overrides" in current page administration
+    And I navigate to "Overrides" in current page administration
     Then I should not see "Sam1 Student1"
 
   Scenario: Use course reset to remove group overrides.
-    When I follow "Test lesson name"
-    And I navigate to "Group overrides" in current page administration
-    And I press "Add group override"
+    When I navigate to "Overrides" in current page administration
+    And I select "Group overrides" from the "jump" singleselect
+    And I follow "Add group override"
     And I set the following fields to these values:
         | Override group   | Group 1  |
         | Re-takes allowed | 1 |
@@ -108,5 +107,6 @@ Feature: Lesson reset
     And I press "Continue"
     And I am on "Course 1" course homepage
     And I follow "Test lesson name"
-    And I navigate to "Group overrides" in current page administration
+    And I navigate to "Overrides" in current page administration
+    And I select "Group overrides" from the "jump" singleselect
     Then I should not see "Group 1"

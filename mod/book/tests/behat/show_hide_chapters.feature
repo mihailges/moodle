@@ -53,22 +53,22 @@ Feature: Book activity chapter visibility management
   Scenario: Show/hide chapters and subchapters
     When I follow "Hide chapter \"2. Second chapter\""
     And I follow "Hide chapter \"2. Third chapter\""
-    And I turn editing mode off
     And I am on "Course 1" course homepage
+    And I turn editing mode off
     And I follow "Test book"
     Then the "class" attribute of "a[title='Second chapter']" "css_element" should contain "dimmed_text"
     And the "class" attribute of "a[title='Third chapter']" "css_element" should contain "dimmed_text"
+    And I am on "Course 1" course homepage
     And I turn editing mode on
+    And I follow "Test book"
     And I follow "Next"
     And I should see "Second chapter" in the ".book_content" "css_element"
-    And I should not see "Exit book"
     And I follow "Next"
     And I should see "Sub chapter" in the ".book_content" "css_element"
     And I follow "Next"
     And I should see "Third chapter" in the ".book_content" "css_element"
     And I follow "Next"
     And I should see "Fourth chapter" in the ".book_content" "css_element"
-    And I follow "Exit book"
     And I log out
     And I log in as "student1"
     And I am on "Course 1" course homepage
@@ -77,6 +77,6 @@ Feature: Book activity chapter visibility management
     And I should not see "Third chapter" in the "Table of contents" "block"
     And I follow "Next"
     And I should see "Fourth chapter" in the ".book_content" "css_element"
-    And I follow "Exit book"
+    And I am on "Course 1" course homepage
     And I follow "Test book"
     And I should see "First chapter" in the ".book_content" "css_element"

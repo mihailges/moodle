@@ -41,16 +41,20 @@ class override_action_menu implements templatable, renderable {
     protected $cmid;
     /** @var moodle_url The current url for the page. */
     protected $currenturl;
+    /** @var bool Whether can add user or group override (depending on the override type). */
+    protected $canoverride;
 
     /**
      * Constructor for this object.
      *
      * @param int        $cmid       The course module ID.
      * @param moodle_url $currenturl The current url for the page.
+     * @param moodle_url $canoverride Whether can add user or group override (depending on the override type).
      */
-    public function __construct(int $cmid, moodle_url $currenturl) {
+    public function __construct(int $cmid, moodle_url $currenturl, bool $canoverride = false) {
         $this->cmid = $cmid;
         $this->currenturl = $currenturl;
+        $this->canoverride = $canoverride;
     }
 
     /**
@@ -85,15 +89,17 @@ class override_action_menu implements templatable, renderable {
         $action = ($type == 'user') ? 'adduser' : 'addgroup';
         $urlselect = $this->create_override_select_menu();
         $data = [
-            'addoverride' => [
+            'urlselect' => $urlselect->export_for_template($output)
+        ];
+        if ($this->canoverride) {
+            $data['addoverride'] = [
                 'text' => $text,
                 'link' => new moodle_url('/mod/lesson/overrideedit.php', [
                     'cmid' => $this->currenturl->get_param('cmid'),
                     'action' => $action
                 ])
-            ],
-            'urlselect' => $urlselect->export_for_template($output)
-        ];
+            ];
+        }
         return $data;
     }
 }

@@ -69,7 +69,18 @@ class main_action_menu implements templatable, renderable {
      */
     public function get_next_chapter(): ?stdClass {
         $nextpageid = $this->chapter->pagenum + 1;
-        return $this->get_chapter($nextpageid);
+        // Early return if the current chapter is also the last chapter.
+        if ($nextpageid > count($this->chapters)) {
+            return null;
+        }
+        while ((!$nextchapter = $this->get_chapter($nextpageid))) {
+            // Break the loop if this is the last chapter.
+            if ($nextpageid === count($this->chapters)) {
+                break;
+            }
+            $nextpageid++;
+        }
+        return $nextchapter;
     }
 
     /**
@@ -78,8 +89,19 @@ class main_action_menu implements templatable, renderable {
      * @return ?stdClass The previous chapter of the book.
      */
     public function get_previous_chapter(): ?stdClass {
-        $nextpageid = $this->chapter->pagenum - 1;
-        return $this->get_chapter($nextpageid);
+        $prevpageid = $this->chapter->pagenum - 1;
+        // Early return if the current chapter is also the first chapter.
+        if ($prevpageid < 1) {
+            return null;
+        }
+        while ((!$prevchapter = $this->get_chapter($prevpageid))) {
+            // Break the loop if this is the first chapter.
+            if ($prevpageid === 1) {
+                break;
+            }
+            $prevpageid--;
+        }
+        return $prevchapter;
     }
 
     /**
@@ -89,8 +111,13 @@ class main_action_menu implements templatable, renderable {
      * @return ?stdClass The requested chapter.
      */
     protected function get_chapter(int $id): ?stdClass {
+        $context = \context_module::instance($this->cmid);
+        $viewhidden = has_capability('mod/book:viewhiddenchapters', $context);
+
         foreach ($this->chapters as $chapter) {
-            if ($chapter->pagenum == $id) {
+            // Also make sure that the chapter is not hidden or the user can view hidden chapters before returning
+            // the chapter object.
+            if (($chapter->pagenum == $id) && (!$chapter->hidden || $viewhidden)) {
                 return $chapter;
             }
         }

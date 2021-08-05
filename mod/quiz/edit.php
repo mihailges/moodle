@@ -186,7 +186,11 @@ $node = $PAGE->settingsnav->find('mod_quiz_edit', navigation_node::TYPE_SETTING)
 if ($node) {
     $node->make_active();
 }
+
+$overwriteedit = new \mod_quiz\output\overwriteedit($cmid, quiz_has_questions($quiz->id));
+
 echo $OUTPUT->header();
+echo $overwriteedit->get_preview_response();
 
 // Initialise the JavaScript.
 $quizeditconfig = new stdClass();

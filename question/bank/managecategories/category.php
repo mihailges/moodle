@@ -147,11 +147,15 @@ if ($param->edit) {
 
 $PAGE->set_title(get_string('editcategories', 'question'));
 $PAGE->set_heading($COURSE->fullname);
-echo $OUTPUT->header();
 
 // Print horizontal nav if needed.
 $renderer = $PAGE->get_renderer('core_question', 'bank');
-echo $renderer->extra_horizontal_navigation();
+// Pass either cmid or courseid.
+$qbankid = ($cmid !== null) ? ['cmid' => $cmid] : ['courseid' => $thispageurl->param('courseid')];
+$qbankaction = new \core_question\output\qbank_actionbar($qbankid, $url);
+
+echo $OUTPUT->header();
+echo $qbankaction->get_qbank_action();
 
 // Display the UI.
 if (!empty($param->edit)) {

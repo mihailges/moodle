@@ -71,11 +71,16 @@ if ($import_form->is_cancelled()){
 //==========
 $PAGE->set_title($txt->importquestions);
 $PAGE->set_heading($COURSE->fullname);
-echo $OUTPUT->header();
 
 // Print horizontal nav if needed.
 $renderer = $PAGE->get_renderer('core_question', 'bank');
-echo $renderer->extra_horizontal_navigation();
+
+// Pass either cmid or courseid.
+$qbankid = ($cmid !== null) ? ['cmid' => $cmid] : ['courseid' => $thispageurl->param('courseid')];
+$qbankaction = new \core_question\output\qbank_actionbar($qbankid, $thispageurl);
+
+echo $OUTPUT->header();
+echo $qbankaction->get_qbank_action();
 
 // file upload form sumitted
 if ($form = $import_form->get_data()) {

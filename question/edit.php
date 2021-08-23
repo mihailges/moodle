@@ -45,11 +45,16 @@ $context = $contexts->lowest();
 $streditingquestions = get_string('editquestions', 'question');
 $PAGE->set_title($streditingquestions);
 $PAGE->set_heading($COURSE->fullname);
-echo $OUTPUT->header();
 
 // Print horizontal nav if needed.
 $renderer = $PAGE->get_renderer('core_question', 'bank');
-echo $renderer->extra_horizontal_navigation();
+// Pass either cmid or courseid.
+$qbankid = ($cmid !== null) ? ['cmid' => $cmid] : ['courseid' => $thispageurl->param('courseid')];
+$qbankaction = new \core_question\output\qbank_actionbar($qbankid, $url);
+
+echo $OUTPUT->header();
+// Render the selection action.
+echo $qbankaction->get_qbank_action();
 
 // Print the question area.
 $questionbank->display($pagevars, 'questions');

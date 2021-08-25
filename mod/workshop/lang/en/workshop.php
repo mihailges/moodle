@@ -376,6 +376,7 @@ $string['submissiontypetextrequired'] = '<span class="accesshide">Online text </
 $string['submissiontypedisabled'] = 'This submission type is disabled for this workshop.';
 $string['submissiontypes'] = 'Submission types';
 $string['submissionsreport'] = 'Workshop submissions report';
+$string['submissionallocation'] = 'Submissions allocation';
 $string['submittednotsubmitted'] = 'Submitted ({$a->submitted}) / not submitted ({$a->notsubmitted})';
 $string['subplugintype_workshopallocation'] = 'Submissions allocation method';
 $string['subplugintype_workshopallocation_plural'] = 'Submissions allocation methods';

@@ -55,7 +55,9 @@
         {{/ output.should_display_navbar_logo }}
     </a>
     {{#primarymoremenu}}
-        {{> core/moremenu }}
+        <div class="primary-navigation">
+            {{> core/moremenu}}
+        </div>
     {{/primarymoremenu}}
 
     <ul class="navbar-nav d-none d-md-flex my-1 px-1">
@@ -63,7 +65,7 @@
         {{{ output.page_heading_menu }}}
     </ul>
 
-    <div id="usernavigation" class="navbar-nav my-1 ml-auto">
+    <div id="usernavigation" class="navbar-nav ml-auto">
         {{#langmenu}}
             {{> theme_boost/language_menu }}
         {{/langmenu}}

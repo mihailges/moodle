@@ -133,7 +133,7 @@ Feature: Upload users
     # Boost check.
     And I log in as "jonest"
     And I am on "Maths" course homepage
-    And "Calendar" "link" should be visible
+    And "Settings" "link" should exist in current page administration
     And I log out
     # Classic check.
     And I log in as "reznor"

@@ -105,7 +105,13 @@ $PAGE->set_context($forum->get_context());
 $PAGE->set_title($forum->get_name());
 $PAGE->add_body_class('forumtype-' . $forum->get_type());
 $PAGE->set_heading($course->fullname);
-$PAGE->add_header_action(forum_search_form($course, $search));
+
+// MDL-71915 Will remove this place holder.
+if (defined('BEHAT_SITE_RUNNING')) {
+    $PAGE->has_secondary_navigation_setter(false);
+}
+
+$PAGE->set_button(forum_search_form($course, $search));
 
 if ($istypesingle && $displaymode == FORUM_MODE_NESTED_V2) {
     $PAGE->add_body_class('nested-v2-display-mode reset-style');

@@ -58,7 +58,6 @@ if ($data = data_submitted() and confirm_sesskey() and isset($data->action) and 
         redirect($PAGE->url);
     }
 }
-
 $PAGE->has_secondary_navigation_setter(false);
 $PAGE->set_primary_active_tab('siteadminnode');
 

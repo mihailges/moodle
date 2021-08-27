@@ -489,7 +489,8 @@ class behat_navigation extends behat_base {
      */
     public function i_navigate_to_in_site_administration($nodetext) {
         $nodelist = array_map('trim', explode('>', $nodetext));
-        $this->i_select_from_flat_navigation_drawer(get_string('administrationsite'));
+        //$this->i_select_from_flat_navigation_drawer(get_string('administrationsite'));
+        $this->i_select_from_primary_navigation(get_string('administrationsite'));
         $this->select_on_administration_page($nodelist);
     }
 
@@ -917,6 +918,14 @@ class behat_navigation extends behat_base {
     public function i_select_from_flat_navigation_drawer($link) {
         $this->i_open_flat_navigation_drawer();
         $this->execute('behat_general::i_click_on_in_the', [$link, 'link', '#nav-drawer', 'css_element']);
+    }
+
+    // Need to handle more menu.
+    public function i_select_from_primary_navigation($link) {
+        $this->execute('behat_general::i_click_on_in_the', [$link, 'link', '.navbar.fixed-top', 'css_element']);
+    }
+    public function i_select_from_secondary_navigation($link) {
+        $this->execute('behat_general::i_click_on_in_the', [$link, 'link', '.navbar', 'css_element']);
     }
 
     /**

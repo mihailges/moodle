@@ -71,6 +71,7 @@ class resultsaction implements templatable, renderable {
         ];
 
         $urlselect = new url_select($menu, $PAGE->url->out(false), null, 'quizresults');
+        $urlselect->set_label(get_string('results', 'quiz'), ['class' => 'accesshide']);
 
         $data = [
             'resultaction' => $urlselect->export_for_template($output)

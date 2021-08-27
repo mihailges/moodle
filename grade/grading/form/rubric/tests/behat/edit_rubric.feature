@@ -44,6 +44,7 @@ Feature: Rubrics can be created and edited
     And I press "Save rubric and make it ready"
     Then I should see "Ready for use"
     # Grading two students.
+    And I navigate to "Assignment" in current page administration
     And I go to "Student 1" "Test assignment 1 name" activity advanced grading page
     And I grade by filling the rubric with:
       | Criterion 1 | 50 | Very good |

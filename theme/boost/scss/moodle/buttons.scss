@@ -10,6 +10,10 @@
     text-align: center;
 }
 
+.border-dashed {
+    border-style: dashed;
+}
+
 p.arrow_button {
     margin-top: 5em;
     text-align: center;
@@ -36,6 +40,15 @@ p.arrow_button {
 
 .btn-lineup {
     margin: 0 0 10px 5px;
+}
+
+.btn-addblock {
+    background-color: #f5faff;
+    border: 1px dashed #0056b3;
+    color: #0056b3;
+    @include hover-focus {
+        background-color: $body-bg;
+    }
 }
 
 .btn.btn-icon {

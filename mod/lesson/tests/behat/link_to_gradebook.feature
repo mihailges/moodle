@@ -67,7 +67,8 @@ Feature: link to gradebook on the end of lesson page
     And I should not see "View grades"
 
   Scenario: No link to gradebook for practice lesson
-    Given I navigate to "Settings" in current page administration
+    Given I follow "Test lesson"
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
         | Practice lesson | Yes |
     And I press "Save and display"

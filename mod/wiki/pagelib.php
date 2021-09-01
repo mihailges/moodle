@@ -142,20 +142,20 @@ abstract class page_wiki {
         echo $this->wikioutput->wiki_info();
 
         if (!empty($this->page)) {
-            $this->print_action_bar($this->page->id, $PAGE->url);
+            echo $this->action_bar($this->page->id, $PAGE->url);
         }
     }
 
     /**
-     * This method prints the action bar.
+     * This method returns the action bar.
      *
      * @param int $pageid The page id.
      * @param \moodle_url $pageurl The page url.
      * @return string The HTML for the action bar.
      */
-    protected function print_action_bar($pageid, $pageurl) {
+    protected function action_bar(int $pageid, \moodle_url $pageurl): string {
         $actionbar = new \mod_wiki\output\action_bar($pageid, $pageurl);
-        echo $this->wikioutput->render_action_bar($actionbar);
+        return $this->wikioutput->render_action_bar($actionbar);
     }
 
     /**
@@ -325,9 +325,9 @@ class page_wiki_view extends page_wiki {
      * @param \moodle_url $pageurl The page url.
      * @return string The HTML for the action bar.
      */
-    protected function print_action_bar($pageid, $pageurl) {
+    protected function action_bar(int $pageid, \moodle_url $pageurl): string {
         $actionbar = new \mod_wiki\output\action_bar($pageid, $pageurl, true);
-        echo $this->wikioutput->render_action_bar($actionbar);
+        return $this->wikioutput->render_action_bar($actionbar);
     }
 
     function print_content() {
@@ -792,6 +792,18 @@ class page_wiki_editcomment extends page_wiki {
         parent::setup_tabs(array('linkedwhenactive' => 'comments', 'activetab' => 'comments'));
     }
 
+    /**
+     * This method prints the action bar.
+     *
+     * @param int $pageid The page id.
+     * @param \moodle_url $pageurl The page url.
+     * @return string The HTML for the action bar.
+     */
+    protected function action_bar(int $pageid, \moodle_url $pageurl): string {
+        // The given page does not require an action bar.
+        return '';
+    }
+
     private function add_comment_form() {
         global $CFG;
         require_once($CFG->dirroot . '/mod/wiki/editors/wiki_editor.php');
@@ -1143,6 +1155,18 @@ class page_wiki_diff extends page_wiki {
 
     protected function setup_tabs($options = array()) {
         parent::setup_tabs(array('linkedwhenactive' => 'history', 'activetab' => 'history'));
+    }
+
+    /**
+     * This method prints the action bar.
+     *
+     * @param int $pageid The page id.
+     * @param \moodle_url $pageurl The page url.
+     * @return string The HTML for the action bar.
+     */
+    protected function action_bar(int $pageid, \moodle_url $pageurl): string {
+        $backlink = new moodle_url('/mod/wiki/history.php', ['pageid' => $pageid]);
+        return html_writer::link($backlink, get_string('back'), ['class' => 'btn btn-secondary mb-4']);
     }
 
     /**
@@ -1891,6 +1915,18 @@ class page_wiki_restoreversion extends page_wiki {
     }
 
     /**
+     * This method prints the action bar.
+     *
+     * @param int $pageid The page id.
+     * @param \moodle_url $pageurl The page url.
+     * @return string The HTML for the action bar.
+     */
+    protected function action_bar(int $pageid, \moodle_url $pageurl): string {
+        // The given page does not require an action bar.
+        return '';
+    }
+
+    /**
      * Prints the restore version content
      *
      * @uses $CFG
@@ -1911,13 +1947,12 @@ class page_wiki_restoreversion extends page_wiki {
 
         echo $OUTPUT->container_start();
         echo html_writer::tag('div', get_string('restoreconfirm', 'wiki', $version->version));
-        echo $OUTPUT->container_start(false, 'wiki_restoreform');
-        echo '<form class="wiki_restore_yes" action="' . $restoreurl . '" method="post" id="restoreversion">';
-        echo '<div><input type="submit" class="btn btn-secondary" name="confirm" value="' . get_string('yes') . '" /></div>';
-        echo '</form>';
-        echo '<form class="wiki_restore_no" action="' . $return . '" method="post">';
-        echo '<div><input type="submit" class="btn btn-secondary" name="norestore" value="' . get_string('no') . '" /></div>';
-        echo '</form>';
+        echo $OUTPUT->container_start('mt-2', 'wiki_restoreform');
+        $yesbutton = new single_button($restoreurl, get_string('yes'), 'post');
+        $nobutton = new single_button($return, get_string('no'), 'post');
+        $nobutton->class .= ' ml-2';
+        echo $OUTPUT->render($yesbutton);
+        echo $OUTPUT->render($nobutton);
         echo $OUTPUT->container_end();
         echo $OUTPUT->container_end();
     }
@@ -1958,6 +1993,18 @@ class page_wiki_deletecomment extends page_wiki {
 
     protected function setup_tabs($options = array()) {
         parent::setup_tabs(array('linkedwhenactive' => 'comments', 'activetab' => 'comments'));
+    }
+
+    /**
+     * This method prints the action bar.
+     *
+     * @param int $pageid The page id.
+     * @param \moodle_url $pageurl The page url.
+     * @return string The HTML for the action bar.
+     */
+    protected function action_bar(int $pageid, \moodle_url $pageurl): string {
+        // The given page does not require an action bar.
+        return '';
     }
 
     /**
@@ -2113,6 +2160,18 @@ class page_wiki_viewversion extends page_wiki {
 
     protected function setup_tabs($options = array()) {
         parent::setup_tabs(array('linkedwhenactive' => 'history', 'activetab' => 'history', 'inactivetabs' => array('edit')));
+    }
+
+    /**
+     * This method prints the action bar.
+     *
+     * @param int $pageid The page id.
+     * @param \moodle_url $pageurl The page url.
+     * @return string The HTML for the action bar.
+     */
+    protected function action_bar(int $pageid, \moodle_url $pageurl): string {
+        $backlink = new moodle_url('/mod/wiki/history.php', ['pageid' => $pageid]);
+        return html_writer::link($backlink, get_string('back'), ['class' => 'btn btn-secondary mb-4']);
     }
 
     /**

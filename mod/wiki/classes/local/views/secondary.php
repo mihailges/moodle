@@ -48,8 +48,12 @@ class secondary extends core_secondary {
             $pageurls = [
                 new \moodle_url('/mod/wiki/view.php'),
                 new \moodle_url('/mod/wiki/edit.php'),
+                new \moodle_url('/mod/wiki/filesedit.php'),
                 new \moodle_url('/mod/wiki/comments.php'),
+                new \moodle_url('/mod/wiki/instancecomments.php'),
                 new \moodle_url('/mod/wiki/history.php'),
+                new \moodle_url('/mod/wiki/viewversion.php'),
+                new \moodle_url('/mod/wiki/diff.php'),
                 new \moodle_url('/mod/wiki/map.php'),
                 new \moodle_url('/mod/wiki/files.php'),
                 new \moodle_url('/mod/wiki/admin.php'),

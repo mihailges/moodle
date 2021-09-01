@@ -39,10 +39,10 @@ class save_as_preset extends dynamic_form {
         $this->_form->setType('d', PARAM_INT);
         $this->_form->addElement('hidden', 'action', 'save2');
         $this->_form->setType('action', PARAM_ALPHANUM);
-        $this->_form->addElement('text', 'name', get_string('name'));
+        $this->_form->addElement('text', 'name', get_string('name'), ['size' => 60]);
         $this->_form->setType('name', PARAM_FILE);
         $this->_form->addRule('name', null, 'required');
-        $this->_form->addElement('checkbox', 'overwrite', get_string('overwrite', 'data'),
+        $this->_form->addElement('checkbox', 'overwrite', '',
             get_string('overrwritedesc', 'data'));
     }
 

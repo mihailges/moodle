@@ -43,6 +43,7 @@ export const init = () => {
         const modalForm = new ModalForm({
             modalConfig: {
                 title: getString('savedataaspreset', 'mod_data'),
+                verticallyCentered: true,
             },
             formClass: 'mod_data\\form\\save_as_preset',
             args: {d: saveAsPresetButton.getAttribute('data-dataid')},

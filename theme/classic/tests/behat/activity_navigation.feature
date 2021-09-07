@@ -1,4 +1,4 @@
-@core @core_course
+@theme_classic
 Feature: Activity navigation
   In order to quickly switch between activities
   As a user

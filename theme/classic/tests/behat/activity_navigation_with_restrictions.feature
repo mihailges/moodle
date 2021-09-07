@@ -1,4 +1,4 @@
-@core @core_course
+@theme_classic
 Feature: Activity navigation involving activities with access restrictions
   In order to quickly switch to another activity that has access restrictions
   As a student

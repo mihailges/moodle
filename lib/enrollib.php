@@ -448,6 +448,11 @@ function enrol_add_course_navigation(navigation_node $coursenode, $course) {
         }
         $instancesnode = $usersnode->add(get_string('enrolmentinstances', 'enrol'), $url, navigation_node::TYPE_SETTING, null, 'manageinstances');
 
+        if ($url) {
+            $instancesnode->add(get_string('manageenrolmentmethods', 'enrol'), $url,
+                navigation_node::TYPE_SETTING);
+        }
+
         // each instance decides how to configure itself or how many other nav items are exposed
         foreach ($instances as $instance) {
             if (!isset($plugins[$instance->enrol])) {
@@ -475,6 +480,11 @@ function enrol_add_course_navigation(navigation_node $coursenode, $course) {
             $url = NULL;
         }
         $permissionsnode = $usersnode->add(get_string('permissions', 'role'), $url, navigation_node::TYPE_SETTING, null, 'override');
+
+        if ($url) {
+            $permissionsnode->add(get_string('managepermissions', 'enrol'), $url,
+                navigation_node::TYPE_SETTING);
+        }
 
         // Add assign or override roles if allowed
         if ($course->id == SITEID or (!empty($CFG->adminsassignrolesincourse) and is_siteadmin())) {

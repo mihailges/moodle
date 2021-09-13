@@ -48,7 +48,7 @@ Feature: Access visible and hidden cohorts
   Scenario: Teacher can see visible cohorts defined in the above contexts
     When I log in as "teacher"
     And I am on "Course 1" course homepage
-    And I navigate to "Users > Enrolment methods" in current page administration
+    And I navigate to "Users > Enrolment methods > Manage enrolment methods" in current page administration
     And I select "Cohort sync" from the "Add method" singleselect
     And I open the autocomplete suggestions list
     Then "Cohort in category 1" "autocomplete_suggestions" should exist
@@ -78,7 +78,7 @@ Feature: Access visible and hidden cohorts
   Scenario: System manager can see all cohorts defined in the above contexts
     When I log in as "user1"
     And I am on "Course 1" course homepage
-    And I navigate to "Users > Enrolment methods" in current page administration
+    And I navigate to "Users > Enrolment methods > Manage enrolment methods" in current page administration
     And I select "Cohort sync" from the "Add method" singleselect
     And I open the autocomplete suggestions list
     Then "Cohort in category 1" "autocomplete_suggestions" should exist
@@ -107,7 +107,7 @@ Feature: Access visible and hidden cohorts
   Scenario: Category manager can see all cohorts defined in his category and visible cohorts defined above
     When I log in as "user2"
     And I am on "Course 1" course homepage
-    And I navigate to "Users > Enrolment methods" in current page administration
+    And I navigate to "Users > Enrolment methods > Manage enrolment methods" in current page administration
     And I select "Cohort sync" from the "Add method" singleselect
     And I open the autocomplete suggestions list
     Then "Cohort in category 1" "autocomplete_suggestions" should exist

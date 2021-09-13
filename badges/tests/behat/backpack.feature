@@ -21,19 +21,24 @@ Feature: Backpack badges
   Scenario: If external backpack connection is disabled, backpack settings should not be displayed
     Given I am on homepage
     And I log in as "admin"
+    And I press "Customise this page"
+    And I add the "Administration" block if not present
     And I navigate to "Badges > Badges settings" in site administration
     And I set the following fields to these values:
       | External backpack connection | 0                        |
     And I press "Save changes"
-    When I navigate to "Badges" in site administration
+    And I am on homepage
+    And I expand "Site administration" node
+    When I expand "Badges" node
     Then I should not see "Manage backpacks"
     And I navigate to "Badges > Badges settings" in site administration
     And I set the following fields to these values:
       | External backpack connection | 1                        |
     And I press "Save changes"
     And I am on homepage
-    And I navigate to "Badges" in site administration
-    And I should see "Manage backpacks"
+    And I expand "Site administration" node
+    When I expand "Badges" node
+    Then I should see "Manage backpacks"
 
   @javascript
   Scenario: Verify backback settings

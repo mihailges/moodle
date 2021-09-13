@@ -9,7 +9,7 @@ Feature: Plugins > Search > Search setup contains Setup search engine only if th
       | enableglobalsearch | 1        |
       | searchengine       | solr     |
     And I log in as "admin"
-    When I navigate to "Plugins > Search" in site administration
+    When I navigate to "Plugins > Search > Manage global search" in site administration
     Then "Setup search engine" "link" should exist
 
   Scenario: Selected search engine does not have an admin section
@@ -17,6 +17,6 @@ Feature: Plugins > Search > Search setup contains Setup search engine only if th
       | enableglobalsearch | 1        |
       | searchengine       | simpledb |
     And I log in as "admin"
-    When I navigate to "Plugins > Search" in site administration
+    When I navigate to "Plugins > Search > Manage global search" in site administration
     Then I should see "Setup search engine"
     And "Setup search engine" "link" should not exist

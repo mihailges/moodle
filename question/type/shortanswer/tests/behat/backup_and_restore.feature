@@ -28,7 +28,7 @@ Feature: Test duplicating a quiz containing a Short answer question
       | Confirmation | Filename | test_backup.mbz |
     And I restore "test_backup.mbz" backup into a new course using this options:
       | Schema | Course name | Course 2 |
-    And I navigate to "Question bank" in current page administration
+    And I navigate to "Question bank > Questions" in current page administration
     And I choose "Edit question" action for "shortanswer-001" in the question bank
     Then the following fields match these values:
       | Question name        | shortanswer-001                                   |

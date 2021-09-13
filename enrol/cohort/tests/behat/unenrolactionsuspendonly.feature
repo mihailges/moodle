@@ -30,7 +30,7 @@ Feature: Unenrol action to disable course enrolment
     When I log in as "teacher001"
     And I am on "Course 001" course homepage
     And I navigate to course participants
-    And I navigate to "Users > Enrolment methods" in current page administration
+    And I navigate to "Users > Enrolment methods > Manage enrolment methods" in current page administration
     And I select "Cohort sync" from the "Add method" singleselect
     And I open the autocomplete suggestions list
     Then "System cohort" "autocomplete_suggestions" should exist
@@ -65,7 +65,7 @@ Feature: Unenrol action to disable course enrolment
     When I log in as "teacher001"
     And I am on "Course 001" course homepage
     And I navigate to course participants
-    And I navigate to "Users > Enrolment methods" in current page administration
+    And I navigate to "Users > Enrolment methods > Manage enrolment methods" in current page administration
     And I select "Cohort sync" from the "Add method" singleselect
     And I open the autocomplete suggestions list
     Then "System cohort" "autocomplete_suggestions" should exist

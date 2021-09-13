@@ -254,7 +254,7 @@ Feature: Restore Moodle 2 course backups
       | Confirmation | Filename | test_backup.mbz |
     When I restore "test_backup.mbz" backup into a new course using this options:
       | Settings | Include permission overrides | 1 |
-    Then I navigate to "Users > Permissions" in current page administration
+    Then I navigate to "Users > Permissions > Manage permissions" in current page administration
     And I should see "Non-editing teacher (1)"
     And I set the field "Advanced role override" to "Non-editing teacher (1)"
     And "enrol/manual:enrol" capability has "Allow" permission
@@ -268,5 +268,5 @@ Feature: Restore Moodle 2 course backups
       | Confirmation | Filename | test_backup.mbz |
     When I restore "test_backup.mbz" backup into a new course using this options:
       | Settings | Include permission overrides | 0 |
-    Then I navigate to "Users > Permissions" in current page administration
+    Then I navigate to "Users > Permissions > Manage permissions" in current page administration
     And I should see "Non-editing teacher (0)"

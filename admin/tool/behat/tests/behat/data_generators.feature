@@ -87,7 +87,7 @@ Feature: Set up contextual data for tests
       | mod/forum:replynews | Prevent | editingteacher | Course | C1 |
     When I log in as "admin"
     And I am on "Course 1" course homepage
-    And I navigate to "Users > Permissions" in current page administration
+    And I navigate to "Users > Permissions > Manage permissions" in current page administration
     And I set the field "Advanced role override" to "Student (1)"
     Then "mod/forum:editanypost" capability has "Allow" permission
     And I press "Cancel"

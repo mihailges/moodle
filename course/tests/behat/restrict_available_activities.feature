@@ -34,7 +34,7 @@ Feature: Restrict activities availability
     And I set the following system permissions of "Teacher" role:
       | mod/chat:addinstance | Prohibit |
     And I am on "Course 1" course homepage
-    And I navigate to "Users > Permissions" in current page administration
+    And I navigate to "Users > Permissions > Manage permissions" in current page administration
     And I override the system permissions of "Teacher" role with:
       | mod/glossary:addinstance | Prohibit |
     And I log out

@@ -26,7 +26,7 @@ Feature: Guest users can auto-enrol themself in courses where guest access is al
     And I am on "Course 1" course homepage with editing mode on
 
   Scenario: Allow guest access without password
-    Given I navigate to "Users > Enrolment methods" in current page administration
+    Given I navigate to "Users > Enrolment methods > Manage enrolment methods" in current page administration
     And I click on "Edit" "link" in the "Guest access" "table_row"
     And I set the following fields to these values:
       | Allow guest access | Yes |
@@ -38,7 +38,7 @@ Feature: Guest users can auto-enrol themself in courses where guest access is al
     Then I should not see "Subscribe to this forum"
 
   Scenario: Allow guest access with password
-    Given I navigate to "Users > Enrolment methods" in current page administration
+    Given I navigate to "Users > Enrolment methods > Manage enrolment methods" in current page administration
     And I click on "Edit" "link" in the "Guest access" "table_row"
     And I set the following fields to these values:
       | Allow guest access | Yes |

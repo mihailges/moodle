@@ -16,7 +16,7 @@ Feature: Scorm with no calendar capabilites
       | teacher1 | C1 | editingteacher |
     And I log in as "admin"
     And I am on "Course 1" course homepage
-    And I navigate to "Users > Permissions" in current page administration
+    And I navigate to "Users > Permissions > Manage permissions" in current page administration
     And I override the system permissions of "Teacher" role with:
       | capability | permission |
       | moodle/calendar:manageentries | Prohibit |

@@ -27,7 +27,7 @@ Feature: Test editing a Numerical question
       | core_langconfig | decsep   | #     |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
+    And I navigate to "Question bank > Questions" in current page administration
     When I choose "Edit question" action for "Numerical for editing" in the question bank
     Then the field "id_answer_0" matches value "3#14"
     When I set the following fields to these values:
@@ -51,7 +51,7 @@ Feature: Test editing a Numerical question
   Scenario: Edit a Numerical question with very small answer
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
+    And I navigate to "Question bank > Questions" in current page administration
     When I choose "Edit question" action for "Numerical for editing" in the question bank
     And I set the following fields to these values:
       | id_answer_0    | 0.00000123456789 |

@@ -50,8 +50,8 @@ class behat_enrol extends behat_base {
         // Navigate to enrolment method page.
         $parentnodes = get_string('users', 'admin');
         $this->execute("behat_navigation::i_navigate_to_in_current_page_administration",
-            array($parentnodes .' > '. get_string('type_enrol_plural', 'plugin'))
-        );
+            array($parentnodes . ' > ' . get_string('type_enrol_plural', 'plugin') . ' > ' .
+            get_string('manageenrolmentmethods', 'enrol')));
 
         // Select enrolment method.
         $this->execute('behat_forms::i_select_from_the_singleselect',

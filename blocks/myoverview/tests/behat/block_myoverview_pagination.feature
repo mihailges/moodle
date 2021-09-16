@@ -35,6 +35,7 @@ Feature: My overview block pagination
 
   Scenario: The pagination controls should be hidden if I am not enrolled in any courses
     When I log in as "student1"
+    And I am on my courses homepage
     Then I should see "No courses" in the "Course overview" "block"
     And I should not see "Show" in the "Course overview" "block"
     And ".block_myoverview .dropdown-menu.show" "css_element" should not be visible
@@ -58,6 +59,7 @@ Feature: My overview block pagination
       | student1 | C11 | student |
       | student1 | C12 | student |
     When I log in as "student1"
+    And I am on my courses homepage
     Then I should not see "Show" in the "Course overview" "block"
     And ".block_myoverview .dropdown-menu.show" "css_element" should not be visible
     And ".block_myoverview [data-control='next']" "css_element" should not be visible
@@ -81,6 +83,7 @@ Feature: My overview block pagination
       | student1 | C12 | student |
       | student1 | C13 | student |
     When I log in as "student1"
+    And I am on my courses homepage
     Then I should see "12" in the "[data-action='limit-toggle']" "css_element"
     And I log out
 
@@ -101,6 +104,7 @@ Feature: My overview block pagination
       | student1 | C12 | student |
       | student1 | C13 | student |
     And I log in as "student1"
+    And I am on my courses homepage
     When I click on "[data-action='limit-toggle']" "css_element" in the "Course overview" "block"
     Then I should see "All" in the ".dropdown-menu.show" "css_element"
     And I should see "12" in the ".dropdown-menu.show" "css_element"
@@ -126,6 +130,7 @@ Feature: My overview block pagination
       | student1 | C12 | student |
       | student1 | C13 | student |
     When I log in as "student1"
+    And I am on my courses homepage
     Then the "class" attribute of ".block_myoverview [data-control='previous']" "css_element" should contain "disabled"
     And I log out
 
@@ -146,6 +151,7 @@ Feature: My overview block pagination
       | student1 | C12 | student |
       | student1 | C13 | student |
     When I log in as "student1"
+    And I am on my courses homepage
     And I click on "[data-control='next']" "css_element" in the "Course overview" "block"
     Then the "class" attribute of ".block_myoverview [data-control='next']" "css_element" should contain "disabled"
     And I log out
@@ -179,6 +185,8 @@ Feature: My overview block pagination
       | student1 | C24 | student |
       | student1 | C25 | student |
     When I log in as "student1"
+    And I am on my courses homepage
+    And I wait until ".block_myoverview [data-control='next']" "css_element" exists
     And I click on "[data-control='next']" "css_element" in the "Course overview" "block"
     Then the "class" attribute of ".block_myoverview [data-control='next']" "css_element" should not contain "disabled"
     And the "class" attribute of ".block_myoverview [data-control='previous']" "css_element" should not contain "disabled"

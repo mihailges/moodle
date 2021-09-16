@@ -639,6 +639,24 @@ $capabilities = array(
         )
     ),
 
+    'moodle/my:configcoursespage' => array(
+
+        'riskbitmap' => RISK_SPAM | RISK_PERSONAL | RISK_CONFIG,
+
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(
+            'manager' => CAP_PROHIBIT,
+            'coursecreator' => CAP_PROHIBIT,
+            'editingteacher' => CAP_PROHIBIT,
+            'teacher' => CAP_PROHIBIT,
+            'student' => CAP_PROHIBIT,
+            'user' => CAP_PROHIBIT,
+            'guest' => CAP_PROHIBIT,
+            'frontpage' => CAP_PROHIBIT,
+        )
+    ),
+
     'moodle/role:assign' => array(
 
         'riskbitmask' => RISK_SPAM | RISK_PERSONAL | RISK_XSS,

@@ -113,5 +113,8 @@ class block_myoverview extends block_base {
             'plugin' => $configs,
         ];
     }
+    public function instance_can_be_edited() {
+        return false;
+    }
 }
 

@@ -66,7 +66,7 @@ class block_myoverview_testcase extends advanced_testcase {
         $this->setUser($user);
         $context = context_user::instance($user->id);
 
-        if (!$currentpage = my_get_page($user->id, MY_PAGE_PRIVATE)) {
+        if (!$currentpage = my_get_page($user->id, MY_PAGE_PRIVATE, MY_PAGE_COURSES)) {
             throw new moodle_exception('mymoodlesetup');
         }
 

@@ -37,7 +37,7 @@ function xmldb_block_recentlyaccessedcourses_install() {
         return;
     }
 
-    if ($defaultmypage = $DB->get_record('my_pages', array('userid' => null, 'name' => '__default', 'private' => 1))) {
+    if ($defaultmypage = $DB->get_record('my_pages', array('userid' => null, 'name' => MY_PAGE_DEFAULT, 'private' => 1))) {
         $subpagepattern = $defaultmypage->id;
     } else {
         $subpagepattern = null;

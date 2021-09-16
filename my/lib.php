@@ -29,6 +29,8 @@
 
 define('MY_PAGE_PUBLIC', 0);
 define('MY_PAGE_PRIVATE', 1);
+define('MY_PAGE_DEFAULT', '__default');
+define('MY_PAGE_COURSES', '__courses');
 
 require_once("$CFG->libdir/blocklib.php");
 
@@ -39,7 +41,7 @@ require_once("$CFG->libdir/blocklib.php");
  * @param int $private either MY_PAGE_PRIVATE or MY_PAGE_PUBLIC
  * @param string $pagename Differentiate between standard /my or /courses pages.
  */
-function my_get_page(?int $userid, string $private = MY_PAGE_PRIVATE, string $pagename = '__default') {
+function my_get_page(?int $userid, string $private = MY_PAGE_PRIVATE, string $pagename = MY_PAGE_DEFAULT) {
     global $DB, $CFG;
 
     if (empty($CFG->forcedefaultmymoodle) && $userid) {  // Ignore custom My Moodle pages if admin has forced them
@@ -67,7 +69,7 @@ function my_get_page(?int $userid, string $private = MY_PAGE_PRIVATE, string $pa
  * @param string $pagetype either my-index or user-profile
  * @param string $pagename Differentiate between standard /my or /courses pages.
  */
-function my_copy_page(int $userid, int $private = MY_PAGE_PRIVATE, string $pagetype = 'my-index', string $pagename = '__default') {
+function my_copy_page(int $userid, int $private = MY_PAGE_PRIVATE, string $pagetype = 'my-index', string $pagename = MY_PAGE_DEFAULT) {
     global $DB;
 
     if ($customised = $DB->get_record(
@@ -148,7 +150,7 @@ function my_copy_page(int $userid, int $private = MY_PAGE_PRIVATE, string $paget
  * @param string $pagename Differentiate between standard /my or /courses pages.
  * @return mixed system page, or false on error
  */
-function my_reset_page(int $userid, int $private = MY_PAGE_PRIVATE, string $pagetype='my-index', string $pagename = '__default') {
+function my_reset_page(int $userid, int $private = MY_PAGE_PRIVATE, string $pagetype='my-index', string $pagename = MY_PAGE_DEFAULT) {
     global $DB, $CFG;
 
     $page = my_get_page($userid, $private, $pagename);
@@ -205,7 +207,7 @@ function my_reset_page_for_all_users(
     int $private = MY_PAGE_PRIVATE,
     string $pagetype = 'my-index',
     ?progress_bar $progressbar = null,
-    string $pagename = '__default'
+    string $pagename = MY_PAGE_DEFAULT
 ) {
     global $DB;
 

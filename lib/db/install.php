@@ -303,12 +303,21 @@ function xmldb_main_install() {
     }
     $mypage = new stdClass();
     $mypage->userid = NULL;
-    $mypage->name = '__default';
+    $mypage->name = MY_PAGE_DEFAULT;
     $mypage->private = 0;
     $mypage->sortorder  = 0;
     $DB->insert_record('my_pages', $mypage);
     $mypage->private = 1;
     $DB->insert_record('my_pages', $mypage);
+
+    $mycoursespage = new stdClass();
+    $mycoursespage->userid = null;
+    $mycoursespage->name = MY_PAGE_COURSES;
+    $mycoursespage->private = 0;
+    $mycoursespage->sortorder  = 0;
+    $DB->insert_record('my_pages', $mycoursespage);
+    $mycoursespage->private = 1;
+    $DB->insert_record('my_pages', $mycoursespage);
 
     // Set a sensible default sort order for the most-used question types.
     set_config('multichoice_sortorder', 1, 'question');

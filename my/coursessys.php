@@ -55,7 +55,7 @@ if ($resetall && confirm_sesskey()) {
     $progressbar->create();
 
     \core\session\manager::write_close();
-    my_reset_page_for_all_users(MY_PAGE_PRIVATE, 'my-index', $progressbar, '__courses');
+    my_reset_page_for_all_users(MY_PAGE_PRIVATE, 'my-index', $progressbar, MY_PAGE_COURSES);
     core\notification::success(get_string('alldashboardswerereset', 'my'));
     echo $OUTPUT->continue_button(new moodle_url('/my/coursessys.php'));
     echo $OUTPUT->footer();
@@ -72,7 +72,7 @@ $PAGE->set_url('/my/coursessys.php');
 $PAGE->blocks->add_region('content');
 
 // Get the My Moodle page info.  Should always return something unless the database is broken.
-if (!$currentpage = my_get_page(null, MY_PAGE_PRIVATE, '__courses')) {
+if (!$currentpage = my_get_page(null, MY_PAGE_PRIVATE, MY_PAGE_COURSES)) {
     throw new Exception('mymoodlesetup');
 }
 $PAGE->set_subpage($currentpage->id);

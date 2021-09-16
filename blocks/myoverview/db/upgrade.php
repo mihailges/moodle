@@ -103,7 +103,7 @@ function xmldb_block_myoverview_upgrade($oldversion) {
         // Delete the default indexsys version of the block.
         $mysubpagepattern = $DB->get_record(
             'my_pages',
-            ['userid' => null, 'name' => '__default', 'private' => 1],
+            ['userid' => null, 'name' => MY_PAGE_DEFAULT, 'private' => 1],
             'id',
             IGNORE_MULTIPLE
         )->id;
@@ -115,7 +115,7 @@ function xmldb_block_myoverview_upgrade($oldversion) {
 
         // Begin looking for any and all instances of course overview in customised /my pages.
         $pageselect = 'name = :name and private = :private and userid IS NOT NULL';
-        $pageparams['name'] = '__default';
+        $pageparams['name'] = MY_PAGE_DEFAULT;
         $pageparams['private'] = true;
 
         $pages = $DB->get_recordset_select('my_pages', $pageselect, $pageparams);
@@ -134,7 +134,7 @@ function xmldb_block_myoverview_upgrade($oldversion) {
         // Add new instance to the /my/coursessys.php page so new instances of my courses recieves this block.
         $subpagepattern = $DB->get_record(
             'my_pages',
-            ['userid' => null, 'name' => '__courses', 'private' => 1],
+            ['userid' => null, 'name' => MY_PAGE_COURSES, 'private' => 1],
             'id',
             IGNORE_MULTIPLE
         )->id;

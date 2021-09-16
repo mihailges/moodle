@@ -62,4 +62,5 @@ EOF;
 $progressbar = new progress_bar();
 $progressbar->create();
 my_reset_page_for_all_users(MY_PAGE_PRIVATE, 'my-index', $progressbar);
+my_reset_page_for_all_users(MY_PAGE_PRIVATE, 'my-index', $progressbar, MY_PAGE_COURSES);
 

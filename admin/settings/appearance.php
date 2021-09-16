@@ -238,6 +238,10 @@ preferences,moodle|/user/preferences.php|t/preferences',
             'moodle/my:configsyspages');
     $ADMIN->add('appearance', $temp);
 
+    $temp = new admin_externalpage('mycoursespage', new lang_string('mycoursespage', 'admin'), $CFG->wwwroot . '/my/coursessys.php',
+        'moodle/my:configsyspages');
+    $ADMIN->add('appearance', $temp);
+
     $temp = new admin_externalpage('profilepage', new lang_string('myprofile', 'admin'), $CFG->wwwroot . '/user/profilesys.php',
             'moodle/my:configsyspages');
     $ADMIN->add('appearance', $temp);

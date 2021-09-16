@@ -46,7 +46,7 @@ $USER->editing = $edit = 0;
 $context = context_system::instance();
 
 // Get the My Moodle page info.  Should always return something unless the database is broken.
-if (!$currentpage = my_get_page(null, MY_PAGE_PRIVATE, '__courses')) {
+if (!$currentpage = my_get_page(null, MY_PAGE_PRIVATE, MY_PAGE_COURSES)) {
     throw new Exception('mymoodlesetup');
 }
 

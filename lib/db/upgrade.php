@@ -2862,5 +2862,19 @@ function xmldb_main_upgrade($oldversion) {
         upgrade_main_savepoint(true, 2021092400.03);
     }
 
+    if ($oldversion < 2021100300.01) {
+
+        $mycoursespage = new stdClass();
+        $mycoursespage->userid = null;
+        $mycoursespage->name = MY_PAGE_COURSES;
+        $mycoursespage->private = 0;
+        $mycoursespage->sortorder  = 0;
+        $DB->insert_record('my_pages', $mycoursespage);
+        $mycoursespage->private = 1;
+        $DB->insert_record('my_pages', $mycoursespage);
+
+        upgrade_main_savepoint(true, 2021100300.01);
+    }
+
     return true;
 }

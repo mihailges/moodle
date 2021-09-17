@@ -4,7 +4,7 @@ Feature: Upload files
   As a user
   I need to upload files
 
-  @javascript
+  @javascript @migrationissue
   Scenario: Upload a file in a multiple file filemanager
     Given the following "courses" exist:
       | fullname | shortname | category |

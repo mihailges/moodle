@@ -92,7 +92,6 @@ Feature: Non anonymous feedback
     And I click on "," "link" in the "Username 1" "table_row"
     And I should see "(Username 1)"
     And I should see "Yes of course"
-    And I follow "Back"
     And I log out
 
   @javascript

@@ -132,12 +132,12 @@ Feature: Basic recycle bin functionality
     And I should see "Recycle bin has been emptied"
     And I should see "There are no items in the recycle bin."
 
-  @javascript
+  @javascript @migrationissue
   Scenario: Show recycle bin on category action menu
     Given I log in as "admin"
     And I navigate to "Courses >  Manage courses and categories" in site administration
     And I click on "Actions menu" "link"
-    And I click on "Recycle bin" "link"
+    And I click on "Recycle bin" "link" in the ".dropdown-menu" "css_element"
     Then I should see "There are no items in the recycle bin."
 
   @javascript

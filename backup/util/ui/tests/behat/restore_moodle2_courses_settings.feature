@@ -24,7 +24,7 @@ Feature: Restore Moodle 2 course backups with different user data settings
     And I add a "Text input" field to "Test database name" database and I fill the form with:
       | Field name | Test field name |
       | Field description | Test field description |
-    And I click on "Templates" "link" in the "region-main" "region"
+    And I click on "Templates" "link"
     And I wait until the page is ready
     And I log out
     And I log in as "student1"

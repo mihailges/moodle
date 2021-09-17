@@ -66,6 +66,7 @@ class qbank_actionbar implements templatable, renderable {
         if (\core\plugininfo\qbank::is_plugin_enabled("qbank_managecategories")) {
             $categorylink = new moodle_url('/question/bank/managecategories/category.php', [$idargname => $this->id[$idargname]]);
         }
+
         $importlink = new moodle_url('/question/import.php', [$idargname => $this->id[$idargname]]);
         $exportlink = new moodle_url('/question/bank/exportquestions/export.php', [$idargname => $this->id[$idargname]]);
 

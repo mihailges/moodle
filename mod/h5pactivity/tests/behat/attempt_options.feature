@@ -1,4 +1,4 @@
-@mod @mod_h5pactivity @core_h5p @javascript
+@mod @mod_h5pactivity @core_h5p @javascript @migrationissue
 Feature: Attempts review settings.
   In order to let users to review attempts
   As a teacher

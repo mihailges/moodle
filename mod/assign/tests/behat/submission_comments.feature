@@ -87,6 +87,7 @@ Feature: In an assignment, students can comment in their submissions
     And I click on ".comment-link" "css_element"
     Then I should see "Teacher feedback first comment" in the ".comment-list" "css_element"
 
+  @matt
   Scenario: Teacher can comment on an offline assignment
     Given the following "activities" exist:
       | activity  | course  | name                  | assignsubmission_onlinetext_enabled  | assignmentsubmission_file_enabled  | assignfeedback_comments_enabled  |
@@ -98,8 +99,6 @@ Feature: In an assignment, students can comment in their submissions
       | Grade out of 100   | 50                        |
       | Feedback comments  | I'm the teacher feedback  |
     And I press "Save changes"
-    And I click on "Edit settings" "link"
-    And I follow "Test assignment name"
     And I follow "View all submissions"
     Then I should see "50.00" in the "Student 1" "table_row"
     And I should see "I'm the teacher feedback" in the "Student 1" "table_row"

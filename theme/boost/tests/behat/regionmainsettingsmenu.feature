@@ -18,14 +18,15 @@ Feature: Region main settings menu
       | activity | name        | intro                   | course | idnumber | option |
       | choice   | Choice name | Test choice description | C1     | choice1  | Option 1, Option 2, Option 3 |
 
+  @migrationissue
   Scenario: Teacher can use the region main settings menu
     Given I log in as "teacher1"
     When I am on "Course 1" course homepage
     Then "#region-main-settings-menu [role=button]" "css_element" should not exist
     And I am on the "Choice name" "Choice activity" page
-    And I click on "#region-main-settings-menu [role=button]" "css_element"
-    And I choose "Settings" in the open action menu
+    And I navigate to "Settings" in current page administration
     And I should see "Updating: Choice"
+    And I am on "Course 1" course homepage
     And I navigate to course participants
     And I click on "#region-main-settings-menu [role=button]" "css_element"
     And I choose "Enrolment methods" in the open action menu

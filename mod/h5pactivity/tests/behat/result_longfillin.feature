@@ -28,6 +28,7 @@ Feature: View essay attempt report
     And I click on "Save and display" "button"
     And I log out
 
+  @migrationissue
   Scenario: View attempt essay content
     # Do an attempt.
     Given I am on the "Awesome H5P package" "h5pactivity activity" page logged in as student1

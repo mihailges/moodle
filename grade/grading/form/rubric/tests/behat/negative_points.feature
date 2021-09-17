@@ -4,6 +4,7 @@ Feature: Rubrics can have levels with negative scores
   As a teacher
   I need to be able to penalise for very wrong submissions
 
+  @migrationissue
   Scenario: Using negative levels in rubrics
     Given the following "users" exist:
       | username | firstname | lastname | email |

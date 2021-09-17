@@ -46,7 +46,7 @@ Feature: Change grading options in an H5P activity
     And I switch to the main frame
     And I log out
 
-  @javascript
+  @javascript @migrationissue
   Scenario: Default grading is max attempt grade
     Given I am on the "Awesome H5P package" "h5pactivity activity" page logged in as teacher1
     When I navigate to "View > User report" in the course gradebook

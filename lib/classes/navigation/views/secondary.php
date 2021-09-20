@@ -184,8 +184,14 @@ class secondary extends view {
         if ($this->children->count() == 1) {
             $this->children->remove('modulepage');
         }
-
-        $this->force_nodes_into_more_menu($defaultmoremenunodes);
+        // Force certain navigation nodes to be displayed in the "more" menu.
+        // If the current page is site administration, do not explicitly limit the number of navigation nodes
+        // displayed in the secondary navigation.
+        if ($this->page->pagetype === 'admin-search') {
+            $this->force_nodes_into_more_menu($defaultmoremenunodes);
+        } else { // Otherwise, use the default max display limit (MAX_DISPLAYED_NAV_NODES).
+            $this->force_nodes_into_more_menu($defaultmoremenunodes, self::MAX_DISPLAYED_NAV_NODES);
+        }
         // Search and set the active node.
         $this->scan_for_active_node($this);
         $this->initialised = true;

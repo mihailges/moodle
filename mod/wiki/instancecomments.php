@@ -90,6 +90,9 @@ if ($action == 'delete') {
 } else {
     if (empty($newcontent)) {
         $form = new mod_wiki_comments_form();
+        if ($form->is_cancelled()) {
+            redirect(new moodle_url('/mod/wiki/comments.php', ['pageid' => (int)$pageid]));
+        }
         $newcomment = $form->get_data();
         $content = $newcomment->entrycomment_editor['text'];
     } else {

@@ -354,8 +354,8 @@ class data_field_base {     // Base class for Database Field Types (see field/*/
         require_once($CFG->dirroot.'/mod/data/field/'.$this->type.'/mod.html');
 
         echo html_writer::start_div('mt-3');
-        echo html_writer::tag('input', null, array('type' => 'submit', 'value' => get_string('cancel'),
-            'class' => 'btn btn-secondary'));
+        echo html_writer::tag('input', null, array('type' => 'submit', 'name' => 'cancel',
+            'value' => get_string('cancel'), 'class' => 'btn btn-secondary'));
         echo html_writer::tag('input', null, array('type' => 'submit', 'value' => $savebutton,
             'class' => 'btn btn-primary ml-2'));
         echo html_writer::end_div();

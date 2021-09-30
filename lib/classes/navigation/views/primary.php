@@ -47,7 +47,7 @@ class primary extends view {
             } else if ($homepage === HOMEPAGE_MY) {
                 $this->add(get_string('myhome'), new \moodle_url('/my/'), self::TYPE_SYSTEM,
                         null, 'home', new \pix_icon('i/home', ''));
-                $this->rootnodes['home'] = $this->add(get_string('sitehome'), new \moodle_url('/'),
+                $this->rootnodes['home'] = $this->add(get_string('sitehome'), new \moodle_url('/?redirect=0'),
                         self::TYPE_SETTING, null, 'myhome', new \pix_icon('i/dashboard', ''));
             }
         }

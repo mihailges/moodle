@@ -249,9 +249,6 @@ if ($data->jstemplate) {
     if ($mode == 'asearch') {
         $PAGE->navbar->add(get_string('search'));
     }
-    $url = new moodle_url($CFG->wwwroot.'/mod/data/view.php', array('id' => $cm->id, 'edit' => $urlediting));
-    $PAGE->set_button($OUTPUT->single_button($url, $strediting));
-}
 
 if ($mode == 'asearch') {
     $PAGE->navbar->add(get_string('search'));

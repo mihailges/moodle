@@ -48,6 +48,7 @@ $blockshtml = $OUTPUT->blocks('side-pre');
 $hasblocks = strpos($blockshtml, 'data-block=') !== false;
 
 $buildsecondarynavigation = $PAGE->has_secondary_navigation();
+$secondarynavigation = false;
 if ($buildsecondarynavigation) {
     $moremenu = new \core\navigation\output\more_menu($PAGE->secondarynav, 'nav-tabs');
     $secondarynavigation = $moremenu->export_for_template($OUTPUT);

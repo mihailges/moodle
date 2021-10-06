@@ -21,7 +21,7 @@ I need to choose the appropriate minimum and/or maximum number of words for inpu
       | Test questions   | essay | essay-min-max | editor   | 0            | 0            |
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
-    And I navigate to "Question bank > Questions" in current page administration
+    And I navigate to "Question bank" in current page administration
 
   @javascript
   Scenario: Minimum/Maximum word limit are enabled but not set.

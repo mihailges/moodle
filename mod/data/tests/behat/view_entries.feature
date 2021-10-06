@@ -110,7 +110,7 @@ Feature: Users can view and search database entries
     And I should not see "Student original entry untagged"
     And I should not see "Student original entry untagged 2"
 
-  @javascript
+  @javascript @matt1 @migrationissue
   Scenario: Check that searching by first and last name works as expected
     Given I log in as "student1"
     And I am on "Course 1" course homepage

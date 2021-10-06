@@ -23,7 +23,7 @@ Feature: Preview a drag-drop into text question
       | Test questions   | ddwtos | Drag to text infinite | infinite |
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
-    And I navigate to "Question bank > Questions" in current page administration
+    And I navigate to "Question bank" in current page administration
 
   @javascript @_bug_phantomjs
   Scenario: Preview a question using the mouse.

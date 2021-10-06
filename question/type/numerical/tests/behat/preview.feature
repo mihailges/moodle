@@ -26,7 +26,7 @@ Feature: Preview a Numerical question
       | core_langconfig | decsep   | #     |
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
-    And I navigate to "Question bank > Questions" in current page administration
+    And I navigate to "Question bank" in current page administration
 
   @javascript @_switch_window
   Scenario: Preview a Numerical question and submit a correct response.

@@ -21,7 +21,7 @@ Feature: Backpack badges
   Scenario: If external backpack connection is disabled, backpack settings should not be displayed
     Given I am on homepage
     And I log in as "admin"
-    And I press "Customise this page"
+    And I turn editing mode on
     And I add the "Administration" block if not present
     And I navigate to "Badges > Badges settings" in site administration
     And I set the following fields to these values:

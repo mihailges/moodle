@@ -26,7 +26,7 @@ Feature: A teacher can manage manually enrolled users in their course
       | moodle/site:viewfullnames | <permission> | editingteacher | Course       | C1        |
     When I log in as "teacher"
     And I am on "Course 1" course homepage
-    And I navigate to "Users > Enrolment methods" in current page administration
+    And I navigate to "Users > Manage enrolment methods" in current page administration
     And I click on "Enrol users" "link" in the "Manual enrolments" "table_row"
     And I set the field "addselect_searchtext" to "First"
     And I wait "1" seconds
@@ -51,7 +51,7 @@ Feature: A teacher can manage manually enrolled users in their course
       | user2 | C1     | student |
     When I log in as "teacher"
     And I am on "Course 1" course homepage
-    And I navigate to "Users > Enrolment methods" in current page administration
+    And I navigate to "Users > Manage enrolment methods" in current page administration
     And I click on "Enrol users" "link" in the "Manual enrolments" "table_row"
     And I set the field "removeselect_searchtext" to "First"
     And I wait "1" seconds

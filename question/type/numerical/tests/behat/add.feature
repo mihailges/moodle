@@ -19,7 +19,7 @@ Feature: Test creating a Numerical question
       | core_langconfig | decsep   | #     |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
-    And I navigate to "Question bank > Questions" in current page administration
+    And I navigate to "Question bank" in current page administration
 
   Scenario: Create a Numerical question
     When I add a "Numerical" question filling the form with:

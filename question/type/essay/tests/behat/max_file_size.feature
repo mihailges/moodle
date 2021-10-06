@@ -22,7 +22,7 @@ I need to choose the appropriate maxbytes for attachments
       | Test questions   | essay | essay-1-max   | editor           | 1           | 0        |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
-    And I navigate to "Question bank > Questions" in current page administration
+    And I navigate to "Question bank" in current page administration
 
   @javascript @_switch_window
   Scenario: Preview an Essay question and see the allowed maximum file sizes and number of attachments.

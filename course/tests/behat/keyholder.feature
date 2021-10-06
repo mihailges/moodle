@@ -1,4 +1,4 @@
-@core @core_course @javascript
+@core @core_course @javascript @matt1 @migrationissue
 Feature: Keyholder role is listed as course contact
   As a student I need to know who the keyholder is to enrol in a course
 

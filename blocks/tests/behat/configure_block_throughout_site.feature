@@ -62,12 +62,12 @@ Feature: Add and configure blocks throughout the site
   @javascript
   Scenario: Blocks can safely be customised
     Given I log in as "admin"
-    And I am on my courses homepage
+    And I am on homepage
     And I turn editing mode on
     And I add the "Text" block
-    And I configure the "(new HTML block)" block
+    And I configure the "(new text block)" block
     And I set the following fields to these values:
       | Text block title | Foo " onload="document.getElementsByTagName('body')[0].remove()" alt=" |
       | Content     | Example |
     When I press "Save changes"
-    Then I should see "Course overview"
+    Then I should see "Example"

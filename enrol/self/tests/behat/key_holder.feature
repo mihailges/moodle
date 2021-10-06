@@ -1,4 +1,4 @@
-@enrol @enrol_self
+@enrol @enrol_self @matt1 @migrationissue
 Feature: Users can be defined as key holders in courses where self enrolment is allowed
   In order to participate in courses
   As a user

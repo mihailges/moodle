@@ -32,13 +32,13 @@ Feature: Export forum
     And I click on "Export" "button"
     And I log out
 
-    @migrationissue
+  @migrationissue
   Scenario: Students cannot export forum by default
     Given I am on the "Test forum 1" "forum activity" page logged in as student1
     Then "Export" "link" should not exist in current page administration
     And I log out
 
-      @migrationissue
+  @migrationissue
   Scenario: User with the capability can export
     Given the following "permission overrides" exist:
       | capability                  | permission | role           | contextlevel | reference |

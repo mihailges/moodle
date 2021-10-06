@@ -79,7 +79,7 @@ Feature: Access to full profiles of users
     When I follow "Profile" in the user menu
     Then I should see "First access to site"
 
-  @javascript
+  @javascript @matt2 @migrationissue
   Scenario: Viewing full profiles of someone with the course contact role
     Given I log in as "admin"
     And I navigate to "Appearance > Courses" in site administration

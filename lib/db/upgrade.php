@@ -2866,7 +2866,7 @@ function xmldb_main_upgrade($oldversion) {
 
         $mycoursespage = new stdClass();
         $mycoursespage->userid = null;
-        $mycoursespage->name = MY_PAGE_COURSES;
+        $mycoursespage->name = '__courses';
         $mycoursespage->private = 0;
         $mycoursespage->sortorder  = 0;
         $DB->insert_record('my_pages', $mycoursespage);

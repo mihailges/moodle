@@ -98,8 +98,7 @@ $templatecontext = [
     'primarymoremenu' => $primarymenu['moremenu'],
     'secondarymoremenu' => $secondarynavigation ?: false,
     'usermenu' => $primarymenu['user'],
-    'langmenu' => $primarymenu['lang'],
-    'overflow' => $overflow
+    'langmenu' => $primarymenu['lang']
 ];
 
 $nav = $PAGE->flatnav;

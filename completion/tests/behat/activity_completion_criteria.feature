@@ -1,4 +1,4 @@
-@core @core_completion
+@core @core_completion @matt
 Feature: Allow to mark course as completed without cron for activity completion criteria
   In order for students to see instant course completion updates
   I need to be able update completion state without cron

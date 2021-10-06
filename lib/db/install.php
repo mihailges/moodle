@@ -303,7 +303,7 @@ function xmldb_main_install() {
     }
     $mypage = new stdClass();
     $mypage->userid = NULL;
-    $mypage->name = MY_PAGE_DEFAULT;
+    $mypage->name = '__default';
     $mypage->private = 0;
     $mypage->sortorder  = 0;
     $DB->insert_record('my_pages', $mypage);
@@ -312,7 +312,7 @@ function xmldb_main_install() {
 
     $mycoursespage = new stdClass();
     $mycoursespage->userid = null;
-    $mycoursespage->name = MY_PAGE_COURSES;
+    $mycoursespage->name = '__courses';
     $mycoursespage->private = 0;
     $mycoursespage->sortorder  = 0;
     $DB->insert_record('my_pages', $mycoursespage);

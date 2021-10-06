@@ -28,7 +28,7 @@ Feature: View fill the blanks attempt report
     And I click on "Save and display" "button"
     And I log out
 
-  @migrationissue
+  @migrationissue2
   Scenario: View attempt in a fill the blanks content
     Given I am on the "Awesome H5P package" "h5pactivity activity" page logged in as student1
     # Do an attempt.

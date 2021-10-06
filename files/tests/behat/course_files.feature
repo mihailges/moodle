@@ -1,4 +1,4 @@
-@core @core_files @migrationissue
+@core @core_files @migrationissue2
 Feature: Course files
   In order to add legacy files
   As a user

@@ -16,7 +16,7 @@ Feature: In a course administration page, navigate through report page, test for
       | admin | C1 | editingteacher |
       | student1 | C1 | student |
 
-  @javascript @migrationissue
+  @javascript
   Scenario: Selector should be available in the course event monitoring page
     Given I log in as "admin"
     And I navigate to "Reports > Event monitoring rules" in site administration

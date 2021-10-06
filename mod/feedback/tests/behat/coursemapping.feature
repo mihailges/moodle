@@ -130,7 +130,7 @@ Feature: Mapping courses in a feedback
     And I should see "1 (50.00 %)" in the "option c" "table_row"
     And I log out
 
-  @javascript @matt1 @migrationissue
+  @javascript @matt1 @migrationissue2
   Scenario: Site feedback is mapped to courses
     And I log in as "manager"
     And I am on site homepage

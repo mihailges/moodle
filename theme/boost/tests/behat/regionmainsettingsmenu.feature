@@ -18,7 +18,7 @@ Feature: Region main settings menu
       | activity | name        | intro                   | course | idnumber | option |
       | choice   | Choice name | Test choice description | C1     | choice1  | Option 1, Option 2, Option 3 |
 
-  @migrationissue
+  @matt
   Scenario: Teacher can use the region main settings menu
     Given I log in as "teacher1"
     When I am on "Course 1" course homepage

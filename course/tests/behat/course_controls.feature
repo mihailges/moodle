@@ -1,4 +1,4 @@
-@core @core_course @migrationissue
+@core @core_course
 Feature: Course activity controls works as expected
   In order to manage my course's activities
   As a teacher
@@ -88,6 +88,7 @@ Feature: Course activity controls works as expected
       | weeks        | 1             | "1 January - 7 January" | should not                | should not                                               | "8 January - 14 January" |
       | weeks        | 1             | ""                      | should                    | should not                                               | "8 January - 14 January" |
 
+  @migrationissue2
   Scenario Outline: General activities course controls using topics and weeks formats, and paged mode and not paged mode works as expected
     Given the following "users" exist:
       | username | firstname | lastname | email |

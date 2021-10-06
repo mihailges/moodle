@@ -1,4 +1,4 @@
-@mod @mod_feedback @matt1 @migrationissue
+@mod @mod_feedback @matt @migrationissue2
 Feature: Feedbacks in courses with groups
   In order to collect feedbacks per group
   As an teacher

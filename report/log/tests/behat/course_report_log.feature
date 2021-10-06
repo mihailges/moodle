@@ -26,7 +26,7 @@ Feature: In a course administration page, navigate through report page, test for
     And the "Report" select box should contain "Logs"
     And the field "Report" matches value "Logs"
 
-  @javascript @matt1 @migrationissue
+  @javascript @matt @migrationissue2
   Scenario: Verify the session setting is saved for different courses
     Given I log in as "admin"
     And I am on "Course 1" course homepage

@@ -43,7 +43,7 @@ Feature: Publish rubrics as templates
     And I go to "Test assignment 2 name" advanced grading definition page
     And I should see "Current rubric status"
 
-  @javascript @migrationissue
+  @javascript @migrationissue2
   Scenario: Create a rubric template and reuse it as a teacher, with Javascript enabled
     Then the field "Description" matches value "Assignment 1 description"
     And I should see "Criterion 1"

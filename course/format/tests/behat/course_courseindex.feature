@@ -86,7 +86,7 @@ Feature: Course index depending on role
     And I click on "Open course index drawer" "button"
     Then I should not see "Activity sample 2" in the "courseindex-content" "region"
 
-  @javascript @migrationissue
+  @javascript
   Scenario: Highlight sections are represented in the course index.
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on

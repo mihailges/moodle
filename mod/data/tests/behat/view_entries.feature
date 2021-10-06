@@ -36,7 +36,7 @@ Feature: Users can view and search database entries
     And I navigate to "Templates" in current page administration
     And I log out
 
-  @javascript @migrationissue
+  @javascript @migrationissue2
   Scenario: Students can add view, list and search entries
     Given I am on the "Test database name" "database activity" page logged in as student1
     And I add an entry to "Test database name" database with:
@@ -110,7 +110,7 @@ Feature: Users can view and search database entries
     And I should not see "Student original entry untagged"
     And I should not see "Student original entry untagged 2"
 
-  @javascript @matt1 @migrationissue
+  @javascript @matt1 @migrationissue2
   Scenario: Check that searching by first and last name works as expected
     Given I log in as "student1"
     And I am on "Course 1" course homepage

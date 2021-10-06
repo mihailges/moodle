@@ -144,7 +144,7 @@ Feature: Collapse course sections
     And I should see "Hidden from students" in the "#section-5 .availabilityinfo" "css_element"
     And I should see "Forum 5"
 
-  @javascript @matt1 @migrationissue
+  @javascript @migrationissue2
   Scenario: Users don't see chevron on one section per page for Topics format
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
@@ -166,7 +166,7 @@ Feature: Collapse course sections
     And I should see "Hidden from students" in the "#section-5 .availabilityinfo" "css_element"
     And I should see "Forum 5"
 
-  @javascript @matt1 @migrationissue
+  @javascript @migrationissue2
   Scenario: Users don't see chevron on one section per page for Weeks format
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage

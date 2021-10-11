@@ -38,7 +38,7 @@ Feature: Users can view and search database entries
 
   @javascript @migrationissue2
   Scenario: Students can add view, list and search entries
-    Given I am on the "Test database name" "database activity" page logged in as student1
+    Given I am on the "Test database name" "data activity" page logged in as student1
     And I add an entry to "Test database name" database with:
       | Test field name | Student entry 1 |
     And I press "Save and add another"
@@ -48,7 +48,7 @@ Feature: Users can view and search database entries
     And I add an entry to "Test database name" database with:
       | Test field name | Student entry 3 |
     And I press "Save"
-    And I follow "Test database name"
+    And I am on the "Test database name" "data activity" page
     Then I should see "Student entry 1"
     And I should see "Student entry 2"
     And I should see "Student entry 3"
@@ -124,7 +124,7 @@ Feature: Users can view and search database entries
       | Test field name | Student entry 2 |
     And I press "Save"
     And I log out
-    When I am on the "Test database name" "database activity" page logged in as teacher1
+    When I am on the "Test database name" "data activity" page logged in as teacher1
     And I click on "Advanced search" "checkbox"
     And I set the field "Author first name" to "Bob"
     And I press "Save settings"

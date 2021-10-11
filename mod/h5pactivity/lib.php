@@ -843,11 +843,11 @@ function h5pactivity_extend_settings_navigation(settings_navigation $settingsnav
     if ($manager->can_view_all_attempts()) {
         $attemptsreporturl = new moodle_url('/mod/h5pactivity/report.php', ['a' => $PAGE->cm->instance]);
         $h5pactivitynode->add(get_string('attempts_report', 'h5pactivity'), $attemptsreporturl,
-            settings_navigation::TYPE_SETTING);
+            settings_navigation::TYPE_SETTING, '', 'attemptsreport');
     } else if ($manager->can_view_own_attempts() && $manager->count_attempts($USER->id)) {
         $attemptsreporturl = new moodle_url('/mod/h5pactivity/report.php',
             ['a' => $PAGE->cm->instance, 'userid' => $USER->id]);
         $h5pactivitynode->add(get_string('attempts_report', 'h5pactivity'), $attemptsreporturl,
-            settings_navigation::TYPE_SETTING);
+            settings_navigation::TYPE_SETTING, '', 'attemptsreport');
     }
 }

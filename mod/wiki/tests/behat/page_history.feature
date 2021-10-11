@@ -48,15 +48,15 @@ Feature: A history of each wiki page is available
     And I click on "1" "link" in the "Teacher 1" "table_row"
     And I should see "First edition"
     And I should see "Teacher 1"
-    And I select "History" from the "jump" singleselect
+    And I follow "Back"
     And I click on "2" "link" in the "Student 1" "table_row"
     And I should see "Second edition"
     And I should see "Student 1"
-    And I select "History" from the "jump" singleselect
+    And I follow "Back"
     And I click on "3" "link" in the "Student 2" "table_row"
     And I should see "Third edition"
     And I should see "Student 2" in the "region-main" "region"
-    And I select "History" from the "jump" singleselect
+    And I follow "Back"
     And I click on "comparewith" "radio" in the "Student 1" "table_row"
     And I click on "compare" "radio" in the "Teacher 1" "table_row"
     And I press "Compare selected"

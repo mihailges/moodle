@@ -1063,7 +1063,9 @@ class behat_navigation extends behat_base {
         }
         if ($menuxpath && $this->running_javascript()) {
             $node = $this->find('xpath', $menuxpath . '//a[@data-toggle=\'dropdown\']');
-            $this->execute('behat_general::i_click_on', [$node, 'NodeElement']);
+            if ($node->isVisible()) {
+                $this->execute('behat_general::i_click_on', [$node, 'NodeElement']);
+            }
         }
     }
 

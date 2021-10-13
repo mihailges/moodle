@@ -78,7 +78,7 @@ Feature: Enable Block Completion in a course using activity completion
       | gradepass                 | 50                                                |
     And I press "Save and return to course"
     And I am on the "Test assign name" "assign activity" page
-    And I navigate to "View all submissions" in current page administration
+    And I follow "View all submissions"
     And I click on "Grade" "link" in the "Student" "table_row"
     And I set the field "Grade out of 100" to "53"
     And I set the field "Notify students" to "0"
@@ -112,7 +112,7 @@ Feature: Enable Block Completion in a course using activity completion
       | gradepass                 | 50                                                |
     And I press "Save and return to course"
     And I am on the "Test assign name" "assign activity" page
-    And I navigate to "View all submissions" in current page administration
+    And I follow "View all submissions"
     And I click on "Grade" "link" in the "Student" "table_row"
     And I set the field "Grade out of 100" to "49"
     And I set the field "Notify students" to "0"

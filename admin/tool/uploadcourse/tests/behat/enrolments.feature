@@ -13,7 +13,7 @@ Feature: An admin can update courses enrolments using a CSV file
   @javascript
   Scenario: Creating enrolment method by enable it
     Given I am on "Course 1" course homepage
-    And I navigate to "Users > Enrolment methods" in current page administration
+    And I navigate to "Users > Enrolment methods > Manage enrolment methods" in current page administration
     And I click on "Delete" "link" in the "Guest access" "table_row"
     And I click on "Continue" "button"
     And I should not see "Guest access" in the "generaltable" "table"
@@ -26,13 +26,13 @@ Feature: An admin can update courses enrolments using a CSV file
     When I click on "Upload courses" "button"
     Then I should see "Course updated"
     And I am on "Course 1" course homepage
-    And I navigate to "Users > Enrolment methods" in current page administration
+    And I navigate to "Users > Enrolment methods > Manage enrolment methods" in current page administration
     And "Disable" "icon" should exist in the "Guest access" "table_row"
 
   @javascript
   Scenario: Creating enrolment method by disabling it
     Given I am on "Course 1" course homepage
-    And I navigate to "Users > Enrolment methods" in current page administration
+    And I navigate to "Users > Enrolment methods > Manage enrolment methods" in current page administration
     And I click on "Delete" "link" in the "Guest access" "table_row"
     And I click on "Continue" "button"
     And I should not see "Guest access" in the "generaltable" "table"
@@ -45,7 +45,7 @@ Feature: An admin can update courses enrolments using a CSV file
     When I click on "Upload courses" "button"
     Then I should see "Course updated"
     And I am on "Course 1" course homepage
-    And I navigate to "Users > Enrolment methods" in current page administration
+    And I navigate to "Users > Enrolment methods > Manage enrolment methods" in current page administration
     And "Enable" "icon" should exist in the "Guest access" "table_row"
 
   @javascript
@@ -59,13 +59,13 @@ Feature: An admin can update courses enrolments using a CSV file
     When I click on "Upload courses" "button"
     Then I should see "Course updated"
     And I am on "Course 1" course homepage
-    And I navigate to "Users > Enrolment methods" in current page administration
+    And I navigate to "Users > Enrolment methods > Manage enrolment methods" in current page administration
     And "Disable" "icon" should exist in the "Guest access" "table_row"
 
   @javascript
   Scenario: Disable an enrolment method
     Given I am on "Course 1" course homepage
-    And I navigate to "Users > Enrolment methods" in current page administration
+    And I navigate to "Users > Enrolment methods > Manage enrolment methods" in current page administration
     And I click on "Enable" "link" in the "Guest access" "table_row"
     And "Disable" "icon" should exist in the "Guest access" "table_row"
     And I navigate to "Courses > Upload courses" in site administration
@@ -77,7 +77,7 @@ Feature: An admin can update courses enrolments using a CSV file
     When I click on "Upload courses" "button"
     Then I should see "Course updated"
     And I am on "Course 1" course homepage
-    And I navigate to "Users > Enrolment methods" in current page administration
+    And I navigate to "Users > Enrolment methods > Manage enrolment methods" in current page administration
     And "Enable" "icon" should exist in the "Guest access" "table_row"
 
   @javascript
@@ -91,13 +91,13 @@ Feature: An admin can update courses enrolments using a CSV file
     When I click on "Upload courses" "button"
     Then I should see "Course updated"
     And I am on "Course 1" course homepage
-    And I navigate to "Users > Enrolment methods" in current page administration
+    And I navigate to "Users > Enrolment methods > Manage enrolment methods" in current page administration
     And I should not see "Guest access" in the "generaltable" "table"
 
   @javascript
   Scenario: Delete an unexistent enrolment method (nothing should change)
     Given I am on "Course 1" course homepage
-    And I navigate to "Users > Enrolment methods" in current page administration
+    And I navigate to "Users > Enrolment methods > Manage enrolment methods" in current page administration
     And I click on "Delete" "link" in the "Guest access" "table_row"
     And I click on "Continue" "button"
     And I should not see "Guest access" in the "generaltable" "table"
@@ -110,5 +110,5 @@ Feature: An admin can update courses enrolments using a CSV file
     When I click on "Upload courses" "button"
     Then I should see "Course updated"
     And I am on "Course 1" course homepage
-    And I navigate to "Users > Enrolment methods" in current page administration
+    And I navigate to "Users > Enrolment methods > Manage enrolment methods" in current page administration
     And I should not see "Guest access" in the "generaltable" "table"

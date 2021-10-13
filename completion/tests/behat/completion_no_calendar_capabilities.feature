@@ -33,7 +33,7 @@ Feature: Completion with no calendar capabilites
       | id_completionexpected_year    | 2017 |
     And I press "Save and return to course"
     And I am on "Course 1" course homepage
-    And I navigate to "Users > Permissions" in current page administration
+    And I navigate to "Users > Permissions > Manage permissions" in current page administration
     And I override the system permissions of "Teacher" role with:
       | capability | permission |
       | moodle/calendar:manageentries | Prohibit |

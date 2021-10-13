@@ -23,7 +23,7 @@ Feature: Test editing a Multiple choice question
       | Test questions   | multichoice | Single choice for editing   | one_of_four |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
+    And I navigate to "Question bank > Questions" in current page administration
 
   Scenario: Edit a Multiple choice question with multiple response (checkboxes)
     When I choose "Edit question" action for "Multiple choice for editing" in the question bank

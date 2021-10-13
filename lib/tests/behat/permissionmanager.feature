@@ -17,7 +17,7 @@ Feature: Override permissions on a context
 
   Scenario: Default system capabilities modification
     Given I am on the "C1" "Course" page logged in as "admin"
-    And I navigate to "Users > Permissions" in current page administration
+    And I navigate to "Users > Permissions > Manage permissions" in current page administration
     When I click on "Allow" "icon" in the "mod/forum:addnews" "table_row"
     And I press "Student"
     Then "Add announcementsmod/forum:addnews" row "Roles with permission" column of "permissions" table should contain "Student"

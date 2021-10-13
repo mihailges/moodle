@@ -15,7 +15,7 @@ Feature: Assignment with no calendar capabilites
       | user      | course  | role            |
       | teacher1  | C1      | editingteacher  |
     And I am on the "C1" Course page logged in as admin
-    And I navigate to "Users > Permissions" in current page administration
+    And I navigate to "Users > Permissions > Manage permissions" in current page administration
     And I override the system permissions of "Teacher" role with:
       | capability                     | permission  |
       | moodle/calendar:manageentries  | Prohibit    |

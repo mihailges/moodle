@@ -24,7 +24,7 @@ Feature: Test editing an Essay question
       | Test questions   | essay | essay-003 | plain            |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
+    And I navigate to "Question bank > Questions" in current page administration
 
   Scenario: Edit an Essay question
     When I choose "Edit question" action for "essay-001" in the question bank

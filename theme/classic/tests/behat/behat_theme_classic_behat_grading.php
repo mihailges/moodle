@@ -38,7 +38,6 @@ class behat_theme_classic_behat_grading extends behat_grading {
     /**
      * Goes to the selected advanced grading page. You should be in the course page when this step begins.
      *
-     * @Given /^I go to "(?P<activity_name_string>(?:[^"]|\\")*)" advanced grading page$/
      * @param string $activityname
      */
     public function i_go_to_advanced_grading_page($activityname) {

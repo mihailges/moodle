@@ -37,8 +37,6 @@ require_once(__DIR__ . '/../../../../completion/tests/behat/behat_completion.php
 class behat_theme_classic_behat_completion extends behat_completion {
     /**
      * Goes to the current course activity completion report.
-     *
-     * @Given /^I go to the current course activity completion report$/
      */
     public function go_to_the_current_course_activity_completion_report() {
         $completionnode = get_string('pluginname', 'report_progress');

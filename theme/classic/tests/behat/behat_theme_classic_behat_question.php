@@ -39,7 +39,6 @@ class behat_theme_classic_behat_question extends behat_question {
     /**
      * Creates a question in the current course questions bank with the provided data. This step can only be used when creating question types composed by a single form.
      *
-     * @Given /^I add a "(?P<question_type_name_string>(?:[^"]|\\")*)" question filling the form with:$/
      * @param string $questiontypename The question type name
      * @param TableNode $questiondata The data to fill the question type form.
      */

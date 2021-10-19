@@ -92,7 +92,7 @@ $PAGE->set_heading($header);
 $PAGE->has_secondary_navigation_setter(false);
 
 // Add-a-block in editing mode.
-if (isset($PAGE->theme->addblockposition) && $PAGE->user_is_editing() && $PAGE->user_can_edit_blocks() && !BEHAT_SITE_RUNNING) {
+if (isset($PAGE->theme->addblockposition) && $PAGE->user_is_editing() && $PAGE->user_can_edit_blocks() && !defined('BEHAT_SITE_RUNNING')) {
     $url = new moodle_url($PAGE->url, ['bui_addblock' => '', 'bui_blockregion' => 'content', 'sesskey' => sesskey()]);
 
     $block = new block_contents;

@@ -28,7 +28,11 @@ user_preference_allow_ajax_update('drawer-open-nav', PARAM_ALPHA);
 require_once($CFG->libdir . '/behat/lib.php');
 
 // Add-a-block in editing mode.
-if (isset($PAGE->theme->addblockposition) && $PAGE->user_is_editing() && $PAGE->user_can_edit_blocks()) {
+if (isset($PAGE->theme->addblockposition) &&
+    $PAGE->user_is_editing() &&
+    $PAGE->user_can_edit_blocks() &&
+    $PAGE->blocks->is_known_region(BLOCK_POS_RIGHT)
+) {
     $url = new moodle_url($PAGE->url, ['bui_addblock' => '', 'sesskey' => sesskey()]);
 
     $block = new block_contents;

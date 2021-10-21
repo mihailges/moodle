@@ -38,6 +38,7 @@ Feature: The my overview block allows users to persistence of their page limits
 
   Scenario: Toggle the page limit between page reloads
     Given I log in as "student1"
+    And I am on my courses homepage
     When I click on "[data-action='limit-toggle']" "css_element" in the "Course overview" "block"
     And I click on "All" "link" in the ".dropdown-menu.show" "css_element"
     Then I should see "Course 13"
@@ -47,6 +48,7 @@ Feature: The my overview block allows users to persistence of their page limits
 
   Scenario: Toggle the page limit between grouping changes
     Given I log in as "student1"
+    And I am on my courses homepage
     When I click on "[data-action='limit-toggle']" "css_element" in the "Course overview" "block"
     And I click on "All" "link" in the ".dropdown-menu.show" "css_element"
     And I click on "All (except removed from view)" "button" in the "Course overview" "block"

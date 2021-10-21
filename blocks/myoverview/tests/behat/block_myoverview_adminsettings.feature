@@ -33,6 +33,7 @@ Feature: The my overview block allows admins to easily configure the students' c
     And I press "Save"
     And I log out
     Then I log in as "student1"
+    And I am on my courses homepage
     And I click on "All (except removed from view)" "button" in the "Course overview" "block"
     # We have to check for the data attribute instead of the list element text as we would get false positives from the "All (except removed from view)" element otherwise
     Then "[data-value='allincludinghidden']" "css_element" should exist in the ".block_myoverview .dropdown-menu" "css_element"
@@ -44,6 +45,7 @@ Feature: The my overview block allows admins to easily configure the students' c
     And I press "Save"
     And I log out
     Then I log in as "student1"
+    And I am on my courses homepage
     And I click on "All (except removed from view)" "button" in the "Course overview" "block"
     # We have to check for the data attribute instead of the list element text as we would get false negatives "All (except removed from view)" element otherwise
     Then "[data-value='allincludinghidden']" "css_element" should not exist in the ".block_myoverview .dropdown-menu" "css_element"
@@ -55,6 +57,7 @@ Feature: The my overview block allows admins to easily configure the students' c
     And I press "Save"
     And I log out
     Then I log in as "student1"
+    And I am on my courses homepage
     And I click on "All (except removed from view)" "button" in the "Course overview" "block"
     Then "All (except removed from view)" "list_item" should exist in the ".block_myoverview .dropdown-menu" "css_element"
 
@@ -65,6 +68,7 @@ Feature: The my overview block allows admins to easily configure the students' c
     And I press "Save"
     And I log out
     Then I log in as "student1"
+    And I am on my courses homepage
     # 'All (except removed from view)' option has been disabled, so the button is falling back to the 'In progress' option which is the next enabled option.
     And I click on "In progress" "button" in the "Course overview" "block"
     Then "All (except removed from view)" "list_item" should not exist in the ".block_myoverview .dropdown-menu" "css_element"
@@ -76,6 +80,7 @@ Feature: The my overview block allows admins to easily configure the students' c
     And I press "Save"
     And I log out
     Then I log in as "student1"
+    And I am on my courses homepage
     And I click on "All (except removed from view)" "button" in the "Course overview" "block"
     Then "In progress" "list_item" should exist in the ".block_myoverview .dropdown-menu" "css_element"
 
@@ -86,6 +91,7 @@ Feature: The my overview block allows admins to easily configure the students' c
     And I press "Save"
     And I log out
     Then I log in as "student1"
+    And I am on my courses homepage
     And I click on "All (except removed from view)" "button" in the "Course overview" "block"
     Then "In progress" "list_item" should not exist in the ".block_myoverview .dropdown-menu" "css_element"
 
@@ -96,6 +102,7 @@ Feature: The my overview block allows admins to easily configure the students' c
     And I press "Save"
     And I log out
     Then I log in as "student1"
+    And I am on my courses homepage
     And I click on "All (except removed from view)" "button" in the "Course overview" "block"
     Then "Future" "list_item" should exist in the ".block_myoverview .dropdown-menu" "css_element"
 
@@ -106,6 +113,7 @@ Feature: The my overview block allows admins to easily configure the students' c
     And I press "Save"
     And I log out
     Then I log in as "student1"
+    And I am on my courses homepage
     And I click on "All (except removed from view)" "button" in the "Course overview" "block"
     Then "Future" "list_item" should not exist in the ".block_myoverview .dropdown-menu" "css_element"
 
@@ -116,6 +124,7 @@ Feature: The my overview block allows admins to easily configure the students' c
     And I press "Save"
     And I log out
     Then I log in as "student1"
+    And I am on my courses homepage
     And I click on "All (except removed from view)" "button" in the "Course overview" "block"
     Then "Past" "list_item" should exist in the ".block_myoverview .dropdown-menu" "css_element"
 
@@ -126,6 +135,7 @@ Feature: The my overview block allows admins to easily configure the students' c
     And I press "Save"
     And I log out
     Then I log in as "student1"
+    And I am on my courses homepage
     And I click on "All (except removed from view)" "button" in the "Course overview" "block"
     Then "Past" "list_item" should not exist in the ".block_myoverview .dropdown-menu" "css_element"
 
@@ -136,6 +146,7 @@ Feature: The my overview block allows admins to easily configure the students' c
     And I press "Save"
     And I log out
     Then I log in as "student1"
+    And I am on my courses homepage
     And I click on "All (except removed from view)" "button" in the "Course overview" "block"
     Then "Starred" "list_item" should exist in the ".block_myoverview .dropdown-menu" "css_element"
 
@@ -146,6 +157,7 @@ Feature: The my overview block allows admins to easily configure the students' c
     And I press "Save"
     And I log out
     Then I log in as "student1"
+    And I am on my courses homepage
     And I click on "All (except removed from view)" "button" in the "Course overview" "block"
     Then "Starred" "list_item" should not exist in the ".block_myoverview .dropdown-menu" "css_element"
 
@@ -156,6 +168,7 @@ Feature: The my overview block allows admins to easily configure the students' c
     And I press "Save"
     And I log out
     Then I log in as "student1"
+    And I am on my courses homepage
     And I click on "All (except removed from view)" "button" in the "Course overview" "block"
     Then "Removed from view" "list_item" should exist in the ".block_myoverview .dropdown-menu" "css_element"
 
@@ -166,6 +179,7 @@ Feature: The my overview block allows admins to easily configure the students' c
     And I press "Save"
     And I log out
     Then I log in as "student1"
+    And I am on my courses homepage
     And I click on "All (except removed from view)" "button" in the "Course overview" "block"
     Then "Removed from view" "list_item" should not exist in the ".block_myoverview .dropdown-menu" "css_element"
 
@@ -182,6 +196,7 @@ Feature: The my overview block allows admins to easily configure the students' c
     And I press "Save"
     And I log out
     And I log in as "student1"
+    And I am on my courses homepage
     Then "button#groupingdropdown" "css_element" should not exist in the ".block_myoverview" "css_element"
     And I should see "Course 1" in the "Course overview" "block"
     And I should see "Course 2" in the "Course overview" "block"
@@ -202,6 +217,7 @@ Feature: The my overview block allows admins to easily configure the students' c
     And I press "Save"
     And I log out
     And I log in as "student1"
+    And I am on my courses homepage
     Then "button#groupingdropdown" "css_element" should not exist in the ".block_myoverview" "css_element"
     And I should see "Course 2" in the "Course overview" "block"
     And I should see "Course 3" in the "Course overview" "block"

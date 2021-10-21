@@ -25,6 +25,7 @@ Feature: The my overview block allows users to favourite their courses
 
   Scenario: Favourite a course on a course card
     Given I log in as "student1"
+    And I am on my courses homepage
     When I click on ".coursemenubtn" "css_element" in the "//div[@class='card dashboard-card' and contains(.,'Course 2')]" "xpath_element"
     And I click on "Star this course" "link" in the "//div[@class='card dashboard-card' and contains(.,'Course 2')]" "xpath_element"
     And I reload the page
@@ -35,6 +36,7 @@ Feature: The my overview block allows users to favourite their courses
 
   Scenario: Star a course and switch display to list
     Given I log in as "student1"
+    And I am on my courses homepage
     When I click on ".coursemenubtn" "css_element" in the "//div[@class='card dashboard-card' and contains(.,'Course 5')]" "xpath_element"
     And I click on "Star this course" "link" in the "//div[@class='card dashboard-card' and contains(.,'Course 5')]" "xpath_element"
     And I reload the page
@@ -48,6 +50,7 @@ Feature: The my overview block allows users to favourite their courses
 
   Scenario: Star a course and switch display to summary
     Given I log in as "student1"
+    And I am on my courses homepage
     When I click on ".coursemenubtn" "css_element" in the "//div[@class='card dashboard-card' and contains(.,'Course 5')]" "xpath_element"
     And I click on "Star this course" "link" in the "//div[@class='card dashboard-card' and contains(.,'Course 5')]" "xpath_element"
     And I reload the page

@@ -105,7 +105,7 @@ Feature: Course activity controls works as expected
       | forum     | Test forum name 2      | Test forum description 2      | C1     | 0002         | 1       |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
-    When I click on <targetpage> "link" skipping visibility check
+    When I click on <targetpage> "link"
     And I turn editing mode on
     And I add the "Recent activity" block
     And I open the action menu in "Recent activity" "block"

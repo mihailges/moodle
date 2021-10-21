@@ -57,6 +57,7 @@ class secondary extends view {
                 'gradebooksetup' => 2.1,
                 'outcomes' => 2.2,
                 'coursecompletion' => 6,
+                'coursetags' => 8,
                 'filtermanagement' => 9,
             ],
         ];
@@ -67,7 +68,7 @@ class secondary extends view {
             self::TYPE_SETTING => [
                 'grades' => 2,
                 'badgesview' => 7,
-                'competencies' => 8,
+                'competencies' => 10,
             ],
             self::TYPE_CUSTOM => [
                 'contentbank' => 5,
@@ -339,7 +340,7 @@ class secondary extends view {
 
         // Try to get any custom nodes defined by a user which may include containers.
         $expectedcourseadmin = ['editsettings', 'coursecompletion', 'users', 'coursereports', 'gradebooksetup', 'coursebadges',
-            'backup', 'restore', 'import', 'copy', 'reset', 'questionbank'];
+            'backup', 'restore', 'import', 'copy', 'reset', 'questionbank', 'coursetags'];
         foreach ($settingsnav->children as $value) {
             if ($value->key == 'courseadmin') {
                 foreach ($value->children as $other) {

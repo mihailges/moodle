@@ -87,6 +87,15 @@ class behat_general extends behat_base {
     }
 
     /**
+     * Opens Moodle my courses homepage.
+     *
+     * @Given /^I am on my courses homepage$/
+     */
+    public function i_am_on_mycourses_homepage() {
+        $this->execute('behat_general::i_visit', ['/my/courses.php']);
+    }
+
+    /**
      * Opens course index page.
      *
      * @Given /^I am on course index$/

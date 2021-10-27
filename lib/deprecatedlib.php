@@ -3634,3 +3634,61 @@ function grade_print_tabs($active_type, $active_plugin, $plugin_info, $return=fa
         echo $rv;
     }
 }
+
+/**
+ * Print grading plugin selection popup form.
+ *
+ * @deprecated since Moodle 4.0. Dropdown box navigation has been replaced with tertiary navigation.
+ * @param array   $plugin_info An array of plugins containing information for the selector
+ * @param boolean $return return as string
+ *
+ * @return nothing or string if $return true
+ */
+function print_grade_plugin_selector($plugin_info, $active_type, $active_plugin, $return=false) {
+    global $CFG, $OUTPUT, $PAGE;
+
+    debugging('print_grade_plugin_selector() has been deprecated. Dropdown box navigation has been replaced ' .
+        'with tertiary navigation.', DEBUG_DEVELOPER);
+
+    $menu = array();
+    $count = 0;
+    $active = '';
+
+    foreach ($plugin_info as $plugin_type => $plugins) {
+        if ($plugin_type == 'strings') {
+            continue;
+        }
+
+        $first_plugin = reset($plugins);
+
+        $sectionname = $plugin_info['strings'][$plugin_type];
+        $section = array();
+
+        foreach ($plugins as $plugin) {
+            $link = $plugin->link->out(false);
+            $section[$link] = $plugin->string;
+            $count++;
+            if ($plugin_type === $active_type and $plugin->id === $active_plugin) {
+                $active = $link;
+            }
+        }
+
+        if ($section) {
+            $menu[] = array($sectionname=>$section);
+        }
+    }
+
+    // finally print/return the popup form
+    if ($count > 1) {
+        $select = new url_select($menu, $active, null, 'choosepluginreport');
+        $select->set_label(get_string('gradereport', 'grades'), array('class' => 'accesshide'));
+        if ($return) {
+            return $OUTPUT->render($select);
+        } else {
+            echo $OUTPUT->render($select);
+        }
+    } else {
+        // only one option - no plugin selector needed
+        return '';
+    }
+}

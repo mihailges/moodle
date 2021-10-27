@@ -37,7 +37,9 @@ require_capability('gradeexport/ods:view', $context);
 // If you use this method without this check, will break the direct grade exporting (without publishing).
 $key = optional_param('key', '', PARAM_RAW);
 if (!empty($CFG->gradepublishing) && !empty($key)) {
-    print_grade_page_head($COURSE->id, 'export', 'ods', get_string('exportto', 'grades') . ' ' . get_string('pluginname', 'gradeexport_ods'));
+    print_grade_page_head($COURSE->id, 'export', 'ods',
+        get_string('exportto', 'grades') . ' ' . get_string('pluginname', 'gradeexport_ods'),
+        false, false, false);
 }
 
 if (groups_get_course_groupmode($COURSE) == SEPARATEGROUPS and !has_capability('moodle/site:accessallgroups', $context)) {
@@ -53,6 +55,8 @@ $export = new grade_export_ods($course, $groupid, $data);
 if (!empty($CFG->gradepublishing) && !empty($key)) {
     groups_print_course_menu($course, 'index.php?id='.$id);
     echo $export->get_grade_publishing_url();
+    echo $OUTPUT->single_button(new moodle_url('/grade/export/ods/index.php', ['id' => $id]),
+        get_string('back'), 'get');
     echo $OUTPUT->footer();
 } else {
     $event = \gradeexport_ods\event\grade_exported::create(array('context' => $context));

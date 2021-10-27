@@ -87,8 +87,10 @@ if ($data = $mform->get_data()) {
     }
 }
 
+$actionbar = new \core_grades\output\import_action_bar($COURSE->id, $PAGE->url, 'xml');
 print_grade_page_head($COURSE->id, 'import', 'xml',
-                      get_string('importxml', 'grades'), false, false, true, 'importxml', 'gradeimport_xml');
+      get_string('importxml', 'grades'), false, false, true, 'importxml',
+    'gradeimport_xml', null, $actionbar);
 
 $mform->display();
 

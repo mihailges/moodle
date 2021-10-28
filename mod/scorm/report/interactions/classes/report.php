@@ -45,10 +45,11 @@ class report extends \mod_scorm\report {
         $PAGE->set_url(new \moodle_url($PAGE->url, array('attemptsmode' => $attemptsmode)));
 
         // Scorm action bar for report.
-        $download = optional_param('download', '', PARAM_RAW);
-        if ($download === '') {
+        $downloadparam = optional_param('download', '', PARAM_RAW);
+        if ($downloadparam === '') {
             $actionbar = new \mod_scorm\output\actionbar($cm->id, true, $attemptsmode);
-            echo $actionbar->get_report_selection();
+            $renderer = $PAGE->get_renderer('mod_scorm');
+            echo $renderer->report_actionbar($actionbar);
         }
 
         if ($action == 'delete' && has_capability('mod/scorm:deleteresponses', $contextmodule) && confirm_sesskey()) {

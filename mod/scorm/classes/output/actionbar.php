@@ -14,14 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Output the actionbar for this activity.
- *
- * @package   mod_scorm
- * @copyright 2021 Sujith Haridasan <sujith@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace mod_scorm\output;
 
 use renderable;
@@ -33,8 +25,9 @@ use url_select;
 /**
  * Render HTML elements for tertiary nav for scorm.
  *
- * @copyright 2021 Sujith Haridasan <sujith@moodle.com>
  * @package mod_scorm
+ * @copyright 2021 Sujith Haridasan <sujith@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class actionbar implements renderable, templatable {
     /** @var int */
@@ -65,7 +58,7 @@ class actionbar implements renderable, templatable {
      * @param renderer_base $output renderer_base object.
      * @return array data for the template
      */
-    public function export_for_template(renderer_base $output):array {
+    public function export_for_template(renderer_base $output) : array {
         global $PAGE;
 
         $basicreportlink = new moodle_url('/mod/scorm/report.php', ['id' => $this->id, 'mode' => 'basic']);
@@ -117,24 +110,11 @@ class actionbar implements renderable, templatable {
 
         $data = [
             'scormreports' => $urlselect->export_for_template($output),
-            'candownload' => $this->download,
-            'downloadlinks' => ($this->download) ? $this->download : '',
+            'downloadlinks' => $this->download ?: '',
             'downloadods' => ($this->download) ? $downloadodslink->out(false) : '',
             'downloadexcel' => ($this->download) ? $downloadexcellink->out(false) : '',
             'downloadtext' => ($this->download) ? $downloadtextlink->out(false) : ''
         ];
         return $data;
-    }
-
-    /**
-     * Rendered HTML for the report action.
-     *
-     * @return string rendered HTML for the report action
-     */
-    public function get_report_selection():string {
-        global $PAGE;
-
-        $renderer = $PAGE->get_renderer('mod_scorm');
-        return $renderer->report_actionbar($this);
     }
 }

@@ -76,6 +76,7 @@ $PAGE->navbar->add($strreport, new moodle_url('/mod/scorm/report.php', array('id
 $PAGE->navbar->add("$strattempt $attempt - ".fullname($user),
     new moodle_url('/mod/scorm/report/userreport.php', array('id' => $id, 'user' => $userid, 'attempt' => $attempt)));
 $PAGE->navbar->add($selsco->title . ' - '. get_string('details', 'scorm'));
+$PAGE->set_secondary_active_tab('scormreport');
 
 if ($trackdata = scorm_get_tracks($selsco->id, $userid, $attempt)) {
     if ($trackdata->status == '') {

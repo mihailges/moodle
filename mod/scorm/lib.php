@@ -1844,6 +1844,6 @@ function scorm_extend_settings_navigation(navigation_node $settings, navigation_
 
     if (has_capability('mod/scorm:viewreport', $PAGE->cm->context)) {
         $url = new moodle_url('/mod/scorm/report.php', ['id' => $PAGE->cm->id]);
-        $scormnode->add(get_string("reports", "scorm"), $url);
+        $scormnode->add(get_string("reports", "scorm"), $url, navigation_node::TYPE_CUSTOM, null, 'scormreport');
     }
 }

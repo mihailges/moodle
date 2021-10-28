@@ -17,7 +17,7 @@
     Classes required for JS:
     * none
     Data attributes required for JS:
-    * data-region
+    * none
     Context variables required for this template:
     * see mod/scorm/classes/output/actionbar.php
     Example context (json):
@@ -31,27 +31,13 @@
                 {"name": "Objectives Report", "value": "/mod/scorm/report.php?id=69&mode=objectives"}
             ]
         },
-        "downloadlinks": {
-            "id": "url_select_down123",
-            "options": [
-                {"name": "Download", "value": ""},
-                {
-                    "name": "Download in ODS format",
-                    "value": "/mod/scorm/report.php?id=69&mode=basic&attemptsmode=0&download=ODS&sesskey=G8FPNoJz9r"
-                },
-                {
-                    "name": "Download in Excel format",
-                    "value": "/mod/scorm/report.php?id=69&mode=basic&attemptsmode=0&download=Excel&sesskey=G8FPNoJz9r"
-                },
-                {
-                    "name": "Download in text format",
-                    "value": "/mod/scorm/report.php?id=69&mode=basic&attemptsmode=0&download=CSV&sesskey=G8FPNoJz9r"
-                }
-            ]
-        }
+        "downloadlinks": true,
+        "downloadods": "http://localhost/moodle/mod/scorm/report.php?id=143&mode=basic&attemptsmode=0&sesskey=AmfcC7riSb&download=ODS",
+        "downloadexcel": "http://localhost/moodle/mod/scorm/report.php?id=143&mode=basic&attemptsmode=0&sesskey=AmfcC7riSb&download=Excel",
+        "downloadtext": "http://localhost/moodle/mod/scorm/report.php?id=143&mode=basic&attemptsmode=0&sesskey=AmfcC7riSb&download=CSV"
     }
 }}
-<div class="container-fluid">
+<div class="container-fluid mb-3">
     <div class="row justify-content-between">
         <div class="mr-5">
             {{#scormreports}}
@@ -60,7 +46,7 @@
         </div>
         <div class="mr-5">
             {{#downloadlinks}}
-                <div class="dropdown show">
+                <div class="dropdown">
                     <a class="custom-select urlselect" href="#" role="button" id="downloadMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         {{#str}} download {{/str}}
                     </a>

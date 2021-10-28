@@ -205,7 +205,11 @@ $PAGE->requires->string_for_js('popupsblocked', 'scorm');
 
 $name = false;
 
-echo html_writer::start_div('', array('id' => 'scormpage'));
+$scrompagestyle = "margin-top: 1em";
+if ($mode === 'normal') {
+    $scrompagestyle = "margin-top: 3em";
+}
+echo html_writer::start_div('', array('id' => 'scormpage', 'style' => $scrompagestyle));
 echo html_writer::start_div('', array('id' => 'tocbox'));
 echo html_writer::div(html_writer::tag('script', '', array('id' => 'external-scormapi', 'type' => 'text/JavaScript')), '',
                         array('id' => 'scormapi-parent'));

@@ -14,14 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Output the overrides action tab.
- *
- * @package   mod_quiz
- * @copyright 2021 Sujith Haridasan <sujith@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace mod_quiz\output;
 
 use moodle_url;
@@ -33,8 +25,9 @@ use url_select;
 /**
  * Render overrides action
  *
- * @copyright 2021 Sujith Haridasan <sujith@moodle.com>
  * @package mod_quiz
+ * @copyright 2021 Sujith Haridasan <sujith@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class overridesaction implements renderable, templatable {
     /** @var int */
@@ -43,20 +36,25 @@ class overridesaction implements renderable, templatable {
     /** @var string */
     private $mode;
 
-    /** @var string */
-    private $addbutton;
+    /** @var bool */
+    private $canedit;
+
+    /** @var array */
+    private $options;
 
     /**
      * overridesaction constructor.
      *
      * @param int $cmid The course module id.
      * @param string $mode The mode passed for the overrides url.
-     * @param string $addbutton rendered HTML button.
+     * @param bool $canedit Does the user have capabilities to list overrides.
+     * @param array $options The options passed to single button.
      */
-    public function __construct(int $cmid, string $mode, string $addbutton) {
+    public function __construct(int $cmid, string $mode, bool $canedit, array  $options) {
         $this->cmid = $cmid;
         $this->mode = $mode;
-        $this->addbutton = $addbutton;
+        $this->canedit = $canedit;
+        $this->options = $options;
     }
 
     /**
@@ -65,7 +63,7 @@ class overridesaction implements renderable, templatable {
      * @param renderer_base $output renderer_base object.
      * @return array data for the template.
      */
-    public function export_for_template(renderer_base $output):array {
+    public function export_for_template(renderer_base $output) : array {
         global $PAGE;
 
         $useroverride = new moodle_url('/mod/quiz/overrides.php', ['cmid' => $this->cmid, 'mode' => 'user']);
@@ -77,23 +75,32 @@ class overridesaction implements renderable, templatable {
         ];
 
         $urlselect = new url_select($menu, $PAGE->url->out(false), null, 'quizoverrides');
+
+        if ($this->mode === 'group') {
+            $addbtnname = get_string('addnewgroupoverride', 'quiz');
+            $request = 'post';
+        } else {
+            $addbtnname = get_string('addnewuseroverride', 'quiz');
+            $request = 'get';
+        }
+
+        // Get url for button.
+        $url = (new moodle_url('/mod/quiz/overrideedit.php',
+            ['cmid' => $this->cmid, 'action' => 'add' . $this->mode]))->out(false);
+
         return [
             'overrides' => $urlselect->export_for_template($output),
-            'useroverride' => $this->mode === 'user' ? true : false,
-            'groupoverride' => $this->mode === 'group' ? true : false,
-            'addbutton' => ($this->mode !== '') ? $this->addbutton : '',
+            'useroverride' => $this->mode === 'user',
+            'groupoverride' => $this->mode === 'group',
+            'actionvalue' => 'add' . $this->mode,
+            'cmidvalue' => $this->cmid,
+            'btnid' => 'single_button' . uniqid(),
+            'btnname' => $addbtnname,
+            'request' => $request,
+            'sesskey' => ($this->mode === 'group') ? sesskey() : '',
+            'url' => $url,
+            'disablebtn' => (isset($this->options['disabled'])) ? 'disabled' : '',
+            'canedit' => $this->canedit,
         ];
-    }
-
-    /**
-     * Get the HTML rendered string.
-     *
-     * @return string rendered HTML string.
-     */
-    public function get_response_overrides():string {
-        global $PAGE;
-
-        $renderer = $PAGE->get_renderer('mod_quiz');
-        return $renderer->overrides_action($this);
     }
 }

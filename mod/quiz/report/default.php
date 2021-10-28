@@ -72,7 +72,8 @@ abstract class quiz_default_report {
             echo $OUTPUT->heading(format_string($quiz->name, true, array('context' => $context)));
         }
         $resultsaction = new \mod_quiz\output\resultsaction($cm->id);
-        echo $resultsaction->get_results_action();
+        $renderer = $PAGE->get_renderer('mod_quiz');
+        echo $renderer->get_results_action($resultsaction);
         if (!empty($CFG->enableplagiarism)) {
             require_once($CFG->libdir . '/plagiarismlib.php');
             echo plagiarism_update_status($course, $cm);

@@ -14,14 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Output results action area for this activity.
- *
- * @package   mod_quiz
- * @copyright 2021 Sujith Haridasan <sujith@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace mod_quiz\output;
 
 use templatable;
@@ -33,8 +25,9 @@ use url_select;
 /**
  * Render results action
  *
- * @copyright 2021 Sujith Haridasan <sujith@moodle.com>
  * @package mod_quiz
+ * @copyright 2021 Sujith Haridasan <sujith@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class resultsaction implements templatable, renderable {
     /** @var int */
@@ -55,7 +48,7 @@ class resultsaction implements templatable, renderable {
      * @param renderer_base $output renderer_base object.
      * @return array data for template.
      */
-    public function export_for_template(renderer_base $output) {
+    public function export_for_template(renderer_base $output) : array {
         global $PAGE;
 
         $gradeslink = new moodle_url('/mod/quiz/report.php', ['id' => $this->id, 'mode' => 'overview']);
@@ -76,17 +69,5 @@ class resultsaction implements templatable, renderable {
             'resultaction' => $urlselect->export_for_template($output)
         ];
         return $data;
-    }
-
-    /**
-     * Get rendered HTML elements for results action.
-     *
-     * @return string rendered HTML string.
-     */
-    public function get_results_action():string {
-        global $PAGE;
-
-        $renderer = $PAGE->get_renderer('mod_quiz');
-        return $renderer->get_results_action($this);
     }
 }

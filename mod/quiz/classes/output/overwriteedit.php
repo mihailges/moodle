@@ -14,14 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Output the elements for the action area of edit page in this activity.
- *
- * @package   mod_quiz
- * @copyright 2021 Sujith Haridasan <sujith@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace mod_quiz\output;
 
 use renderable;
@@ -32,8 +24,9 @@ use moodle_url;
 /**
  * Render the tertiary elements for the edit page
  *
- * @copyright 2021 Sujith Haridasan <sujith@moodle.com>
  * @package mod_quiz
+ * @copyright 2021 Sujith Haridasan <sujith@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class overwriteedit implements templatable, renderable {
 
@@ -60,25 +53,16 @@ class overwriteedit implements templatable, renderable {
      * @param renderer_base $output renderer_base object
      * @return array data for the template
      */
-    public function export_for_template(renderer_base $output):array {
-        $data = [
-            'back' => new moodle_url('/mod/quiz/view.php', ['id' => $this->cmid]),
-        ];
-
+    public function export_for_template(renderer_base $output) : array {
+        $data = [];
         if ($this->quizhasquestion) {
-            $data['previewlink'] = new moodle_url('/mod/quiz/startattempt.php', ['cmid' => $this->cmid, 'sesskey' => sesskey()]);
+            $data = [
+                    'back' => (new moodle_url('/mod/quiz/view.php', ['id' => $this->cmid]))->out(false),
+            ];
+            $data['previewlink'] =
+                    (new moodle_url('/mod/quiz/startattempt.php', ['cmid' => $this->cmid, 'sesskey' => sesskey()]))->out(false);
+            $data['previewquiz'] = get_string('previewquiz', 'mod_quiz', 'quiz');
         }
         return $data;
-    }
-
-    /**
-     * Rendered HTML for the action area in edit page.
-     *
-     * @return string rendered HTML for the edit page
-     */
-    public function get_preview_response():string {
-        global $PAGE;
-        $renderer = $PAGE->get_renderer('mod_quiz');
-        return $renderer->overwrite_edit_action($this);
     }
 }

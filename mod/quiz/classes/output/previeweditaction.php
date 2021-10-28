@@ -14,14 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Output the preview and edit action area for this activity.
- *
- * @package   mod_quiz
- * @copyright 2021 Sujith Haridasan <sujith@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace mod_quiz\output;
 
 use moodle_url;
@@ -32,8 +24,9 @@ use renderable;
 /**
  * Render view action with preview and edit buttons
  *
- * @copyright 2021 Sujith Haridasan <sujith@moodle.com>
  * @package mod_quiz
+ * @copyright 2021 Sujith Haridasan <sujith@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class previeweditaction implements templatable, renderable {
     /** @var int */
@@ -50,6 +43,9 @@ class previeweditaction implements templatable, renderable {
 
     /** @var bool */
     private $quizhasquestions;
+
+    /** @var int */
+    private $attempts;
 
     /**
      * previeweditaction constructor.
@@ -77,39 +73,27 @@ class previeweditaction implements templatable, renderable {
      * @param renderer_base $output renderer_base objects.
      * @return array data for template
      */
-    public function export_for_template(renderer_base $output):array {
+    public function export_for_template(renderer_base $output) : array {
         $data = [];
         if ($this->quizhasquestions) {
             if ($this->canpreview) {
-                $data['previewlink'] = new moodle_url(
-                    '/mod/quiz/startattempt.php',
-                    ['attempt' => $this->attempts, 'cmid' => $this->cmid, 'sesskey' => sesskey()]);
+                $data['previewlink'] = (new moodle_url('/mod/quiz/startattempt.php',
+                        ['attempt' => $this->attempts, 'cmid' => $this->cmid, 'sesskey' => sesskey()]))->out(false);
+                $data['previewquiz'] = get_string('previewquiz', 'mod_quiz', 'quiz');
             }
 
             if ($this->canedit) {
-                $data['editlink'] = new moodle_url('/mod/quiz/edit.php', ['cmid' => $this->cmid]);
+                $data['editlink'] = (new moodle_url('/mod/quiz/edit.php', ['cmid' => $this->cmid]))->out(false);
             }
 
             if ($this->canattempt && !$this->canpreview) {
-                $data['attemptlink'] = new moodle_url(
-                    '/mod/quiz/startattempt.php',
-                    ['cmid' => $this->cmid, 'sesskey' => sesskey()]);
+                $data['attemptlink'] =
+                        (new moodle_url('/mod/quiz/startattempt.php', ['cmid' => $this->cmid, 'sesskey' => sesskey()]))->out(false);
             }
         } else {
-            $data['addquestionlink'] = new moodle_url('/mod/quiz/edit.php', ['cmid' => $this->cmid]);
+            $data['addquestionlink'] = (new moodle_url('/mod/quiz/edit.php', ['cmid' => $this->cmid]))->out(false);
         }
 
         return $data;
-    }
-
-    /**
-     * Get the preview and edit quiz buttons rendered for action area.
-     *
-     * @return string rendered HTML string
-     */
-    public function get_preview_edit_action():string {
-        global $PAGE;
-        $renderer = $PAGE->get_renderer('mod_quiz');
-        return $renderer->preview_edit_action($this);
     }
 }

@@ -20,7 +20,7 @@
     Classes required for JS:
     * none
     Data attributes required for JS:
-    * data-region
+    * none
     Context variables required for this template:
     * see mod/quiz/classes/output/overridesaction.php
     Example context (json):
@@ -36,27 +36,57 @@
                 }
             ]
         },
-        "useroverride": true,
-        "addbutton": "<button id='single_button' class='btn btn-secondary' type='submit'>Add user override></button>",
-        "groupoverride": false
+        "useroverride": false,
+        "groupoverride": true,
+        "actionvalue": "addgroup",
+        "cmidvalue": 144,
+        "btnid": "single_button6177806fcc363",
+        "btnname": "Add group override",
+        "request": "post",
+        "sesskey": "bkYFRJfAbn",
+        "url": "http://localhost/moodle/mod/quiz/overrides.php",
+        "disablebtn" : "disabled"
     }
 }}
-<div class="container-fluid">
+<div class="container-fluid mb-3">
     <div class="row">
         {{#overrides}}
             <div class="col-xs-6">
                 {{>core/url_select}}
             </div>
         {{/overrides}}
-        {{#useroverride}}
-            <div class="col-sm-6">
-                {{{addbutton}}}
-            </div>
-        {{/useroverride}}
-        {{#groupoverride}}
-            <div class="col-sm-6">
-                {{{addbutton}}}
-            </div>
-        {{/groupoverride}}
+        {{#canedit}}
+            {{#useroverride}}
+                <div class="col-sm-6">
+                    <div class="singlebutton">
+                        <form method="{{request}}" action="{{url}}">
+                            <input type="hidden" name="action" value="{{actionvalue}}">
+                            <input type="hidden" name="cmid" value="{{cmidvalue}}">
+                            <button type="submit" class="btn btn-primary"
+                                    id="{{btnid}}"
+                                    title=""
+                                    {{disablebtn}}
+                            >{{btnname}}</button>
+                        </form>
+                    </div>
+                </div>
+            {{/useroverride}}
+            {{#groupoverride}}
+                <div class="col-sm-6">
+                    <div class="singlebutton">
+                        <form method="{{request}}" action="{{url}}">
+                            <input type="hidden" name="action" value="{{actionvalue}}">
+                            <input type="hidden" name="cmid" value="{{cmidvalue}}">
+                            <input type="hidden" name="sesskey" value="{{sesskey}}">
+                            <button type="submit" class="btn btn-primary"
+                                    id="{{btnid}}"
+                                    title=""
+                                    {{disablebtn}}
+                            >{{btnname}}</button>
+                        </form>
+                    </div>
+                </div>
+            {{/groupoverride}}
+        {{/canedit}}
     </div>
 </div>

@@ -452,11 +452,14 @@ class mod_quiz_renderer extends plugin_renderer_base {
         $context = $attemptobj->get_quizobj()->get_context();
         $cmid = $attemptobj->get_quizobj()->get_cmid();
         $canedit = has_capability('mod/quiz:manage', $context);
-        $overwriteperview = new \mod_quiz\output\overwritepreview($cmid, $canedit);
+        $overwritepreview = new \mod_quiz\output\overwritepreview($cmid, $canedit);
 
         $output = '';
         $output .= $this->header();
-        $output .= $overwriteperview->get_preview_response();
+
+        $renderer = $this->page->get_renderer('mod_quiz');
+        $output .= $renderer->overwrite_preview_action($overwritepreview);
+
         $output .= $this->quiz_notices($messages);
         $output .= $this->countdown_timer($attemptobj, time());
         $output .= $this->attempt_form($attemptobj, $page, $slots, $id, $nextpage);
@@ -683,21 +686,19 @@ class mod_quiz_renderer extends plugin_renderer_base {
         foreach ($slots as $slot) {
             // Add a section headings if we need one here.
             $heading = $attemptobj->get_heading_before_slot($slot);
-            if ($heading) {
-                $heading = format_string($heading);
-            }
-            $sections = $attemptobj->get_quizobj()->get_sections();
-            if (!is_null($heading) && empty($heading) && count($sections) > 1) {
+            if (!is_null($heading) && empty($heading)) {
                 $heading = get_string('sectionnoname', 'quiz');
-                $heading = \html_writer::span($heading, 'dimmed_text');
             }
-
             if ($heading) {
-                $cell = new html_table_cell($heading);
+                $cell = new html_table_cell(format_string($heading));
                 $cell->header = true;
                 $cell->colspan = $tablewidth;
                 $table->data[] = array($cell);
-                $table->rowclasses[] = 'quizsummaryheading';
+                $classes = 'quizsummaryheading';
+                if ($heading === get_string('sectionnoname', 'quiz')) {
+                    $classes .= ' dimmed_text';
+                }
+                $table->rowclasses[] = $classes;
             }
 
             // Don't display information items.
@@ -824,11 +825,10 @@ class mod_quiz_renderer extends plugin_renderer_base {
      * @return string HTML to output.
      */
     public function view_page_buttons(mod_quiz_view_object $viewobj) {
-        global $CFG;
         $output = '';
 
         if (!$viewobj->quizhasquestions) {
-            $output .= $this->no_questions_message($viewobj->canedit, $viewobj->editurl);
+            $output .= $this->generate_no_questions_message();
         }
         return $output;
     }
@@ -880,11 +880,26 @@ class mod_quiz_renderer extends plugin_renderer_base {
     }
 
     /**
+     * Generate a message saying that this quiz has no questions, with a button to
+     * go to the edit page, if the user has the right capability.
+     * @param object $quiz the quiz settings.
+     * @param object $cm the course_module object.
+     * @param object $context the quiz context.
+     *
+     * @return string HTML to output.
+     */
+    public function no_questions_message($canedit, $editurl) {
+        debugging('no_questions_message() is deprecated, please use generate_no_questions_message() instead.', DEBUG_DEVELOPER);
+
+        return $this->generate_no_questions_message();
+    }
+
+    /**
      * Generate a message saying that this quiz has no questions
      *
      * @return string HTML to output.
      */
-    public function no_questions_message() {
+    public function generate_no_questions_message() {
         $output = html_writer::start_tag('div', array('class' => 'text-left   mb-3'));
 
         $output .= $this->notification(get_string('noquestions', 'quiz'), 'warning', false);
@@ -904,7 +919,7 @@ class mod_quiz_renderer extends plugin_renderer_base {
      * @param array $messages Array containing any messages
      * @param bool $quizhasquestions If quiz has questions
      */
-    public function view_page_guest($course, $quiz, $cm, $context, $messages, $quizhasquestions) {
+    public function view_page_guest($course, $quiz, $cm, $context, $messages, $quizhasquestions = false) {
         $output = '';
         $output .= $this->view_information($quiz, $cm, $context, $messages, $quizhasquestions);
         $guestno = html_writer::tag('p', get_string('guestsno', 'quiz'));
@@ -924,7 +939,7 @@ class mod_quiz_renderer extends plugin_renderer_base {
      * @param array $messages Array containing any messages
      * @param bool $quizhasquestions If quiz has questions
      */
-    public function view_page_notenrolled($course, $quiz, $cm, $context, $messages, $quizhasquestions) {
+    public function view_page_notenrolled($course, $quiz, $cm, $context, $messages, $quizhasquestions = false) {
         global $CFG;
         $output = '';
         $output .= $this->view_information($quiz, $cm, $context, $messages, $quizhasquestions);
@@ -942,10 +957,10 @@ class mod_quiz_renderer extends plugin_renderer_base {
      * @param object $cm the course_module object.
      * @param context $context the quiz context.
      * @param array $messages any access messages that should be described.
-     * @param bool $quizhasquestions number of attempts
+     * @param bool $quizhasquestions does quiz has questions added.
      * @return string HTML to output.
      */
-    public function view_information($quiz, $cm, $context, $messages, bool $quizhasquestions) {
+    public function view_information($quiz, $cm, $context, $messages, bool $quizhasquestions = false) {
         global $USER;
 
         $output = '';
@@ -968,9 +983,10 @@ class mod_quiz_renderer extends plugin_renderer_base {
         $canedit = has_capability('mod/quiz:manage', $context);
         $canpreview = has_capability('mod/quiz:preview', $context);
         $canattempt = has_capability('mod/quiz:attempt', $context);
-        $previeweditaction = new \mod_quiz\output\previeweditaction($cm->id, $canedit,
-                $canattempt, $canpreview, $quizhasquestions, $quiz->attempts);
-        $output .= $previeweditaction->get_preview_edit_action();
+        $previeweditaction = new \mod_quiz\output\previeweditaction($cm->id, $canedit, $canattempt, $canpreview, $quizhasquestions,
+            $quiz->attempts);
+        $renderer = $this->page->get_renderer('mod_quiz');
+        $output .= $renderer->preview_edit_action($previeweditaction);
 
         // Show number of attempts summary to those who can view reports.
         if (has_capability('mod/quiz:viewreports', $context)) {
@@ -1373,8 +1389,8 @@ class mod_quiz_renderer extends plugin_renderer_base {
      * @param \mod_quiz\output\overwritepreview $overwritepreview overwritepreview object.
      * @return string rendered HTML for the preview page
      */
-    public function overwrite_preview_action(\mod_quiz\output\overwritepreview $overwritepreview):string {
-        return $this->render_from_template('mod_quiz/quiz_preview_edit_action', $overwritepreview->export_for_template($this));
+    public function overwrite_preview_action(\mod_quiz\output\overwritepreview $overwritepreview) : string {
+        return $this->render_from_template('mod_quiz/quiz_preview_action', $overwritepreview->export_for_template($this));
     }
 
     /**
@@ -1383,8 +1399,8 @@ class mod_quiz_renderer extends plugin_renderer_base {
      * @param \mod_quiz\output\overwriteedit $overwriteedit overwriteedit object.
      * @return string rendered HTML for the edit page
      */
-    public function overwrite_edit_action(\mod_quiz\output\overwriteedit $overwriteedit):string {
-        return $this->render_from_template('mod_quiz/quiz_preview_edit_action', $overwriteedit->export_for_template($this));
+    public function overwrite_edit_action(\mod_quiz\output\overwriteedit $overwriteedit) : string {
+        return $this->render_from_template('mod_quiz/quiz_edit_action', $overwriteedit->export_for_template($this));
     }
 
     /**
@@ -1393,7 +1409,7 @@ class mod_quiz_renderer extends plugin_renderer_base {
      * @param \mod_quiz\output\resultsaction $resultsaction resultsaction object.
      * @return string rendered HTML string from the template.
      */
-    public function get_results_action(\mod_quiz\output\resultsaction $resultsaction):string {
+    public function get_results_action(\mod_quiz\output\resultsaction $resultsaction) : string {
         return $this->render_from_template('mod_quiz/quiz_results_action', $resultsaction->export_for_template($this));
     }
 
@@ -1403,7 +1419,7 @@ class mod_quiz_renderer extends plugin_renderer_base {
      * @param \mod_quiz\output\overridesaction $overridesaction the overridesaction object.
      * @return string rendered HTML string from the template.
      */
-    public function overrides_action(\mod_quiz\output\overridesaction $overridesaction):string {
+    public function overrides_action(\mod_quiz\output\overridesaction $overridesaction) : string {
         return $this->render_from_template('mod_quiz/quiz_overrides', $overridesaction->export_for_template($this));
     }
 }

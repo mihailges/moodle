@@ -14,14 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Output the preview action for this activity.
- *
- * @package   mod_quiz
- * @copyright 2021 Sujith Haridasan <sujith@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace mod_quiz\output;
 
 use renderable;
@@ -33,6 +25,8 @@ use moodle_url;
  * Output the preview action area of this activity
  *
  * @package mod_quiz
+ * @copyright 2021 Sujith Haridasan <sujith@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class overwritepreview implements templatable, renderable {
 
@@ -59,24 +53,13 @@ class overwritepreview implements templatable, renderable {
      * @param renderer_base $output
      * @return array data for the template
      */
-    public function export_for_template(renderer_base $output):array {
+    public function export_for_template(renderer_base $output) : array {
         $data = [
-            'back' => new moodle_url('/mod/quiz/view.php', ['id' => $this->cmid]),
+            'back' => (new moodle_url('/mod/quiz/view.php', ['id' => $this->cmid]))->out(false),
         ];
         if ($this->canedit) {
-            $data['editlink'] = new moodle_url('/mod/quiz/edit.php', ['cmid' => $this->cmid]);
+            $data['editlink'] = (new moodle_url('/mod/quiz/edit.php', ['cmid' => $this->cmid]))->out(false);
         }
         return $data;
-    }
-
-    /**
-     * Rendered HTML for the preview page.
-     *
-     * @return string rendered HTML for the preview page
-     */
-    public function get_preview_response():string {
-        global $PAGE;
-        $renderer = $PAGE->get_renderer('mod_quiz');
-        return $renderer->overwrite_preview_action($this);
     }
 }

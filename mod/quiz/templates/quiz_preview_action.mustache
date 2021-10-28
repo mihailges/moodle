@@ -15,44 +15,36 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template mod_quiz/quiz_results_action
+    @template mod_quiz/quiz_preview_action
     Actions panel at the bottom of the assignment grading UI.
     Classes required for JS:
     * none
     Data attributes required for JS:
     * none
     Context variables required for this template:
-    * see mod/quiz/classes/output/resultsaction.php
+    * see mod/quiz/classes/output/previeweditaction.php
     Example context (json):
     {
-        "resultaction": {
-            "id": "url_select_test",
-            "options": [{
-                    "name": "Grades",
-                    "value": "/mod/quiz/report.php?id=4&mode=overview"
-                },
-                {
-                    "name": "Responses",
-                    "value": "/mod/quiz/report.php?id=4&mode=responses"
-                },
-                {
-                    "name": "Statistics",
-                    "value": "/mod/quiz/report.php?id=4&mode=statistics"
-                },
-                {
-                    "name": "Manual grading",
-                    "value": "/mod/quiz/report.php?id=4&mode=grading"
-                }
-            ]
-        }
+        "back": "http://localhost/mod/quiz/view.php?id=2",
+        "editlink": "http://localhost/mod/quiz/edit.php?cmid=3"
     }
 }}
 <div class="container-fluid mb-3">
     <div class="row">
-        <div class="float-left">
-            {{#resultaction}}
-                {{>core/url_select}}
-            {{/resultaction}}
+        {{#back}}
+            <div class="col-xs-6">
+                <a href="{{back}}"><button class="btn btn-secondary">{{#str}}back, core {{/str}}</button></a>
+            </div>
+        {{/back}}
+        {{#editlink}}
+            {{#back}}
+            <div class="col-sm-6">
+            {{/back}}
+            {{^back}}
+            <div class="mr-2">
+            {{/back}}
+            <a href="{{editlink}}"><button class="btn btn-primary">{{#str}}editquiz, quiz{{/str}}</button></a>
         </div>
+        {{/editlink}}
     </div>
 </div>

@@ -323,19 +323,15 @@ if ($hasinactive) {
 }
 
 $addbutton = '';
+$options = [];
 if ($canedit) {
     $output .= html_writer::start_tag('div', ['class' => 'buttons']);
-    $options = [];
     if ($groupmode) {
         if (empty($groups)) {
             // There are no groups.
             $output .= $OUTPUT->notification(get_string('groupsnone', 'quiz'), 'error');
             $options['disabled'] = true;
         }
-        $options['primary'] = true;
-        $addbutton = $OUTPUT->single_button($overrideediturl->out(true,
-                ['action' => 'addgroup', 'cmid' => $cm->id]),
-                get_string('addnewgroupoverride', 'quiz'), 'post', $options);
     } else {
         $users = [];
         // See if there are any students in the quiz.
@@ -356,10 +352,6 @@ if ($canedit) {
             $output .= $OUTPUT->notification($nousermessage, 'error');
             $options['disabled'] = true;
         }
-        $options['primary'] = true;
-        $addbutton = $OUTPUT->single_button($overrideediturl->out(true,
-                ['action' => 'adduser', 'cmid' => $cm->id]),
-                get_string('addnewuseroverride', 'quiz'), 'get', $options);
     }
     $output .= html_writer::end_tag('div');
 }
@@ -367,8 +359,9 @@ if ($canedit) {
 $output .= html_writer::end_tag('div');
 
 // Outputs overrides action.
-$overridesaction = new \mod_quiz\output\overridesaction($cmid, $mode, $addbutton);
-echo $overridesaction->get_response_overrides();
+$overridesaction = new \mod_quiz\output\overridesaction($cmid, $mode, $canedit, $options);
+$renderer = $PAGE->get_renderer('mod_quiz');
+echo $renderer->overrides_action($overridesaction);
 
 // Now output what we captured after the overrides action.
 echo $output;

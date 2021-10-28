@@ -191,7 +191,9 @@ if ($node) {
 $overwriteedit = new \mod_quiz\output\overwriteedit($cmid, quiz_has_questions($quiz->id));
 
 echo $OUTPUT->header();
-echo $overwriteedit->get_preview_response();
+
+$renderer = $PAGE->get_renderer('mod_quiz');
+echo $renderer->overwrite_edit_action($overwriteedit);
 
 // Initialise the JavaScript.
 $quizeditconfig = new stdClass();

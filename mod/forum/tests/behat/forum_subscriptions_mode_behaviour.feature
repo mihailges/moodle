@@ -31,6 +31,7 @@ Feature: Changes to the subscription mode of a forum can change subcribers of a 
     And I navigate to "Subscriptions" in current page administration
     When I select "Auto subscription" from the "Subscriptions" singleselect
     Then I should not see "There are no subscribers yet for this forum"
+    And I navigate to "Subscriptions" in current page administration
     And I should see "Student 1"
     And I should see "student.1@example.com"
     And I should see "Student 2"

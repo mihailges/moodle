@@ -231,6 +231,51 @@ Feature: A user can control their own subscription preferences for a discussion
     And I follow "Reply"
     And the field "Discussion subscription" matches value "I don't want to be notified of new posts in this discussion"
 
+  Scenario: An automatic forum prompts a user to subscribe to a discussion when posting unless they have already chosen not to subscribe
+    Given the following "activity" exists:
+      | activity       | forum                  |
+      | course         | C1                     |
+      | idnumber       | forum1                 |
+      | name           | Test forum name        |
+      | intro          | Test forum description |
+      | type           | general                |
+      | forcesubscribe | 2                      |
+    And I am on "Course 1" course homepage
+    And I add a new discussion to "Test forum name" forum with:
+      | Subject | Test post subject one |
+      | Message | Test post message one |
+    And I add a new discussion to "Test forum name" forum with:
+      | Subject | Test post subject two |
+      | Message | Test post message two |
+    # added for this scenario
+    And the following "users" exist:
+      | username | firstname | lastname | email                   |
+      | student2 | Student   | Two      | student.two@example.com |
+    And the following "course enrolments" exist:
+      | user     | course | role    |
+      | student2 | C1     | student |
+    And I log out
+    When I am on the "Test forum name" "forum activity" page logged in as student2
+    And I should see "Unsubscribe from forum"
+    And I reply "Test post subject one" post from "Test forum name" forum with:
+      | Subject                 | Reply 1 to discussion 1               |
+      | Message                 | Discussion contents 1, second message |
+      | Discussion subscription | 1                                     |
+    And I reply "Test post subject two" post from "Test forum name" forum with:
+      | Subject                 | Reply 1 to discussion 1               |
+      | Message                 | Discussion contents 1, second message |
+      | Discussion subscription | 0                                     |
+    And I am on the "Test forum name" "forum activity" page
+    Then "Unsubscribe from this discussion" "checkbox" should exist in the "Test post subject one" "table_row"
+    And "Subscribe to this discussion" "checkbox" should exist in the "Test post subject two" "table_row"
+    And I follow "Test post subject one"
+    And I follow "Reply"
+    And the field "Discussion subscription" matches value "Send me notifications of new posts in this discussion"
+    And I am on the "Test forum name" "forum activity" page
+    And I follow "Test post subject two"
+    And I follow "Reply"
+    And the field "Discussion subscription" matches value "I don't want to be notified of new posts in this discussion"
+
   Scenario: A guest should not be able to subscribe to a discussion
     Given the following "activities" exist:
       | activity    | name            | intro                  | course               | section | idnumber  | type    |

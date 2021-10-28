@@ -54,6 +54,7 @@ $PAGE->set_url($workshop->assess_url($assessment->id));
 $PAGE->set_title($workshop->name);
 $PAGE->set_heading($course->fullname);
 $PAGE->navbar->add(get_string('assessingsubmission', 'workshop'));
+$PAGE->set_secondary_active_tab('modulepage');
 
 $cansetassessmentweight = has_capability('mod/workshop:allocate', $workshop->context);
 $canoverridegrades      = has_capability('mod/workshop:overridegrades', $workshop->context);

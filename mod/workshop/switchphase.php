@@ -63,6 +63,10 @@ echo $OUTPUT->header();
 if (!$PAGE->has_secondary_navigation()) {
     echo $OUTPUT->heading(format_string($workshop->name));
 }
+
+$continuebtn = new single_button(
+    new moodle_url($PAGE->url, array('confirm' => 1)), get_string('continue'), 'post', true);
+$continuebtn->class .= ' mr-3';
 echo $OUTPUT->confirm(get_string('switchphase' . $phase . 'info', 'workshop'),
-                        new moodle_url($PAGE->url, array('confirm' => 1)), $workshop->view_url());
+                        $continuebtn, $workshop->view_url());
 echo $OUTPUT->footer();

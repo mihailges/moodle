@@ -43,6 +43,7 @@ $PAGE->set_url($workshop->exassess_url($assessment->id));
 $PAGE->set_title($workshop->name);
 $PAGE->set_heading($course->fullname);
 $PAGE->navbar->add(get_string('assessingexample', 'workshop'));
+$PAGE->set_secondary_active_tab('modulepage');
 $currenttab = 'assessment';
 
 $canmanage  = has_capability('mod/workshop:manageexamples', $workshop->context);

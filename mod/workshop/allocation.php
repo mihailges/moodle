@@ -49,14 +49,13 @@ $PAGE->set_title($workshop->name);
 $PAGE->set_heading($course->fullname);
 $PAGE->navbar->add(get_string('allocation', 'workshop'), $workshop->allocation_url($method));
 
-
 $allocator  = $workshop->allocator_instance($method);
 $initresult = $allocator->init();
 
 //
 // Output starts here
 //
-$actionbar = new \mod_workshop\output\actionbar($cmid, $url, $workshop);
+$actionbar = new \mod_workshop\output\actionbar($url, $workshop);
 
 $output = $PAGE->get_renderer('mod_workshop');
 echo $output->header();

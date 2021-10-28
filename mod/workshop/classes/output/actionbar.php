@@ -14,14 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Output the actionbar for workshop activity.
- *
- * @package   mod_workshop
- * @copyright 2021 Sujith Haridasan <sujith@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace mod_workshop\output;
 
 use moodle_url;
@@ -30,17 +22,11 @@ use url_select;
 /**
  * Output the rendered elements for the tertiary nav for page action.
  *
+ * @package   mod_workshop
  * @copyright 2021 Sujith Haridasan <sujith@moodle.com>
- * @package mod_workshop
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class actionbar {
-    /**
-     * The course id.
-     *
-     * @var int $cmid
-     */
-    private $cmid;
-
     /**
      * The current url.
      *
@@ -57,12 +43,10 @@ class actionbar {
     /**
      * actionbar constructor.
      *
-     * @param int $cmid The course module id.
      * @param moodle_url $currenturl The current URL.
      * @param \workshop $workshop The workshop object.
      */
-    public function __construct(int $cmid, moodle_url $currenturl, \workshop $workshop) {
-        $this->cmid = $cmid;
+    public function __construct(moodle_url $currenturl, \workshop $workshop) {
         $this->currenturl = $currenturl;
         $this->workshop = $workshop;
     }
@@ -72,7 +56,7 @@ class actionbar {
      *
      * @return url_select url_select object.
      */
-    private function create_select_menu():url_select {
+    private function create_select_menu() : url_select {
         $allocators = \workshop::installed_allocators();
         $menu = [];
 
@@ -81,8 +65,7 @@ class actionbar {
             $menu[$this->workshop->allocation_url($methodid)->out(false)] = $selectorname;
         }
 
-        $urlselect = new url_select($menu, $this->currenturl->out(false), null, 'allocationsetting');
-        return $urlselect;
+        return new url_select($menu, $this->currenturl->out(false), null, 'allocationsetting');
     }
 
     /**
@@ -90,7 +73,7 @@ class actionbar {
      *
      * @return string rendered HTML string
      */
-    public function get_allocation_menu():string {
+    public function get_allocation_menu() : string {
         global $OUTPUT;
 
         $urlselect = $this->create_select_menu();

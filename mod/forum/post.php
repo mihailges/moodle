@@ -1093,6 +1093,7 @@ if ($edit) {
 
 $PAGE->set_title("{$course->shortname}: {$strdiscussionname}{$titlesubject}");
 $PAGE->set_heading($course->fullname);
+$PAGE->set_secondary_active_tab("modulepage");
 
 echo $OUTPUT->header();
 if (!$PAGE->has_secondary_navigation()) {

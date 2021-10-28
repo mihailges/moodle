@@ -105,6 +105,7 @@ $PAGE->set_context($forum->get_context());
 $PAGE->set_title($forum->get_name());
 $PAGE->add_body_class('forumtype-' . $forum->get_type());
 $PAGE->set_heading($course->fullname);
+$PAGE->add_header_action(forum_search_form($course, $search));
 
 if ($istypesingle && $displaymode == FORUM_MODE_NESTED_V2) {
     $PAGE->add_body_class('nested-v2-display-mode reset-style');
@@ -241,6 +242,7 @@ switch ($forum->get_type()) {
         }
         break;
     case 'blog':
+        $forum->removediscussbtn = true;
         $discussionsrenderer = $rendererfactory->get_blog_discussion_list_renderer($forum);
         // Blog forums always show discussions newest first.
         echo $discussionsrenderer->render($USER, $cm, $groupid, $discussionlistvault::SORTORDER_CREATED_DESC,
@@ -255,6 +257,7 @@ switch ($forum->get_type()) {
         }
         break;
     default:
+        $forum->removediscussbtn = true;
         $discussionsrenderer = $rendererfactory->get_discussion_list_renderer($forum);
         echo $discussionsrenderer->render($USER, $cm, $groupid, $sortorder, $pageno, $pagesize, $displaymode);
 }

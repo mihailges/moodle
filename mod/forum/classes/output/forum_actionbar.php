@@ -14,14 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Output the actionbar for this activity.
- *
- * @package   mod_forum
- * @copyright 2021 Sujith Haridasan <sujith@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace mod_forum\output;
 
 use renderable;
@@ -37,10 +29,11 @@ use mod_forum\local\entities\forum as forum_entity;
  * Render elements search forum, add new discussion button and subscribe all
  * to the page action.
  *
- * @copyright 2021 Sujith Haridasan <sujith@moodle.com>
  * @package mod_forum
+ * @copyright 2021 Sujith Haridasan <sujith@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class activity_actionbar implements renderable, templatable {
+class forum_actionbar implements renderable, templatable {
     /**
      * @var forum_entity $forum
      */
@@ -62,7 +55,7 @@ class activity_actionbar implements renderable, templatable {
     private $search;
 
     /**
-     * activity_actionbar constructor.
+     * forum_actionbar constructor.
      *
      * @param forum_entity $forum The forum object.
      * @param \stdClass $course The course object.
@@ -81,10 +74,10 @@ class activity_actionbar implements renderable, templatable {
      *
      * @return string HTML button
      */
-    private function get_new_discussion_topic_button(): string {
+    private function get_new_discussion_topic_button() : string {
         global $USER;
         $renderfactory = \mod_forum\local\container::get_renderer_factory();
-        $discussionrenderer = $renderfactory->get_blog_discussion_list_renderer($this->forum);
+        $discussionrenderer = $renderfactory->get_discussion_list_renderer($this->forum);
         return $discussionrenderer->render_new_discussion($USER, $this->groupid);
     }
 
@@ -94,21 +87,25 @@ class activity_actionbar implements renderable, templatable {
      * @param renderer_base $output The render_base object.
      * @return array data for the template
      */
-    public function export_for_template(renderer_base $output): array {
+    public function export_for_template(renderer_base $output) : array {
         global $USER;
-        $actionurl = new moodle_url('/mod/forum/search.php');
+        $actionurl = (new moodle_url('/mod/forum/search.php'))->out(false);
         $helpicon = new help_icon('search', 'core');
         $hiddenfields = [
             (object) ['name' => 'id', 'value' => $this->course->id],
         ];
+        $shownewdiscussionbtn = '';
+        if ($this->forum->get_type() !== 'single') {
+            $shownewdiscussionbtn = $this->get_new_discussion_topic_button();
+        }
         $data = [
-            'action' => $actionurl->out(false),
+            'action' => $actionurl,
             'hiddenfields' => $hiddenfields,
             'query' => $this->search,
             'helpicon' => $helpicon->export_for_template($output),
             'inputname' => 'search',
             'searchstring' => get_string('search'),
-            'newdiscussionbtn' => $this->get_new_discussion_topic_button(),
+            'newdiscussionbtn' => $shownewdiscussionbtn,
         ];
 
         $legacydatamapperfactory = \mod_forum\local\container::get_legacy_data_mapper_factory();
@@ -119,17 +116,18 @@ class activity_actionbar implements renderable, templatable {
         $cansubscribe = $activeenrolled && !($this->forum->get_subscription_mode() === FORUM_FORCESUBSCRIBE) &&
                 (!($this->forum->get_subscription_mode() === FORUM_DISALLOWSUBSCRIBE) || $canmanage);
         if ($cansubscribe) {
-            $returnurl = new moodle_url('/mod/forum/view.php', ['id' => $this->forum->get_course_module_record()->id]);
+            $returnurl =
+                    (new moodle_url('/mod/forum/view.php', ['id' => $this->forum->get_course_module_record()->id]))->out(false);
             if (!\mod_forum\subscriptions::is_subscribed($USER->id, $forumobject, null, $this->forum->get_course_module_record())) {
-                $data['subscribetoforum'] = new moodle_url(
+                $data['subscribetoforum'] = (new moodle_url(
                         '/mod/forum/subscribe.php',
                         ['id' => $forumobject->id, 'sesskey' => sesskey(), 'returnurl' => $returnurl]
-                );
+                ))->out(false);
             } else {
-                $data['unsubscribefromforum'] = new moodle_url(
+                $data['unsubscribefromforum'] = (new moodle_url(
                         '/mod/forum/subscribe.php',
                         ['id' => $forumobject->id, 'sesskey' => sesskey(), 'returnurl' => $returnurl]
-                );
+                ))->out(false);
             }
         }
         return $data;

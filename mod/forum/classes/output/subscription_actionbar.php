@@ -14,14 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Output the subscription actionbar for this activity.
- *
- * @package   mod_forum
- * @copyright 2021 Sujith Haridasan <sujith@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace mod_forum\output;
 
 use moodle_url;
@@ -31,10 +23,11 @@ use renderable;
 use templatable;
 
 /**
- * Renders the subscribers page.
+ * Renders the subscribers page for this activity.
  *
+ * @package   mod_forum
  * @copyright 2021 Sujith Haridasan <sujith@moodle.com>
- * @package mod_forum
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class subscription_actionbar implements renderable, templatable {
     /** @var int course id */
@@ -64,7 +57,7 @@ class subscription_actionbar implements renderable, templatable {
      *
      * @return url_select the url_select object
      */
-    private function create_subscription_menu():url_select {
+    private function create_subscription_menu() : url_select {
         $sesskey = sesskey();
         $modeset = \mod_forum\subscriptions::get_subscription_mode($this->forum);
         $optionallink = new moodle_url('/mod/forum/subscribe.php', ['id' => $this->id, 'mode' => 0, 'sesskey' => $sesskey]);
@@ -112,7 +105,7 @@ class subscription_actionbar implements renderable, templatable {
      *
      * @return url_select get url_select object.
      */
-    private function create_view_manage_menu():url_select {
+    private function create_view_manage_menu() : url_select {
         global $USER;
 
         $viewlink = new moodle_url('/mod/forum/subscribers.php', ['id' => $this->id, 'edit' => 'off']);
@@ -123,11 +116,10 @@ class subscription_actionbar implements renderable, templatable {
             $managelink->out(false) => get_string('managesubscriptionson', 'forum'),
         ];
 
-        // When edit is on, then subscriptionsediting is set to 1.
-        if (isset($USER->subscriptionsediting) && ($USER->subscriptionsediting === 1)) {
-            $this->currenturl = $managelink;
-        } else {
+        if ($this->currenturl->get_param('edit') === 'off') {
             $this->currenturl = $viewlink;
+        } else {
+            $this->currenturl = $managelink;
         }
 
         $urlselect = new url_select($menu, $this->currenturl->out(false), null, 'selectviewandmanagesubscribers');
@@ -141,7 +133,7 @@ class subscription_actionbar implements renderable, templatable {
      * @param renderer_base $output The render_base object.
      * @return array data for template
      */
-    public function export_for_template(renderer_base $output):array {
+    public function export_for_template(renderer_base $output) : array {
         $subscribeoptionselect = $this->create_subscription_menu();
         $viewmanageselect = $this->create_view_manage_menu();
         $data = [
@@ -156,7 +148,7 @@ class subscription_actionbar implements renderable, templatable {
      *
      * @return string rendered HTML string
      */
-    public function get_response_result():string {
+    public function get_response_result() : string {
         global $PAGE;
         $renderer = $PAGE->get_renderer('mod_forum');
         return $renderer->subscription_actionbar($this);

@@ -2610,13 +2610,12 @@ function forum_search_form($course, $search='') {
  * @param string $search The search string.
  * @return string rendered HTML string.
  */
-function forum_activity_actionbar(?forum_entity $forum, $groupid, stdClass $course, string $search='') {
+function forum_activity_actionbar(?forum_entity $forum, $groupid, stdClass $course, string $search='') : string {
     global $PAGE;
 
-    $actionbar = new mod_forum\output\activity_actionbar($forum, $course, $groupid, $search);
+    $actionbar = new mod_forum\output\forum_actionbar($forum, $course, $groupid, $search);
     $output = $PAGE->get_renderer('mod_forum');
-    $out = $output->render($actionbar);
-    return $out;
+    return $output->render($actionbar);
 }
 
 /**
@@ -5599,8 +5598,8 @@ function forum_extend_settings_navigation(settings_navigation $settingsnav, navi
     }
 
     if (has_capability('mod/forum:viewsubscribers', $PAGE->cm->context)) {
-        $url = new moodle_url('/mod/forum/subscribers.php', array('id' => $forumobject->id));
-        $forumnode->add(get_string('subscriptions', 'forum'), $url, navigation_node::TYPE_SETTING);
+        $url = new moodle_url('/mod/forum/subscribers.php', ['id' => $forumobject->id, 'edit' => 'off']);
+        $forumnode->add(get_string('subscriptions', 'forum'), $url, navigation_node::TYPE_SETTING, null, 'forumsubscriptions');
     }
 
     // Display all forum reports user has access to.

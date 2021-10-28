@@ -37,6 +37,7 @@ use mod_forum\local\vaults\discussion_list as discussion_list_vault;
 use renderer_base;
 use stdClass;
 use core\output\notification;
+use mod_forum\local\data_mappers\legacy\forum;
 use mod_forum\local\factories\builder as builder_factory;
 
 require_once($CFG->dirroot . '/mod/forum/lib.php');
@@ -209,7 +210,8 @@ class discussion_list {
             ],
             'totaldiscussioncount' => $alldiscussionscount,
             'userid' => $user->id,
-            'visiblediscussioncount' => count($discussions)
+            'visiblediscussioncount' => count($discussions),
+            'removeadddiscussbtn' => isset($forum->removediscussbtn) ? $forum->removediscussbtn : false,
         ];
 
         if ($forumview['forum']['capabilities']['create']) {
@@ -248,10 +250,7 @@ class discussion_list {
      * @param int|null $groupid The group id.
      * @return string rendered HTML string
      */
-    public function render_new_discussion(
-        stdClass $user,
-        ?int $groupid
-    ): string {
+    public function render_new_discussion(stdClass $user, ?int $groupid) : string {
         $forumexporter = $this->exporterfactory->get_forum_exporter(
             $user,
             $this->forum,
@@ -405,7 +404,7 @@ class discussion_list {
             $notifications[] = (new notification(
                 get_string('qandanotify', 'forum'),
                 notification::NOTIFY_INFO
-            ))->set_show_closebutton();
+            ))->set_show_closebutton()->set_extra_classes(['mt-3']);
         }
 
         if ('eachuser' === $forum->get_type()) {

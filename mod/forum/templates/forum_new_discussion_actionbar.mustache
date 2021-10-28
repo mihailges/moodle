@@ -20,30 +20,30 @@
     Classes required for JS:
     * none
     Data attributes required for JS:
-    * data-region
+    * none
     Context variables required for this template:
     * see mod/forum/classes/output/activity_actionbar.php
     Example context (json):
     {
-        "id": 3,
-        "name": "Forum test",
-        "state": [],
-        "userstate": "",
-        "capabilities": [{
-            "viewdiscussions": true,
-            "create": true,
-            "selfenrol": false
-        }],
-        "urls": [{
-            "create": "http://localhost/mod/forum/post.php?forum=11"
-        }]
+        "forum": {
+            "id": 3,
+            "name": "Forum test",
+            "state": [],
+            "userstate": "",
+            "capabilities": [{
+                "viewdiscussions": true,
+                "create": true,
+                "selfenrol": false
+            }],
+            "urls": [{
+                "create": "http://localhost/mod/forum/post.php?forum=11"
+            }]
+        }
     }
 }}
 
 {{#forum.capabilities.create}}
     <a class="btn btn-primary mr-5" data-toggle="collapse" href="#collapseAddForm">
-        {{$discussion_create_text}}
-            {{#str}}addnewdiscussion, forum{{/str}}
-        {{/discussion_create_text}}
+        {{#str}}addanewdiscussion, forum{{/str}}
     </a>
 {{/forum.capabilities.create}}

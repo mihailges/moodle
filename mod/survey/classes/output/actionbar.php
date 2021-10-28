@@ -14,14 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Output the actionbar for this activity.
- *
- * @package   mod_survey
- * @copyright 2021 Sujith Haridasan <sujith@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace mod_survey\output;
 
 use moodle_url;
@@ -33,8 +25,9 @@ use url_select;
 /**
  * Output the rendered elements for the tertiary nav page action
  *
- * @copyright 2021 Sujith Haridasan <sujith@moodle.com>
  * @package mod_survey
+ * @copyright 2021 Sujith Haridasan <sujith@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class actionbar implements renderable, templatable {
     /**
@@ -76,7 +69,7 @@ class actionbar implements renderable, templatable {
      *
      * @return url_select url_select object.
      */
-    private function create_select_menu():url_select {
+    private function create_select_menu() : url_select {
         $summarylink = new moodle_url('/mod/survey/report.php', ['id' => $this->id, 'action' => 'summary']);
         $scaleslink = new moodle_url('/mod/survey/report.php', ['id' => $this->id, 'action' => 'scales']);
         $questionslink = new moodle_url('/mod/survey/report.php', ['id' => $this->id, 'action' => 'questions']);
@@ -106,8 +99,7 @@ class actionbar implements renderable, templatable {
                 $activeurl = $this->currenturl;
         }
 
-        $urlselect = new url_select($menu, $activeurl->out(false), null, 'surveyresponseselect');
-        return $urlselect;
+        return new url_select($menu, $activeurl->out(false), null, 'surveyresponseselect');
     }
 
     /**
@@ -116,7 +108,7 @@ class actionbar implements renderable, templatable {
      * @param renderer_base $output renderer_base object.
      * @return array data for the template
      */
-    public function export_for_template(renderer_base $output):array {
+    public function export_for_template(renderer_base $output) : array {
         global $PAGE;
 
         $selecturl = $this->create_select_menu();
@@ -125,24 +117,12 @@ class actionbar implements renderable, templatable {
         ];
 
         if (has_capability('mod/survey:download', $PAGE->cm->context)) {
-            $downloadlink = new moodle_url('/mod/survey/report.php', ['id' => $this->id, 'action' => 'download']);
+            $downloadlink = (new moodle_url('/mod/survey/report.php', ['id' => $this->id, 'action' => 'download']))->out(false);
             $data['download'] = [
                 'link' => $downloadlink,
                 'text' => get_string('downloadresults', 'mod_survey'),
             ];
         }
         return $data;
-    }
-
-    /**
-     * The rendered element for report page action.
-     *
-     * @return string rendered HTML string
-     */
-    public function get_response_results():string {
-        global $PAGE;
-
-        $renderer = $PAGE->get_renderer('mod_survey');
-        return $renderer->response_actionbar($this);
     }
 }

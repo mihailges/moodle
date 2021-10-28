@@ -103,7 +103,8 @@
 if (!$PAGE->has_secondary_navigation()) {
     echo $OUTPUT->heading(format_string($survey->name));
 }
-    echo $actionbar->get_response_results();
+    $renderer = $PAGE->get_renderer('mod_survey');
+    echo $renderer->response_actionbar($actionbar);
 
 /// Check to see if groups are being used in this survey
     if ($groupmode = groups_get_activity_groupmode($cm)) {   // Groups are being used

@@ -32,7 +32,8 @@ Feature: Test importing questions from Moodle XML format.
     Then I should see "Moodle acronym (True)"
 
     # Now export again.
-    And I select "Export" from the "questionbankactionselect" singleselect
+    And I am on "Course 1" course homepage
+    And I navigate to "Question bank > Export" in current page administration
     And I set the field "id_format_xml" to "1"
     And I set the field "Export category" to "TrueFalse"
     And I press "Export questions to file"

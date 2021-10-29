@@ -36,8 +36,6 @@ if (($lastchanged = optional_param('lastchanged', 0, PARAM_INT)) !== 0) {
 }
 $PAGE->set_url($url);
 
-$PAGE->set_secondary_active_tab("questionbank");
-
 $questionbank = new core_question\local\bank\view($contexts, $thispageurl, $COURSE, $cm);
 
 // TODO MDL-72076 - this one will become redundant after implementing bulk actions UI.
@@ -50,13 +48,8 @@ $PAGE->set_heading($COURSE->fullname);
 
 // Print horizontal nav if needed.
 $renderer = $PAGE->get_renderer('core_question', 'bank');
-// Pass either cmid or courseid.
-$qbankid = ($cmid !== null) ? ['cmid' => $cmid] : ['courseid' => $thispageurl->param('courseid')];
-$qbankaction = new \core_question\output\qbank_actionbar($qbankid, $url);
 
 echo $OUTPUT->header();
-// Render the selection action.
-echo $qbankaction->get_qbank_action();
 
 // Print the question area.
 $questionbank->display($pagevars, 'questions');

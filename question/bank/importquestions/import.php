@@ -63,7 +63,6 @@ if ($contexts === null) { // Need to get the course from the chosen category.
 }
 
 $PAGE->set_url($thispageurl);
-$PAGE->set_secondary_active_tab("questionbank");
 
 $importform = new question_import_form($thispageurl, ['contexts' => $contexts->having_one_edit_tab_cap('import'),
     'defaultcategory' => $pagevars['cat']]);
@@ -78,12 +77,7 @@ $PAGE->set_heading($COURSE->fullname);
 // Print horizontal nav if needed.
 $renderer = $PAGE->get_renderer('core_question', 'bank');
 
-// Pass either cmid or courseid.
-$qbankid = ($cmid !== null) ? ['cmid' => $cmid] : ['courseid' => $thispageurl->param('courseid')];
-$qbankaction = new \core_question\output\qbank_actionbar($qbankid, $thispageurl);
-
 echo $OUTPUT->header();
-echo $qbankaction->get_qbank_action();
 
 // File upload form submitted.
 if ($form = $importform->get_data()) {

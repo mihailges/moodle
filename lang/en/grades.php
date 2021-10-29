@@ -475,6 +475,7 @@ $string['locktimedate'] = 'Locked after: {$a}';
 $string['lockverbose'] = 'Lock {$a->category} {$a->itemmodule} {$a->itemname}';
 $string['lowest'] = 'Lowest';
 $string['lowgradeletter'] = 'Low';
+$string['manageoutcomes'] = 'Manage outcomes';
 $string['manualitem'] = 'Manual item';
 $string['mapfrom'] = 'Map from';
 $string['mapfrom_help'] = 'Select the column in the spreadsheet containing data for identifying the user, such as username, user ID or email address.';

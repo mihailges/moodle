@@ -223,21 +223,20 @@ if ($outcomes = grade_outcome::fetch_all_global()) {
     $outcomes_tables[] = $return;
 }
 
+$actionbar = new \core_grades\output\manage_outcomes_action_bar(!empty($outcomes_tables), $courseid ?: null);
+
 if ($courseid) {
     /// Print header
-    print_grade_page_head($courseid, 'outcome', 'edit', $heading);
+    print_grade_page_head($courseid, 'outcome', 'edit', $heading, false, false,
+        true, null, null, null, $actionbar);
+} else {
+    $actionbardata = $actionbar->export_for_template($OUTPUT);
+    echo $OUTPUT->render_from_template($actionbar->get_template(), $actionbardata);
 }
 
 foreach($outcomes_tables as $table) {
     echo $table;
 }
-
-echo $OUTPUT->container_start('buttons');
-echo $OUTPUT->single_button(new moodle_url('edit.php', array('courseid'=>$courseid)), $strcreatenewoutcome);
-if ( !empty($outcomes_tables) ) {
-    echo $OUTPUT->single_button(new moodle_url('export.php', array('id'=>$courseid, 'sesskey'=>sesskey())),  get_string('exportalloutcomes', 'grades'));
-}
-echo $OUTPUT->container_end();
 
 echo $OUTPUT->footer();
 

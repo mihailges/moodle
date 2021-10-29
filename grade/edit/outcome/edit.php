@@ -160,7 +160,7 @@ if ($mform->is_cancelled()) {
 }
 
 if ($courseid) {
-    print_grade_page_head($courseid, 'outcome', 'edit', $heading);
+    print_grade_page_head($courseid, 'outcome', 'edit', $heading, false, false, false);
 } else {
     echo $OUTPUT->header();
 }

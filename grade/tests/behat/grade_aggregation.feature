@@ -502,7 +502,8 @@ Feature: We can use calculated grade totals
 
   @javascript
   Scenario: Natural aggregation with weights of zero
-    When I set the following settings for grade item "Course 1":
+    When I navigate to "View > Grader report" in the course gradebook
+    And I set the following settings for grade item "Course 1":
       | Aggregation          | Natural |
       | Exclude empty grades | 0       |
     And I set the following settings for grade item "Sub category 1":
@@ -528,6 +529,7 @@ Feature: We can use calculated grade totals
     And I set the field "Show contribution to course total" to "Show"
     And I set the field "Show weightings" to "Show"
     And I press "Save changes"
+    And I navigate to "View > Grader report" in the course gradebook
     Then I should see "75.00 (16.85 %)" in the ".course" "css_element"
     And I navigate to "View > User report" in the course gradebook
     And I select "Myself" from the "View report as" singleselect

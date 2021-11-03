@@ -54,7 +54,6 @@ $strcustomscales   = get_string('scalescustom');
 $strname           = get_string('name');
 $strdelete         = get_string('delete');
 $stredit           = get_string('edit');
-$srtcreatenewscale = get_string('scalescustomcreate');
 $strused           = get_string('used');
 $stredit           = get_string('edit');
 
@@ -166,14 +165,17 @@ if ($scales = grade_scale::fetch_all_global()) {
 
 
 if ($courseid) {
-    print_grade_page_head($courseid, 'scale', 'scale', get_string('coursescales', 'grades'));
+    $actionbar = new \core_grades\output\scales_action_bar($courseid);
+    print_grade_page_head($courseid, 'scale', 'scale', get_string('coursescales', 'grades'),
+        false, false, true, null, null, null, $actionbar);
+} else {
+    $renderer = $PAGE->get_renderer('core_grades');
+    $actionbar = new \core_grades\output\scales_action_bar();
+    echo $renderer->render_action_bar($actionbar);
 }
 
 echo $OUTPUT->heading($strcustomscales, 3, 'main');
 echo html_writer::table($table);
 echo $OUTPUT->heading($strstandardscale, 3, 'main');
 echo html_writer::table($table2);
-echo $OUTPUT->container_start('buttons');
-echo $OUTPUT->single_button(new moodle_url('edit.php', array('courseid'=>$courseid)), $srtcreatenewscale);
-echo $OUTPUT->container_end();
 echo $OUTPUT->footer();

@@ -134,7 +134,6 @@ Feature: My overview block pagination
     Then the "class" attribute of ".block_myoverview [data-control='previous']" "css_element" should contain "disabled"
     And I log out
 
-  @matt
   Scenario: Next page button should be disabled when on the last page of courses
     Given the following "course enrolments" exist:
       | user | course | role |

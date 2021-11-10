@@ -845,6 +845,24 @@ class navigation_node implements renderable {
     }
 
     /**
+     * Return an array consisting of the additional attributes for the action url.
+     *
+     * @return array Formatted array to parse in a template
+     */
+    public function actionattributes() {
+        if ($this->action instanceof action_link) {
+            return array_map(function($key, $value) {
+                return [
+                    'name' => $key,
+                    'value' => $value
+                ];
+            }, array_keys($this->action->attributes), $this->action->attributes);
+        }
+
+        return [];
+    }
+
+    /**
      * Sets whether the node and its children should be added into a "more" menu whenever possible.
      *
      * @param bool $forceintomoremenu

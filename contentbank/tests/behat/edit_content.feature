@@ -165,6 +165,7 @@ Feature: Content bank use editor feature
     And I follow "filltheblanks.h5p"
     Then "Edit" "link" should not exist in the "region-main" "region"
 
+  @fail1
   Scenario: Teachers keep their content authoring in copied courses
     Given the following "users" exist:
       | username | firstname | lastname | email                |

@@ -37,6 +37,7 @@ Feature: Replace H5P file from an existing content requires special capabilities
     And I click on "admincontent" "link"
     And I navigate to "Content bank" in current page administration
 
+  @fail1
   Scenario: Teacher can replace its own H5P files
     Given I click on "teachercontent" "link"
     When I open the action menu in "region-main-settings-menu" "region"
@@ -48,10 +49,12 @@ Feature: Replace H5P file from an existing content requires special capabilities
     And I should see "Lorum ipsum"
     And I switch to the main frame
 
+  @fail1
   Scenario: Teacher cannot replace another user's H5P files
     When I click on "admincontent" "link"
     Then "Replace with file" "link" should not exist in the "region-main-settings-menu" "region"
 
+  @fail1
   Scenario: Teacher cannot replace a content without having upload capability
     Given the following "permission overrides" exist:
       | capability                | permission | role           | contextlevel | reference |
@@ -59,6 +62,7 @@ Feature: Replace H5P file from an existing content requires special capabilities
     When I click on "teachercontent" "link"
     Then "Replace with file" "link" should not exist in the "region-main-settings-menu" "region"
 
+  @fail1
   Scenario: Teacher cannot replace a content without having the H5P upload capability
     Given the following "permission overrides" exist:
       | capability             | permission | role           | contextlevel | reference |
@@ -66,6 +70,7 @@ Feature: Replace H5P file from an existing content requires special capabilities
     When I click on "teachercontent" "link"
     Then "Replace with file" "link" should not exist in the "region-main-settings-menu" "region"
 
+  @fail1
   Scenario: Teacher cannot replace a content without having the manage own content capability
     Given the following "permission overrides" exist:
       | capability                          | permission | role           | contextlevel | reference |

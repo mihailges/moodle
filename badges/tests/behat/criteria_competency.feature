@@ -23,7 +23,7 @@ Feature: Award badges based on competency completion
       | comp2 | sc-y-2 |
     And I log in as "admin"
 
-  @javascript
+  @javascript @fail2
   Scenario: Award badge for completing a competency in a course
     # Add a competency to the course
     When I am on "Course 1" course homepage
@@ -70,7 +70,7 @@ Feature: Award badges based on competency completion
     And I follow "Profile" in the user menu
     And I should see "Course Badge"
 
-  @javascript
+  @javascript  @fail2
   Scenario: Award badge for completing a competency in the site
     # Add a competency to the course
     When I am on "Course 1" course homepage
@@ -121,7 +121,7 @@ Feature: Award badges based on competency completion
     And I follow "Profile" in the user menu
     And I should see "Site Badge"
 
-  @javascript
+  @javascript @fail2
   Scenario: Award badge for completing all competencies in the site
     # Add a competency to the course
     When I am on "Course 1" course homepage

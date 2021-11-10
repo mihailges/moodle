@@ -71,7 +71,7 @@ Feature: Allow to mark course as completed without cron for activity completion 
     When I am on "Completion course" course homepage
     Then I should see "Status: Complete"
 
-  @javascript
+  @javascript @fail3
   Scenario: Update course completion with multiple activity criteria
     Given the following "activity" exists:
       | activity                            | assign                      |

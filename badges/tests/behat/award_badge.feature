@@ -27,7 +27,7 @@ Feature: Award badges
       | completion                          | 1                       |
       | assignsubmission_onlinetext_enabled | 1                       |
 
-  @javascript
+  @javascript @fail1
   Scenario: Award badge on other badges as criteria
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage

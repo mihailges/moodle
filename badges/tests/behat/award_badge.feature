@@ -27,7 +27,7 @@ Feature: Award badges
       | completion                          | 1                       |
       | assignsubmission_onlinetext_enabled | 1                       |
 
-  @javascript @fail1
+  @javascript
   Scenario: Award badge on other badges as criteria
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
@@ -88,7 +88,7 @@ Feature: Award badges
     # Teacher 1 should have access to manage/create badges in the Badges navigation section.
     When I log in as "teacher1"
     And I am on "Course 1" course homepage
-    And I navigate to "Badges" in current page administration
+    And I navigate to "Badges > Manage badges" in current page administration
     Then I should see "Course Badge 1"
     And I should see "Course Badge 2"
     And I should see "Manage badges"

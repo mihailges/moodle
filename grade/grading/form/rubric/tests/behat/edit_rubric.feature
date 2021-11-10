@@ -1,11 +1,10 @@
-
 @gradingform @gradingform_rubric
 Feature: Rubrics can be created and edited
   In order to use and refine rubrics to grade students
   As a teacher
   I need to edit previously used rubrics
 
-  @javascript @fail1
+  @javascript
   Scenario: I can use rubrics to grade and edit them later updating students grades
     Given the following "users" exist:
       | username | firstname | lastname | email |

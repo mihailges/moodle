@@ -55,7 +55,17 @@ class behat_theme_classic_behat_navigation extends behat_navigation {
 
         array_unshift($parentnodes, $node->getText());
         $lastnode = array_pop($parentnodes);
-        $this->select_node_in_navigation($lastnode, $parentnodes);
+        try {
+            $this->select_node_in_navigation($lastnode, $parentnodes);
+        } catch (Exception $e) {
+            try {
+                $this->execute("behat_general::click_link", $lastnode);
+            } catch (Exception $e) {
+                // We must be in a weird state i.e. Add competencies to course.
+                $this->execute("behat_general::click_link", array_pop($parentnodes));
+                $this->execute('behat_forms::press_button', $lastnode);
+            }
+        }
     }
 
     /**

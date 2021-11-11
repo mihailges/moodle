@@ -49,13 +49,13 @@ Feature: Regrading grades does not unnecessarily mark some as overriden
     And I set the field "Maximum grade" to "200"
     And I press "Save changes"
 
-  @javascript @fail3
+  @javascript
   Scenario: Confirm regrading did not overwrite overridden status
     Given I navigate to "View > Grader report" in the course gradebook
     Then "td.overridden" "css_element" should not exist in the "Student 1" "table_row"
     And "td.overridden" "css_element" should exist in the "Student 2" "table_row"
 
-  @javascript @fail3
+  @javascript
   Scenario: Confirm overridden course total does not get regraded when activity grade is changed
     Given I am on the "Assignment 1" "assign activity" page
     And I navigate to "View all submissions" in current page administration

@@ -69,7 +69,7 @@ class actionbar implements renderable, templatable {
      *
      * @return url_select url_select object.
      */
-    private function create_select_menu() : url_select {
+    private function create_select_menu(): url_select {
         $summarylink = new moodle_url('/mod/survey/report.php', ['id' => $this->id, 'action' => 'summary']);
         $scaleslink = new moodle_url('/mod/survey/report.php', ['id' => $this->id, 'action' => 'scales']);
         $questionslink = new moodle_url('/mod/survey/report.php', ['id' => $this->id, 'action' => 'questions']);
@@ -108,7 +108,7 @@ class actionbar implements renderable, templatable {
      * @param renderer_base $output renderer_base object.
      * @return array data for the template
      */
-    public function export_for_template(renderer_base $output) : array {
+    public function export_for_template(renderer_base $output): array {
         global $PAGE;
 
         $selecturl = $this->create_select_menu();

@@ -92,9 +92,7 @@ if (has_capability('mod/survey:readresponses', $context) or ($groupmode == VISIB
     $currentgroup = 0;
 }
 
-if (has_capability('mod/survey:readresponses', $context) || $surveyalreadydone) {
-    $numusers = survey_count_responses($survey->id, $currentgroup, $groupingid);
-} else if (!$cm->visible) {
+if (!$cm->visible) {
     notice(get_string("activityiscurrentlyhidden"));
 }
 
@@ -103,6 +101,7 @@ if (!is_enrolled($context)) {
 }
 
 if ($surveyalreadydone) {
+    $numusers = survey_count_responses($survey->id, $currentgroup, $groupingid);
     if ($showscales) {
         // Ensure that graph.php will allow the user to see the graph.
         if (has_capability('mod/survey:readresponses', $context) || !$groupmode || groups_is_member($currentgroup)) {

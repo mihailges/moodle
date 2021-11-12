@@ -58,7 +58,7 @@ class actionbar implements renderable, templatable {
      * @param renderer_base $output renderer_base object.
      * @return array data for the template
      */
-    public function export_for_template(renderer_base $output) : array {
+    public function export_for_template(renderer_base $output): array {
         global $PAGE;
 
         $basicreportlink = new moodle_url('/mod/scorm/report.php', ['id' => $this->id, 'mode' => 'basic']);
@@ -110,7 +110,7 @@ class actionbar implements renderable, templatable {
 
         $data = [
             'scormreports' => $urlselect->export_for_template($output),
-            'downloadlinks' => $this->download ?: '',
+            'candownload' => $this->download,
             'downloadods' => ($this->download) ? $downloadodslink->out(false) : '',
             'downloadexcel' => ($this->download) ? $downloadexcellink->out(false) : '',
             'downloadtext' => ($this->download) ? $downloadtextlink->out(false) : ''

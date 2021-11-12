@@ -44,8 +44,7 @@ class report extends \mod_scorm\report {
         $PAGE->set_url(new \moodle_url($PAGE->url, array('attemptsmode' => $attemptsmode)));
 
         // Scorm action bar for report.
-        $downloadparam = optional_param('download', '', PARAM_RAW);
-        if ($downloadparam === '') {
+        if ($download === '') {
             $actionbar = new \mod_scorm\output\actionbar($cm->id, true, $attemptsmode);
             $renderer = $PAGE->get_renderer('mod_scorm');
             echo $renderer->report_actionbar($actionbar);
@@ -53,7 +52,7 @@ class report extends \mod_scorm\report {
 
         if ($action == 'delete' && has_capability('mod/scorm:deleteresponses', $contextmodule) && confirm_sesskey()) {
             if (scorm_delete_responses($attemptids, $scorm)) { // Delete responses.
-                echo $OUTPUT->notification(get_string('scormresponsedeleted', 'scorm'), 'notifysuccess mt-2');
+                echo $OUTPUT->notification(get_string('scormresponsedeleted', 'scorm'), 'notifysuccess');
             }
         }
         // Find out current groups mode.

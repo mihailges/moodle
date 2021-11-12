@@ -44,6 +44,7 @@ $user = $DB->get_record('user', array('id' => $userid), implode(',', \core_user\
 $attemptids = scorm_get_all_attempts($scorm->id, $userid);
 
 $PAGE->set_url($url);
+$PAGE->set_secondary_active_tab('scormreport');
 // END of url setting + data buildup.
 
 // Checking login +logging +getting context.

@@ -121,9 +121,8 @@ switch ($workshop->phase) {
         // Is the assessment of example submissions considered finished?
         $examplesdone = has_capability('mod/workshop:manageexamples', $workshop->context);
 
-        if ($workshop->assessing_examples_allowed()
-            && has_capability('mod/workshop:submit', $workshop->context)
-            && !has_capability('mod/workshop:manageexamples', $workshop->context)) {
+        if ($workshop->assessing_examples_allowed() && has_capability('mod/workshop:submit', $workshop->context) &&
+                !has_capability('mod/workshop:manageexamples', $workshop->context)) {
             $examples = $userplan->get_examples();
             $left = 0;
             // Make sure the current user has all examples allocated.

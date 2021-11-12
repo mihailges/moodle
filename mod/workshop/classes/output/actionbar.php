@@ -56,7 +56,7 @@ class actionbar {
      *
      * @return url_select url_select object.
      */
-    private function create_select_menu() : url_select {
+    private function create_select_menu(): url_select {
         $allocators = \workshop::installed_allocators();
         $menu = [];
 
@@ -73,7 +73,7 @@ class actionbar {
      *
      * @return string rendered HTML string
      */
-    public function get_allocation_menu() : string {
+    public function get_allocation_menu(): string {
         global $OUTPUT;
 
         $urlselect = $this->create_select_menu();

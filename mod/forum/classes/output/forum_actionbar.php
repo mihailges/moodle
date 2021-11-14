@@ -74,7 +74,7 @@ class forum_actionbar implements renderable, templatable {
      *
      * @return string HTML button
      */
-    private function get_new_discussion_topic_button() : string {
+    private function get_new_discussion_topic_button(): string {
         global $USER;
         $renderfactory = \mod_forum\local\container::get_renderer_factory();
         $discussionrenderer = $renderfactory->get_discussion_list_renderer($this->forum);
@@ -87,7 +87,7 @@ class forum_actionbar implements renderable, templatable {
      * @param renderer_base $output The render_base object.
      * @return array data for the template
      */
-    public function export_for_template(renderer_base $output) : array {
+    public function export_for_template(renderer_base $output): array {
         global $USER;
         $actionurl = (new moodle_url('/mod/forum/search.php'))->out(false);
         $helpicon = new help_icon('search', 'core');
@@ -114,19 +114,19 @@ class forum_actionbar implements renderable, templatable {
         $activeenrolled = is_enrolled($context, $USER, '', true);
         $canmanage = has_capability('mod/forum:managesubscriptions', $context);
         $cansubscribe = $activeenrolled && !($this->forum->get_subscription_mode() === FORUM_FORCESUBSCRIBE) &&
-                (!($this->forum->get_subscription_mode() === FORUM_DISALLOWSUBSCRIBE) || $canmanage);
+            (!($this->forum->get_subscription_mode() === FORUM_DISALLOWSUBSCRIBE) || $canmanage);
         if ($cansubscribe) {
             $returnurl =
-                    (new moodle_url('/mod/forum/view.php', ['id' => $this->forum->get_course_module_record()->id]))->out(false);
+                (new moodle_url('/mod/forum/view.php', ['id' => $this->forum->get_course_module_record()->id]))->out(false);
             if (!\mod_forum\subscriptions::is_subscribed($USER->id, $forumobject, null, $this->forum->get_course_module_record())) {
                 $data['subscribetoforum'] = (new moodle_url(
-                        '/mod/forum/subscribe.php',
-                        ['id' => $forumobject->id, 'sesskey' => sesskey(), 'returnurl' => $returnurl]
-                ))->out(false);
+                    '/mod/forum/subscribe.php',
+                    ['id' => $forumobject->id, 'sesskey' => sesskey(), 'returnurl' => $returnurl]
+                    ))->out(false);
             } else {
                 $data['unsubscribefromforum'] = (new moodle_url(
-                        '/mod/forum/subscribe.php',
-                        ['id' => $forumobject->id, 'sesskey' => sesskey(), 'returnurl' => $returnurl]
+                    '/mod/forum/subscribe.php',
+                    ['id' => $forumobject->id, 'sesskey' => sesskey(), 'returnurl' => $returnurl]
                 ))->out(false);
             }
         }

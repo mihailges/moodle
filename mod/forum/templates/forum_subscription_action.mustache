@@ -16,7 +16,7 @@
 }}
 {{!
     @template mod_forum/forum_subscription_action
-    Actions panel at the bottom of the assignment grading UI.
+    Actions bar for the subscribers page UI.
     Classes required for JS:
     * none
     Data attributes required for JS:
@@ -25,43 +25,45 @@
     * see mod/forum/classes/output/subscription_actionbar.php
     Example context (json):
     {
-	"subscriptionoptions": {
-		"formid": "selectsubscriptions",
-		"classes": "urlselect float-right",
-		"disabled": false,
-		"sesskey": "abcdef",
-		"action": "http://localhost/course/jumpto.php",
-		"helpicon": false,
-		"options": [{
-				"name": "Subscription disabled",
-				"value": ""
-			},
-			{
-				"name": "Optional subscrition",
-				"value": "/mod/forum/subscribe.php?id=3&mode=0&sesskey=abc123"
-			}
-		]
-	},
-	"viewandmanageselect": {
-		"formid": "selectviewandmanagesubscribers",
-		"classes": "urlselect",
-		"label": "Subscribers",
-		"disabled": false,
-		"sesskey": "abcdef",
-		"action": "http://localhost/course/jumpto.php",
-		"options": [{
-				"name": "View subscribers",
-				"value": "/mod/forum/subscribers.php?id=3&edit=off",
-				"selected": true
-			},
-			{
-				"name": "Manage subscribers",
-				"value": "/mod/forum/subscribers.php?id=3&edit=on",
-				"selected": false
-			}
-		]
-	}
-}
+        "subscriptionoptions": {
+            "formid": "selectsubscriptions",
+            "classes": "urlselect float-right",
+            "disabled": false,
+            "sesskey": "abcdef",
+            "action": "http://localhost/course/jumpto.php",
+            "helpicon": false,
+            "options": [
+                {
+                    "name": "Subscription disabled",
+                    "value": ""
+                },
+                {
+                    "name": "Optional subscrition",
+                    "value": "/mod/forum/subscribe.php?id=3&mode=0&sesskey=abc123"
+                }
+            ]
+	     },
+	    "viewandmanageselect": {
+            "formid": "selectviewandmanagesubscribers",
+            "classes": "urlselect",
+            "label": "Subscribers",
+            "disabled": false,
+            "sesskey": "abcdef",
+            "action": "http://localhost/course/jumpto.php",
+            "options": [
+                {
+                    "name": "View subscribers",
+                    "value": "/mod/forum/subscribers.php?id=3&edit=off",
+                    "selected": true
+                 },
+                 {
+                     "name": "Manage subscribers",
+                     "value": "/mod/forum/subscribers.php?id=3&edit=on",
+                     "selected": false
+                 }
+            ]
+        }
+    }
 }}
 <div class="container-fluid">
     <div class="row justify-content-between">

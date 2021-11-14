@@ -16,9 +16,9 @@
 }}
 {{!
     @template mod_forum/forum_action_bar
-
     Simple search input.
-
+    Context variables required for this template:
+    * see mod/forum/classes/output/forum_actionbar.php
     Example context (json):
     {
         "action": "https://moodle.local/mod/forum/search.php",
@@ -43,28 +43,26 @@
              }]
           }]
          },
-        "newdiscussion": "<a class='btn btn-primary'>Add discussion topic</a>",
+        "newdiscussionbtn": "<a class='btn btn-primary'>Add discussion topic</a>",
         "subscribetoforum": "http://localhost/moodle/mod/forum/subscribe.php?id=7&sesskey=abcd&returnurl=http//localhost/moodle/mod/forum/view.php?id=4",
-        "unsubscribefromforum": "http://localhost/moodle/mod/forum/subscribe.php?id=7&sesskey=abcd&returnurl=http//localhost/moodle/mod/forum/view.php?id=4",
-        "uniqid": 123456
+        "unsubscribefromforum": "http://localhost/moodle/mod/forum/subscribe.php?id=7&sesskey=abcd&returnurl=http//localhost/moodle/mod/forum/view.php?id=4"
     }
 }}
 
-{{#subscribetoforum}}
-    <a class="btn btn-secondary float-right" href="{{ subscribetoforum }}">{{#str}}subscribe, mod_forum {{/str}}</a>
-{{/subscribetoforum}}
-{{#unsubscribefromforum}}
-    <a class="btn btn-secondary float-right" href="{{ unsubscribefromforum }}">{{#str}}unsubscribe, mod_forum {{/str}}</a>
-{{/unsubscribefromforum}}
-<div class="simplesearchform row mb-3">
+<div class="simplesearchform row mb-3 ml-auto">
     <form autocomplete="off" action="{{ action }}" method="get" accept-charset="utf-8" class="mform form-inline simplesearchform">
-        <div class="input-group mr-5">
+        <div class="input-group mr-2">
             {{#helpicon}}
                 {{>core/help_icon}}
             {{/helpicon}}
-            {{< core/search_input }}
-            {{/ core/search_input }}
+            {{> core/search_input }}
         </div>
         {{{newdiscussionbtn}}}
     </form>
+    {{#subscribetoforum}}
+        <a class="btn btn-secondary ml-auto" href="{{ subscribetoforum }}">{{#str}}subscribe, mod_forum {{/str}}</a>
+    {{/subscribetoforum}}
+    {{#unsubscribefromforum}}
+        <a class="btn btn-secondary ml-auto" href="{{ unsubscribefromforum }}">{{#str}}unsubscribe, mod_forum {{/str}}</a>
+    {{/unsubscribefromforum}}
 </div>

@@ -57,7 +57,7 @@ class subscription_actionbar implements renderable, templatable {
      *
      * @return url_select the url_select object
      */
-    private function create_subscription_menu() : url_select {
+    private function create_subscription_menu(): url_select {
         $sesskey = sesskey();
         $modeset = \mod_forum\subscriptions::get_subscription_mode($this->forum);
         $optionallink = new moodle_url('/mod/forum/subscribe.php', ['id' => $this->id, 'mode' => 0, 'sesskey' => $sesskey]);
@@ -105,9 +105,7 @@ class subscription_actionbar implements renderable, templatable {
      *
      * @return url_select get url_select object.
      */
-    private function create_view_manage_menu() : url_select {
-        global $USER;
-
+    private function create_view_manage_menu(): url_select {
         $viewlink = new moodle_url('/mod/forum/subscribers.php', ['id' => $this->id, 'edit' => 'off']);
         $managelink = new moodle_url('/mod/forum/subscribers.php', ['id' => $this->id, 'edit' => 'on']);
 
@@ -133,7 +131,7 @@ class subscription_actionbar implements renderable, templatable {
      * @param renderer_base $output The render_base object.
      * @return array data for template
      */
-    public function export_for_template(renderer_base $output) : array {
+    public function export_for_template(renderer_base $output): array {
         $subscribeoptionselect = $this->create_subscription_menu();
         $viewmanageselect = $this->create_view_manage_menu();
         $data = [
@@ -141,16 +139,5 @@ class subscription_actionbar implements renderable, templatable {
             'viewandmanageselect' => $viewmanageselect->export_for_template($output),
         ];
         return $data;
-    }
-
-    /**
-     * Get the HTML elements rendered for the subscribers page.
-     *
-     * @return string rendered HTML string
-     */
-    public function get_response_result() : string {
-        global $PAGE;
-        $renderer = $PAGE->get_renderer('mod_forum');
-        return $renderer->subscription_actionbar($this);
     }
 }

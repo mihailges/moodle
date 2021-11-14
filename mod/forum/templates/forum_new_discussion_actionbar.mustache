@@ -16,7 +16,7 @@
 }}
 {{!
     @template mod_forum/forum_new_discussion_actionbar
-    Actions panel at the bottom of the assignment grading UI.
+    Add button to create a new discussion in the forum activity.
     Classes required for JS:
     * none
     Data attributes required for JS:
@@ -43,7 +43,7 @@
 }}
 
 {{#forum.capabilities.create}}
-    <a class="btn btn-primary mr-5" data-toggle="collapse" href="#collapseAddForm">
+    <a class="btn btn-primary" data-toggle="collapse" href="#collapseAddForm">
         {{#str}}addanewdiscussion, forum{{/str}}
     </a>
 {{/forum.capabilities.create}}

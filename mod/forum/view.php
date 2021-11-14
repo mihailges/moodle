@@ -242,11 +242,10 @@ switch ($forum->get_type()) {
         }
         break;
     case 'blog':
-        $forum->removediscussbtn = true;
         $discussionsrenderer = $rendererfactory->get_blog_discussion_list_renderer($forum);
         // Blog forums always show discussions newest first.
         echo $discussionsrenderer->render($USER, $cm, $groupid, $discussionlistvault::SORTORDER_CREATED_DESC,
-            $pageno, $pagesize);
+            $pageno, $pagesize, null, false);
 
         if (!$CFG->forum_usermarksread && forum_tp_is_tracked($forumrecord, $USER)) {
             $discussions = mod_forum_get_discussion_summaries($forum, $USER, $groupid, null, $pageno, $pagesize);
@@ -257,9 +256,8 @@ switch ($forum->get_type()) {
         }
         break;
     default:
-        $forum->removediscussbtn = true;
         $discussionsrenderer = $rendererfactory->get_discussion_list_renderer($forum);
-        echo $discussionsrenderer->render($USER, $cm, $groupid, $sortorder, $pageno, $pagesize, $displaymode);
+        echo $discussionsrenderer->render($USER, $cm, $groupid, $sortorder, $pageno, $pagesize, $displaymode, false);
 }
 
 echo $OUTPUT->footer();

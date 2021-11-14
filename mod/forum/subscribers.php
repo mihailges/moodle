@@ -113,7 +113,8 @@ echo $OUTPUT->header();
 if (!$PAGE->has_secondary_navigation()) {
     echo $OUTPUT->heading(get_string('forum', 'forum') . ' ' . $strsubscribers);
 }
-echo $actionbar->get_response_result();
+echo $forumoutput->subscription_actionbar($actionbar);
+
 
 if ($edit === 0) {
     $subscribers = \mod_forum\subscriptions::fetch_subscribed_users($forum, $currentgroup, $context);

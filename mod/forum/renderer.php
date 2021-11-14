@@ -250,7 +250,7 @@ class mod_forum_renderer extends plugin_renderer_base {
      * @param \mod_forum\output\forum_actionbar $actionbar forum_actionbar object.
      * @return string rendered HTML string
      */
-    public function render_activity_actionbar(\mod_forum\output\forum_actionbar $actionbar) : string {
+    public function render_activity_actionbar(\mod_forum\output\forum_actionbar $actionbar): string {
         return $this->render_from_template('mod_forum/forum_actionbar', $actionbar->export_for_template($this));
     }
 
@@ -260,7 +260,7 @@ class mod_forum_renderer extends plugin_renderer_base {
      * @param \mod_forum\output\subscription_actionbar $subscriptionactionbar subscription_actionbar object.
      * @return bool|string rendered HTML string.
      */
-    public function subscription_actionbar(\mod_forum\output\subscription_actionbar $subscriptionactionbar):string {
+    public function subscription_actionbar(\mod_forum\output\subscription_actionbar $subscriptionactionbar): string {
         return $this->render_from_template('mod_forum/forum_subscription_action',
             $subscriptionactionbar->export_for_template($this));
     }

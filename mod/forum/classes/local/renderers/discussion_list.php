@@ -146,6 +146,7 @@ class discussion_list {
      * @param   int         $pageno The zero-indexed page number to use
      * @param   int         $pagesize The number of discussions to show on the page
      * @param   int         $displaymode The discussion display mode
+     * @param   bool        $enablediscussioncreation To show the discussion button.
      * @return  string      The rendered content for display
      */
     public function render(
@@ -155,7 +156,8 @@ class discussion_list {
         ?int $sortorder,
         ?int $pageno,
         ?int $pagesize,
-        int $displaymode = null
+        int $displaymode = null,
+        bool $enablediscussioncreation = true
     ) : string {
         global $PAGE;
 
@@ -211,7 +213,7 @@ class discussion_list {
             'totaldiscussioncount' => $alldiscussionscount,
             'userid' => $user->id,
             'visiblediscussioncount' => count($discussions),
-            'removeadddiscussbtn' => isset($forum->removediscussbtn) ? $forum->removediscussbtn : false,
+            'enablediscussioncreation' => $enablediscussioncreation,
         ];
 
         if ($forumview['forum']['capabilities']['create']) {
@@ -250,7 +252,7 @@ class discussion_list {
      * @param int|null $groupid The group id.
      * @return string rendered HTML string
      */
-    public function render_new_discussion(stdClass $user, ?int $groupid) : string {
+    public function render_new_discussion(stdClass $user, ?int $groupid): string {
         $forumexporter = $this->exporterfactory->get_forum_exporter(
             $user,
             $this->forum,
@@ -358,7 +360,7 @@ class discussion_list {
      * @param int|null $groupid The forum's group id
      * @return      array
      */
-    private function get_notifications(stdClass $user, ?int $groupid) : array {
+    private function get_notifications(stdClass $user, ?int $groupid): array {
         $notifications = $this->notifications;
         $forum = $this->forum;
         $capabilitymanager = $this->capabilitymanager;

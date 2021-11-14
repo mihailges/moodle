@@ -2610,7 +2610,7 @@ function forum_search_form($course, $search='') {
  * @param string $search The search string.
  * @return string rendered HTML string.
  */
-function forum_activity_actionbar(?forum_entity $forum, $groupid, stdClass $course, string $search='') : string {
+function forum_activity_actionbar(?forum_entity $forum, $groupid, stdClass $course, string $search=''): string {
     global $PAGE;
 
     $actionbar = new mod_forum\output\forum_actionbar($forum, $course, $groupid, $search);

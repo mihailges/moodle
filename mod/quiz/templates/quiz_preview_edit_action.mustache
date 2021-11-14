@@ -16,7 +16,7 @@
 }}
 {{!
     @template mod_quiz/quiz_preview_edit_action
-    Actions panel at the bottom of the assignment grading UI.
+    Actions bar at the top of the quiz view page
     Classes required for JS:
     * none
     Data attributes required for JS:
@@ -25,7 +25,6 @@
     * see mod/quiz/classes/output/previeweditaction.php
     Example context (json):
     {
-        "back": "http://localhost/mod/quiz/view.php?id=2",
         "previewlink": "http://localhost/mod/quiz/startattempt.php?cmid=2&sesskey=G8FPNoJz9r",
         "editlink": "http://localhost/mod/quiz/edit.php?cmid=3",
         "attemptlink": "http://localhost/mod/quiz/startattempt.php?cmid=5&sesskey=psqFTeG0Hi",
@@ -35,34 +34,16 @@
 <div class="container-fluid mb-3">
     <div class="row">
         {{#previewlink}}
-            {{#back}}
-                <div class="col-sm-6">
-            {{/back}}
-            {{^back}}
-            <div class="mr-2">
-            {{/back}}
-                <a href="{{previewlink}}"><button class="btn btn-secondary">{{previewquiz}}</button></a>
-            </div>
+            <a href="{{previewlink}}"><button class="btn btn-secondary mr-2">{{previewquiz}}</button></a>
         {{/previewlink}}
         {{#editlink}}
-            {{#back}}
-                <div class="col-sm-6">
-            {{/back}}
-            {{^back}}
-            <div class="mr-2">
-            {{/back}}
-                <a href="{{editlink}}"><button class="btn btn-primary">{{#str}}editquiz, quiz{{/str}}</button></a>
-            </div>
+            <a href="{{editlink}}"><button class="btn btn-primary mr-2">{{#str}}editquiz, quiz{{/str}}</button></a>
         {{/editlink}}
         {{#attemptlink}}
-            <div class="mr-2">
-                <a href="{{attemptlink}}"><button class="btn btn-primary">{{#str}}attemptquiz, quiz{{/str}}</button></a>
-            </div>
+            <a href="{{attemptlink}}"><button class="btn btn-primary">{{#str}}attemptquiz, quiz{{/str}}</button></a>
         {{/attemptlink}}
         {{#addquestionlink}}
-            <div class="mr-2">
-                <a href="{{addquestionlink}}"><button class="btn btn-primary">{{#str}}addquestion, quiz{{/str}}</button></a>
-            </div>
+            <a href="{{addquestionlink}}"><button class="btn btn-primary">{{#str}}addquestion, quiz{{/str}}</button></a>
         {{/addquestionlink}}
     </div>
 </div>

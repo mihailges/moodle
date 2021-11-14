@@ -53,7 +53,7 @@ class overwritepreview implements templatable, renderable {
      * @param renderer_base $output
      * @return array data for the template
      */
-    public function export_for_template(renderer_base $output) : array {
+    public function export_for_template(renderer_base $output): array {
         $data = [
             'back' => (new moodle_url('/mod/quiz/view.php', ['id' => $this->cmid]))->out(false),
         ];

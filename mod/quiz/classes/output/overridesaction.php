@@ -63,7 +63,7 @@ class overridesaction implements renderable, templatable {
      * @param renderer_base $output renderer_base object.
      * @return array data for the template.
      */
-    public function export_for_template(renderer_base $output) : array {
+    public function export_for_template(renderer_base $output): array {
         global $PAGE;
 
         $useroverride = new moodle_url('/mod/quiz/overrides.php', ['cmid' => $this->cmid, 'mode' => 'user']);
@@ -76,31 +76,24 @@ class overridesaction implements renderable, templatable {
 
         $urlselect = new url_select($menu, $PAGE->url->out(false), null, 'quizoverrides');
 
+        $overridesbuttonurl = new moodle_url('/mod/quiz/overrideedit.php', ['cmid' => $this->cmid, 'action' => 'add' . $this->mode]);
         if ($this->mode === 'group') {
-            $addbtnname = get_string('addnewgroupoverride', 'quiz');
-            $request = 'post';
+            $overridesbutton = new \single_button($overridesbuttonurl, get_string( 'addnewgroupoverride', 'quiz'),
+                'post', true);
+            $overridesbutton->params = ['action' => 'add' . $this->mode, 'cmid' => $this->cmid, 'sesskey' => sesskey()];
         } else {
-            $addbtnname = get_string('addnewuseroverride', 'quiz');
-            $request = 'get';
+            $overridesbutton = new \single_button($overridesbuttonurl, get_string( 'addnewuseroverride', 'quiz'),
+                'get', true);
+            $overridesbutton->params = ['action' => 'add' . $this->mode, 'cmid' => $this->cmid];
         }
-
-        // Get url for button.
-        $url = (new moodle_url('/mod/quiz/overrideedit.php',
-            ['cmid' => $this->cmid, 'action' => 'add' . $this->mode]))->out(false);
+        if (isset($this->options['disabled'])) {
+            $overridesbutton->disabled = true;
+        }
 
         return [
             'overrides' => $urlselect->export_for_template($output),
-            'useroverride' => $this->mode === 'user',
-            'groupoverride' => $this->mode === 'group',
-            'actionvalue' => 'add' . $this->mode,
-            'cmidvalue' => $this->cmid,
-            'btnid' => 'single_button' . uniqid(),
-            'btnname' => $addbtnname,
-            'request' => $request,
-            'sesskey' => ($this->mode === 'group') ? sesskey() : '',
-            'url' => $url,
-            'disablebtn' => (isset($this->options['disabled'])) ? 'disabled' : '',
             'canedit' => $this->canedit,
+            'overridesbtn' => $overridesbutton->export_for_template($output),
         ];
     }
 }

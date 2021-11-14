@@ -885,13 +885,24 @@ class mod_quiz_renderer extends plugin_renderer_base {
      * @param object $quiz the quiz settings.
      * @param object $cm the course_module object.
      * @param object $context the quiz context.
+     * @deprecated since Moodle 4.0 MDL-71915 - please do not use this function any more.
      *
      * @return string HTML to output.
      */
     public function no_questions_message($canedit, $editurl) {
         debugging('no_questions_message() is deprecated, please use generate_no_questions_message() instead.', DEBUG_DEVELOPER);
 
-        return $this->generate_no_questions_message();
+        $output = html_writer::start_tag('div', array('class' => 'card text-center mb-3'));
+        $output .= html_writer::start_tag('div', array('class' => 'card-body'));
+
+        $output .= $this->notification(get_string('noquestions', 'quiz'), 'warning', false);
+        if ($canedit) {
+            $output .= $this->single_button($editurl, get_string('editquiz', 'quiz'), 'get');
+        }
+        $output .= html_writer::end_tag('div');
+        $output .= html_writer::end_tag('div');
+
+        return $output;
     }
 
     /**
@@ -1389,7 +1400,7 @@ class mod_quiz_renderer extends plugin_renderer_base {
      * @param \mod_quiz\output\overwritepreview $overwritepreview overwritepreview object.
      * @return string rendered HTML for the preview page
      */
-    public function overwrite_preview_action(\mod_quiz\output\overwritepreview $overwritepreview) : string {
+    public function overwrite_preview_action(\mod_quiz\output\overwritepreview $overwritepreview): string {
         return $this->render_from_template('mod_quiz/quiz_preview_action', $overwritepreview->export_for_template($this));
     }
 
@@ -1399,7 +1410,7 @@ class mod_quiz_renderer extends plugin_renderer_base {
      * @param \mod_quiz\output\overwriteedit $overwriteedit overwriteedit object.
      * @return string rendered HTML for the edit page
      */
-    public function overwrite_edit_action(\mod_quiz\output\overwriteedit $overwriteedit) : string {
+    public function overwrite_edit_action(\mod_quiz\output\overwriteedit $overwriteedit): string {
         return $this->render_from_template('mod_quiz/quiz_edit_action', $overwriteedit->export_for_template($this));
     }
 
@@ -1409,7 +1420,7 @@ class mod_quiz_renderer extends plugin_renderer_base {
      * @param \mod_quiz\output\resultsaction $resultsaction resultsaction object.
      * @return string rendered HTML string from the template.
      */
-    public function get_results_action(\mod_quiz\output\resultsaction $resultsaction) : string {
+    public function get_results_action(\mod_quiz\output\resultsaction $resultsaction): string {
         return $this->render_from_template('mod_quiz/quiz_results_action', $resultsaction->export_for_template($this));
     }
 
@@ -1419,7 +1430,7 @@ class mod_quiz_renderer extends plugin_renderer_base {
      * @param \mod_quiz\output\overridesaction $overridesaction the overridesaction object.
      * @return string rendered HTML string from the template.
      */
-    public function overrides_action(\mod_quiz\output\overridesaction $overridesaction) : string {
+    public function overrides_action(\mod_quiz\output\overridesaction $overridesaction): string {
         return $this->render_from_template('mod_quiz/quiz_overrides', $overridesaction->export_for_template($this));
     }
 }

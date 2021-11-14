@@ -16,13 +16,13 @@
 }}
 {{!
     @template mod_quiz/quiz_preview_action
-    Actions panel at the bottom of the assignment grading UI.
+    Action bar at the top of the quiz attempt page UI.
     Classes required for JS:
     * none
     Data attributes required for JS:
     * none
     Context variables required for this template:
-    * see mod/quiz/classes/output/previeweditaction.php
+    * see mod/quiz/classes/output/overwritepreview.php
     Example context (json):
     {
         "back": "http://localhost/mod/quiz/view.php?id=2",
@@ -31,20 +31,9 @@
 }}
 <div class="container-fluid mb-3">
     <div class="row">
-        {{#back}}
-            <div class="col-xs-6">
-                <a href="{{back}}"><button class="btn btn-secondary">{{#str}}back, core {{/str}}</button></a>
-            </div>
-        {{/back}}
+        <a href="{{back}}"><button class="btn btn-secondary">{{#str}}back, core {{/str}}</button></a>
         {{#editlink}}
-            {{#back}}
-            <div class="col-sm-6">
-            {{/back}}
-            {{^back}}
-            <div class="mr-2">
-            {{/back}}
-            <a href="{{editlink}}"><button class="btn btn-primary">{{#str}}editquiz, quiz{{/str}}</button></a>
-        </div>
+            <a href="{{editlink}}"><button class="btn btn-primary ml-2">{{#str}}editquiz, quiz{{/str}}</button></a>
         {{/editlink}}
     </div>
 </div>

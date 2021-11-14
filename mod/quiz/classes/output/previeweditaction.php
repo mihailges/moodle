@@ -73,13 +73,13 @@ class previeweditaction implements templatable, renderable {
      * @param renderer_base $output renderer_base objects.
      * @return array data for template
      */
-    public function export_for_template(renderer_base $output) : array {
+    public function export_for_template(renderer_base $output): array {
         $data = [];
         if ($this->quizhasquestions) {
             if ($this->canpreview) {
                 $data['previewlink'] = (new moodle_url('/mod/quiz/startattempt.php',
-                        ['attempt' => $this->attempts, 'cmid' => $this->cmid, 'sesskey' => sesskey()]))->out(false);
-                $data['previewquiz'] = get_string('previewquiz', 'mod_quiz', 'quiz');
+                    ['attempt' => $this->attempts, 'cmid' => $this->cmid, 'sesskey' => sesskey()]))->out(false);
+                $data['previewquiz'] = get_string('previewq', 'mod_quiz');
             }
 
             if ($this->canedit) {
@@ -88,7 +88,7 @@ class previeweditaction implements templatable, renderable {
 
             if ($this->canattempt && !$this->canpreview) {
                 $data['attemptlink'] =
-                        (new moodle_url('/mod/quiz/startattempt.php', ['cmid' => $this->cmid, 'sesskey' => sesskey()]))->out(false);
+                    (new moodle_url('/mod/quiz/startattempt.php', ['cmid' => $this->cmid, 'sesskey' => sesskey()]))->out(false);
             }
         } else {
             $data['addquestionlink'] = (new moodle_url('/mod/quiz/edit.php', ['cmid' => $this->cmid]))->out(false);

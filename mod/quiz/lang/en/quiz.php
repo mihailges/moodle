@@ -674,6 +674,7 @@ $string['preprocesserror'] = 'Error occurred during pre-processing!';
 $string['preview'] = 'Preview';
 $string['previewquestion'] = 'Preview question';
 $string['previewquiz'] = 'Preview {$a}';
+$string['previewq'] = 'Preview quiz';
 $string['previewquiznow'] = 'Preview quiz now';
 $string['previous'] = 'Previous state';
 $string['privacy:metadata:core_question'] = 'The quiz activity stores question usage information in the core_question subsystem.';

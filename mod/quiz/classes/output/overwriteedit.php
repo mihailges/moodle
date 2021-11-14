@@ -53,15 +53,15 @@ class overwriteedit implements templatable, renderable {
      * @param renderer_base $output renderer_base object
      * @return array data for the template
      */
-    public function export_for_template(renderer_base $output) : array {
+    public function export_for_template(renderer_base $output): array {
         $data = [];
+        $data = [
+                'back' => (new moodle_url('/mod/quiz/view.php', ['id' => $this->cmid]))->out(false),
+        ];
         if ($this->quizhasquestion) {
-            $data = [
-                    'back' => (new moodle_url('/mod/quiz/view.php', ['id' => $this->cmid]))->out(false),
-            ];
             $data['previewlink'] =
-                    (new moodle_url('/mod/quiz/startattempt.php', ['cmid' => $this->cmid, 'sesskey' => sesskey()]))->out(false);
-            $data['previewquiz'] = get_string('previewquiz', 'mod_quiz', 'quiz');
+                (new moodle_url('/mod/quiz/startattempt.php', ['cmid' => $this->cmid, 'sesskey' => sesskey()]))->out(false);
+            $data['previewquiz'] = get_string('previewq', 'mod_quiz');
         }
         return $data;
     }

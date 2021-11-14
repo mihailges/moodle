@@ -16,38 +16,24 @@
 }}
 {{!
     @template mod_quiz/quiz_edit_action
-    Actions panel at the bottom of the assignment grading UI.
+    Actions bar at the top of the quiz edit page UI.
     Classes required for JS:
     * none
     Data attributes required for JS:
     * none
     Context variables required for this template:
-    * see mod/quiz/classes/output/overriteedit.php
+    * see mod/quiz/classes/output/overwriteedit.php
     Example context (json):
     {
         "back": "http://localhost/mod/quiz/view.php?id=2",
-        "previewlink": "http://localhost/mod/quiz/startattempt.php?cmid=2&sesskey=G8FPNoJz9r",
-        "editlink": "http://localhost/mod/quiz/edit.php?cmid=3",
-        "attemptlink": "http://localhost/mod/quiz/startattempt.php?cmid=5&sesskey=psqFTeG0Hi",
-        "addquestionlink": "http://localhost/mod/quiz/edit.php?cmid=3"
+        "previewlink": "http://localhost/mod/quiz/startattempt.php?cmid=2&sesskey=G8FPNoJz9r"
     }
 }}
 <div class="container-fluid mb-3">
     <div class="row">
-        {{#back}}
-            <div class="col-xs-6">
-                <a href="{{back}}"><button class="btn btn-secondary">{{#str}}back, core {{/str}}</button></a>
-            </div>
-        {{/back}}
+        <a href="{{back}}"><button class="btn btn-secondary">{{#str}}back, core {{/str}}</button></a>
         {{#previewlink}}
-            {{#back}}
-            <div class="col-sm-6">
-            {{/back}}
-            {{^back}}
-            <div class="mr-2">
-            {{/back}}
-            <a href="{{previewlink}}"><button class="btn btn-secondary">{{previewquiz}}</button></a>
-        </div>
+            <a href="{{previewlink}}"><button class="btn btn-secondary ml-2">{{previewquiz}}</button></a>
         {{/previewlink}}
     </div>
 </div>

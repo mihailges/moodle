@@ -48,7 +48,7 @@ class resultsaction implements templatable, renderable {
      * @param renderer_base $output renderer_base object.
      * @return array data for template.
      */
-    public function export_for_template(renderer_base $output) : array {
+    public function export_for_template(renderer_base $output): array {
         global $PAGE;
 
         $gradeslink = new moodle_url('/mod/quiz/report.php', ['id' => $this->id, 'mode' => 'overview']);

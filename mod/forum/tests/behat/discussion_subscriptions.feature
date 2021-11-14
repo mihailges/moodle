@@ -55,7 +55,7 @@ Feature: A user can control their own subscription preferences for a discussion
     And I can unsubscribe from this forum
     And "Unsubscribe from this discussion" "checkbox" should exist in the "Test post subject one" "table_row"
     And "Unsubscribe from this discussion" "checkbox" should exist in the "Test post subject two" "table_row"
-    When I follow "Unsubscribe from forum"
+    And I unsubscribe from this forum
     And I should see "Student One will NOT be notified of new posts in 'Test forum name'"
     And I can subscribe to this forum
     And "Subscribe to this discussion" "checkbox" should exist in the "Test post subject one" "table_row"
@@ -95,7 +95,7 @@ Feature: A user can control their own subscription preferences for a discussion
     And I can unsubscribe from this forum
     And "Subscribe to this discussion" "checkbox" should exist in the "Test post subject one" "table_row"
     And "Unsubscribe from this discussion" "checkbox" should exist in the "Test post subject two" "table_row"
-    And I follow "Unsubscribe from forum"
+    And I unsubscribe from this forum
     And I should see "Student One will NOT be notified of new posts in 'Test forum name'"
     And I can subscribe to this forum
     And "Subscribe to this discussion" "checkbox" should exist in the "Test post subject one" "table_row"
@@ -143,52 +143,8 @@ Feature: A user can control their own subscription preferences for a discussion
     And I can unsubscribe from this forum
     And "Unsubscribe from this discussion" "checkbox" should exist in the "Test post subject one" "table_row"
     And "Unsubscribe from this discussion" "checkbox" should exist in the "Test post subject two" "table_row"
-    When I follow "Unsubscribe from forum"
+    When I unsubscribe from this forum
     Then I should see "Student One will NOT be notified of new posts in 'Test forum name'"
-    And I can subscribe to this forum
-    And "Unsubscribe from this discussion" "checkbox" should exist in the "Test post subject one" "table_row"
-    And "Subscribe to this discussion" "checkbox" should exist in the "Test post subject two" "table_row"
-
-  @javascript
-  Scenario: A user does not lose their preferences when a forum is switch from optional to automatic
-    Given the following "activity" exists:
-      | activity       | forum                  |
-      | course         | C1                     |
-      | idnumber       | forum1                 |
-      | name           | Test forum name        |
-      | intro          | Test forum description |
-      | type           | general                |
-      | forcesubscribe | 0                      |
-    And I am on "Course 1" course homepage
-    And I add a new discussion to "Test forum name" forum with:
-      | Subject | Test post subject one |
-      | Message | Test post message one |
-    And I add a new discussion to "Test forum name" forum with:
-      | Subject | Test post subject two |
-      | Message | Test post message two |
-    And I log out
-    And I am on the "Test forum name" "forum activity" page logged in as student1
-    And I can subscribe to this forum
-    And "Subscribe to this discussion" "checkbox" should exist in the "Test post subject one" "table_row"
-    And "Subscribe to this discussion" "checkbox" should exist in the "Test post subject two" "table_row"
-    And I click on "input[id^=subscription-toggle]" "css_element" in the "Test post subject one" "table_row"
-    And I can subscribe to this forum
-    And "Unsubscribe from this discussion" "checkbox" should exist in the "Test post subject one" "table_row"
-    And "Subscribe to this discussion" "checkbox" should exist in the "Test post subject two" "table_row"
-    And I log out
-    And I log in as "admin"
-    And I am on the "Test forum name" "forum activity" page
-    And I navigate to "Settings" in current page administration
-    And I set the following fields to these values:
-      | Subscription mode | Auto subscription |
-    And I press "Save and return to course"
-    And I log out
-    And I am on the "Test forum name" "forum activity" page logged in as student1
-    And I can unsubscribe from this forum
-    And "Unsubscribe from this discussion" "checkbox" should exist in the "Test post subject one" "table_row"
-    And "Unsubscribe from this discussion" "checkbox" should exist in the "Test post subject two" "table_row"
-    When I follow "Unsubscribe from forum"
-    And I should see "Student One will NOT be notified of new posts in 'Test forum name'"
     And I can subscribe to this forum
     And "Unsubscribe from this discussion" "checkbox" should exist in the "Test post subject one" "table_row"
     And "Subscribe to this discussion" "checkbox" should exist in the "Test post subject two" "table_row"

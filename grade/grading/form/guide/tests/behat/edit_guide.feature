@@ -36,6 +36,7 @@ Feature: Marking guides can be created and edited
     And I press "Save and return to course"
     # Defining a marking guide
     When I go to "Test assignment 1 name" advanced grading definition page
+    And I change window size to "large"
     And I set the following fields to these values:
       | Name        | Assignment 1 marking guide     |
       | Description | Marking guide test description |

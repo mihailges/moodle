@@ -46,12 +46,14 @@ Feature: Rubrics can have levels with negative scores
       | Criterion 2 | 30 |  |
       | Criterion 3 | 10 |  |
     And I save the advanced grading form
+    And I am on the "Test assignment 1" "assign activity" page
     And I go to "Student 2" "Test assignment 1" activity advanced grading page
     And I grade by filling the rubric with:
       | Criterion 1 | 25 |  |
       | Criterion 2 | -20 |  |
       | Criterion 3 | 10 |  |
     And I save the advanced grading form
+    And I am on the "Test assignment 1" "assign activity" page
     And I go to "Student 3" "Test assignment 1" activity advanced grading page
     And I grade by filling the rubric with:
       | Criterion 1 | -11 |  |

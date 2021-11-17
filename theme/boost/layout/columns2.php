@@ -29,9 +29,9 @@ require_once($CFG->libdir . '/behat/lib.php');
 
 // Add-a-block in editing mode.
 if (isset($PAGE->theme->addblockposition) &&
-    $PAGE->user_is_editing() &&
-    $PAGE->user_can_edit_blocks() &&
-    $PAGE->pagelayout !== 'mycourses'
+        $PAGE->user_is_editing() &&
+        $PAGE->user_can_edit_blocks() &&
+        $PAGE->pagelayout !== 'mycourses'
 ) {
     $url = new moodle_url($PAGE->url, ['bui_addblock' => '', 'sesskey' => sesskey()]);
 
@@ -53,9 +53,8 @@ $bodyattributes = $OUTPUT->body_attributes($extraclasses);
 $blockshtml = $OUTPUT->blocks('side-pre');
 $hasblocks = strpos($blockshtml, 'data-block=') !== false;
 
-$buildsecondarynavigation = $PAGE->has_secondary_navigation();
 $secondarynavigation = false;
-if ($buildsecondarynavigation) {
+if ($PAGE->has_secondary_navigation()) {
     $moremenu = new \core\navigation\output\more_menu($PAGE->secondarynav, 'nav-tabs');
     $secondarynavigation = $moremenu->export_for_template($OUTPUT);
 }

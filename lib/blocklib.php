@@ -837,6 +837,12 @@ class block_manager {
         }
     }
 
+    /**
+     * When passed a block name create a new instance of the block in the specified region.
+     *
+     * @param string $blockname Name of the block to add.
+     * @param null|string $blockregion If defined add the new block to the specified region.
+     */
     public function add_block_at_end_of_default_region($blockname, $blockregion = null) {
         if (empty($this->birecordsbyregion)) {
             // No blocks or block regions exist yet.

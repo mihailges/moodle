@@ -913,18 +913,6 @@ class behat_navigation extends behat_base {
     }
 
     /**
-     * Clicks link with specified id|title|alt|text in the flat navigation drawer.
-     *
-     * @When /^I select "(?P<link_string>(?:[^"]|\\")*)" from flat navigation drawer$/
-     * @throws ElementNotFoundException Thrown by behat_base::find
-     * @param string $link
-     */
-    public function i_select_from_flat_navigation_drawer($link) {
-        $this->i_open_flat_navigation_drawer();
-        $this->execute('behat_general::i_click_on_in_the', [$link, 'link', '#nav-drawer', 'css_element']);
-    }
-
-    /**
      * Clicks link with specified id|title|alt|text in the primary navigation
      *
      * @When /^I select "(?P<link_string>(?:[^"]|\\")*)" from primary navigation$/
@@ -1143,7 +1131,7 @@ class behat_navigation extends behat_base {
             // Front page administration will have subnodes under "More...".
             $linkname = behat_context_helper::escape(get_string('morenavigationlinks'));
             $link = $this->getSession()->getPage()->find('xpath', $menuxpath . '//a[contains(normalize-space(.), ' . $linkname . ')]');
-            // Course administration will have subnodes under "Course administraion"
+            // Course administration will have subnodes under "Course administration"
             $courselinkname = behat_context_helper::escape(get_string('courseadministration'));
             $courselink = $this->getSession()->getPage()->find('xpath', $menuxpath . '//a[contains(normalize-space(.), ' . $courselinkname . ')]');
             if ($link) {

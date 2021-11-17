@@ -78,9 +78,8 @@ if (!$courseindex) {
 $bodyattributes = $OUTPUT->body_attributes($extraclasses);
 $forceblockdraweropen = $OUTPUT->firstview_fakeblocks();
 
-$buildsecondarynavigation = $PAGE->has_secondary_navigation();
 $secondarynavigation = false;
-if ($buildsecondarynavigation) {
+if ($PAGE->has_secondary_navigation()) {
     $moremenu = new \core\navigation\output\more_menu($PAGE->secondarynav, 'nav-tabs');
     $secondarynavigation = $moremenu->export_for_template($OUTPUT);
 }

@@ -49,20 +49,24 @@
     }
 }}
 
-<div class="simplesearchform row mb-3 ml-auto">
-    <form autocomplete="off" action="{{ action }}" method="get" accept-charset="utf-8" class="mform form-inline simplesearchform">
-        <div class="input-group mr-2">
+<div class="container-fluid mb-4">
+    <div class="row">
+        <div class="d-flex">
             {{#helpicon}}
                 {{>core/help_icon}}
             {{/helpicon}}
             {{> core/search_input }}
         </div>
-        {{{newdiscussionbtn}}}
-    </form>
-    {{#subscribetoforum}}
-        <a class="btn btn-secondary ml-auto" href="{{ subscribetoforum }}">{{#str}}subscribe, mod_forum {{/str}}</a>
-    {{/subscribetoforum}}
-    {{#unsubscribefromforum}}
-        <a class="btn btn-secondary ml-auto" href="{{ unsubscribefromforum }}">{{#str}}unsubscribe, mod_forum {{/str}}</a>
-    {{/unsubscribefromforum}}
+        <div class="ml-2">
+            {{{newdiscussionbtn}}}
+        </div>
+        <div class="ml-auto d-flex">
+            {{#subscribetoforum}}
+                <a class="btn btn-secondary" href="{{ subscribetoforum }}">{{#str}}subscribe, mod_forum {{/str}}</a>
+            {{/subscribetoforum}}
+            {{#unsubscribefromforum}}
+                <a class="btn btn-secondary" href="{{ unsubscribefromforum }}">{{#str}}unsubscribe, mod_forum {{/str}}</a>
+            {{/unsubscribefromforum}}
+        </div>
+    </div>
 </div>

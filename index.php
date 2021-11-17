@@ -99,7 +99,7 @@ $PAGE->set_heading($SITE->fullname);
 $PAGE->has_secondary_navigation_setter(false);
 $courserenderer = $PAGE->get_renderer('core', 'course');
 
-if($hassiteconfig) {
+if ($hassiteconfig) {
     $editurl = new moodle_url('/course/view.php', ['id' => SITEID, 'sesskey' => sesskey()]);
     $editbutton = $OUTPUT->edit_button($editurl);
     $PAGE->set_button($editbutton);

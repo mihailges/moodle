@@ -14,20 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Step definitions related to blocks overrides for the Classic theme.
- *
- * @package    theme_classic
- * @category   test
- * @copyright  2021 Mathew May
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 // NOTE: no MOODLE_INTERNAL test here, this file may be required by behat before including /config.php.
 
 require_once(__DIR__ . '/../../../../completion/tests/behat/behat_completion.php');
 
 /**
+ * Step definitions related to blocks overrides for the Classic theme.
  *
  * @package    theme_classic
  * @category   test

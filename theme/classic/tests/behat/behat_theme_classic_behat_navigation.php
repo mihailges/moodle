@@ -317,7 +317,6 @@ class behat_theme_classic_behat_navigation extends behat_navigation {
                         $xpath .= '//div[contains(@class,\'active\')]';
                         array_shift($parentnodes);
                     }
-                } catch (Exception $e) {
                 }
             }
         }
@@ -393,7 +392,9 @@ class behat_theme_classic_behat_navigation extends behat_navigation {
         if (!$isheader || count($nodelist) == 1) {
             $lastnode = end($nodelist);
             $linkname = behat_context_helper::escape($lastnode);
-            $link = $this->getSession()->getPage()->find('xpath', $menuxpath . '//a[contains(normalize-space(.), ' . $linkname . ')]');
+            $link = $this->getSession()->getPage()->find('xpath', $menuxpath . '//a[contains(normalize-space(.), ' .
+                $linkname . ')]'
+            );
             if ($link) {
                 $this->execute('behat_general::i_click_on', [$link, 'NodeElement']);
                 return;
@@ -403,7 +404,9 @@ class behat_theme_classic_behat_navigation extends behat_navigation {
         if ($isheader) {
             // Course administration and Front page administration will have subnodes under "More...".
             $linkname = behat_context_helper::escape(get_string('morenavigationlinks'));
-            $link = $this->getSession()->getPage()->find('xpath', $menuxpath . '//a[contains(normalize-space(.), ' . $linkname . ')]');
+            $link = $this->getSession()->getPage()->find('xpath', $menuxpath . '//a[contains(normalize-space(.), ' .
+                $linkname . ')]'
+            );
             if ($link) {
                 $this->execute('behat_general::i_click_on', [$link, 'NodeElement']);
                 $this->select_on_administration_page($nodelist);

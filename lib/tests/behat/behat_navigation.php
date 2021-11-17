@@ -920,7 +920,9 @@ class behat_navigation extends behat_base {
      * @param string $link
      */
     public function i_select_from_primary_navigation($link) {
-        $this->execute('behat_general::i_click_on_in_the', [$link, 'link', '.primary-navigation .moremenu.navigation', 'css_element']);
+        $this->execute('behat_general::i_click_on_in_the',
+            [$link, 'link', '.primary-navigation .moremenu.navigation', 'css_element']
+        );
     }
 
     /**
@@ -939,7 +941,9 @@ class behat_navigation extends behat_base {
     protected function go_to_main_course_page() {
         $url = $this->getSession()->getCurrentUrl();
         if (!preg_match('|/course/view.php\?id=[\d]+$|', $url)) {
-            $node = $this->find('xpath', '//header//div[@id=\'page-navbar\']//a[contains(@href,\'/course/view.php?id=\')]');
+            $node = $this->find('xpath',
+                '//header//div[@id=\'page-navbar\']//a[contains(@href,\'/course/view.php?id=\')]'
+            );
             $this->execute('behat_general::i_click_on', [$node, 'NodeElement']);
         }
     }
@@ -1110,7 +1114,9 @@ class behat_navigation extends behat_base {
 
         $firstnode = $nodelist[0];
         $firstlinkname = behat_context_helper::escape($firstnode);
-        $firstlink = $this->getSession()->getPage()->find('xpath', $menuxpath . '//a[contains(normalize-space(.), ' . $firstlinkname . ')]');
+        $firstlink = $this->getSession()->getPage()->find('xpath',
+            $menuxpath . '//a[contains(normalize-space(.), ' . $firstlinkname . ')]'
+        );
 
         if (!$isheader || count($nodelist) == 1) {
             $lastnode = end($nodelist);
@@ -1130,10 +1136,14 @@ class behat_navigation extends behat_base {
         if ($isheader) {
             // Front page administration will have subnodes under "More...".
             $linkname = behat_context_helper::escape(get_string('morenavigationlinks'));
-            $link = $this->getSession()->getPage()->find('xpath', $menuxpath . '//a[contains(normalize-space(.), ' . $linkname . ')]');
+            $link = $this->getSession()->getPage()->find('xpath',
+                $menuxpath . '//a[contains(normalize-space(.), ' . $linkname . ')]'
+            );
             // Course administration will have subnodes under "Course administration"
             $courselinkname = behat_context_helper::escape(get_string('courseadministration'));
-            $courselink = $this->getSession()->getPage()->find('xpath', $menuxpath . '//a[contains(normalize-space(.), ' . $courselinkname . ')]');
+            $courselink = $this->getSession()->getPage()->find('xpath',
+                $menuxpath . '//a[contains(normalize-space(.), ' . $courselinkname . ')]'
+            );
             if ($link) {
                 $this->execute('behat_general::i_click_on', [$link, 'NodeElement']);
                 $this->select_on_administration_page($nodelist);

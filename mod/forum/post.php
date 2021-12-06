@@ -450,6 +450,8 @@ if (!empty($forum)) {
         $PAGE->navbar->add(get_string('delete', 'forum'));
         $PAGE->set_title($course->shortname);
         $PAGE->set_heading($course->fullname);
+        $PAGE->set_secondary_active_tab('modulepage');
+        $PAGE->activityheader->disable();
 
         if ($replycount) {
             if (!has_capability('mod/forum:deleteanypost', $modcontext)) {
@@ -486,6 +488,7 @@ if (!empty($forum)) {
             $postsrenderer = $rendererfactory->get_single_discussion_posts_renderer(FORUM_MODE_NESTED, true);
             echo $postsrenderer->render($USER, [$forumentity], [$discussionentity], $postentities);
         } else {
+            $PAGE->activityheader->disable();
             echo $OUTPUT->header();
             if (!$PAGE->has_secondary_navigation()) {
                 echo $OUTPUT->heading(format_string($forum->name), 2);
@@ -552,6 +555,8 @@ if (!empty($forum)) {
 
     $PAGE->set_cm($cm);
     $PAGE->set_context($modcontext);
+    $PAGE->set_secondary_active_tab('modulepage');
+    $PAGE->activityheader->disable();
 
     $prunemform = new mod_forum_prune_form(null, array('prune' => $prune, 'confirm' => $prune));
 
@@ -632,7 +637,7 @@ if (!empty($forum)) {
         $course = $DB->get_record('course', array('id' => $forum->course));
         $subjectstr = format_string($post->subject, true);
         $PAGE->navbar->add($subjectstr, new moodle_url('/mod/forum/discuss.php', array('d' => $discussion->id)));
-        $PAGE->navbar->add(get_string("prune", "forum"));
+        $PAGE->navbar->add(get_string("prunediscussion", "forum"));
         $PAGE->set_title(format_string($discussion->name).": ".format_string($post->subject));
         $PAGE->set_heading($course->fullname);
         echo $OUTPUT->header();
@@ -1078,11 +1083,15 @@ if (!empty($discussion->id)) {
 }
 
 if ($post->parent) {
-    $PAGE->navbar->add(get_string('reply', 'forum'));
+    $PAGE->navbar->add(get_string('addreply', 'forum'));
 }
 
 if ($edit) {
-    $PAGE->navbar->add(get_string('edit', 'forum'));
+    $PAGE->navbar->add(get_string('editdiscussiontopic', 'forum'), $PAGE->url);
+}
+
+if (!$reply && !$edit && !$delete && !$prune && !$name && !$confirm && !$groupid && !$subject) {
+    $PAGE->navbar->add(get_string('addanewdiscussion', 'forum'), $PAGE->url);
 }
 
 $PAGE->set_title("{$course->shortname}: {$strdiscussionname}{$titlesubject}");
@@ -1092,8 +1101,19 @@ $activityheaderconfig['hidecompletion'] = true;
 if (!empty($parententity)) {
         $activityheaderconfig['description'] = '';
 }
+
+// Remove the activity description.
+$PAGE->activityrecord->intro = null;
 $PAGE->activityheader->set_attrs($activityheaderconfig);
 echo $OUTPUT->header();
+
+if ($edit) {
+    echo $OUTPUT->heading(get_string('editdiscussiontopic', 'forum'), 4);
+} else if ($reply) {
+    echo $OUTPUT->heading(get_string('replypostdiscussion', 'forum'), 4);
+} else {
+    echo $OUTPUT->heading(get_string('addanewdiscussion', 'forum'), 4);
+}
 
 // Checkup.
 if (!empty($parententity) && !$capabilitymanager->can_view_post($USER, $discussionentity, $parententity)) {

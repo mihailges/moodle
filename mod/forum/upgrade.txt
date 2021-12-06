@@ -23,6 +23,7 @@ information provided here is intended especially for developers.
     * forum_print_posts_nested
     * forum_print_latest_discussions
     * forum_get_user_grades
+* forum_update_subscriptions_button from mod/forum/lib.php has been deprecated and moved to mod/forum/deprecatedlib.php.
 
 === 3.11 ===
 

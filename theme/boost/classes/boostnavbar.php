@@ -16,6 +16,8 @@
 
 namespace theme_boost;
 
+use core\navigation\views\view;
+
 /**
  * Creates a navbar for boost that allows easy control of the navbar items.
  *
@@ -49,10 +51,13 @@ class boostnavbar implements \renderable {
     protected function prepare_nodes_for_boost(): void {
         global $PAGE;
 
-        // Don't show the navigation if we are in the course context.
         if ($this->page->context->contextlevel == CONTEXT_COURSE) {
-            $this->clear_items();
-            return;
+            // Remove 'My courses' if we are in the course context.
+            $this->remove('mycourses');
+            // Remove the course breadcrumb node.
+            $this->remove($this->page->course->id);
+            // Remove the navbar nodes that already exist in the secondary navigation menu.
+            $this->remove_items_that_exist_in_nav_menu($PAGE->secondarynav);
         }
 
         $this->remove('myhome'); // Dashboard.
@@ -66,13 +71,8 @@ class boostnavbar implements \renderable {
         if (!is_null($this->get_item('root'))) { // We are in site administration.
             // Remove the 'Site administration' navbar node as it already exists in the primary navigation menu.
             $this->remove('root');
-            // Loop through the remaining navbar nodes and remove the ones that already exist in the secondary
-            // navigation menu.
-            foreach ($this->items as $item) {
-                if ($PAGE->secondarynav->get($item->key)) {
-                    $this->remove($item->key);
-                }
-            }
+            // Remove the navbar nodes that already exist in the secondary navigation menu.
+            $this->remove_items_that_exist_in_nav_menu($PAGE->secondarynav);
         }
 
         // Set the designated one path for courses.
@@ -83,6 +83,7 @@ class boostnavbar implements \renderable {
             $mycoursesnode->text = get_string('mycourses');
         }
 
+        $this->remove_duplicated_link_items();
         $this->remove_no_link_items();
 
         // Don't display the navbar if there is only one item. Apparently this is bad UX design.
@@ -199,5 +200,37 @@ class boostnavbar implements \renderable {
             }
         }
         $this->items = array_values($this->items);
+    }
+
+    /**
+     * Remove breadcrumb items that have duplicated action link.
+     */
+    protected function remove_duplicated_link_items(): void {
+        $nodeactions = [];
+        $filtereditems = [];
+        foreach ($this->items as $item) {
+            if ($item->action) {
+                if (in_array($item->action->out(), $nodeactions, true)) {
+                    continue;
+                }
+                $nodeactions[] = $item->action->out();
+            }
+            $filtereditems[] = $item;
+        }
+        $this->items = $filtereditems;
+    }
+
+
+    /**
+     * Remove breadcrumb items that already exist in a given navigation view (primary or secondary).
+     *
+     * @param view $navigationview The navigation view object.
+     */
+    protected function remove_items_that_exist_in_nav_menu(view $navigationview): void {
+        foreach ($this->items as $item) {
+            if ($navigationview->get($item->key)) {
+                $this->remove($item->key);
+            }
+        }
     }
 }

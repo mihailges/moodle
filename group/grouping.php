@@ -138,7 +138,6 @@ if ($id) {
     $strheading = get_string('creategrouping', 'group');
 }
 
-$PAGE->navbar->add($strparticipants, new moodle_url('/user/index.php', array('id'=>$courseid)));
 $PAGE->navbar->add($strgroupings, new moodle_url('/group/groupings.php', array('id'=>$courseid)));
 $PAGE->navbar->add($strheading);
 

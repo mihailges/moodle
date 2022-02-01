@@ -118,8 +118,8 @@ if ($editform->is_cancelled()) {
     redirect($returnurl);
 }
 
-$strkeys   = get_string('userkeys', 'userkey');
-$strgrades = get_string('grades');
+$strkeys   = get_string('keymanager', 'userkey');
+$strexportgrades = get_string('export', 'grades');
 
 if ($id) {
     $strheading = get_string('edituserkey', 'userkey');
@@ -127,7 +127,7 @@ if ($id) {
     $strheading = get_string('createuserkey', 'userkey');
 }
 
-$PAGE->navbar->add($strgrades, new moodle_url('/grade/index.php', array('id'=>$courseid)));
+$PAGE->navbar->add($strexportgrades, new moodle_url('/grade/export/index.php', ['id' => $courseid]));
 $PAGE->navbar->add($strkeys, new moodle_url('/grade/export/keymanager.php', array('id'=>$courseid)));
 $PAGE->navbar->add($strheading);
 

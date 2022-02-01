@@ -33,7 +33,8 @@ $id       = optional_param('id', 0, PARAM_INT);
 $delete   = optional_param('delete', 0, PARAM_BOOL);
 $confirm  = optional_param('confirm', 0, PARAM_BOOL);
 
-$PAGE->set_url('/grade/import/key.php', array('courseid' => $courseid, 'id' => $id));
+$url = new moodle_url('/grade/import/key.php', ['courseid' => $courseid, 'id' => $id]);
+$PAGE->set_url($url);
 
 if ($id) {
     if (!$key = $DB->get_record('user_private_key', array('id' => $id))) {
@@ -118,8 +119,8 @@ if ($editform->is_cancelled()) {
     redirect($returnurl);
 }
 
-$strkeys   = get_string('userkeys', 'userkey');
-$strgrades = get_string('grades');
+$strkeys   = get_string('keymanager', 'userkey');
+$strimportgrades = get_string('import', 'grades');
 
 if ($id) {
     $strheading = get_string('edituserkey', 'userkey');
@@ -127,7 +128,7 @@ if ($id) {
     $strheading = get_string('createuserkey', 'userkey');
 }
 
-$PAGE->navbar->add($strgrades, new moodle_url('/grade/index.php', array('id'=>$courseid)));
+$PAGE->navbar->add($strimportgrades, new moodle_url(new moodle_url('/grade/import/index.php', ['id' => $courseid])));
 $PAGE->navbar->add($strkeys, new moodle_url('/grade/import/keymanager.php', array('id'=>$courseid)));
 $PAGE->navbar->add($strheading);
 

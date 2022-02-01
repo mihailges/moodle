@@ -81,7 +81,9 @@ switch ($action) {
         $deleteconfirmed = optional_param('deleteconfirmed', 0, PARAM_BOOL);
 
         if (!$deleteconfirmed) {
-            $strdeletescale = get_string('delete'). ' '. get_string('scale');
+            $PAGE->navbar->add(get_string('scales'), new moodle_url('/grade/edit/scale/index.php',
+                ['id' => $courseid]));
+            $strdeletescale = get_string('deletescale', 'grades');
             $PAGE->navbar->add($strdeletescale);
             $PAGE->set_title($strdeletescale);
             $PAGE->set_heading($COURSE->fullname);

@@ -60,11 +60,17 @@ if ($id) {
         $context = context_course::instance($course->id);
         require_capability('moodle/grade:manage', $context);
         $courseid = $course->id;
+        navigation_node::override_active_url(new moodle_url('/grade/edit/outcome/course.php', ['id' => $courseid]));
+        $PAGE->navbar->add(get_string('manageoutcomes', 'grades'),
+            new moodle_url('/grade/edit/outcome/index.php', ['id' => $courseid]));
     } else {
         if ($courseid) {
             if (!$course = $DB->get_record('course', array('id' => $courseid))) {
                 print_error('invalidcourseid');
             }
+            navigation_node::override_active_url(new moodle_url('/grade/edit/outcome/course.php', ['id' => $courseid]));
+            $PAGE->navbar->add(get_string('manageoutcomes', 'grades'),
+                new moodle_url('/grade/edit/outcome/index.php', ['id' => $courseid]));
         }
         $outcome_rec->standard = 1;
         $outcome_rec->courseid = $courseid;
@@ -80,6 +86,8 @@ if ($id) {
     $context = context_course::instance($course->id);
     require_capability('moodle/grade:manage', $context);
     navigation_node::override_active_url(new moodle_url('/grade/edit/outcome/course.php', array('id'=>$courseid)));
+    $PAGE->navbar->add(get_string('manageoutcomes', 'grades'),
+        new moodle_url('/grade/edit/outcome/index.php', ['id' => $courseid]));
 
     $outcome_rec = new stdClass();
     $outcome_rec->standard = 0;
@@ -157,6 +165,8 @@ if ($mform->is_cancelled()) {
 
     redirect($returnurl);
 }
+
+$PAGE->navbar->add($heading, $url);
 
 print_grade_page_head($courseid ?: SITEID, 'outcome', 'edit', $heading, false, false, false);
 

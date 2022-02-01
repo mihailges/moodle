@@ -171,6 +171,10 @@ switch ($context->contextlevel) {
         if ($isfrontpage) {
             $PAGE->set_heading(get_string('frontpage', 'admin'));
         } else {
+            $url = new moodle_url('/enrol/otherusers.php', ['id' => $course->id]);
+            $PAGE->navbar->add(get_string('notenrolledusers', 'enrol'), $url, navigation_node::TYPE_SETTING,
+                null, 'otherusers');
+            $PAGE->navbar->add(get_string('assignroles', 'role'));
             $PAGE->set_heading($course->fullname);
         }
         break;

@@ -165,4 +165,209 @@ class boostnavbar_test extends \advanced_testcase {
         }
         $this->assertEquals($expected, $actual);
     }
+
+    /**
+     * Provider for test_remove_duplicated_link_items
+     *
+     * @return array
+     */
+    public function remove_duplicated_link_items_provider(): array {
+        return [
+            'Breadcrumbs that have nodes with the identical action url' => [
+                [
+                    'Node 1' => new \moodle_url('/example1.php'),
+                    'Node 2' => new \moodle_url('/example2.php', ['id' => 1]),
+                    'Node 3' => new \moodle_url('/example2.php', ['id' => 1]),
+                    'Node 4' => new \moodle_url('/example4.php', ['id' => 1])
+                ],
+                ['Home', 'Node 1', 'Node 2', 'Node 4']
+            ],
+            'Breadcrumbs that do not have nodes with the identical action url.' => [
+                [
+                    'Node 1' => new \moodle_url('/example1.php'),
+                    'Node 2' => new \moodle_url('/example2.php', ['id' => 1]),
+                    'Node 3' => new \moodle_url('/example2.php', ['id' => 2]),
+                    'Node 4' => new \moodle_url('/example4.php', ['id' => 1])
+                ],
+                ['Home', 'Node 1', 'Node 2', 'Node 3', 'Node 4']
+            ],
+        ];
+    }
+
+    /**
+     * Test the remove_duplicated_link_items function
+     *
+     * @dataProvider remove_duplicated_link_items_provider
+     * @param array $navbarnodes The array containing the text => moodle_url of the nodes to be added to the navbar
+     * @param array $expected The array containing the text of the expected navbar nodes
+     */
+    public function test_remove_duplicated_link_items(array $navbarnodes, array $expected) {
+        $this->resetAfterTest();
+        $page = new \moodle_page();
+        $page->set_url('/');
+
+        // Add the navbar nodes.
+        foreach ($navbarnodes as $text => $url) {
+            $page->navbar->add($text, $url, \navigation_node::TYPE_CUSTOM);
+        }
+
+        $boostnavbar = $this->getMockBuilder(boostnavbar::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods([])
+            ->getMock();
+
+        $rc = new \ReflectionClass(boostnavbar::class);
+        $rcp = $rc->getProperty('items');
+        $rcp->setAccessible(true);
+        $rcp->setValue($boostnavbar, $page->navbar->get_items());
+
+        // Make the call to the function.
+        $rcm = $rc->getMethod('remove_duplicated_link_items');
+        $rcm->setAccessible(true);
+        $rcm->invoke($boostnavbar);
+
+        // Get the value for the class variable that the function modifies.
+        $values = $rcp->getValue($boostnavbar);
+        $actual = [];
+        foreach ($values as $value) {
+            $actual[] = $value->text;
+        }
+        $this->assertEquals($expected, $actual);
+    }
+
+
+    /**
+     * Provider for test_remove_items_that_exist_in_nav_menu
+     *
+     * @return array
+     */
+    public function remove_items_that_exist_in_nav_menu_provider(): array {
+        return [
+            'The breadcrumb node exists in the primary navigation menu.' => [
+                'primary',
+                [
+                    [
+                        'key' => 'node1',
+                        'text' => 'Node 1'
+                    ]
+                ],
+                [
+                    'node1' => 'Node 1',
+                    'node2' => 'Node 2',
+                    'node3' => 'Node 3'
+                ],
+                ['Home', 'Node 2', 'Node 3']
+            ],
+            'The breadcrumb node exists in the secondary navigation menu.' => [
+                'secondary',
+                [
+                    [
+                        'key' => 'node2',
+                        'text' => 'Node 2'
+                    ]
+                ],
+                [
+                    'node1' => 'Node 1',
+                    'node2' => 'Node 2',
+                    'node3' => 'Node 3'
+                ],
+                ['Home', 'Node 1', 'Node 3']
+            ],
+            'Multiple breadcrumb nodes exist in the secondary navigation menu.' => [
+                'secondary',
+                [
+                    [
+                        'key' => 'node2',
+                        'text' => 'Node 2'
+                    ],
+                    [
+                        'key' => 'node3',
+                        'text' => 'Node 3'
+                    ]
+                ],
+                [
+                    'node1' => 'Node 1',
+                    'node2' => 'Node 2',
+                    'node3' => 'Node 3'
+                ],
+                ['Home', 'Node 1']
+            ],
+            'The breadcrumb node does not exist in the secondary navigation menu.' => [
+                'secondary',
+                [
+                    [
+                        'key' => 'node4',
+                        'text' => 'Node 4'
+                    ]
+                ],
+                [
+                    'node1' => 'Node 1',
+                    'node2' => 'Node 2',
+                    'node3' => 'Node 3'
+                ],
+                ['Home', 'Node 1', 'Node 2', 'Node 3']
+            ],
+        ];
+    }
+
+    /**
+     * Test the remove_items_that_exist_in_nav_menu function
+     *
+     * @dataProvider remove_items_that_exist_in_nav_menu_provider
+     * @param string $navmenu The name of the navigation menu we would like to use (primary or secondary)
+     * @param array $navmenunodes The array containing the key and text of the nodes to be added to the navigation menu
+     * @param array $navbarnodes Array containing the key => text of the nodes to be added to the navbar
+     * @param array $expected Array containing the text of the expected navbar nodes after the filtering
+     */
+    public function test_remove_items_that_exist_in_nav_menu(string $navmenu, array $navmenunodes, array $navbarnodes,
+            array $expected) {
+        global $PAGE;
+
+        // Unfortunate hack needed because people use global $PAGE around the place.
+        $PAGE->set_url('/');
+        $this->resetAfterTest();
+        $page = new \moodle_page();
+        $page->set_url('/');
+
+        switch ($navmenu) {
+            case 'primary':
+                $navigationmenu = new \core\navigation\views\primary($page);
+            case 'secondary':
+                $navigationmenu = new \core\navigation\views\secondary($page);
+        }
+
+        $navigationmenu->initialise();
+        // Add the additional nodes to the navigation menu.
+        foreach ($navmenunodes as $navmenunode) {
+            $navigationmenu->add($navmenunode['text'], null, \navigation_node::TYPE_CUSTOM, null, $navmenunode['key']);
+        }
+
+        // Add the additional navbar nodes.
+        foreach ($navbarnodes as $key => $text) {
+            $page->navbar->add($text, null, \navigation_node::TYPE_CUSTOM, null, $key);
+        }
+
+        $boostnavbar = $this->getMockBuilder(boostnavbar::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods([])
+            ->getMock();
+
+        $rc = new \ReflectionClass(boostnavbar::class);
+        $rcp = $rc->getProperty('items');
+        $rcp->setAccessible(true);
+        $rcp->setValue($boostnavbar, $page->navbar->get_items());
+
+        // Make the call to the function.
+        $rcm = $rc->getMethod('remove_items_that_exist_in_nav_menu');
+        $rcm->setAccessible(true);
+        $rcm->invoke($boostnavbar, $navigationmenu);
+
+        // Get the value for the class variable that the function modifies.
+        $values = $rcp->getValue($boostnavbar);
+        $actual = [];
+        foreach ($values as $value) {
+            $actual[] = $value->text;
+        }
+        $this->assertEquals($expected, $actual);
+    }
 }

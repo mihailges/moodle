@@ -91,6 +91,8 @@ if ($type == BADGE_TYPE_SITE) {
     navigation_node::override_active_url(
         new moodle_url('/badges/index.php', array('type' => BADGE_TYPE_COURSE, 'id' => $course->id))
     );
+    $PAGE->navbar->prepend(get_string('badges', 'badges'), new moodle_url('/badges/view.php',
+        ['type' => BADGE_TYPE_COURSE, 'id' => $courseid]));
 }
 
 if (!has_any_capability(array(

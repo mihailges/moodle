@@ -52,6 +52,8 @@ if (($type == BADGE_TYPE_COURSE) && ($course = $DB->get_record('course', array('
     $heading = format_string($course->fullname, true, array('context' => $coursecontext)) . ": " . $title;
     $PAGE->set_heading($heading);
     $PAGE->set_title($heading);
+    $PAGE->navbar->prepend(get_string('badges', 'badges'), new moodle_url('/badges/view.php',
+        ['type' => BADGE_TYPE_COURSE, 'id' => $courseid]));
 } else {
     $PAGE->set_context(context_system::instance());
     $PAGE->set_pagelayout('admin');

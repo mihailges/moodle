@@ -62,10 +62,14 @@ if ($badge->type == BADGE_TYPE_COURSE) {
     $navurl = new moodle_url('/badges/index.php', array('type' => $badge->type, 'id' => $badge->courseid));
     $PAGE->set_pagelayout('standard');
     navigation_node::override_active_url($navurl);
+    $PAGE->navbar->prepend(get_string('badges', 'badges'), new moodle_url('/badges/view.php',
+        ['type' => BADGE_TYPE_COURSE, 'id' => $badge->courseid]));
 } else {
     $PAGE->set_pagelayout('admin');
     $heading = get_string('administrationsite');
     navigation_node::override_active_url($navurl, true);
+    $PAGE->navbar->prepend(get_string('badges', 'badges'), new moodle_url('/badges/view.php',
+        ['type' => BADGE_TYPE_SITE]));
 }
 
 $urlparams = array('badgeid' => $badgeid, 'edit' => $edit, 'type' => $type, 'crit' => $crit);
@@ -73,7 +77,9 @@ $PAGE->set_context($context);
 $PAGE->set_url('/badges/criteria_settings.php', $urlparams);
 $PAGE->set_heading($heading);
 $PAGE->set_title($badge->name);
-$PAGE->navbar->add($badge->name, new moodle_url('overview.php', array('id' => $badge->id)))->add(get_string('criteria_' . $type, 'badges'));
+$PAGE->navbar->add($badge->name, new moodle_url('overview.php', array('id' => $badge->id)))
+    ->add(get_string('bcriteria', 'badges'), new moodle_url('criteria.php', ['id' => $badge->id]))
+    ->add(get_string('criteria_' . $type, 'badges'));
 
 $cparams = array('criteriatype' => $type, 'badgeid' => $badge->id);
 if ($edit) {

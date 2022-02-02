@@ -650,9 +650,12 @@ function get_category_or_system_context($categoryid) {
  * Print the buttons relating to course requests.
  *
  * @param context $context current page context.
+ * @deprecated since Moodle 4.0
  */
 function print_course_request_buttons($context) {
     global $CFG, $DB, $OUTPUT;
+    debugging("print_course_request_buttons() is deprecated. " .
+        "This is replaced with the category_action_bar tertiary navigation.", DEBUG_DEVELOPER);
     if (empty($CFG->enablecourserequests)) {
         return;
     }

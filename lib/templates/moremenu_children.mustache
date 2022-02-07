@@ -38,7 +38,10 @@
         <div class="dropdown-menu" role="menu" id="drop-down-menu-{{moremenuid}}" aria-labelledby="drop-down-{{moremenuid}}">
             {{#children}}
                 {{^divider}}
-                    <a class="dropdown-item" role="menuitem" href="{{{url}}}">{{{text}}}</a>
+                    <a class="dropdown-item" role="menuitem" {{#actionattributes}}{{name}}="{{value}}"{{/actionattributes}} href="{{{url}}}">{{{text}}}</a>
+                    {{#action_link_actions}}
+                        {{> core/actions }}
+                    {{/action_link_actions}}
                 {{/divider}}
                 {{#divider}}
                     <div class="dropdown-divider"></div>
@@ -53,11 +56,17 @@
             <a role="menuitem" class="nav-link {{#isactive}}active{{/isactive}} {{#classes}}{{.}} {{/classes}}" {{#actionattributes}}{{name}}="{{value}}"{{/actionattributes}} href="{{tab}}" data-toggle="tab" data-text="{{{text}}}" aria-current="false" tabindex="-1">
                 {{{text}}}
             </a>
+            {{#action_link_actions}}
+                {{> core/actions }}
+            {{/action_link_actions}}
         {{/tab}}
         {{^tab}}
             <a role="menuitem" class="nav-link {{#isactive}}active{{/isactive}} {{#classes}}{{.}} {{/classes}}" {{#actionattributes}}{{name}}="{{value}}"{{/actionattributes}} href="{{{url}}}{{{action}}}" {{#isactive}}aria-current="true"{{/isactive}} tabindex="-1">
                 {{{text}}}
             </a>
+            {{#action_link_actions}}
+                {{> core/actions }}
+            {{/action_link_actions}}
         {{/tab}}
     </li>
 {{/haschildren}}

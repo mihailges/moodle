@@ -1532,6 +1532,9 @@ class action_link implements renderable {
                                 pix_icon $icon=null) {
         $this->url = clone($url);
         $this->text = $text;
+        if (empty($attributes['id'])) {
+            $attributes['id'] = html_writer::random_id('action_link');
+        }
         $this->attributes = (array)$attributes;
         if ($action) {
             $this->add_action($action);
@@ -1594,6 +1597,7 @@ class action_link implements renderable {
         if (empty($attributes['id'])) {
             $attributes['id'] = html_writer::random_id('action_link');
         }
+
         $data->id = $attributes['id'];
         unset($attributes['id']);
 

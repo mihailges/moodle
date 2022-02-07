@@ -866,6 +866,28 @@ class navigation_node implements renderable {
     }
 
     /**
+     * Return an array consisting of the actions for the action link.
+     *
+     * @return array Formatted array to parse in a template
+     */
+    public function action_link_actions() {
+        global $PAGE;
+
+        if ($this->action instanceof action_link) {
+            $actionid = $this->action->attributes['id'];
+            $actionsdata = array_map(function($action) use ($PAGE, $actionid) {
+                $data = $action->export_for_template($PAGE->get_renderer('core'));
+                $data->id = $actionid;
+                return $data;
+            }, !empty($this->action->actions) ? $this->action->actions : []);
+
+            return ['actions' => $actionsdata];
+        }
+
+        return [];
+    }
+
+    /**
      * Sets whether the node and its children should be added into a "more" menu whenever possible.
      *
      * @param bool $forceintomoremenu

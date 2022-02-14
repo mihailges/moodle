@@ -148,7 +148,9 @@
                             {{> core/activity_header }}
                         {{/headercontent}}
                         {{#overflow}}
-                            {{> core/url_select}}
+                            <div class="overflow-select">
+                                {{> core/url_select}}
+                            </div>
                         {{/overflow}}
                         {{{ output.main_content }}}
                         {{{ output.activity_navigation }}}

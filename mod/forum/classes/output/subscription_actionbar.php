@@ -54,7 +54,7 @@ class subscription_actionbar implements renderable, templatable {
         $this->id = $id;
         $this->currenturl = $currenturl;
         $this->forum = $forum;
-        $this->edit = ($edit !== 1) ? 0 : $edit;
+        $this->edit = $edit;
     }
 
     /**
@@ -64,7 +64,7 @@ class subscription_actionbar implements renderable, templatable {
      */
     private function create_subscription_menu(): ?url_select {
         // When user is on manage subscription, we don't have to show the subscription selector.
-        if ($this->edit === 1) {
+        if ($this->edit === 1 && !\mod_forum\subscriptions::is_forcesubscribed($this->forum)) {
             return  null;
         }
 

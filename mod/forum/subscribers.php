@@ -35,7 +35,6 @@ if ($group !== 0) {
     $url->param('group', $group);
 }
 
-$edit = ($edit === -1) ? 0 : $edit;
 if ($edit === 1) {
     $url->param('edit', 'on');
 } else {
@@ -118,22 +117,16 @@ if (!$PAGE->has_secondary_navigation()) {
 }
 echo $forumoutput->subscription_actionbar($actionbar);
 
-if ($edit === 0) {
-    echo $OUTPUT->heading(get_string('subscribers', 'forum'), 2);
-} else {
+if ($edit === 1 && !\mod_forum\subscriptions::is_forcesubscribed($forum)) {
     echo $OUTPUT->heading(get_string('managesubscriptionson', 'forum'), 2);
-}
-
-if ($edit === 0) {
+    echo $forumoutput->subscriber_selection_form($existingselector, $subscriberselector);
+} else {
+    echo $OUTPUT->heading(get_string('subscribers', 'forum'), 2);
     $subscribers = \mod_forum\subscriptions::fetch_subscribed_users($forum, $currentgroup, $context);
     if (\mod_forum\subscriptions::is_forcesubscribed($forum)) {
         $subscribers = mod_forum_filter_hidden_users($cm, $context, $subscribers);
     }
     echo $forumoutput->subscriber_overview($subscribers, $forum, $course);
-} else {
-    if (!\mod_forum\subscriptions::is_forcesubscribed($forum)) {
-        echo $forumoutput->subscriber_selection_form($existingselector, $subscriberselector);
-    }
 }
 
 echo $OUTPUT->footer();

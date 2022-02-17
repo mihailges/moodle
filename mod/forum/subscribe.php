@@ -127,13 +127,21 @@ if (!is_null($mode) and has_capability('mod/forum:managesubscriptions', $context
     switch ($mode) {
         case FORUM_CHOOSESUBSCRIBE : // 0
             \mod_forum\subscriptions::set_subscription_mode($forum->id, FORUM_CHOOSESUBSCRIBE);
-            $subscribersurl->param('notification', 'everyonecannowchoose');
-            redirect($subscribersurl);
+            redirect(
+                    $subscribersurl,
+                    get_string('everyonecannowchoose', 'forum'),
+                    null,
+                    \core\output\notification::NOTIFY_SUCCESS
+            );
             break;
         case FORUM_FORCESUBSCRIBE : // 1
             \mod_forum\subscriptions::set_subscription_mode($forum->id, FORUM_FORCESUBSCRIBE);
-            $subscribersurl->param('notification', 'everyoneisnowsubscribed');
-            redirect($subscribersurl);
+            redirect(
+                    $subscribersurl,
+                    get_string('everyoneisnowsubscribed', 'forum'),
+                    null,
+                    \core\output\notification::NOTIFY_SUCCESS
+            );
             break;
         case FORUM_INITIALSUBSCRIBE : // 2
             \mod_forum\subscriptions::set_subscription_mode($forum->id, FORUM_INITIALSUBSCRIBE);
@@ -145,13 +153,21 @@ if (!is_null($mode) and has_capability('mod/forum:managesubscriptions', $context
                     \mod_forum\subscriptions::subscribe_user($user->id, $forum, $context);
                 }
             }
-            $subscribersurl->param('notification', 'everyoneisnowsubscribed');
-            redirect($subscribersurl);
+            redirect(
+                    $subscribersurl,
+                    get_string('everyoneisnowsubscribed', 'forum'),
+                    null,
+                    \core\output\notification::NOTIFY_SUCCESS
+            );
             break;
         case FORUM_DISALLOWSUBSCRIBE : // 3
             \mod_forum\subscriptions::set_subscription_mode($forum->id, FORUM_DISALLOWSUBSCRIBE);
-            $subscribersurl->param('notification', 'noonecansubscribenow');
-            redirect($subscribersurl);
+            redirect(
+                    $subscribersurl,
+                    get_string('noonecansubscribenow', 'forum'),
+                    null,
+                    \core\output\notification::NOTIFY_SUCCESS
+            );
             break;
         default:
             print_error(get_string('invalidforcesubscribe', 'forum'));

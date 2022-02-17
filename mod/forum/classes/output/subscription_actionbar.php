@@ -39,7 +39,7 @@ class subscription_actionbar implements renderable, templatable {
     /** @var \stdClass  */
     private $forum;
 
-    /** @var string */
+    /** @var int */
     private $edit;
 
     /**
@@ -48,22 +48,23 @@ class subscription_actionbar implements renderable, templatable {
      * @param int $id The forum id.
      * @param moodle_url $currenturl Current URL.
      * @param \stdClass $forum The forum object.
-     * @param string $edit This argument decides to show view/manage subscribers view.
+     * @param int $edit This argument decides to show view/manage subscribers view.
      */
-    public function __construct(int $id, moodle_url $currenturl, \stdClass $forum, string $edit) {
+    public function __construct(int $id, moodle_url $currenturl, \stdClass $forum, int $edit) {
         $this->id = $id;
         $this->currenturl = $currenturl;
         $this->forum = $forum;
-        $this->edit = $edit;
+        $this->edit = ($edit !== 1) ? 0 : $edit;
     }
 
     /**
      * Create url select menu for subscription option
      *
-     * @return url_select the url_select object
+     * @return url_select|null the url_select object
      */
     private function create_subscription_menu(): ?url_select {
-        if ($this->currenturl->get_param('edit') === 'on') {
+        // When user is on manage subscription, we don't have to show the subscription selector.
+        if ($this->edit === 1) {
             return  null;
         }
 
@@ -117,11 +118,11 @@ class subscription_actionbar implements renderable, templatable {
     /**
      * Create view and manage subscribers select menu.
      *
-     * @return url_select get url_select object.
+     * @return url_select|null get url_select object.
      */
     private function create_view_manage_menu(): ?url_select {
         // If forced subscription is used then no need to show the view.
-        if (\mod_forum\subscriptions::get_subscription_mode($this->forum) === (string)FORUM_FORCESUBSCRIBE) {
+        if (\mod_forum\subscriptions::is_forcesubscribed($this->forum)) {
             return null;
         }
 
@@ -133,7 +134,7 @@ class subscription_actionbar implements renderable, templatable {
             $managelink->out(false) => get_string('managesubscriptionson', 'forum'),
         ];
 
-        if ($this->currenturl->get_param('edit') === 'off') {
+        if ($this->edit === 0) {
             $this->currenturl = $viewlink;
         } else {
             $this->currenturl = $managelink;

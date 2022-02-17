@@ -488,7 +488,6 @@ if (!empty($forum)) {
             $postsrenderer = $rendererfactory->get_single_discussion_posts_renderer(FORUM_MODE_NESTED, true);
             echo $postsrenderer->render($USER, [$forumentity], [$discussionentity], $postentities);
         } else {
-            $PAGE->activityheader->disable();
             echo $OUTPUT->header();
             if (!$PAGE->has_secondary_navigation()) {
                 echo $OUTPUT->heading(format_string($forum->name), 2);
@@ -1090,7 +1089,8 @@ if ($edit) {
     $PAGE->navbar->add(get_string('editdiscussiontopic', 'forum'), $PAGE->url);
 }
 
-if (!$reply && !$edit && !$delete && !$prune && !$name && !$confirm && !$groupid && !$subject) {
+// If not reply or edit or delete, then add new discussion can be added to the forum.
+if (!$reply && !$edit && !$delete) {
     $PAGE->navbar->add(get_string('addanewdiscussion', 'forum'), $PAGE->url);
 }
 
@@ -1098,21 +1098,18 @@ $PAGE->set_title("{$course->shortname}: {$strdiscussionname}{$titlesubject}");
 $PAGE->set_heading($course->fullname);
 $PAGE->set_secondary_active_tab("modulepage");
 $activityheaderconfig['hidecompletion'] = true;
-if (!empty($parententity)) {
-        $activityheaderconfig['description'] = '';
-}
+$activityheaderconfig['description'] = '';
 
 // Remove the activity description.
-$PAGE->activityrecord->intro = null;
 $PAGE->activityheader->set_attrs($activityheaderconfig);
 echo $OUTPUT->header();
 
 if ($edit) {
-    echo $OUTPUT->heading(get_string('editdiscussiontopic', 'forum'), 4);
+    echo $OUTPUT->heading(get_string('editdiscussiontopic', 'forum'), 2);
 } else if ($reply) {
-    echo $OUTPUT->heading(get_string('replypostdiscussion', 'forum'), 4);
+    echo $OUTPUT->heading(get_string('replypostdiscussion', 'forum'), 2);
 } else {
-    echo $OUTPUT->heading(get_string('addanewdiscussion', 'forum'), 4);
+    echo $OUTPUT->heading(get_string('addanewdiscussion', 'forum'), 2);
 }
 
 // Checkup.

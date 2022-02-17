@@ -490,7 +490,8 @@ WHERE
 function forum_update_subscriptions_button($courseid, $forumid): string {
     global $CFG, $USER;
 
-    debugging('forum_update_subscriptions_button has been deprecated.', DEBUG_DEVELOPER);
+    debugging('The method forum_update_subscriptions_button() has been deprecated as it is no longer used.' .
+            'The \'Manage subscribers\' button has been replaced with tertiary navigation.', DEBUG_DEVELOPER);
 
     if (!empty($USER->subscriptionsediting)) {
         $string = get_string('managesubscriptionsoff', 'forum');

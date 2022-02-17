@@ -29,13 +29,14 @@ require_once("lib.php");
 $id    = required_param('id',PARAM_INT);           // forum
 $group = optional_param('group',0,PARAM_INT);      // change of group
 $edit  = optional_param('edit',-1,PARAM_BOOL);     // Turn editing on and off
-$notificationstr  = optional_param('notification', null, PARAM_ALPHA);    // The notification string for subscription.
 
 $url = new moodle_url('/mod/forum/subscribers.php', array('id'=>$id));
 if ($group !== 0) {
     $url->param('group', $group);
 }
-if ($edit !== 0) {
+
+$edit = ($edit === -1) ? 0 : $edit;
+if ($edit === 1) {
     $url->param('edit', 'on');
 } else {
     $url->param('edit', 'off');
@@ -118,13 +119,9 @@ if (!$PAGE->has_secondary_navigation()) {
 echo $forumoutput->subscription_actionbar($actionbar);
 
 if ($edit === 0) {
-    echo $OUTPUT->heading(get_string('subscribers', 'forum'), 3);
+    echo $OUTPUT->heading(get_string('subscribers', 'forum'), 2);
 } else {
-    echo $OUTPUT->heading(get_string('managesubscriptionson', 'forum'), 3);
-}
-// The notification should be added under the tertiary nav, when passed via redirect, its shown above the tertiary nav.
-if ($notificationstr) {
-    echo $OUTPUT->notification(get_string($notificationstr, 'forum'), \core\output\notification::NOTIFY_SUCCESS);
+    echo $OUTPUT->heading(get_string('managesubscriptionson', 'forum'), 2);
 }
 
 if ($edit === 0) {
@@ -134,7 +131,9 @@ if ($edit === 0) {
     }
     echo $forumoutput->subscriber_overview($subscribers, $forum, $course);
 } else {
-    echo $forumoutput->subscriber_selection_form($existingselector, $subscriberselector);
+    if (!\mod_forum\subscriptions::is_forcesubscribed($forum)) {
+        echo $forumoutput->subscriber_selection_form($existingselector, $subscriberselector);
+    }
 }
 
 echo $OUTPUT->footer();

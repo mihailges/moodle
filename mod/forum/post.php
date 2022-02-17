@@ -1081,16 +1081,11 @@ if (!empty($discussion->id)) {
     $PAGE->navbar->add($titlesubject, $urlfactory->get_discussion_view_url_from_discussion($discussionentity));
 }
 
-if ($post->parent) {
-    $PAGE->navbar->add(get_string('addreply', 'forum'));
-}
-
 if ($edit) {
     $PAGE->navbar->add(get_string('editdiscussiontopic', 'forum'), $PAGE->url);
-}
-
-// If not reply or edit or delete, then add new discussion can be added to the forum.
-if (!$reply && !$edit && !$delete) {
+} else if ($reply) {
+    $PAGE->navbar->add(get_string('addreply', 'forum'));
+} else {
     $PAGE->navbar->add(get_string('addanewdiscussion', 'forum'), $PAGE->url);
 }
 

@@ -165,7 +165,14 @@ switch ($context->contextlevel) {
         $showroles = 1;
         break;
     case CONTEXT_COURSECAT:
-        $PAGE->set_heading($SITE->fullname);
+        $PAGE->set_primary_active_tab('home');
+        $categoryid = $context->instanceid;
+        $coursecategory = core_course_category::get($categoryid, MUST_EXIST, true);
+        $PAGE->set_heading($coursecategory->get_formatted_name());
+        // Set the category node active in the navigation block.
+        $coursesnode = $PAGE->navigation->find('courses', navigation_node::COURSE_OTHER);
+        $categorynode = $coursesnode->find($categoryid, navigation_node::TYPE_CATEGORY);
+        $categorynode->make_active();
         break;
     case CONTEXT_COURSE:
         if ($isfrontpage) {

@@ -71,7 +71,8 @@ $requestform->set_data($data);
 
 $strtitle = get_string('courserequest');
 $PAGE->set_title($strtitle);
-$PAGE->set_heading($strtitle);
+$coursecategory = core_course_category::get($categoryid, MUST_EXIST, true);
+$PAGE->set_heading($coursecategory->get_formatted_name());
 
 // Standard form processing if statement.
 if ($requestform->is_cancelled()){
@@ -83,6 +84,12 @@ if ($requestform->is_cancelled()){
     // And redirect back to the course listing.
     notice(get_string('courserequestsuccess'), $returnurl);
 }
+
+$categoryurl = new moodle_url('/course/index.php');
+if ($categoryid) {
+    $categoryurl->param('categoryid', $categoryid);
+}
+navigation_node::override_active_url($categoryurl);
 
 $PAGE->navbar->add($strtitle);
 echo $OUTPUT->header();

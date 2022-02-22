@@ -38,6 +38,9 @@ if ($id) {
     $coursecat = core_course_category::get($id, MUST_EXIST, true);
     $category = $coursecat->get_db_record();
     $context = context_coursecat::instance($id);
+    navigation_node::override_active_url(new moodle_url('/course/index.php', ['categoryid' => $category->id]));
+    $PAGE->navbar->add(get_string('settings'));
+    $PAGE->set_secondary_active_tab('edit');
 
     $url->param('id', $id);
     $strtitle = new lang_string('editcategorysettings');
@@ -49,20 +52,34 @@ if ($id) {
     $parent = required_param('parent', PARAM_INT);
     $url->param('parent', $parent);
     if ($parent) {
-        $DB->record_exists('course_categories', array('id' => $parent), '*', MUST_EXIST);
+        $parentcategory = $DB->get_record('course_categories', array('id' => $parent), '*', MUST_EXIST);
         $context = context_coursecat::instance($parent);
+        $strtitle = get_string('addsubcategory');
+        $fullname = format_string($parentcategory->name, true, ['context' => $context->id]);
+        $title = "$fullname: $strtitle";
     } else {
         $context = context_system::instance();
+        $strtitle = get_string('addnewcategory');
+        $fullname = $SITE->fullname;
+        $title = "$SITE->shortname: $strtitle";
     }
-    navigation_node::override_active_url(new moodle_url('/course/editcategory.php', array('parent' => $parent)));
+
+    $managementurl = new moodle_url('/course/management.php');
+    // These are the caps required in order to see the management interface.
+    $managementcaps = array('moodle/category:manage', 'moodle/course:create');
+    if (!has_any_capability($managementcaps, context_system::instance())) {
+        // If the user doesn't have either manage caps then they can only manage within the given category.
+        $managementurl->param('categoryid', $parent);
+    }
+
+    navigation_node::override_active_url(new moodle_url('/course/index.php', ['categoryid' => $parent]));
+    $PAGE->navbar->add(get_string('coursemgmt', 'admin'), $managementurl);
+    $PAGE->navbar->add($strtitle);
 
     $category = new stdClass();
     $category->id = 0;
     $category->parent = $parent;
-    $strtitle = new lang_string("addnewcategory");
     $itemid = null; // Set this explicitly, so files for parent category should not get loaded in draft area.
-    $title = "$SITE->shortname: ".get_string('addnewcategory');
-    $fullname = $SITE->fullname;
 }
 
 require_capability('moodle/category:manage', $context);

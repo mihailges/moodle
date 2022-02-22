@@ -48,8 +48,28 @@ if ($filearea == 'automated' && !can_download_from_backup_filearea($filearea, $c
 
 $PAGE->set_url($url);
 $PAGE->set_context($context);
-$PAGE->set_title(get_string('managefiles', 'backup'));
-$PAGE->set_heading(get_string('managefiles', 'backup'));
+
+if ($context->contextlevel == CONTEXT_COURSECAT) {
+    $categoryid = $context->instanceid;
+    $coursecategory = core_course_category::get($categoryid, MUST_EXIST, true);
+    $heading = $coursecategory->get_formatted_name();
+
+    // Set the category node active in the navigation block.
+    $coursesnode = $PAGE->navigation->find('courses', navigation_node::COURSE_OTHER);
+    $categorynode = $coursesnode->find($categoryid, navigation_node::TYPE_CATEGORY);
+    $categorynode->make_active();
+    // Set the restore course node active in the settings navigation block.
+    $restorecoursenode = $PAGE->settingsnav->find('restorecourse', navigation_node::TYPE_SETTING);
+    $restorecoursenode->make_active();
+}
+
+$title = get_string('managefiles', 'backup');
+
+$PAGE->set_secondary_active_tab('restorecourse');
+$PAGE->navbar->add($title);
+
+$PAGE->set_title($title);
+$PAGE->set_heading($heading);
 $PAGE->set_pagelayout('admin');
 $browser = get_file_browser();
 
@@ -71,6 +91,7 @@ if ($data) {
 echo $OUTPUT->header();
 
 echo $OUTPUT->container_start();
+echo $OUTPUT->heading($title);
 $form->display();
 echo $OUTPUT->container_end();
 

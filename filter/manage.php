@@ -57,7 +57,13 @@ $isfrontpage = ($context->contextlevel == CONTEXT_COURSE && $context->instanceid
 $contextname = $context->get_context_name();
 
 if ($context->contextlevel == CONTEXT_COURSECAT) {
-    $heading = $SITE->fullname;
+    $categoryid = $context->instanceid;
+    $coursecategory = core_course_category::get($categoryid, MUST_EXIST, true);
+    $heading = $coursecategory->get_formatted_name();
+    // Set the category node active in the navigation block.
+    $coursesnode = $PAGE->navigation->find('courses', navigation_node::COURSE_OTHER);
+    $categorynode = $coursesnode->find($categoryid, navigation_node::TYPE_CATEGORY);
+    $categorynode->make_active();
 } else if ($context->contextlevel == CONTEXT_COURSE) {
     $heading = $course->fullname;
 } else if ($context->contextlevel == CONTEXT_MODULE) {

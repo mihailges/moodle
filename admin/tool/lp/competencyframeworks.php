@@ -39,14 +39,31 @@ if (!\core_competency\competency_framework::can_read_context($context)) {
 }
 
 $title = get_string('competencies', 'core_competency');
+$heading = $title;
 $pagetitle = get_string('competencyframeworks', 'tool_lp');
 
 // Set up the page.
 $PAGE->set_context($context);
 $PAGE->set_pagelayout('admin');
 $PAGE->set_url($url);
+
+if ($context->contextlevel == CONTEXT_COURSECAT) {
+    $PAGE->set_primary_active_tab('home');
+    $categoryid = $context->instanceid;
+    $coursecategory = core_course_category::get($categoryid, MUST_EXIST, true);
+    $heading = $coursecategory->get_formatted_name();
+
+    // Set the category node active in the navigation block.
+    $coursesnode = $PAGE->navigation->find('courses', navigation_node::COURSE_OTHER);
+    $categorynode = $coursesnode->find($categoryid, navigation_node::TYPE_CATEGORY);
+    $categorynode->make_active();
+    // Set the competency frameworks node active in the settings navigation block.
+    $competencyframeworksnode = $PAGE->settingsnav->find('competencyframeworks', navigation_node::TYPE_SETTING);
+    $competencyframeworksnode->make_active();
+}
+
 $PAGE->set_title($title);
-$PAGE->set_heading($title);
+$PAGE->set_heading($heading);
 $output = $PAGE->get_renderer('tool_lp');
 echo $output->header();
 echo $output->heading($pagetitle, 2);

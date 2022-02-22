@@ -45,15 +45,29 @@ require_capability('moodle/cohort:manage', $context);
 $PAGE->set_context($context);
 $baseurl = new moodle_url('/cohort/upload.php', array('contextid' => $context->id));
 $PAGE->set_url($baseurl);
-$PAGE->set_heading($COURSE->fullname);
-$PAGE->set_pagelayout('admin');
+$heading = $COURSE->fullname;
 
 if ($context->contextlevel == CONTEXT_COURSECAT) {
-    $PAGE->set_category_by_id($context->instanceid);
-    navigation_node::override_active_url(new moodle_url('/cohort/index.php', array('contextid' => $context->id)));
+    $categoryid = $context->instanceid;
+    $PAGE->set_category_by_id($categoryid);
+    // Set the category node active in the navigation block.
+    $coursesnode = $PAGE->navigation->find('courses', navigation_node::COURSE_OTHER);
+    $categorynode = $coursesnode->find($categoryid, navigation_node::TYPE_CATEGORY);
+    $categorynode->make_active();
+    // Set the cohorts node active in the settings navigation block.
+    $cohortsnode = $PAGE->settingsnav->find('cohort', navigation_node::TYPE_SETTING);
+    $cohortsnode->make_active();
+
+    $PAGE->set_primary_active_tab('home');
+    $PAGE->set_secondary_active_tab('cohort');
+    $coursecategory = core_course_category::get($categoryid, MUST_EXIST, true);
+    $heading = $coursecategory->get_formatted_name();
 } else {
     navigation_node::override_active_url(new moodle_url('/cohort/index.php', array()));
 }
+
+$PAGE->set_heading($heading);
+$PAGE->set_pagelayout('admin');
 
 $uploadform = new cohort_upload_form(null, array('contextid' => $context->id));
 

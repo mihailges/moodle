@@ -133,6 +133,7 @@ class page_helper {
 
         $PAGE->navigation->override_active_url($templatesurl);
         $PAGE->set_context($pagecontext);
+        $PAGE->set_url($url);
 
         if (!empty($template)) {
             $title = format_string($template->get('shortname'), true, array('context' => $context));
@@ -143,13 +144,22 @@ class page_helper {
         if ($pagecontext->contextlevel == CONTEXT_SYSTEM) {
             $heading = $SITE->fullname;
         } else if ($pagecontext->contextlevel == CONTEXT_COURSECAT) {
-            $heading = $pagecontext->get_context_name();
+            $categoryid = $context->instanceid;
+            $coursecategory = \core_course_category::get($categoryid, MUST_EXIST, true);
+            $heading = $coursecategory->get_formatted_name();
+
+            // Set the category node active in the navigation block.
+            $coursesnode = $PAGE->navigation->find('courses', \navigation_node::COURSE_OTHER);
+            $categorynode = $coursesnode->find($categoryid, \navigation_node::TYPE_CATEGORY);
+            $categorynode->make_active();
+            // Set the learning plan templates node active in the settings navigation block.
+            $learningplannode = $PAGE->settingsnav->find('learningplantemplates', \navigation_node::TYPE_SETTING);
+            $learningplannode->make_active();
         } else {
             throw new coding_exception('Unexpected context!');
         }
 
         $PAGE->set_pagelayout('admin');
-        $PAGE->set_url($url);
         $PAGE->set_title($title);
         $PAGE->set_heading($heading);
 
@@ -343,8 +353,29 @@ class page_helper {
         }
         $frameworksurl = new moodle_url('/admin/tool/lp/competencyframeworks.php', array('pagecontextid' => $pagecontextid));
 
-        $PAGE->navigation->override_active_url($frameworksurl);
+        $context = context::instance_by_id($pagecontextid);
+        $PAGE->set_context($context);
+        $PAGE->set_pagelayout('admin');
+        $PAGE->set_url($url);
+
         $title = get_string('competencies', 'core_competency');
+        $heading = $title;
+
+        if ($context->contextlevel == CONTEXT_COURSECAT) {
+            $categoryid = $context->instanceid;
+            $coursecategory = \core_course_category::get($categoryid, MUST_EXIST, true);
+            $heading = $coursecategory->get_formatted_name();
+
+            // Set the category node active in the navigation block.
+            $coursesnode = $PAGE->navigation->find('courses', \navigation_node::COURSE_OTHER);
+            $categorynode = $coursesnode->find($categoryid, \navigation_node::TYPE_CATEGORY);
+            $categorynode->make_active();
+            // Set the learning plan templates node active in the settings navigation block.
+            $learningplannode = $PAGE->settingsnav->find('competencyframeworks', \navigation_node::TYPE_SETTING);
+            $learningplannode->make_active();
+        }
+
+        $PAGE->navigation->override_active_url($frameworksurl);
         if (empty($id)) {
             $pagetitle = get_string('competencyframeworks', 'tool_lp');
             $pagesubtitle = get_string('addnewcompetencyframework', 'tool_lp');
@@ -367,11 +398,8 @@ class page_helper {
             $PAGE->navbar->add($pagesubtitle, $url);
         }
 
-        $PAGE->set_context(context::instance_by_id($pagecontextid));
-        $PAGE->set_pagelayout('admin');
-        $PAGE->set_url($url);
         $PAGE->set_title($title);
-        $PAGE->set_heading($title);
+        $PAGE->set_heading($heading);
         return array($pagetitle, $pagesubtitle, $url, $frameworksurl);
     }
 

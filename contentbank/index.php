@@ -51,8 +51,19 @@ if ($contextid == \context_system::instance()->id) {
 } else {
     $PAGE->set_context($context);
 }
+
+if ($context->contextlevel == CONTEXT_COURSECAT) {
+    $coursecategory = core_course_category::get($context->instanceid, MUST_EXIST, true);
+    $heading = $coursecategory->get_formatted_name();
+} else if ($context->contextlevel == CONTEXT_COURSE) {
+    $course = get_course($context->instanceid);
+    $heading = $course->fullname;
+} else {
+    $heading = $SITE->fullname;
+}
+
 $PAGE->set_title($title);
-$PAGE->set_heading($title);
+$PAGE->set_heading($heading);
 $PAGE->add_body_class('limitedwidth');
 $PAGE->set_pagetype('contentbank');
 $PAGE->set_secondary_active_tab('contentbank');
@@ -110,6 +121,7 @@ if (has_capability('moodle/contentbank:upload', $context)) {
 }
 
 echo $OUTPUT->header();
+echo $OUTPUT->heading(get_string('contentbank', 'core_contentbank'));
 echo $OUTPUT->box_start('generalbox');
 
 // If needed, display notifications.

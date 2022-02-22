@@ -48,10 +48,12 @@ if (!empty($id)) {
     $heading = $content->get_name();
     // The content type of the content overwrites the pluginname param value.
     $contenttypename = $content->get_content_type();
+    $breadcrumbtitle = get_string('edit');
 } else {
     $contenttypename = "contenttype_$pluginname";
     $heading = get_string('addinganew', 'moodle', get_string('description', $contenttypename));
     $content = null;
+    $breadcrumbtitle = get_string('add');
 }
 
 // Check plugin is enabled.
@@ -85,13 +87,26 @@ if ($PAGE->course) {
     require_login($PAGE->course->id);
 }
 
+if ($context->contextlevel == CONTEXT_COURSECAT) {
+    $coursecategory = core_course_category::get($context->instanceid, MUST_EXIST, true);
+    $headeretitle = $coursecategory->get_formatted_name();
+} else if ($context->contextlevel == CONTEXT_COURSE) {
+    $course = get_course($context->instanceid);
+    $headeretitle = $course->fullname;
+} else {
+    $headeretitle = $SITE->fullname;
+}
+
 $PAGE->set_url(new \moodle_url('/contentbank/edit.php', $values));
 $PAGE->set_context($context);
-$PAGE->navbar->add(get_string('edit'));
+if ($content) {
+    $PAGE->navbar->add($content->get_name(), new \moodle_url('/contentbank/view.php', ['id' => $id]));
+}
+$PAGE->navbar->add($breadcrumbtitle);
 $PAGE->set_title($title);
 $PAGE->set_pagelayout('incourse');
-
-$PAGE->set_heading($heading);
+$PAGE->set_secondary_active_tab('contentbank');
+$PAGE->set_heading($headeretitle);
 
 // Instantiate the content type form.
 $editorclass = "$contenttypename\\form\\editor";
@@ -114,5 +129,6 @@ if ($editorform->is_cancelled()) {
 }
 
 echo $OUTPUT->header();
+echo $OUTPUT->heading($heading);
 $editorform->display();
 echo $OUTPUT->footer();

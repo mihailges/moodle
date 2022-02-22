@@ -66,14 +66,25 @@ if ($content->get_visibility() == content::VISIBILITY_UNLISTED) {
     $pageheading = get_string('visibilitytitleunlisted', 'contentbank', $record->name);
 }
 
+if ($context->contextlevel == CONTEXT_COURSECAT) {
+    $coursecategory = core_course_category::get($context->instanceid, MUST_EXIST, true);
+    $headeretitle = $coursecategory->get_formatted_name();
+} else if ($context->contextlevel == CONTEXT_COURSE) {
+    $course = get_course($context->instanceid);
+    $headeretitle = $course->fullname;
+} else {
+    $headeretitle = $SITE->fullname;
+}
+
 $PAGE->set_url(new \moodle_url('/contentbank/view.php', ['id' => $id]));
 $PAGE->set_context($context);
 $PAGE->navbar->add($record->name);
-$PAGE->set_heading($pageheading);
+$PAGE->set_heading($headeretitle);
 $title .= ": ".$record->name;
 $PAGE->set_title($title);
 $PAGE->set_pagetype('contentbank');
 $PAGE->set_pagelayout('incourse');
+$PAGE->set_secondary_active_tab('contentbank');
 
 // Create the cog menu with all the secondary actions, such as delete, rename...
 $actionmenu = new action_menu();
@@ -172,6 +183,7 @@ $PAGE->add_header_action(html_writer::div(
 ));
 
 echo $OUTPUT->header();
+echo $OUTPUT->heading($pageheading);
 
 // If needed, display notifications.
 if ($errormsg !== '' && get_string_manager()->string_exists($errormsg, 'core_contentbank')) {

@@ -49,6 +49,13 @@ class boostnavbar implements \renderable {
     protected function prepare_nodes_for_boost(): void {
         global $PAGE;
 
+        if ($this->page->context->contextlevel == CONTEXT_COURSECAT) {
+            // Remove the 'Permissions' navbar node in the Check permissions page.
+            if ($this->page->pagetype === 'admin-roles-check') {
+                $this->remove('permissions');
+            }
+        }
+
         // Don't show the navigation if we are in the course context.
         if ($this->page->context->contextlevel == CONTEXT_COURSE) {
             $this->clear_items();

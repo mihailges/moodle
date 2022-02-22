@@ -48,13 +48,29 @@ if (!empty($filecontextid)) {
 
 $url = new moodle_url('/backup/restorefile.php', array('contextid'=>$contextid));
 
+$PAGE->set_url($url);
+$PAGE->set_context($context);
+
 switch ($context->contextlevel) {
+    case CONTEXT_COURSECAT:
+        $PAGE->set_primary_active_tab('home');
+        $categoryid = $context->instanceid;
+        $coursecategory = core_course_category::get($categoryid, MUST_EXIST, true);
+        $heading = $coursecategory->get_formatted_name();
+
+        // Set the category node active in the navigation block.
+        $coursesnode = $PAGE->navigation->find('courses', navigation_node::COURSE_OTHER);
+        $categorynode = $coursesnode->find($categoryid, navigation_node::TYPE_CATEGORY);
+        $categorynode->make_active();
+        break;
     case CONTEXT_MODULE:
         $heading = get_string('restoreactivity', 'backup');
         break;
     case CONTEXT_COURSE:
+        $course = get_course($context->instanceid);
+        $heading = $course->fullname;
     default:
-        $heading = get_string('restorecourse', 'backup');
+        $heading = $SITE->fullname;
 }
 
 
@@ -109,8 +125,6 @@ if ($action == 'choosebackupfile') {
     die;
 }
 
-$PAGE->set_url($url);
-$PAGE->set_context($context);
 $PAGE->set_title(get_string('course') . ': ' . $coursefullname);
 $PAGE->set_heading($heading);
 $PAGE->set_pagelayout('admin');

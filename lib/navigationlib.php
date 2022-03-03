@@ -3963,6 +3963,7 @@ class breadcrumb_navigation_node extends navigation_node {
  * Subclass of navigation_node allowing different rendering for the flat navigation
  * in particular allowing dividers and indents.
  *
+ * @deprecated since Moodle 4.0 - do not use any more. Leverage secondary/tertiary navigation concepts
  * @package   core
  * @category  navigation
  * @copyright 2016 Damyon Wiese
@@ -4094,6 +4095,7 @@ class flat_navigation_node extends navigation_node {
  * Class used to generate a collection of navigation nodes most closely related
  * to the current page.
  *
+ * @deprecated since Moodle 4.0 - do not use any more. Leverage secondary/tertiary navigation concepts
  * @package core
  * @copyright 2016 Damyon Wiese
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -4186,6 +4188,24 @@ class flat_navigation extends navigation_node_collection {
             $flat->key = 'sitesettings';
             $flat->icon = new pix_icon('t/preferences', '');
             $this->add($flat);
+        }
+
+        // Add-a-block in editing mode.
+        if (isset($this->page->theme->addblockposition) &&
+                $this->page->theme->addblockposition == BLOCK_ADDBLOCK_POSITION_FLATNAV &&
+                $PAGE->user_is_editing() && $PAGE->user_can_edit_blocks()) {
+            $url = new moodle_url($PAGE->url, ['bui_addblock' => '', 'sesskey' => sesskey()]);
+            $addablock = navigation_node::create(get_string('addblock'), $url);
+            $flat = new flat_navigation_node($addablock, 0);
+            $flat->set_showdivider(true, get_string('blocksaddedit'));
+            $flat->key = 'addblock';
+            $flat->icon = new pix_icon('i/addblock', '');
+            $this->add($flat);
+
+            $addblockurl = "?{$url->get_query_string(false)}";
+
+            $PAGE->requires->js_call_amd('core/addblockmodal', 'init',
+                [$PAGE->pagetype, $PAGE->pagelayout, $addblockurl]);
         }
     }
 

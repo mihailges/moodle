@@ -3994,6 +3994,7 @@ class flat_navigation_node extends navigation_node {
      * @param mixed $navnode A navigation_node or an array
      */
     public function __construct($navnode, $indent) {
+        debugging('Deprecated flat_navigation_node', DEBUG_DEVELOPER);
         if (is_array($navnode)) {
             parent::__construct($navnode);
         } else if ($navnode instanceof navigation_node) {
@@ -4123,6 +4124,7 @@ class flat_navigation extends navigation_node_collection {
         if (during_initial_install()) {
             return false;
         }
+        debugging('Deprecated flat_navigation', DEBUG_DEVELOPER);
         $this->page = $page;
     }
 

@@ -326,6 +326,7 @@ class events_test extends \advanced_testcase {
         // Trigger and capture the event.
         $sink = $this->redirectEvents();
         $assign->view();
+        $this->assertDebuggingCalledCount(6);
         $events = $sink->get_events();
         $this->assertCount(1, $events);
         $event = reset($events);
@@ -725,6 +726,7 @@ class events_test extends \advanced_testcase {
         // Trigger and capture the event.
         $sink = $this->redirectEvents();
         $assign->view('viewpluginassignsubmission');
+        $this->assertDebuggingCalledCount(6);
         $events = $sink->get_events();
         $this->assertCount(1, $events);
         $event = reset($events);
@@ -780,6 +782,7 @@ class events_test extends \advanced_testcase {
         // Trigger and capture the event.
         $sink = $this->redirectEvents();
         $assign->view('viewpluginassignfeedback');
+        $this->assertDebuggingCalledCount(6);
         $events = $sink->get_events();
         $this->assertCount(1, $events);
         $event = reset($events);
@@ -826,6 +829,7 @@ class events_test extends \advanced_testcase {
         // Trigger and capture the event.
         $sink = $this->redirectEvents();
         $assign->view('grade');
+        $this->assertDebuggingCalledCount(6);
         $events = $sink->get_events();
         $this->assertCount(1, $events);
         $event = reset($events);
@@ -872,6 +876,7 @@ class events_test extends \advanced_testcase {
         // Trigger and capture the event.
         $sink = $this->redirectEvents();
         $assign->view('grading');
+        $this->assertDebuggingCalledCount(6);
         $events = $sink->get_events();
         $this->assertCount(1, $events);
         $event = reset($events);
@@ -912,6 +917,7 @@ class events_test extends \advanced_testcase {
         // Trigger and capture the event.
         $sink = $this->redirectEvents();
         $assign->view('editsubmission');
+        $this->assertDebuggingCalledCount(6);
         $events = $sink->get_events();
         $this->assertCount(1, $events);
         $event = reset($events);
@@ -952,6 +958,7 @@ class events_test extends \advanced_testcase {
         // Trigger and capture the event.
         $sink = $this->redirectEvents();
         $assign->view('submit');
+        $this->assertDebuggingCalledCount(6);
         $events = $sink->get_events();
         $this->assertCount(1, $events);
         $event = reset($events);
@@ -990,6 +997,7 @@ class events_test extends \advanced_testcase {
         // Trigger and capture the event.
         $sink = $this->redirectEvents();
         $assign->view('revealidentities');
+        $this->assertDebuggingCalledCount(6);
         $events = $sink->get_events();
         $this->assertCount(1, $events);
         $event = reset($events);
@@ -1098,6 +1106,7 @@ class events_test extends \advanced_testcase {
         // Trigger and capture the event.
         $sink = $this->redirectEvents();
         $assign->testable_view_batch_set_workflow_state($student->id);
+        $this->assertDebuggingCalledCount(6);
         $events = $sink->get_events();
         $event = reset($events);
 
@@ -1129,6 +1138,7 @@ class events_test extends \advanced_testcase {
         // Trigger and capture the event.
         $sink = $this->redirectEvents();
         $assign->testable_view_batch_markingallocation($student->id);
+        $this->assertDebuggingCalledCount(6);
         $events = $sink->get_events();
         $event = reset($events);
 

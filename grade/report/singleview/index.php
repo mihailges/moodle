@@ -107,17 +107,6 @@ $pageparams = array(
 
 $PAGE->set_pagelayout('report');
 
-$actionbar = new \core_grades\output\general_action_bar($context,
-    new moodle_url('/grade/report/singleview/index.php', ['id' => $courseid]), 'report', 'singleview');
-
-if ($itemtype == 'user') {
-    print_grade_page_head($course->id, 'report', 'singleview', $reportname, false, false,
-        true, null, null, $report->screen->item, $actionbar);
-} else {
-    print_grade_page_head($course->id, 'report', 'singleview', $reportname, false, false,
-        true, null, null, null, $actionbar);
-}
-
 if ($data = data_submitted()) {
     // Must have a sesskey for all actions.
     require_sesskey();
@@ -141,6 +130,17 @@ if ($data = data_submitted()) {
 
 // Make sure we have proper final grades.
 grade_regrade_final_grades_if_required($course);
+
+$actionbar = new \core_grades\output\general_action_bar($context,
+    new moodle_url('/grade/report/singleview/index.php', ['id' => $courseid]), 'report', 'singleview');
+
+if ($itemtype == 'user') {
+    print_grade_page_head($course->id, 'report', 'singleview', $reportname, false, false,
+        true, null, null, $report->screen->item, $actionbar);
+} else {
+    print_grade_page_head($course->id, 'report', 'singleview', $reportname, false, false,
+        true, null, null, null, $actionbar);
+}
 
 $graderrightnav = $graderleftnav = null;
 

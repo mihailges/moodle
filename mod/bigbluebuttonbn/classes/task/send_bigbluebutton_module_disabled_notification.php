@@ -23,8 +23,11 @@ use core\message\message;
 use mod_bigbluebuttonbn\local\config;
 
 /**
- * Ad-hoc task to send a notification to admin informing that the BigBlueButton activity module has been disabled
- * and they are required to confirm their acceptance of the data processing agreement prior to re-enabling it.
+ * Ad-hoc task to send a notification related to the disabling of the BigBlueButton activity module.
+ *
+ * The ad-hoc tasks sends a notification to the administrator informing that the BigBlueButton activity module has
+ * been disabled and they are required to confirm their acceptance of the data processing agreement prior to
+ * re-enabling it.
  *
  * @package   mod_bigbluebuttonbn
  * @copyright 2022 Mihail Geshoski <mihail@moodle.com>

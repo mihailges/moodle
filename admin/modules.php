@@ -51,7 +51,7 @@
         if ($canenablemodule) {
             $class = \core_plugin_manager::resolve_plugininfo_class('mod');
             $class::enable_plugin($show, true);
-            admin_get_root(true, false);  // settings not required - only pages
+            admin_get_root(true, false);  // Settings not required - only pages.
             redirect(new moodle_url('/admin/modules.php'));
         }
     }

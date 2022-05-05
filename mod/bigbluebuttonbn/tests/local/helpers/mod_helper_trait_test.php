@@ -103,6 +103,7 @@ class mod_helper_trait_test extends \advanced_testcase {
      */
     public function test_process_post_save() {
         $this->resetAfterTest();
+        \course_helper::reset_static_caches();
 
         $generator = $this->getDataGenerator();
         list($bbactivitycontext, $bbactivitycm, $bbactivity) =
@@ -133,6 +134,7 @@ class mod_helper_trait_test extends \advanced_testcase {
      */
     public function test_process_post_save_with_add() {
         $this->resetAfterTest();
+        \course_helper::reset_static_caches();
 
         $generator = $this->getDataGenerator();
         list($bbactivitycontext, $bbactivitycm, $bbactivity) =
@@ -164,6 +166,7 @@ class mod_helper_trait_test extends \advanced_testcase {
      */
     public function test_process_post_save_twice_with_completion() {
         $this->resetAfterTest();
+        \course_helper::reset_static_caches();
 
         $generator = $this->getDataGenerator();
         list($bbactivitycontext, $bbactivitycm, $bbactivity) =

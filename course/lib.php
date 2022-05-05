@@ -4988,3 +4988,58 @@ function course_output_fragment_new_base_form($args) {
 
     return $o;
 }
+
+/**
+ * Course helper class.
+ *
+ * This class provides helpful functions that work irrespective of any current state.
+ *
+ * @package   core_course
+ * @copyright 2022 Mihail Geshoski <mihail@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class course_helper {
+
+    /**
+     * Cached localised human-readable names of all used modules.
+     *
+     * {@see get_module_types_names}
+     * @var array|null
+     */
+    protected static $modnames = null;
+
+    /**
+     * Returns an array of localised human-readable names of all used modules.
+     *
+     * Array where the key is the module name (component name without 'mod_') and the value is a lang_string object
+     * with a human-readable string.
+     *
+     * @param bool $plural If true, the function returns the plural forms of the names.
+     * @return array Localised human-readable names of all used modules.
+     */
+    public static function get_module_types_names(bool $plural = false): array {
+        global $DB, $CFG;
+
+        if (self::$modnames === null) {
+            self::$modnames = array(0 => array(), 1 => array());
+            if ($allmods = $DB->get_records("modules")) {
+                foreach ($allmods as $mod) {
+                    if (file_exists("$CFG->dirroot/mod/$mod->name/lib.php") && $mod->visible) {
+                        self::$modnames[0][$mod->name] = get_string("modulename", "$mod->name", null, true);
+                        self::$modnames[1][$mod->name] = get_string("modulenameplural", "$mod->name", null, true);
+                    }
+                }
+            }
+        }
+        return self::$modnames[(int)$plural];
+    }
+
+    /**
+     * Reset static caches.
+     *
+     * @return void
+     */
+    public static function reset_static_caches(): void {
+        self::$modnames = null;
+    }
+}

@@ -89,7 +89,7 @@ class content_notification_task extends adhoc_task {
             }
 
             // Get module names in the user's language.
-            $modnames = get_module_types_names();
+            $modnames = \course_helper::get_module_types_names();
             $a = [
                 'coursename' => get_course_display_name_for_list($course),
                 'courselink' => (new \moodle_url('/course/view.php', ['id' => $course->id]))->out(false),

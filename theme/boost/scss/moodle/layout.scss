@@ -189,8 +189,8 @@
 @include media-breakpoint-up(lg) {
     .drawer-left,
     .drawer-right {
-        top: $navbar-height;
-        height: calc(100vh - #{$navbar-height});
+        top: $navbar-height + 1px;
+        height: calc(100vh - #{$navbar-height + 1px});
     }
 
     #page.drawers {

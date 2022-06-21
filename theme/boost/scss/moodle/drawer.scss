@@ -221,7 +221,9 @@ $right-drawer-width: 320px;
 
 @include media-breakpoint-up(lg) {
     .drawer {
-        z-index: inherit;
+        &:not(:focus-within) {
+            z-index: inherit;
+        }
 
         &.not-initialized {
             display: block;

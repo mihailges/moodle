@@ -15021,10 +15021,10 @@ body.drawer-ease {
       bottom: 0; }
 
 @media (min-width: 992px) {
-  .drawer {
+  .drawer:not(:focus-within) {
     z-index: inherit; }
-    .drawer.not-initialized {
-      display: block; } }
+  .drawer.not-initialized {
+    display: block; } }
 
 .drawer-md,
 .drawer-sm {
@@ -20494,8 +20494,8 @@ span[data-flexitour="container"][x-placement="right"], span[data-flexitour="cont
 @media (min-width: 992px) {
   .drawer-left,
   .drawer-right {
-    top: 50px;
-    height: calc(100vh - 50px); }
+    top: 51px;
+    height: calc(100vh - 51px); }
   #page.drawers {
     position: relative;
     overflow-y: auto;

@@ -5040,6 +5040,16 @@ EOD;
         }
         return $addblockbutton;
     }
+
+    /**
+     * Renders a tertiary navigation selector element.
+     *
+     * @param \core\navigation\output\tertiary\navigation_selector $navselector Tertiary nav selector renderable object.
+     * @return string
+     */
+    public function render_tertiary_navigation_selector(\core\navigation\output\tertiary\navigation_selector $navselector) {
+        return $this->render_from_template('core/tertiary_navigation_selector', $navselector->export_for_template($this));
+    }
 }
 
 /**

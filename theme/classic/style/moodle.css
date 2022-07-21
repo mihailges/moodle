@@ -21673,6 +21673,38 @@ div.editor_atto_toolbar button .icon {
   .tertiary-navigation .navitem:not(:last-child) {
     margin-right: 20px; }
 
+.tertiary-navigation-selector .dropdown-toggle {
+  color: inherit;
+  text-decoration: none;
+  font-size: 1.4rem;
+  font-weight: bold; }
+
+.tertiary-navigation-selector .dropdown-menu .dropdown-header {
+  font-weight: normal;
+  font-size: inherit;
+  color: #6a737b;
+  padding: 0.5rem 1rem 0.25rem 1rem; }
+
+.tertiary-navigation-selector .dropdown-menu .dropdown-group {
+  margin: 0;
+  padding: 0;
+  list-style: none; }
+
+.tertiary-navigation-selector .dropdown-menu .dropdown-item {
+  padding: 0.25rem 2rem; }
+  .tertiary-navigation-selector .dropdown-menu .dropdown-item[aria-current="true"], .tertiary-navigation-selector .dropdown-menu .dropdown-item.active {
+    background-color: transparent;
+    color: #1d2125;
+    font-weight: bold; }
+    .tertiary-navigation-selector .dropdown-menu .dropdown-item[aria-current="true"]:focus-within, .tertiary-navigation-selector .dropdown-menu .dropdown-item[aria-current="true"]:hover, .tertiary-navigation-selector .dropdown-menu .dropdown-item.active:focus-within, .tertiary-navigation-selector .dropdown-menu .dropdown-item.active:hover {
+      background-color: #0f6cbf;
+      color: #fff; }
+      .tertiary-navigation-selector .dropdown-menu .dropdown-item[aria-current="true"]:focus-within a, .tertiary-navigation-selector .dropdown-menu .dropdown-item[aria-current="true"]:hover a, .tertiary-navigation-selector .dropdown-menu .dropdown-item.active:focus-within a, .tertiary-navigation-selector .dropdown-menu .dropdown-item.active:hover a {
+        color: #fff; }
+    .tertiary-navigation-selector .dropdown-menu .dropdown-item[aria-current="true"]:before, .tertiary-navigation-selector .dropdown-menu .dropdown-item.active:before {
+      content: "";
+      padding-left: 0.6rem; }
+
 @media print {
   .tertiary-navigation {
     display: none; } }

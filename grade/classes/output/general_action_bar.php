@@ -16,6 +16,9 @@
 
 namespace core_grades\output;
 
+use core\navigation\output\tertiary\navigation_selector;
+use core\navigation\output\tertiary\navigation_selector_action_item;
+use core\navigation\output\tertiary\navigation_selector_group_item;
 use moodle_url;
 
 /**
@@ -65,14 +68,14 @@ class general_action_bar extends action_bar {
      * @return array
      */
     public function export_for_template(\renderer_base $output): array {
-        $urlselect = $this->get_action_selector();
+        $navigationselector = $this->get_action_selector();
 
-        if (is_null($urlselect)) {
+        if (is_null($navigationselector)) {
             return [];
         }
 
         return [
-            'generalnavselector' => $urlselect->export_for_template($output),
+            'generalnavselector' => $navigationselector->export_for_template($output),
         ];
     }
 
@@ -86,20 +89,22 @@ class general_action_bar extends action_bar {
     }
 
     /**
-     * Returns the URL selector object.
+     * Returns the tertiary navigation selector object.
      *
-     * @return \url_select|null The URL select object.
+     * @return \navigation_selector|null The tertiary navigation selector object.
      */
-    private function get_action_selector(): ?\url_select {
+    private function get_action_selector(): ?navigation_selector {
         if ($this->context->contextlevel !== CONTEXT_COURSE) {
             return null;
         }
         $courseid = $this->context->instanceid;
         $plugininfo = grade_get_plugin_info($courseid, $this->activetype, $this->activeplugin);
-        $menu = [];
-        $viewgroup = [];
-        $setupgroup = [];
-        $moregroup = [];
+
+        $tertiarynavselector = new navigation_selector(get_string('gradebooktertiarynavigation', 'grades'));
+
+        $viewgroup = new navigation_selector_group_item(get_string('view'));
+        $setupgroup = new navigation_selector_group_item(get_string('setup', 'grades'));
+        $moregroup = new navigation_selector_group_item(get_string('moremenu'));
 
         foreach ($plugininfo as $plugintype => $plugins) {
             // Skip if the plugintype value is 'strings'. This particular item only returns an array of strings
@@ -114,19 +119,24 @@ class general_action_bar extends action_bar {
                 if (!empty($plugininfo[$this->activetype]->parent)) {
                     $string = $plugininfo[$this->activetype]->parent->string;
                 }
-                $menu[$plugins->link->out(false)] = $string;
+                $tertiarynavselector->add_item(new navigation_selector_action_item($string, $plugins->link,
+                    $this->activeurl == $plugins->link));
                 continue;
             }
 
             foreach ($plugins as $key => $plugin) {
-                // Depending on the plugin type, include the plugin to the appropriate item group for the URL selector
-                // element.
+                // Depending on the plugin type, include the plugin to the appropriate item group for the tertiary
+                // navigation selector.
                 switch ($plugintype) {
                     case 'report':
-                        $viewgroup[$plugin->link->out(false)] = $plugin->string;
+                        $reportitem = new navigation_selector_action_item($plugin->string, $plugin->link,
+                            $this->activeurl == $plugin->link);
+                        $viewgroup->add_action_item($reportitem);
                         break;
                     case 'settings':
-                        $setupgroup[$plugin->link->out(false)] = $plugin->string;
+                        $setupitem = new navigation_selector_action_item($plugin->string, $plugin->link,
+                            $this->activeurl == $plugin->link);
+                        $setupgroup->add_action_item($setupitem);
                         break;
                     case 'scale':
                         // We only need the link to the 'view scales' page, otherwise skip and continue to the next
@@ -134,7 +144,9 @@ class general_action_bar extends action_bar {
                         if ($key !== 'view') {
                             continue 2;
                         }
-                        $moregroup[$plugin->link->out(false)] = get_string('scales');
+                        $moreitem = new navigation_selector_action_item(get_string('scales'), $plugin->link,
+                            $this->activeurl == $plugin->link);
+                        $moregroup->add_action_item($moreitem);
                         break;
                     case 'outcome':
                         // We only need the link to the 'outcomes used in course' page, otherwise skip and continue to
@@ -142,7 +154,9 @@ class general_action_bar extends action_bar {
                         if ($key !== 'course') {
                             continue 2;
                         }
-                        $moregroup[$plugin->link->out(false)] = get_string('outcomes', 'grades');
+                        $moreitem = new navigation_selector_action_item(get_string('outcomes', 'grades'),
+                            $plugin->link, $this->activeurl == $plugin->link);
+                        $moregroup->add_action_item($moreitem);
                         break;
                     case 'letter':
                         // We only need the link to the 'view grade letters' page, otherwise skip and continue to the
@@ -150,42 +164,48 @@ class general_action_bar extends action_bar {
                         if ($key !== 'view') {
                             continue 2;
                         }
-                        $moregroup[$plugin->link->out(false)] = get_string('gradeletters', 'grades');
+                        $moreitem = new navigation_selector_action_item(get_string('gradeletters', 'grades'),
+                            $plugin->link, $this->activeurl == $plugin->link);
+                        $moregroup->add_action_item($moreitem);
                         break;
                     case 'import':
                         $link = new moodle_url('/grade/import/index.php', ['id' => $courseid]);
+                        $moreitem = new navigation_selector_action_item(get_string('import', 'grades'),
+                            $link, $this->activeurl == $link);
                         // If the link to the grade import options is already added to the group, skip and continue to
                         // the next plugin.
-                        if (array_key_exists($link->out(false), $moregroup)) {
+                        if (in_array($moreitem, $moregroup->get_action_items())) {
                             continue 2;
                         }
-                        $moregroup[$link->out(false)] = get_string('import', 'grades');
+                        $moregroup->add_action_item($moreitem);
                         break;
                     case 'export':
                         $link = new moodle_url('/grade/export/index.php', ['id' => $courseid]);
+                        $moreitem = new navigation_selector_action_item(get_string('export', 'grades'),
+                            $link, $this->activeurl == $link);
                         // If the link to the grade export options is already added to the group, skip and continue to
                         // the next plugin.
-                        if (array_key_exists($link->out(false), $moregroup)) {
+                        if (in_array($moreitem, $moregroup->get_action_items())) {
                             continue 2;
                         }
-                        $moregroup[$link->out(false)] = get_string('export', 'grades');
+                        $moregroup->add_action_item($moreitem);
                         break;
                 }
             }
         }
 
-        if (!empty($viewgroup)) {
-            $menu[][get_string('view')] = $viewgroup;
+        if (!empty($viewgroup->get_action_items())) {
+            $tertiarynavselector->add_item($viewgroup);
         }
 
-        if (!empty($setupgroup)) {
-            $menu[][get_string('setup', 'grades')] = $setupgroup;
+        if (!empty($setupgroup->get_action_items())) {
+            $tertiarynavselector->add_item($setupgroup);
         }
 
-        if (!empty($moregroup)) {
-            $menu[][get_string('moremenu')] = $moregroup;
+        if (!empty($moregroup->get_action_items())) {
+            $tertiarynavselector->add_item($moregroup);
         }
 
-        return new \url_select($menu, $this->activeurl->out(false), null, 'gradesactionselect');
+        return $tertiarynavselector;
     }
 }

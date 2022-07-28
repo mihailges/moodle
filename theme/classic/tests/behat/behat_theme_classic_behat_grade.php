@@ -52,6 +52,6 @@ class behat_theme_classic_behat_grade extends behat_grade {
                     get_string('pluginname', 'block_navigation'), 'block'));
         }
 
-        $this->select_in_gradebook_navigation_selector($gradepath, 'gradesactionselect');
+        $this->execute('behat_navigation::i_select_from_tertiary_navigation_selector', $gradepath);
     }
 }

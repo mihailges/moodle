@@ -23,25 +23,34 @@
     Example context (json):
     {
         "generalnavselector": {
-            "id": "url_select12345",
-            "action": "https://example.com/get",
-            "classes": "urlselect",
-            "formid": "gradesactionselect",
-            "sesskey": "sesskey",
-            "label": "",
-            "helpicon": false,
-            "showbutton": null,
-            "options": [{
-                "name": "View", "isgroup": true, "options":
-                [
-                    {"name": "Grader report", "isgroup": false, "value": "/grade/report/grader/index.php"}
-                ]},
-                {"name": "Setup", "isgroup": true, "options":
-                [
-                    {"name": "Gradebook setup", "isgroup": false, "value": "/grade/edit/tree/index.php"}
-                ]}],
-            "disabled": false,
-            "title": null
+            "title": "Tertiary navigation",
+            "activeitemtext": "Action item 1",
+            "items": [
+                {
+                    "name": "Action item 1",
+                    "action": "/example1.php",
+                    "active": true,
+                    "attributes": [
+                        {
+                            "name": "target",
+                            "value": "_blank"
+                        }
+                    ],
+                    "isgroup": false
+                },
+                {
+                    "name": "Group",
+                    "actionitems": [
+                        {
+                            "name": "Action item 2",
+                            "action": "/example2.php",
+                            "active": false,
+                            "attributes": []
+                        }
+                    ],
+                    "isgroup": true
+                }
+            ]
         },
         "manageoutcomesbutton": {
             "id": "single_button12345",
@@ -60,7 +69,7 @@
     <div class="row">
         {{#generalnavselector}}
             <div class="navitem">
-                {{>core/url_select}}
+                {{>core/tertiary_navigation_selector}}
             </div>
         {{/generalnavselector}}
         {{#manageoutcomesbutton}}

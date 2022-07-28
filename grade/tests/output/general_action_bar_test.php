@@ -71,10 +71,10 @@ class general_action_bar_test extends advanced_testcase {
 
         $generalnavselector = $generalactionbardata['generalnavselector'];
         // Assert the correct number of available option groups in the general navigation selector.
-        foreach ($generalnavselector->options as $option) {
-            if ($option['isgroup']) {
-                $groupname = $option['name'];
-                $groupoptions = $option['options'];
+        foreach ($generalnavselector['items'] as $item) {
+            if ($item['isgroup']) {
+                $groupname = $item['name'];
+                $groupoptions = $item['actionitems'];
                 // Assert that the group name exists.
                 $this->assertArrayHasKey($groupname, $expectedoptions);
                 // Assert that the actual number of group options matches the number of expected options.

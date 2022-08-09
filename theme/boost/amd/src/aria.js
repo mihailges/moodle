@@ -23,6 +23,7 @@
 
 import $ from 'jquery';
 import Pending from 'core/pending';
+import {dispatchEvent} from 'core/event_dispatcher';
 
 /**
  * Drop downs from bootstrap don't support keyboard accessibility by default.
@@ -314,6 +315,7 @@ const comboboxFix = () => {
         }
         option.setAttribute('aria-selected', 'true');
         combobox.textContent = option.textContent;
+        dispatchEvent('change', {selectedOption: option}, combobox);
     };
 };
 

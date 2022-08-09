@@ -30,7 +30,7 @@ use templatable;
  */
 class navigation_selector implements renderable, templatable {
 
-    /** @var string $title The title for the tertiary navigation selector. */
+    /** @var string|null $title The title for the tertiary navigation selector. */
     protected $title;
 
     /** @var array $items An array of navigation_selector_item objects. */
@@ -42,7 +42,7 @@ class navigation_selector implements renderable, templatable {
     /**
      * Constructor.
      *
-     * @param string $title The title for the tertiary navigation selector.
+     * @param string|null $title The title for the tertiary navigation selector.
      */
     public function __construct(?string $title = null) {
         $this->title = $title;

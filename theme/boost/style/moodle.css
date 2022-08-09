@@ -21733,11 +21733,8 @@ div.editor_atto_toolbar button .icon {
 .tertiary-navigation-selector .dropdown-menu .dropdown-header {
   font-weight: normal;
   font-size: inherit;
-  color: #8f959e;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  padding-top: 0.5rem;
-  padding-bottom: 0.25rem; }
+  color: #6a737b;
+  padding: 0.5rem 1rem 0.25rem 1rem; }
 
 .tertiary-navigation-selector .dropdown-menu .dropdown-group {
   margin: 0;

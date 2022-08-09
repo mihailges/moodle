@@ -38,8 +38,8 @@
         ]
     }
 }}
-<li>
-    <a role="menuitem" class="dropdown-item {{#isactive}}active{{/isactive}}" href="{{{url}}}{{{action}}}" {{#isactive}}aria-current="true"{{/isactive}} {{#attributes}}{{name}}="{{value}}" {{/attributes}} tabindex="-1">
+<li role="none">
+    <a role="menuitem" class="dropdown-item {{#isactive}}active{{/isactive}}" href="{{action}}" {{#isactive}}aria-current="true"{{/isactive}} {{#attributes}}{{name}}="{{value}}"{{/attributes}} tabindex="-1">
         {{name}}
     </a>
 </li>

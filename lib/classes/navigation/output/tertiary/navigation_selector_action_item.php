@@ -56,7 +56,6 @@ class navigation_selector_action_item extends navigation_selector_item {
      * Set whether the action item is active (selected) is not.
      *
      * @param bool $active Whether the action item is active or not.
-     * @return void
      */
     public function set_active(bool $active = false) {
         $this->active = $active;
@@ -95,7 +94,7 @@ class navigation_selector_action_item extends navigation_selector_item {
         return array_merge(
             parent::export_for_template($output),
             [
-                'action' => $this->action,
+                'action' => $this->action->out(false),
                 'isactive' => $this->active,
                 'attributes' => $attributes,
             ]

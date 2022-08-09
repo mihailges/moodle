@@ -1442,9 +1442,9 @@ class behat_navigation extends behat_base {
      *                     while the second ("Item") will be used to identify an item (anchor element) within that
      *                     group. Otherwise, a string with a single item (ex. "Item") will be used to identify an item
      *                     within the navigation selector regardless of the group.
-     * @param string $not
+     * @param string|null $not Instructs to check whether an item does not exist in the tertiary navigation selector.
      */
-    public function the_tertiary_navigation_selector_should_contain(string $item, $not = null) {
+    public function the_tertiary_navigation_selector_should_contain(string $item, ?string $not = null) {
         try {
             $this->find_tertiary_navigation_selector_item($item);
             // If the tertiary navigation selector should not contain the item but it does.

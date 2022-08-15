@@ -30,6 +30,7 @@ require_once(__DIR__ . '/../../behat/behat_base.php');
 use Behat\Mink\Exception\ExpectationException as ExpectationException;
 use Behat\Mink\Exception\DriverException as DriverException;
 use Behat\Mink\Exception\ElementNotFoundException as ElementNotFoundException;
+use Behat\Mink\Element\NodeElement as NodeElement;
 
 /**
  * Steps definitions to navigate through the navigation tree nodes.
@@ -1409,5 +1410,111 @@ class behat_navigation extends behat_base {
         if ($this->is_editing_on()) {
             throw new ExpectationException('The edit mode could not be turned off', $this->getSession());
         }
+    }
+
+    /**
+     * Clicks on a item (anchor element) with specified text from the tertiary navigation selector.
+     *
+     * @When I select :item from the tertiary navigation selector
+     *
+     * @throws ElementNotFoundException Thrown by behat_base::find if the element was not found.
+     * @param string $item The string that is used to identify an item (anchor link) within the tertiary navigation
+     *                     selector. If the string has two items separated by '>' (ex. "Group > Item"), the first item
+     *                     ("Group") will be used to identify a particular group within the tertiary navigation selector,
+     *                     while the second ("Item") will be used to identify an item (anchor element) within that
+     *                     group. Otherwise, a string with a single item (ex. "Item") will be used to identify an item
+     *                     within the navigation selector regardless of the group.
+     */
+    public function i_select_from_tertiary_navigation_selector(string $item) {
+        $tertiarynavselectoritem = $this->find_tertiary_navigation_selector_item($item);
+        $tertiarynavselectoritem->click();
+    }
+
+    /**
+     * Checks whether the tertiary navigation selector contains an item (anchor element) with specified text or not.
+     *
+     * @Then the tertiary navigation selector should contain :item
+     * @Then the tertiary navigation selector should :not contain :item
+     *
+     * @throws ExpectationException When the expectation is not satisfied
+     * @param string $item The string that is used to identify an item (anchor link) within the tertiary navigation
+     *                     selector. If the string has two items separated by '>' (ex. "Group > Item"), the first item
+     *                     ("Group") will be used to identify a particular group within the tertiary navigation selector,
+     *                     while the second ("Item") will be used to identify an item (anchor element) within that
+     *                     group. Otherwise, a string with a single item (ex. "Item") will be used to identify an item
+     *                     within the navigation selector regardless of the group.
+     * @param string|null $not Instructs to check whether an item does not exist in the tertiary navigation selector.
+     */
+    public function the_tertiary_navigation_selector_should_contain(string $item, ?string $not = null) {
+        try {
+            $this->find_tertiary_navigation_selector_item($item);
+            // If the tertiary navigation selector should not contain the item but it does.
+            if ($not) {
+                throw new ExpectationException(
+                    "The tertiary navigation selector should not contain \"{$item}\" but it does.",
+                    $this->getSession()
+                );
+            }
+        } catch (ElementNotFoundException $e) {
+            // If the tertiary navigation selector should contain the item but it does not.
+            if (!$not) {
+                throw new ExpectationException(
+                    "The tertiary navigation selector should contain \"{$item}\" but it does not.",
+                    $this->getSession()
+                );
+            }
+        }
+    }
+
+    /**
+     * Helper method that finds an item (anchor element) with specified text from the tertiary navigation selector.
+     *
+     * @throws coding_exception Thrown when the string assigned to $item has more than two items separated with ">".
+     * @throws ElementNotFoundException Thrown by behat_base::find if the element was not found.
+     * @param string $item The string that is used to identify an item (anchor link) within the tertiary navigation
+     *                     selector. If the string has two items separated by '>' (ex. "Group > Item"), the first item
+     *                     ("Group") will be used to identify a particular group within the tertiary navigation selector,
+     *                     while the second ("Item") will be used to identify an item (anchor element) within that
+     *                     group. Otherwise, a string with a single item (ex. "Item") will be used to identify an item
+     *                     within the navigation selector regardless of the group.
+     * @return NodeElement The item (anchor element) within the tertiary navigation selector.
+     */
+    protected function find_tertiary_navigation_selector_item(string $item): NodeElement {
+        // Split the item string by ">".
+        $item = preg_split('/\s*>\s*/', trim($item));
+
+        // Make sure that the string does not have more than two items separated with ">".
+        if (count($item) > 2) {
+            throw new coding_exception('The item string is too long (must have no more than two items separated with ">")');
+        }
+
+        $tertiarynavselectorxpath = '//div[contains(@class, "tertiary-navigation-selector")]';
+
+        if ($this->running_javascript()) {
+            // The tertiary navigation selector dropdown must be expanded when JS is enabled.
+            $tertiarynavselectortogglexpath = $tertiarynavselectorxpath . '/descendant::a[contains(@class, "dropdown-toggle")]';
+            $this->find('xpath', $tertiarynavselectortogglexpath)->click();
+        }
+
+        // Define the xpath to the option element depending on the provided path.
+        // If two items are provided in the path, the first item will be considered as an identifier of an existing
+        // option group in the select select element, while the second item will identify an existing option within
+        // that option group.
+        // If one item is provided in the path, this item will identify any existing option in the select element
+        // regardless of the option group. Also, this is useful when option elements are not a part of an option group
+        // which is possible.
+        if (count($item) === 2) {
+            $itemxpath = $tertiarynavselectorxpath .
+                '/descendant::span[contains(@class, "dropdown-header") and normalize-space(text()) = "' .
+                $this->escape($item[0]) . '"]' . '/following-sibling::ul[contains(@class, "dropdown-group")]' .
+                '/descendant::a[contains(@class, "dropdown-item") and normalize-space(text()) = "' .
+                $this->escape($item[1]) . '"]';
+        } else {
+            $itemxpath = $tertiarynavselectorxpath .
+                '/descendant::a[contains(@class, "dropdown-item") and normalize-space(text()) = "' .
+                $this->escape($item[0]) . '"]';
+        }
+
+        return $this->find('xpath', $itemxpath);
     }
 }

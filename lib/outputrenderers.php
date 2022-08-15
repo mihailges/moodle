@@ -38,6 +38,7 @@
 use core\output\named_templatable;
 use core_completion\cm_completion_details;
 use core_course\output\activity_information;
+use core\navigation\output\tertiary\navigation_selector;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -5039,6 +5040,16 @@ EOD;
             );
         }
         return $addblockbutton;
+    }
+
+    /**
+     * Renders a tertiary navigation selector element.
+     *
+     * @param navigation_selector $navselector Tertiary nav selector renderable object.
+     * @return string
+     */
+    public function render_tertiary_navigation_selector(navigation_selector $navselector): string {
+        return $this->render_from_template('core/tertiary_navigation_selector', $navselector->export_for_template($this));
     }
 }
 

@@ -263,6 +263,7 @@ The newer version is {$a->currentversion}; you are using gradebook version {$a->
 $string['gradebookhiddenerror'] = 'The gradebook is currently set to hide everything from students.';
 $string['gradebookhistories'] = 'Grade histories';
 $string['gradebooksetup'] = 'Gradebook setup';
+$string['gradebooktertiarynavigation'] = 'Gradebook tertiary navigation';
 $string['gradeboundary'] = 'Letter grade boundary';
 $string['gradeboundary_help'] = 'This setting determines the minimum percentage over which grades will be assigned the grade letter.';
 $string['gradecategories'] = 'Grade categories';

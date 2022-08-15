@@ -19391,6 +19391,9 @@ p.arrow_button {
 .path-grade-report-user .gradefail {
   color: #ca3120; }
 
+.path-grade #region-main {
+  overflow-x: visible; }
+
 #page-grade-grading-manage #activemethodselector label {
   display: inline-block; }
 

@@ -92,7 +92,7 @@ class export_action_bar extends action_bar {
 
         // This navigation selector menu will contain the links to all available grade export plugin pages.
         $exportsurlselect = new \core\output\select_menu($exportsmenu, $this->exportactiveurl->out());
-        $exportsurlselect->set_label(get_string('exportas', 'grades'));
+        $exportsurlselect->set_label(get_string('exportas', 'grades'), ['class' => 'font-weight-bold']);
         $data['exportselector'] = $exportsurlselect->export_for_template($output);
 
         return $data;

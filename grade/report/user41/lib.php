@@ -84,7 +84,7 @@ class gradereport_user41 extends grade_report {
         global $OUTPUT, $COURSE;
         $context = [
             'courseid' => $COURSE->id,
-            'imglink' => new \moodle_url('/pix/f/image-256.png'),
+            'imglink' => new \moodle_url('/pix/f/clip-353 1.png'),
         ];
         return $OUTPUT->render_from_template('gradereport_user41/zero_state', $context);
     }

@@ -31,5 +31,5 @@ $string['privacy:metadata:preference:gradereport_user41_view_user'] = 'Whether t
 $string['viewas'] = 'View report as';
 $string['selectuser'] = 'Select a user to view their grades';
 $string['selectuserinstructions'] = 'By selecting a user you can view the grades by activity';
-$string['selectuserlink'] = 'Select user';
+$string['selectuserlink'] = 'Click to select user';
 $string['selectgradeitemlink'] = 'Select grade item';

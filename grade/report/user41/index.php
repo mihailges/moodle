@@ -147,10 +147,13 @@ if (isset($report)) {
     // No students warning.
 }
 
+// Print header
+print_grade_page_head($COURSE->id, 'report', 'user41', ' ', false);
+
 $defaulttype = $userid ? 'user' : 'select';
 $itemid = optional_param('itemid', null, PARAM_INT);
 $itemtype = optional_param('item', $defaulttype, PARAM_TEXT);
 $report = new gradereport_user41($courseid, $gpr, $context, $itemtype, $itemid);
-echo $OUTPUT->header();
+//echo $OUTPUT->header();
 echo $report->output();
 echo $OUTPUT->footer();

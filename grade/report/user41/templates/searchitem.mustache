@@ -1,0 +1,21 @@
+<div class="w-100 my-2">
+    {{#usertemplate}}
+        <div class="w-75 pull-left">
+            <a href="#?sid={{id}}">{{fullname}}</a>
+        </div>
+        <div class="w-25 pull-left">
+            <a href="#" class="">
+                <i class="icon fa fa-search fa-fw fa-fw iconsmall text-muted" aria-hidden="true"></i>
+                <span class="sr-only">{{#str}}message{{/str}}</span>
+            </a>
+            <a href="#" class="">
+                <i class="icon fa fa-address-card fa-fw fa-fw iconsmall text-muted" aria-hidden="true"></i>
+                <span class="sr-only">{{#str}}addtoyourcontacts, core_message{{/str}}</span>
+            </a>
+        </div>
+    {{/usertemplate}}
+    {{#gradetemplate}}
+        <a href="#?sid={{id}}">{{name}}</a>
+    {{/gradetemplate}}
+</div>
+<br>

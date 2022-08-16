@@ -104,6 +104,7 @@ class general_action_bar_test extends advanced_testcase {
                         'Overview report',
                         'Single view',
                         'User report',
+                        'Neo User report',
                     ],
                     'Setup' => [
                         'Gradebook setup',
@@ -129,6 +130,7 @@ class general_action_bar_test extends advanced_testcase {
                         'Overview report',
                         'Single view',
                         'User report',
+                        'Neo User report',
                     ],
                     'Setup' => [
                         'Gradebook setup',
@@ -154,6 +156,7 @@ class general_action_bar_test extends advanced_testcase {
                         'Overview report',
                         'Single view',
                         'User report',
+                        'Neo User report',
                     ],
                     'Setup' => [
                         'Gradebook setup',
@@ -179,6 +182,7 @@ class general_action_bar_test extends advanced_testcase {
                         'Overview report',
                         'Single view',
                         'User report',
+                        'Neo User report',
                     ],
                     'Setup' => [
                         'Gradebook setup',
@@ -204,6 +208,7 @@ class general_action_bar_test extends advanced_testcase {
                         'Outcomes report',
                         'Overview report',
                         'User report',
+                        'Neo User report',
                     ],
                     'Setup' => [
                         'Preferences: Grader report',
@@ -220,6 +225,7 @@ class general_action_bar_test extends advanced_testcase {
                     'View' => [
                         'Overview report',
                         'User report',
+                        'Neo User report',
                     ],
                 ],
             ],

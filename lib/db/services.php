@@ -486,6 +486,7 @@ $functions = array(
         'methodname' => 'get_course_contents',
         'classpath' => 'course/externallib.php',
         'description' => 'Get course contents',
+        'ajax' => true,
         'type' => 'read',
         'capabilities' => 'moodle/course:update, moodle/course:viewhiddencourses',
         'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE),
@@ -736,6 +737,7 @@ $functions = array(
         'methodname' => 'get_enrolled_users',
         'classpath' => 'enrol/externallib.php',
         'description' => 'Get enrolled users by course id.',
+        'ajax' => true,
         'type' => 'read',
         'capabilities' => 'moodle/user:viewdetails, moodle/user:viewhiddendetails, moodle/course:useremail, moodle/user:update, '
             . 'moodle/site:accessallgroups',

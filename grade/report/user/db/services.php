@@ -48,6 +48,7 @@ $functions = array(
         'classpath' => 'grade/report/user/externallib.php',
         'description' => 'Returns the complete list of grade items for users in a course',
         'type' => 'read',
+        'ajax' => true,
         'capabilities' => 'gradereport/user:view',
         'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE),
     )

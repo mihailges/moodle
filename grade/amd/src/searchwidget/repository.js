@@ -50,7 +50,7 @@ export const userFetch = (courseid) => {
  */
 export const gradeitemFetch = (courseid) => {
     const request = {
-        methodname: 'core_course_get_contents',
+        methodname: 'gradereport_singleneo_get_grade_items_for_search_widget',
         args: {
             courseid: courseid,
         },

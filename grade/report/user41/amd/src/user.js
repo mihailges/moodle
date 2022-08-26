@@ -26,6 +26,7 @@ import * as Templates from 'core/templates';
 import CustomEvents from "core/custom_interaction_events";
 import * as Repository from 'core_grades/searchwidget/repository';
 import * as WidgetBase from 'core_grades/searchwidget/basewidget';
+import {get_string as getString} from 'core/str';
 
 /**
  * Our entry point into starting to build the search widget.
@@ -75,7 +76,13 @@ const registerListenerEvents = () => {
                 if (data === []) {
                     return;
                 }
-                WidgetBase.init(bodyPromise, footerPromise, data.users, searchUsers());
+                WidgetBase.init(
+                    bodyPromise,
+                    footerPromise,
+                    data.users,
+                    searchUsers(),
+                    getString('pluginname', 'gradereport_user41')
+                );
             }
         });
     });

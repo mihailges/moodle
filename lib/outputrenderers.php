@@ -2089,7 +2089,7 @@ class core_renderer extends renderer_base {
         $output .= html_writer::tag('p', $message);
         $output .= $this->box_end();
         $output .= $this->box_start('modal-footer', 'modal-footer');
-        $output .= html_writer::tag('div', $this->render($continue) . $this->render($cancel), array('class' => 'buttons'));
+        $output .= html_writer::tag('div', $this->render($cancel) . $this->render($continue), ['class' => 'buttons']);
         $output .= $this->box_end();
         $output .= $this->box_end();
         $output .= $this->box_end();
@@ -4267,7 +4267,15 @@ EOD;
      * @return moodle_url The moodle_url for the favicon
      */
     public function favicon() {
-        return $this->image_url('favicon', 'theme');
+        global $CFG;
+        $logo = get_config('core_admin', 'favicon');
+        if (empty($logo)) {
+            return $this->image_url('favicon', 'theme');
+        }
+
+        // Use $CFG->themerev to prevent browser caching when the file changes.
+        return moodle_url::make_pluginfile_url(context_system::instance()->id, 'core_admin', 'favicon', '64x64/',
+            theme_get_revision(), $logo);
     }
 
     /**
@@ -5580,7 +5588,7 @@ class core_renderer_maintenance extends core_renderer {
         $output = $this->box_start('generalbox', 'notice');
         $output .= html_writer::tag('h4', get_string('confirm'));
         $output .= html_writer::tag('p', $message);
-        $output .= html_writer::tag('div', $this->render($continue) . $this->render($cancel), array('class' => 'buttons'));
+        $output .= html_writer::tag('div', $this->render($cancel) . $this->render($continue), ['class' => 'buttons']);
         $output .= $this->box_end();
         return $output;
     }

@@ -208,10 +208,18 @@ class mod_data_generator extends testing_module_generator {
      * @param int $groupid
      * @param array $tags
      * @param array $options
+     * @param int $userid if defined, it will be the author of the entry
      * @return int id of the generated record in table {data_records}
      */
-    public function create_entry($data, array $contents, $groupid = 0, $tags = [], array $options = null) {
+    public function create_entry($data, array $contents, $groupid = 0, $tags = [], array $options = null, int $userid = 0) {
         global $DB, $USER, $CFG;
+
+        // Set current user if defined.
+        if (!empty($userid)) {
+            $currentuser = $USER;
+            $user = \core_user::get_user($userid);
+            $this->set_user($user);
+        }
 
         $this->databaserecordcount++;
 
@@ -362,6 +370,10 @@ class mod_data_generator extends testing_module_generator {
                 context_module::instance($cm->id), $tags);
         }
 
+        if (isset($currentuser)) {
+            $this->set_user($currentuser);
+        }
+
         return $recordid;
     }
 
@@ -373,8 +385,17 @@ class mod_data_generator extends testing_module_generator {
      * @return preset The preset that has been created.
      */
     public function create_preset(stdClass $instance, stdClass $record = null): preset {
+        global $USER;
+
         if (is_null($record)) {
             $record = new stdClass();
+        }
+
+        // Set current user if defined.
+        if (isset($record->userid) && $record->userid != $USER->id) {
+            $currentuser = $USER;
+            $user = \core_user::get_user($record->userid);
+            $this->set_user($user);
         }
 
         // Fill in optional values if not specified.
@@ -390,6 +411,10 @@ class mod_data_generator extends testing_module_generator {
         $manager = manager::create_from_instance($instance);
         $preset = preset::create_from_instance($manager, $presetname, $presetdescription);
         $preset->save();
+
+        if (isset($currentuser)) {
+            $this->set_user($currentuser);
+        }
 
         return $preset;
     }

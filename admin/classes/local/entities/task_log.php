@@ -18,14 +18,17 @@ namespace core_admin\local\entities;
 
 use core_reportbuilder\local\filters\date;
 use core_reportbuilder\local\filters\duration;
+use core_reportbuilder\local\filters\number;
 use core_reportbuilder\local\filters\select;
 use core_reportbuilder\local\filters\text;
+use core_reportbuilder\local\filters\autocomplete;
 use core_reportbuilder\local\helpers\format;
 use lang_string;
 use core_reportbuilder\local\entities\base;
 use core_reportbuilder\local\report\column;
 use core_reportbuilder\local\report\filter;
 use stdClass;
+use core_collator;
 
 /**
  * Task log entity class implementation
@@ -61,15 +64,6 @@ class task_log extends base {
     }
 
     /**
-     * The default machine-readable name for this entity that will be used in the internal names of the columns/filters
-     *
-     * @return string
-     */
-    protected function get_default_entity_name(): string {
-        return 'task_log';
-    }
-
-    /**
      * Initialise the entity
      *
      * @return base
@@ -80,9 +74,12 @@ class task_log extends base {
             $this->add_column($column);
         }
 
+        // All the filters defined by the entity can also be used as conditions.
         $filters = $this->get_all_filters();
         foreach ($filters as $filter) {
-            $this->add_filter($filter);
+            $this
+                ->add_filter($filter)
+                ->add_condition($filter);
         }
 
         return $this;
@@ -94,6 +91,7 @@ class task_log extends base {
      * @return column[]
      */
     protected function get_all_columns(): array {
+        global $DB;
 
         $tablealias = $this->get_table_alias('task_log');
 
@@ -116,10 +114,21 @@ class task_log extends base {
                     }
                 }
                 $output .= \html_writer::tag('div', "\\{$classname}", [
-                    'class' => 'task-class',
+                    'class' => 'small text-muted',
                 ]);
                 return $output;
             });
+
+        // Component column.
+        $columns[] = (new column(
+            'component',
+            new lang_string('plugin'),
+            $this->get_entity_name()
+        ))
+            ->add_joins($this->get_joins())
+            ->set_type(column::TYPE_TEXT)
+            ->add_field("{$tablealias}.component")
+            ->set_is_sortable(true);
 
         // Type column.
         $columns[] = (new column(
@@ -128,11 +137,11 @@ class task_log extends base {
             $this->get_entity_name()
         ))
             ->add_joins($this->get_joins())
-            ->set_type(column::TYPE_INTEGER)
+            ->set_type(column::TYPE_TEXT)
             ->add_field("{$tablealias}.type")
             ->set_is_sortable(true)
-            ->add_callback(static function(int $value): string {
-                if (\core\task\database_logger::TYPE_SCHEDULED === $value) {
+            ->add_callback(static function($value): string {
+                if (\core\task\database_logger::TYPE_SCHEDULED === (int) $value) {
                     return get_string('task_type:scheduled', 'admin');
                 }
                 return get_string('task_type:adhoc', 'admin');
@@ -147,6 +156,18 @@ class task_log extends base {
             ->add_joins($this->get_joins())
             ->set_type(column::TYPE_TIMESTAMP)
             ->add_field("{$tablealias}.timestart")
+            ->set_is_sortable(true)
+            ->add_callback([format::class, 'userdate'], get_string('strftimedatetimeshortaccurate', 'core_langconfig'));
+
+        // End time column.
+        $columns[] = (new column(
+            'endtime',
+            new lang_string('task_endtime', 'admin'),
+            $this->get_entity_name()
+        ))
+            ->add_joins($this->get_joins())
+            ->set_type(column::TYPE_TIMESTAMP)
+            ->add_field("{$tablealias}.timeend")
             ->set_is_sortable(true)
             ->add_callback([format::class, 'userdate'], get_string('strftimedatetimeshortaccurate', 'core_langconfig'));
 
@@ -190,7 +211,9 @@ class task_log extends base {
             ->add_joins($this->get_joins())
             ->set_type(column::TYPE_INTEGER)
             ->add_field("{$tablealias}.pid")
-            ->set_is_sortable(true);
+            ->set_is_sortable(true)
+            // Although this is an integer column, it doesn't make sense to perform numeric aggregation on it.
+            ->set_disabled_aggregation(['avg', 'count', 'countdistinct', 'max', 'min', 'sum']);
 
         // Database column.
         $columns[] = (new column(
@@ -201,13 +224,37 @@ class task_log extends base {
             ->add_joins($this->get_joins())
             ->set_type(column::TYPE_INTEGER)
             ->add_fields("{$tablealias}.dbreads, {$tablealias}.dbwrites")
-            ->set_is_sortable(true)
+            ->set_is_sortable(true, ["{$tablealias}.dbreads", "{$tablealias}.dbwrites"])
             ->add_callback(static function(int $value, stdClass $row): string {
                 $output = '';
                 $output .= \html_writer::div(get_string('task_stats:dbreads', 'admin', $row->dbreads));
                 $output .= \html_writer::div(get_string('task_stats:dbwrites', 'admin', $row->dbwrites));
                 return $output;
-            });
+            })
+            // Although this is an integer column, it doesn't make sense to perform numeric aggregation on it.
+            ->set_disabled_aggregation(['avg', 'count', 'countdistinct', 'max', 'min', 'sum']);
+
+        // Database reads column.
+        $columns[] = (new column(
+            'dbreads',
+            new lang_string('task_dbreads', 'admin'),
+            $this->get_entity_name()
+        ))
+            ->add_joins($this->get_joins())
+            ->set_type(column::TYPE_INTEGER)
+            ->add_fields("{$tablealias}.dbreads")
+            ->set_is_sortable(true);
+
+        // Database writes column.
+        $columns[] = (new column(
+            'dbwrites',
+            new lang_string('task_dbwrites', 'admin'),
+            $this->get_entity_name()
+        ))
+            ->add_joins($this->get_joins())
+            ->set_type(column::TYPE_INTEGER)
+            ->add_fields("{$tablealias}.dbwrites")
+            ->set_is_sortable(true);
 
         // Result column.
         $columns[] = (new column(
@@ -216,11 +263,12 @@ class task_log extends base {
             $this->get_entity_name()
         ))
             ->add_joins($this->get_joins())
-            ->set_type(column::TYPE_INTEGER)
-            ->add_field("$tablealias.result")
+            ->set_type(column::TYPE_BOOLEAN)
+            // For accurate aggregation, we need to return boolean success = true by xor'ing the field value.
+            ->add_field($DB->sql_bitxor("{$tablealias}.result", 1), 'success')
             ->set_is_sortable(true)
-            ->add_callback(static function(int $value): string {
-                if ($value) {
+            ->add_callback(static function(bool $success): string {
+                if (!$success) {
                     return get_string('task_result:failed', 'admin');
                 }
                 return get_string('success');
@@ -235,17 +283,42 @@ class task_log extends base {
      * @return filter[]
      */
     protected function get_all_filters(): array {
-        $filters = [];
+        global $DB;
 
         $tablealias = $this->get_table_alias('task_log');
 
         // Name filter (Filter by classname).
         $filters[] = (new filter(
-            text::class,
+            autocomplete::class,
             'name',
             new lang_string('classname', 'tool_task'),
             $this->get_entity_name(),
             "{$tablealias}.classname"
+        ))
+            ->add_joins($this->get_joins())
+            ->set_options_callback(static function(): array {
+                global $DB;
+                $classnames = $DB->get_fieldset_sql('SELECT DISTINCT classname FROM {task_log} ORDER BY classname ASC');
+
+                $options = [];
+                foreach ($classnames as $classname) {
+                    if (class_exists($classname)) {
+                        $task = new $classname;
+                        $options[$classname] = $task->get_name();
+                    }
+                }
+
+                core_collator::asort($options);
+                return $options;
+            });
+
+        // Component filter.
+        $filters[] = (new filter(
+            text::class,
+            'component',
+            new lang_string('plugin'),
+            $this->get_entity_name(),
+            "{$tablealias}.component"
         ))
             ->add_joins($this->get_joins());
 
@@ -269,23 +342,9 @@ class task_log extends base {
             'output',
             new lang_string('task_logoutput', 'admin'),
             $this->get_entity_name(),
-            "{$tablealias}.output"
+            $DB->sql_cast_to_char("{$tablealias}.output")
         ))
             ->add_joins($this->get_joins());
-
-        // Result filter.
-        $filters[] = (new filter(
-            select::class,
-            'result',
-            new lang_string('task_result', 'admin'),
-            $this->get_entity_name(),
-            "{$tablealias}.result"
-        ))
-            ->add_joins($this->get_joins())
-            ->set_options([
-                self::SUCCESS => get_string('success'),
-                self::FAILED => get_string('task_result:failed', 'admin'),
-            ]);
 
         // Start time filter.
         $filters[] = (new filter(
@@ -303,15 +362,65 @@ class task_log extends base {
                 date::DATE_CURRENT,
             ]);
 
+        // End time.
+        $filters[] = (new filter(
+            date::class,
+            'timeend',
+            new lang_string('task_endtime', 'admin'),
+            $this->get_entity_name(),
+            "{$tablealias}.timeend"
+        ))
+            ->add_joins($this->get_joins())
+            ->set_limited_operators([
+                date::DATE_ANY,
+                date::DATE_RANGE,
+                date::DATE_PREVIOUS,
+                date::DATE_CURRENT,
+            ]);
+
         // Duration filter.
         $filters[] = (new filter(
             duration::class,
             'duration',
             new lang_string('task_duration', 'admin'),
             $this->get_entity_name(),
-            "${tablealias}.timeend - {$tablealias}.timestart"
+            "{$tablealias}.timeend - {$tablealias}.timestart"
         ))
             ->add_joins($this->get_joins());
+
+        // Database reads.
+        $filters[] = (new filter(
+            number::class,
+            'dbreads',
+            new lang_string('task_dbreads', 'admin'),
+            $this->get_entity_name(),
+            "{$tablealias}.dbreads"
+        ))
+            ->add_joins($this->get_joins());
+
+        // Database writes.
+        $filters[] = (new filter(
+            number::class,
+            'dbwrites',
+            new lang_string('task_dbwrites', 'admin'),
+            $this->get_entity_name(),
+            "{$tablealias}.dbwrites"
+        ))
+            ->add_joins($this->get_joins());
+
+        // Result filter.
+        $filters[] = (new filter(
+            select::class,
+            'result',
+            new lang_string('task_result', 'admin'),
+            $this->get_entity_name(),
+            "{$tablealias}.result"
+        ))
+            ->add_joins($this->get_joins())
+            ->set_options([
+                self::SUCCESS => get_string('success'),
+                self::FAILED => get_string('task_result:failed', 'admin'),
+            ]);
 
         return $filters;
     }

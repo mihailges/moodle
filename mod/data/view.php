@@ -72,14 +72,6 @@ comment::init();
 
 require_capability('mod/data:viewentry', $context);
 
-/// If we have an empty Database then redirect because this page is useless without data
-if (has_capability('mod/data:managetemplates', $context)) {
-    if (!$DB->record_exists('data_fields', array('dataid'=>$data->id))) {      // Brand new database!
-        redirect($CFG->wwwroot.'/mod/data/field.php?d='.$data->id);  // Redirect to field entry
-    }
-}
-
-
 /// Check further parameters that set browsing preferences
 if (!isset($SESSION->dataprefs)) {
     $SESSION->dataprefs = array();
@@ -247,6 +239,15 @@ $groupmode = groups_get_activity_groupmode($cm);
 $canmanageentries = has_capability('mod/data:manageentries', $context);
 echo $OUTPUT->header();
 
+if (!$manager->has_fields()) {
+    // It's a brand-new database. There are no fields.
+    $renderer = $PAGE->get_renderer('mod_data');
+    echo $renderer->render_zero_state($manager);
+    echo $OUTPUT->footer();
+    // Don't check the rest of the options. There is no field, there is nothing else to work with.
+    exit;
+}
+
 // Detect entries not approved yet and show hint instead of not found error.
 if ($record and !data_can_view_record($data, $record, $currentgroup, $canmanageentries)) {
     throw new \moodle_exception('notapproved', 'data');
@@ -385,6 +386,14 @@ if ($showactivity) {
             data_search_entries($data, $cm, $context, $mode, $currentgroup, $search, $sort, $order, $page, $perpage, $advanced, $search_array, $record);
         $hasrecords = !empty($records);
 
+        if ($maxcount == 0) {
+            $renderer = $PAGE->get_renderer('mod_data');
+            echo $renderer->render_empty_database($manager);
+            echo $OUTPUT->footer();
+            // There is no entry, so makes no sense to check different views, pagination, etc.
+            exit;
+        }
+
         $actionbar = new \mod_data\output\action_bar($data->id, $pageurl);
         echo $actionbar->get_view_action_bar($hasrecords);
 
@@ -429,13 +438,15 @@ if ($showactivity) {
             }
 
             if ($mode == 'single') { // Single template
-                $baseurl = 'view.php?d=' . $data->id . '&mode=single&';
+                $baseurl = '/mod/data/view.php';
+                $baseurlparams = ['d' => $data->id, 'mode' => 'single'];
                 if (!empty($search)) {
-                    $baseurl .= 'filter=1&';
+                    $baseurlparams['filter'] = 1;
                 }
                 if (!empty($page)) {
-                    $baseurl .= 'page=' . $page;
+                    $baseurlparams['page'] = $page;
                 }
+                $baseurl = new moodle_url($baseurl, $baseurlparams);
                 echo $OUTPUT->paging_bar($totalcount, $page, $nowperpage, $baseurl);
 
                 if (empty($data->singletemplate)){
@@ -453,7 +464,7 @@ if ($showactivity) {
                     $ratingoptions->aggregate = $data->assessed;//the aggregation method
                     $ratingoptions->scaleid = $data->scale;
                     $ratingoptions->userid = $USER->id;
-                    $ratingoptions->returnurl = $CFG->wwwroot.'/mod/data/'.$baseurl;
+                    $ratingoptions->returnurl = $baseurl->out();
                     $ratingoptions->assesstimestart = $data->assesstimestart;
                     $ratingoptions->assesstimefinish = $data->assesstimefinish;
 
@@ -464,7 +475,7 @@ if ($showactivity) {
                 $options = [
                     'search' => $search,
                     'page' => $page,
-                    'baseurl' => new moodle_url($baseurl),
+                    'baseurl' => $baseurl,
                 ];
                 $parser = $manager->get_template('singletemplate', $options);
                 echo $parser->parse_entries($records);
@@ -472,14 +483,12 @@ if ($showactivity) {
                 echo $OUTPUT->paging_bar($totalcount, $page, $nowperpage, $baseurl);
 
             } else {                                  // List template
-                $baseurl = 'view.php?d='.$data->id.'&amp;';
-                //send the advanced flag through the URL so it is remembered while paging.
-                $baseurl .= 'advanced='.$advanced.'&amp;';
+                $baseurl = '/mod/data/view.php';
+                $baseurlparams = ['d' => $data->id, 'advanced' => $advanced, 'paging' => $paging];
                 if (!empty($search)) {
-                    $baseurl .= 'filter=1&amp;';
+                    $baseurlparams['filter'] = 1;
                 }
-                //pass variable to allow determining whether or not we are paging through results.
-                $baseurl .= 'paging='.$paging.'&amp;';
+                $baseurl = new moodle_url($baseurl, $baseurlparams);
 
                 echo $OUTPUT->paging_bar($totalcount, $page, $nowperpage, $baseurl);
 
@@ -491,14 +500,14 @@ if ($showactivity) {
                 $options = [
                     'search' => $search,
                     'page' => $page,
-                    'baseurl' => new moodle_url($baseurl),
+                    'baseurl' => $baseurl,
                 ];
                 $parser = $manager->get_template('listtemplate', $options);
                 echo $parser->parse_entries($records);
 
                 echo $data->listtemplatefooter;
 
-                echo $OUTPUT->paging_bar($totalcount, $page, $nowperpage, $baseurl);
+                echo $OUTPUT->paging_bar($totalcount, $page, $nowperpage, $baseurl->out());
             }
 
             if ($mode != 'single' && $canmanageentries) {

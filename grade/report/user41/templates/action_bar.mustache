@@ -80,16 +80,17 @@
         }
     }
 }}
-<div class="container-fluid tertiary-navigation">
+<div class="container-fluid tertiary-navigation full-width-bottom-border">
     <div class="row">
         {{#generalnavselector}}
             <div class="navitem">
-                {{>core/url_select}}
+                {{>core/tertiary_navigation_selector}}
             </div>
+            <div class="navitem-divider"></div>
         {{/generalnavselector}}
-        {{#user}}
+        {{#userselector}}
             <div class="navitem">
-                <a href="#" role="button" class="userwidget btn dropdown-toggle d-flex text-left align-items-center" data-courseid="2" data-searchtype="user">
+                <a href="#" role="button" class="userwidget btn dropdown-toggle d-flex text-left align-items-center p-0 mt-n1" data-courseid="{{courseid}}" data-searchtype="user">
                     <span class="user d-flex">
                         <span class="avatar d-block pr-2">
                             {{{avatar}}}
@@ -105,6 +106,7 @@
                     </span>
                 </a>
             </div>
-        {{/user}}
+            <div class="navitem-divider"></div>
+        {{/userselector}}
     </div>
 </div>

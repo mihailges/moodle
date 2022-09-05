@@ -354,13 +354,13 @@ class gradereport_user41 extends grade_report {
         }
 
         foreach ($element['children'] as $key=>$child) {
-//            if ($child['type'] == 'category') {
-//                $count += 1;
-//
-//                if ($element['prev'] != 0) {
-//                    $count += 1;
-//                }
-//            }
+            if ($child['type'] == 'category') {
+                $count += 1;
+
+                if ($element['prev'] != 0) {
+                    $count += 1;
+                }
+            }
 
             // If category is hidden then do not include it in the rowspan.
             if ($child['type'] == 'category' && $child['object']->is_hidden() && !$this->canviewhidden

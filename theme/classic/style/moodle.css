@@ -21692,7 +21692,8 @@ div.editor_atto_toolbar button .icon {
   .tertiary-navigation .navitem,
   .tertiary-navigation .navitem-divider {
     display: flex;
-    margin-bottom: 25px; }
+    margin-bottom: 25px;
+    height: 35px; }
   .tertiary-navigation .navitem-divider {
     width: 1px;
     background-color: #dee2e6; }

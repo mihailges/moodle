@@ -57,8 +57,6 @@ class action_bar extends \core_grades\output\action_bar {
      * @return array
      */
     public function export_for_template(\renderer_base $output): array {
-        $data = [];
-
         // If in the course context, we should display the general navigation selector in gradebook.
         $courseid = $this->context->instanceid;
         // Get the data used to output the general navigation selector.
@@ -66,7 +64,8 @@ class action_bar extends \core_grades\output\action_bar {
             new moodle_url('/grade/report/user41/index.php', ['id' => $courseid]), 'gradereport', 'user41');
         $data = $generalnavselector->export_for_template($output);
 
-        $data['user'] = [
+        $data['userselector'] = [
+            'courseid' => $courseid,
             'avatar' => $output->user_picture($this->user, array('size' => 40, 'link' => false)),
             'name' => fullname($this->user),
             'email' => $this->user->email

@@ -3,3 +3,147 @@
     height: 150px;
     overflow: auto;
 }
+
+.path-grade-report-user41 #graded_users_selector {
+    float: right;
+    margin-bottom: 5px;
+}
+
+.path-grade-report-user41 .view_users_selector {
+    clear: both;
+    float: right;
+    margin-bottom: 5px;
+}
+
+.path-grade-report-user41 #graded_users_selector .singleselect label,
+.path-grade-report-user41 .view_users_selector .singleselect label {
+    display: inline-block;
+}
+
+.path-grade-report-user41 .user-grade {
+    width: 100%;
+}
+
+.path-grade-report-user41 .user-grade thead th {
+    vertical-align: bottom;
+}
+
+.path-grade-report-user41 .user-grade th {
+    text-align: left;
+}
+
+.path-grade-report-user41 .user-grade td {
+    min-width: 4.5em;
+    vertical-align: top;
+}
+
+.path-grade-report-user41 .user-grade .b1l {
+    padding: 0;
+    width: 24px;
+    min-width: 24px;
+}
+
+.path-grade-report-user41 .user-grade tbody .column-itemname {
+    padding-left: 0;
+    padding-right: 8px;
+}
+
+.path-grade-report-user41 .user-grade .column-itemname.item,
+.path-grade-report-user41 .user-grade .gradeitemdescription {
+    font-weight: normal;
+    padding-left: 24px;
+}
+
+.path-grade-report-user41 .user-grade .column-itemname.baggt,
+.path-grade-report-user41 .user-grade .column-itemname.baggb {
+    padding-left: 24px;
+}
+
+.path-grade-report-user41 .user-grade .baggt,
+.path-grade-report-user41 .user-grade .baggb {
+    font-weight: bold;
+}
+
+
+.path-grade-report-user41 .user-grade .b1t.column-itemname.category {
+    background-color: white !important;
+    border: 1px solid #dee2e6;
+}
+
+.path-grade-report-user41 .user-grade tbody tr:hover {
+    color: inherit;
+    background-color: #f8f9fa !important;
+}
+
+.path-grade-report-user41 .user-grade tbody tr:nth-of-type(odd) {
+    background-color: #f8f9fa !important;
+}
+
+.path-grade-report-user41 .user-grade tbody tr {
+    background-color: #f8f9fa !important;
+}
+
+.path-grade-report-user41 .user-grade.generaltable .item {
+    background-color: white !important;
+}
+
+.path-grade-report-user41 .user-grade.generaltable .column-leader {
+    border: none;
+}
+
+.path-grade-report-user41 .user-grade.generaltable .empty {
+    background-color: #f8f9fa !important;
+    border: none;
+    padding: 5px;
+}
+
+.path-grade-report-user41 .user-grade.generaltable .column-itemname.category {
+    padding-left: 10px;
+}
+
+.path-grade-report-user41 .user-grade.generaltable thead th {
+    background-color: #f8f9fa !important;
+    position: sticky;
+    top: 0;
+}
+
+.path-grade-report-user41 #region-main {
+    overflow-x: inherit;
+}
+
+.path-grade-report-user41 .user-grade.generaltable .column-itemname a[aria-expanded="true"] .expanded,
+.path-grade-report-user41 .user-grade.generaltable .column-itemname a[aria-expanded="false"] .collapsed {
+    display: none;
+}
+
+.path-grade-report-user41 .user-grade.generaltable .column-itemname a.toggle-category i {
+    font-size: 12px;
+    width: 12px;
+    height: 12px;
+    color: #1d2125;
+    margin: 0;
+}
+
+.path-grade-report-user41 .user-grade.generaltable .column-itemname a.toggle-category {
+    height: 24px;
+    width: 24px;
+    font-size: 12px;
+    line-height: 24px;
+    margin-right: 3px;
+}
+
+.path-grade-report-user41  .user-grade-container {
+    padding: 10px 10px;
+    background-color: #f8f9fa !important;
+}
+
+.path-grade-report-user41 .user-grade.generaltable thead th,
+.path-grade-report-user41 .user-grade.generaltable .b1t.b2b.b1l,
+.path-grade-report-user41 .user-grade.generaltable .singleitem th,
+.path-grade-report-user41 .user-grade.generaltable .singleitem td {
+    border: none;
+}
+
+.path-grade-report-user41 .user-grade.generaltable .column-itemname .small {
+    font-size: 70%;
+}

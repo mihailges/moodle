@@ -83,8 +83,10 @@ class user extends core_course_external {
 
         $enrolledusers = get_enrolled_users($coursecontext);
 
-        $users = array_map(function ($user) use ($PAGE, $USER) {
+        $users = array_map(function ($user) use ($PAGE, $USER, $params) {
             $user->fullname = fullname($user);
+            $url = new moodle_url('/grade/report/user41/index.php', ['id' => $params['courseid'], 'userid' => $user->id]);
+            $user->url = $url->out(false);
             $userpicture = new user_picture($user);
             $userpicture->size = 1;
             $user->profileimage = $userpicture->get_url($PAGE)->out(false);
@@ -132,6 +134,11 @@ class user extends core_course_external {
             'profileimage' => new external_value(
                 PARAM_URL,
                 'The location of the users larger image',
+                VALUE_OPTIONAL
+            ),
+            'url' => new external_value(
+                PARAM_URL,
+                'The link to the user report',
                 VALUE_OPTIONAL
             ),
             'sendmessage' => new external_value(

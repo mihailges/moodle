@@ -387,9 +387,11 @@ class behat_grade extends behat_base {
             throw new coding_exception('The path is too long (must have no more than two items separated with ">")');
         }
 
-        // Get the select element.
-        $selectxpath = "//form[contains(@id,'{$formid}')]//select";
-        $select = $this->find('xpath', $selectxpath);
+        $tertiarynavselectorxpath = '//nav[contains(@class, "tertiary-navigation-selector")]';
+
+        // The tertiary navigation selector dropdown must be expanded.
+        $tertiarynavselectortogglexpath = $tertiarynavselectorxpath . '/descendant::div[contains(@class, "dropdown-toggle")]';
+        $this->find('xpath', $tertiarynavselectortogglexpath)->click();
 
         // Define the xpath to the option element depending on the provided path.
         // If two items are provided in the path, the first item will be considered as an identifier of an existing
@@ -399,22 +401,18 @@ class behat_grade extends behat_base {
         // regardless of the option group. Also, this is useful when option elements are not a part of an option group
         // which is possible.
         if (count($path) === 2) {
-            $optionxpath = $selectxpath . '/optgroup[@label="' . $this->escape($path[0]) . '"]' .
-                '/option[contains(.,"' . $this->escape($path[1]) . '")]';
+            $itemxpath = $tertiarynavselectorxpath .
+                '/descendant::li[contains(@role, "presentation") and normalize-space(text()) = "' .
+                $this->escape($path[0]) . '"]' .
+                '/following-sibling::li[contains(@class, "dropdown-item") and normalize-space(text()) = "' .
+                $this->escape($path[1]) . '"]';
         } else {
-            $optionxpath = $selectxpath . '//option[contains(.,"' . $this->escape($path[0]) . '")]';
+            $itemxpath = $tertiarynavselectorxpath .
+                '/descendant::li[contains(@class, "dropdown-item") and normalize-space(text()) = "' .
+                $this->escape($path[0]) . '"]';
         }
 
-        // Get the option element that we are looking to select.
-        $option = $this->find('xpath', $optionxpath);
-
-        // Select the given option in the select element.
-        $field = behat_field_manager::get_field_instance('select', $select, $this->getSession());
-        $field->set_value($this->escape($option->getValue()));
-
-        if (!$this->running_javascript()) {
-            $this->execute('behat_general::i_click_on_in_the', [get_string('go'), 'button',
-                "#{$formid}", 'css_element']);
-        }
+        $tertiarynavselectoritem = $this->find('xpath', $itemxpath);
+        $tertiarynavselectoritem->click();
     }
 }

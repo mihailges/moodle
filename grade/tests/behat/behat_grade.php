@@ -334,7 +334,7 @@ class behat_grade extends behat_base {
             $this->execute('behat_navigation::i_select_from_secondary_navigation', get_string('grades'));
         }
 
-        $this->select_in_gradebook_navigation_selector($gradepath, 'gradesactionselect');
+        $this->select_in_gradebook_navigation_selector($gradepath);
     }
 
     /**
@@ -376,9 +376,13 @@ class behat_grade extends behat_base {
      *                     an option group in the navigation selector, while the second ("Grade letters") will be used to
      *                     identify an option within that option group. Otherwise, a single item in a path (ex. "Scales")
      *                     will be used to identify an option in the navigation selector regardless of the option group.
-     * @param string $formid The ID of the form element which contains the navigation URL selector element.
+     * @param null $unused This parameter has been deprecated since 4.1 and should not be used anymore.
      */
-    protected function select_in_gradebook_navigation_selector(string $path, string $formid) {
+    protected function select_in_gradebook_navigation_selector(string $path, string $unused = null) {
+        if ($unused !== null) {
+            debugging('Deprecated argument passed to ' . __FUNCTION__, DEBUG_DEVELOPER);
+        }
+
         // Split the path string by ">".
         $path = preg_split('/\s*>\s*/', trim($path));
 

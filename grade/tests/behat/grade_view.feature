@@ -1,4 +1,4 @@
-@core @core_grades
+@core @core_grades @javascript @testtt
 Feature: We can enter in grades and view reports from the gradebook
   In order to check the expected results are displayed
   As a teacher

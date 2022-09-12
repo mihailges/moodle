@@ -1,4 +1,4 @@
-@core @core_grades
+@core @core_grades @javascript
 Feature: We can use calculated grade totals
   In order to calculate grade totals
   As an teacher

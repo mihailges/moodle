@@ -2970,6 +2970,12 @@ class global_navigation extends navigation_node {
             }
         }
 
+        $js = "function showAlert(e, courseId) { e.preventDefault(); alert('Exporting course with ID ' + courseId + ' to MoodleNet'); }";
+        $this->page->requires->js_amd_inline($js);
+        $action = new action_link(new moodle_url(''), '', new component_action('click', 'showAlert', [$course->id]));
+        $coursenode->add('Export to MoodleNet', $action, self::TYPE_SETTING, null,
+            'exportmoodlenet')->set_force_into_more_menu(true);
+
         return true;
     }
     /**
@@ -4875,6 +4881,12 @@ class settings_navigation extends navigation_node {
         if (function_exists($function)) {
             $function($this, $modulenode);
         }
+
+        $js = "function showAlert(e, moduleId) { e.preventDefault(); alert('Exporting module with ID ' + moduleId + ' to MoodleNet'); }";
+        $this->page->requires->js_amd_inline($js);
+        $action = new action_link(new moodle_url(''), '', new component_action('click', 'showAlert', [$this->page->cm->id]));
+        $modulenode->add('Export to MoodleNet', $action, self::TYPE_SETTING, null,
+            'exportmoodlenet')->set_force_into_more_menu(true);
 
         // Remove the module node if there are no children.
         if ($modulenode->children->count() <= 0) {

@@ -31,10 +31,16 @@ use graded_users_iterator;
 use moodle_exception;
 use stdClass;
 use gradereport_user\report\user as user_report;
+use coding_exception;
+use invalid_parameter_exception;
+use moodle_url;
+use restricted_context_exception;
+use user_picture;
 
 defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->libdir.'/externallib.php');
+require_once($CFG->dirroot.'/grade/lib.php');
 
 /**
  * External grade report API implementation

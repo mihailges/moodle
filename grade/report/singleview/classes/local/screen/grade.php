@@ -44,13 +44,13 @@ defined('MOODLE_INTERNAL') || die;
  */
 class grade extends tablelike implements selectable_items, filterable_items {
 
-    /** @var int $totalitemcount Used for paging */
+    /** @param int $totalitemcount Used for paging */
     private int $totalitemcount = 0;
 
-    /** @var bool $requiresextra True if this is a manual grade item */
+    /** @param bool $requiresextra True if this is a manual grade item */
     private bool $requiresextra = false;
 
-    /** @var bool $requirepaging True if there are more users than our limit. */
+    /** @param bool $requirepaging True if there are more users than our limit. */
     private bool $requirespaging = true;
 
     /**

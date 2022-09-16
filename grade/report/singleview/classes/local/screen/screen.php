@@ -45,49 +45,81 @@ abstract class screen {
 
     /**
      * The id of the course
+<<<<<<< HEAD
      * @var int $courseid
+=======
+     * @param int $courseid
+>>>>>>> b81978a77e8 (MDL-75362 gradereport_singleview: Roll in intial zero state)
      */
     protected int $courseid;
 
     /**
      * Either a user id or a grade_item id
+<<<<<<< HEAD
      * @var int|null $itemid
+=======
+     * @param int|null $itemid
+>>>>>>> b81978a77e8 (MDL-75362 gradereport_singleview: Roll in intial zero state)
      */
     protected ?int $itemid;
 
     /**
      * The currently set groupid (if set)
+<<<<<<< HEAD
      * @var int $groupid
+=======
+     * @param int $groupid
+>>>>>>> b81978a77e8 (MDL-75362 gradereport_singleview: Roll in intial zero state)
      */
     protected $groupid;
 
     /**
      * The course context
+<<<<<<< HEAD
      * @var context_course $context
+=======
+     * @param context_course $context
+>>>>>>> b81978a77e8 (MDL-75362 gradereport_singleview: Roll in intial zero state)
      */
     protected context_course $context;
 
     /**
      * The page number
+<<<<<<< HEAD
      * @var int $page
+=======
+     * @param int $page
+>>>>>>> b81978a77e8 (MDL-75362 gradereport_singleview: Roll in intial zero state)
      */
     protected int $page;
 
     /**
      * Results per page
+<<<<<<< HEAD
      * @var int $perpage
+=======
+     * @param int $perpage
+>>>>>>> b81978a77e8 (MDL-75362 gradereport_singleview: Roll in intial zero state)
      */
     protected int $perpage;
 
     /**
      * List of items on the page, they could be users or grade_items
+<<<<<<< HEAD
      * @var array $items
+=======
+     * @param array $items
+>>>>>>> b81978a77e8 (MDL-75362 gradereport_singleview: Roll in intial zero state)
      */
     protected array $items;
 
     /**
      * List of allowed values for 'perpage' setting
+<<<<<<< HEAD
      * @var array $validperpage
+=======
+     * @param array $validperpage
+>>>>>>> b81978a77e8 (MDL-75362 gradereport_singleview: Roll in intial zero state)
      */
     protected static array $validperpage = [20, 50, 100, 200, 400, 1000, 5000];
 

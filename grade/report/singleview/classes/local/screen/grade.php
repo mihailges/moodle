@@ -46,19 +46,31 @@ class grade extends tablelike implements selectable_items, filterable_items {
 
     /**
      * Used for paging
+<<<<<<< HEAD
      * @var int $totalitemcount
+=======
+     * @param int $totalitemcount
+>>>>>>> b81978a77e8 (MDL-75362 gradereport_singleview: Roll in intial zero state)
      */
     private int $totalitemcount = 0;
 
     /**
      * True if this is a manual grade item
+<<<<<<< HEAD
      * @var bool $requiresextra
+=======
+     * @param bool $requiresextra
+>>>>>>> b81978a77e8 (MDL-75362 gradereport_singleview: Roll in intial zero state)
      */
     private bool $requiresextra = false;
 
     /**
      *  True if there are more users than our limit.
+<<<<<<< HEAD
      * @var bool $requirepaging
+=======
+     * @param bool $requirepaging
+>>>>>>> b81978a77e8 (MDL-75362 gradereport_singleview: Roll in intial zero state)
      */
     private bool $requirespaging = true;
 

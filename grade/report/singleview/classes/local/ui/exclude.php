@@ -37,10 +37,10 @@ use grade_grade;
  */
 class exclude extends grade_attribute_format implements be_checked, be_disabled {
 
-    /** @var string $name The name of the input */
+    /** @param string $name The name of the input */
     public string $name = 'exclude';
 
-    /** @var bool $disabled Is the checkbox disabled? */
+    /** @param bool $disabled Is the checkbox disabled? */
     public $disabled = false;
 
     /**

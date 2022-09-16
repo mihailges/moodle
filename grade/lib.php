@@ -2951,8 +2951,12 @@ abstract class grade_helper {
                 continue;
             }
 
+            if ($plugin === 'singleview' || $plugin === 'user') {
+                $url = new moodle_url('/grade/report/'.$plugin.'/index.php', array('id'=>$courseid, 'zerostate'=>true));
+            } else {
+                $url = new moodle_url('/grade/report/'.$plugin.'/index.php', array('id'=>$courseid));
+            }
             $pluginstr = get_string('pluginname', 'gradereport_'.$plugin);
-            $url = new moodle_url('/grade/report/'.$plugin.'/index.php', array('id'=>$courseid));
             $gradereports[$plugin] = new grade_plugin_info($plugin, $url, $pluginstr);
 
             // Add link to preferences tab if such a page exists

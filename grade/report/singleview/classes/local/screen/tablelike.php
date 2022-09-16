@@ -41,13 +41,22 @@ defined('MOODLE_INTERNAL') || die;
  */
 abstract class tablelike extends screen {
 
-    /** @param array $headers A list of table headers */
+    /**
+     * A list of table headers
+     * @param array $headers
+     */
     protected array $headers = [];
 
-    /** @param array $initerrors A list of errors that mean we should not show the table */
+    /**
+     * A list of errors that mean we should not show the table
+     * @param array $initerrors
+     */
     protected array $initerrors = [];
 
-    /** @param array $definition Describes the columns in the table */
+    /**
+     * Describes the columns in the table
+     * @param array $definition
+     */
     protected array $definition = [];
 
     /**

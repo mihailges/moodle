@@ -35,13 +35,22 @@ defined('MOODLE_INTERNAL') || die;
  */
 class dropdown_attribute extends element {
 
-    /** @param string $selected Who is selected ? */
+    /**
+     * Who is selected?
+     * @param string $selected
+     */
     private string $selected;
 
-    /** @param array $options List of options ? */
+    /**
+     * List of options
+     * @param array $options
+     */
     private array $options;
 
-    /** @param bool $isdisabled Is this input disabled. */
+    /**
+     * Is this input disabled.
+     * @param bool $isdisabled
+     */
     private bool $isdisabled;
 
     /**

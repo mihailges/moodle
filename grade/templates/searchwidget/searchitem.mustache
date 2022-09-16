@@ -43,11 +43,24 @@
             <a class="result-cell" id="user-{{id}}" role="gridcell" href="{{url}}">{{fullname}}</a>
         </div>
         <div class="w-25 pull-left">
-            <a href="{{sendmessage}}" id="message-user-button" role="button" data-conversationid="0" data-userid="{{id}}" >
+            <a href="{{sendmessage}}"
+               class="result-cell"
+               id="message-user-button-{{id}}"
+               role="gridcell"
+               data-conversationid="0"
+               data-userid="{{id}}"
+            >
                 <i class="icon fa fa-comment-o fa-fw fa-fw iconsmall text-muted" aria-hidden="true"></i>
                 <span class="sr-only">{{#str}}message{{/str}}</span>
             </a>
-            <a href="{{addcontact}}" data-currentuserid="{{currentuser}}" data-userid="{{id}}" data-is-contact="0" id="toggle-contact-button" role="button" class="ajax-contact-button">
+            <a href="{{addcontact}}"
+               data-currentuserid="{{currentuser}}"
+               data-userid="{{id}}"
+               data-is-contact="0"
+               id="toggle-contact-button-{{id}}"
+               role="gridcell"
+               class="ajax-contact-button result-cell"
+            >
                 <i class="icon fa fa-address-card fa-fw fa-fw iconsmall text-muted" aria-hidden="true"></i>
                 <span class="sr-only">{{#str}}addtoyourcontacts, core_message{{/str}}</span>
             </a>

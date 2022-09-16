@@ -43,28 +43,52 @@ defined('MOODLE_INTERNAL') || die;
  */
 abstract class screen {
 
-    /** @param int $courseid The id of the course */
+    /**
+     * The id of the course
+     * @param int $courseid
+     */
     protected int $courseid;
 
-    /** @param int|null $itemid Either a user id or a grade_item id */
+    /**
+     * Either a user id or a grade_item id
+     * @param int|null $itemid
+     */
     protected ?int $itemid;
 
-    /** @param int $groupid The currently set groupid (if set) */
+    /**
+     * The currently set groupid (if set)
+     * @param int $groupid
+     */
     protected $groupid;
 
-    /** @param context_course $context The course context */
+    /**
+     * The course context
+     * @param context_course $context
+     */
     protected context_course $context;
 
-    /** @param int $page The page number */
+    /**
+     * The page number
+     * @param int $page
+     */
     protected int $page;
 
-    /** @param int $perpage Results per page */
+    /**
+     * Results per page
+     * @param int $perpage
+     */
     protected int $perpage;
 
-    /** @param array $items List of items on the page, they could be users or grade_items */
+    /**
+     * List of items on the page, they could be users or grade_items
+     * @param array $items
+     */
     protected array $items;
 
-    /** @param array $validperpage List of allowed values for 'perpage' setting */
+    /**
+     * List of allowed values for 'perpage' setting
+     * @param array $validperpage
+     */
     protected static array $validperpage = [20, 50, 100, 200, 400, 1000, 5000];
 
     /**

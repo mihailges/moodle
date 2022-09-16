@@ -513,3 +513,12 @@
 .path-grade-report-singleview input[name^="finalgrade"] {
     width: 80px;
 }
+
+.result-row.active {
+    background-color: $state-info-bg;
+}
+
+.searchresultitemscontainer .focused-cell {
+    outline-style: dotted;
+    outline-color: green;
+}

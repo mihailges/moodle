@@ -15,19 +15,19 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template core_grades/report/user41/usersearch_body
+    @template core_grades/report/singleview/gradesearch_body
 
-    The body of the user widget.
+    The body of the grade item widget.
 
     Example context (json):
     {}
 }}
 {{< core/search_input_auto }}
     {{$label}}{{#str}}
-        searchusers, gradereport_user
+        searchgrades, gradereport_singleview
     {{/str}}{{/label}}
     {{$placeholder}}{{#str}}
-        searchusers, gradereport_user
+        searchgrades, gradereport_singleview
     {{/str}}{{/placeholder}}
 {{/ core/search_input_auto }}
 

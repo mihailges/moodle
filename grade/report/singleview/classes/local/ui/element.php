@@ -35,13 +35,13 @@ defined('MOODLE_INTERNAL') || die;
  */
 abstract class element {
 
-    /** @var string $name The first bit of the name for this input. */
+    /** @param string $name The first bit of the name for this input. */
     public string $name;
 
-    /** @var string $value The value for this input. */
+    /** @param string $value The value for this input. */
     public string $value;
 
-    /** @var string $label The form label for this input. */
+    /** @param string $label The form label for this input. */
     public string $label;
 
     /**

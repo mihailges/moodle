@@ -43,28 +43,28 @@ defined('MOODLE_INTERNAL') || die;
  */
 abstract class screen {
 
-    /** @var int $courseid The id of the course */
+    /** @param int $courseid The id of the course */
     protected int $courseid;
 
-    /** @var int|null $itemid Either a user id or a grade_item id */
+    /** @param int|null $itemid Either a user id or a grade_item id */
     protected ?int $itemid;
 
-    /** @var int $groupid The currently set groupid (if set) */
+    /** @param int $groupid The currently set groupid (if set) */
     protected $groupid;
 
-    /** @var context_course $context The course context */
+    /** @param context_course $context The course context */
     protected context_course $context;
 
-    /** @var int $page The page number */
+    /** @param int $page The page number */
     protected int $page;
 
-    /** @var int $perpage Results per page */
+    /** @param int $perpage Results per page */
     protected int $perpage;
 
-    /** @var array $items List of items on the page, they could be users or grade_items */
+    /** @param array $items List of items on the page, they could be users or grade_items */
     protected array $items;
 
-    /** @var array $validperpage List of allowed values for 'perpage' setting */
+    /** @param array $validperpage List of allowed values for 'perpage' setting */
     protected static array $validperpage = [20, 50, 100, 200, 400, 1000, 5000];
 
     /**
@@ -222,21 +222,21 @@ abstract class screen {
      *
      * @param boolean $selfitemisempty True if no item has been selected yet.
      */
-    public abstract function init(bool $selfitemisempty = false);
+    abstract public function init(bool $selfitemisempty = false);
 
     /**
      * Get the type of items in the list.
      *
      * @return string
      */
-    public abstract function item_type(): string;
+    abstract public function item_type(): string;
 
     /**
      * Get the entire screen as a string.
      *
      * @return string
      */
-    public abstract function html(): string;
+    abstract public function html(): string;
 
     /**
      * Does this screen support paging?

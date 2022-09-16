@@ -35,7 +35,7 @@ defined('MOODLE_INTERNAL') || die;
  */
 class override extends grade_attribute_format implements be_checked, be_disabled {
 
-    /** @var string $name The name for this input */
+    /** @param string $name The name for this input */
     public string $name = 'override';
 
     /**

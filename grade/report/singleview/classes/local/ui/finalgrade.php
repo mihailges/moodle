@@ -36,7 +36,7 @@ use stdClass;
  */
 class finalgrade extends grade_attribute_format implements unique_value, be_disabled {
 
-    /** @var string $name Name of this input */
+    /** @param string $name Name of this input */
     public string $name = 'finalgrade';
 
     /**

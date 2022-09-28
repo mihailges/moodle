@@ -96,11 +96,10 @@ class group extends external_api {
 
             $groupsmenu = array_merge($allowedgroups, $usergroups);
             if (!$allowedgroups or $groupmode == VISIBLEGROUPS or $aag) {
-                $groupsmenu[0] = (object) [
+                array_unshift($groupsmenu, (object) [
                     'id' => 0,
                     'name' => get_string('allparticipants'),
-                ];
-
+                ]);
             }
 
             $mappedgroups = array_map(function($group) use ($COURSE) {

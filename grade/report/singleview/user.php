@@ -29,7 +29,7 @@ require_once($CFG->dirroot.'/grade/lib.php');
 use gradereport_singleview\report\singleview_user as reportbase;
 
 $courseid = required_param('id', PARAM_INT);
-$userid   = optional_param('userid', $USER->id, PARAM_INT);
+$userid   = optional_param('userid', null, PARAM_INT);
 $userview = optional_param('userview', 0, PARAM_INT);
 
 $PAGE->set_url(new moodle_url('/grade/report/singleview/user.php', ['id' => $courseid]));
@@ -86,8 +86,12 @@ if (isset($report)) {
     echo $OUTPUT->notification(get_string('nostudentsyet'));
 }
 
+$actionbar = new \core_grades\output\general_action_bar($context,
+    new moodle_url('/grade/report/singleview/index.php', ['id' => $courseid]), 'report', 'singleview');
+
 // Print header.
-print_grade_page_head($COURSE->id, 'report', 'singleview', ' ', false);
+print_grade_page_head($COURSE->id, 'report', 'singleview', ' ', false, null,
+    true, null, null, null, $actionbar);
 
 echo $report->output();
 echo $OUTPUT->footer();

@@ -86,8 +86,12 @@ if (isset($report)) {
     echo $OUTPUT->notification(get_string('nostudentsyet'));
 }
 
+$actionbar = new \core_grades\output\general_action_bar($context,
+    new moodle_url('/grade/report/singleview/index.php', ['id' => $courseid]), 'report', 'singleview');
+
 // Print header.
-print_grade_page_head($COURSE->id, 'report', 'singleview', ' ', false);
+print_grade_page_head($COURSE->id, 'report', 'singleview', ' ', false, null,
+    true, null, null, null, $actionbar);
 
 echo $report->output();
 echo $OUTPUT->footer();

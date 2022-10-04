@@ -45,7 +45,7 @@ require_once($CFG->dirroot.'/grade/lib.php');
  * @copyright  2022 Mathew May <mathew.solutions>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class gradeitems extends core_course_external {
+class singleview extends core_course_external {
     /**
      * Describes the parameters for get_users_for_course.
      *
@@ -90,15 +90,20 @@ class gradeitems extends core_course_external {
             $item = new \stdClass();
             $item->gid = $gradeitem->id;
             $url = new moodle_url('/grade/report/singleview/index.php', [
-                'id' => $params['courseid'],
-                'itemid' => $gradeitem->id]
+                    'id' => $params['courseid'],
+                    'itemid' => $gradeitem->id,
+                    'item' => 'grade'
+                ]
             );
             $item->url = $url->out(false);
             if ($gradeitem->itemtype === 'course') {
                 $item->name = get_string('coursetotal', 'grades');
+            } else if ($gradeitem->itemname === '') {
+                $item->name = get_string('unnameditem', 'gradereport_singleview');
             } else {
                 $item->name = $gradeitem->itemname;
             }
+
             return $item;
         }, $gradeableitems);
         sort($gradeitems);

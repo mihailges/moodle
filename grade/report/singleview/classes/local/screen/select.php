@@ -63,9 +63,9 @@ class select extends screen {
     /**
      * Get the type of items on this screen, not valid so return false.
      *
-     * @return bool
+     * @return string|null
      */
-    public function item_type(): string {
+    public function item_type(): ?string {
         return false;
     }
 
@@ -75,7 +75,19 @@ class select extends screen {
      * @return string
      */
     public function html(): string {
-        global $OUTPUT;
+        global $OUTPUT, $COURSE;
+
+        if($this->itemid === null) {
+            $userlink = new \moodle_url('/grade/report/singleview/index.php', ['id' => $COURSE->id, 'item' => 'user_select']);
+            $gradelink = new \moodle_url('/grade/report/singleview/index.php', ['id' => $COURSE->id, 'item' => 'grade_select']);
+            $context = [
+                'courseid' => $COURSE->id,
+                'imglink' => new \moodle_url('/pix/f/clip-353 1.png'),
+                'userzerolink' => $userlink->out(false),
+                'gradezerolink' => $gradelink->out(false),
+            ];
+            return $OUTPUT->render_from_template('gradereport_singleview/zero_state', $context);
+        }
 
         $html = '';
 
@@ -123,5 +135,16 @@ class select extends screen {
      */
     public function supports_next_prev(): bool {
         return false;
+    }
+
+    /**
+     * Should we show the base singlereport group selector?
+     * @return bool
+     */
+    public function display_group_selector(): bool {
+        if ($this->itemid === null) {
+            return false;
+        }
+        return true;
     }
 }

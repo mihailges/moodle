@@ -41,7 +41,7 @@ export const init = () => {
 };
 
 /**
- * Register chooser related event listeners.
+ * Register user search widget related event listeners.
  *
  * @method registerListenerEvents
  */
@@ -55,7 +55,7 @@ const registerListenerEvents = () => {
 
     let {bodyPromiseResolver, bodyPromise} = WidgetBase.promisesAndResolvers();
 
-    // Display module chooser event listeners.
+    // Register events.
     events.forEach((event) => {
         document.addEventListener(event, async(e) => {
             const trigger = e.target.closest('.userwidget');
@@ -64,12 +64,12 @@ const registerListenerEvents = () => {
                 e.preventDefault();
 
                 // If an error occurs while fetching the data, display the error within the modal.
-                const data = await Repository.userSingleItemFetch(courseID).catch(async(e) => {
+                const data = await Repository.userFetch(courseID, 'singleview').catch(async(e) => {
                     const errorTemplateData = {
                         'errormessage': e.message
                     };
                     bodyPromiseResolver(
-                        await Templates.render('core_course/local/activitychooser/error', errorTemplateData)
+                        await Templates.render('core_grades/searchwidget/error', errorTemplateData)
                     );
                 });
                 // Early return if there is no module data.
@@ -80,7 +80,7 @@ const registerListenerEvents = () => {
                     bodyPromise,
                     data.users,
                     searchUsers(),
-                    getString('pluginname', 'gradereport_singleview')
+                    getString('selectauser', 'gradereport_singleview')
                 );
             }
         });

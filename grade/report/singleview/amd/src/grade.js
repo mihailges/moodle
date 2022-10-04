@@ -16,7 +16,7 @@
 /**
  * A small modal to search users within the gradebook.
  *
- * @module    gradereport_singleview/user
+ * @module    gradereport_singleview
  * @copyright 2022 Mathew May <mathew.solutions>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -41,7 +41,7 @@ export const init = () => {
 };
 
 /**
- * Register chooser related event listeners.
+ * Register grade item search widget related event listeners.
  *
  * @method registerListenerEvents
  */
@@ -55,7 +55,7 @@ const registerListenerEvents = () => {
 
     let {bodyPromiseResolver, bodyPromise} = WidgetBase.promisesAndResolvers();
 
-    // Display module chooser event listeners.
+    // Register events.
     events.forEach((event) => {
         document.addEventListener(event, async(e) => {
             const trigger = e.target.closest('.gradewidget');
@@ -69,7 +69,7 @@ const registerListenerEvents = () => {
                         'errormessage': e.message
                     };
                     bodyPromiseResolver(
-                        await Templates.render('core_course/local/activitychooser/error', errorTemplateData)
+                        await Templates.render('core_grades/searchwidget/error', errorTemplateData)
                     );
                 });
                 // Early return if there is no module data.
@@ -80,7 +80,7 @@ const registerListenerEvents = () => {
                     bodyPromise,
                     data.gradeitems,
                     searchGradeitems(),
-                    getString('pluginname', 'gradereport_singleview')
+                    getString('selectagrade', 'gradereport_singleview')
                 );
             }
         });

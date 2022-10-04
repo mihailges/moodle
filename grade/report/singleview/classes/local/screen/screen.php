@@ -283,9 +283,9 @@ abstract class screen {
     /**
      * Get the type of items in the list.
      *
-     * @return string
+     * @return null|string
      */
-    abstract public function item_type(): string;
+    abstract public function item_type(): ?string;
 
     /**
      * Get the entire screen as a string.

@@ -22,13 +22,15 @@
     Example context (json):
     {
         "searchresult": [
-            "id": 1,
-            "name": "Quiz 1",
-            "url": "http://foo.bar/gradereport/?userid=25",
-            "fullname": "Cameron Greeve",
-            "sendmessage": "http://foo.bar/message/index.php?id=25",
-            "addcontact": "http://foo.bar/message/index.php?user1=2&user2=14&addcontact=14&sesskey=XXXXX",
-            "currentuser": "2"
+            {
+                "id": "1",
+                "name": "Quiz 1",
+                "url": "http://foo.bar/gradereport/?userid=25",
+                "fullname": "Cameron Greeve",
+                "sendmessage": "http://foo.bar/message/index.php?id=25",
+                "addcontact": "http://foo.bar/message/index.php?user1=2&user2=14&addcontact=14&sesskey=XXXXX",
+                "currentuser": "2"
+            }
         ]
     }
 }}
@@ -39,18 +41,11 @@
         </div>
     {{/name}}
     {{^name}}
-        <div class="w-75 pull-left">
-            <a class="result-cell" id="user-{{id}}" role="gridcell" href="{{url}}">{{fullname}}</a>
+        <div class="w-50 pull-left result-cell text-truncate">
+            <a id="user-{{id}}" role="gridcell" href="{{url}}">{{fullname}}</a>
         </div>
-        <div class="w-25 pull-left">
-            <a href="{{sendmessage}}" id="message-user-button" role="button" data-conversationid="0" data-userid="{{id}}" >
-                <i class="icon fa fa-comment-o fa-fw fa-fw iconsmall text-muted" aria-hidden="true"></i>
-                <span class="sr-only">{{#str}}message{{/str}}</span>
-            </a>
-            <a href="{{addcontact}}" data-currentuserid="{{currentuser}}" data-userid="{{id}}" data-is-contact="0" id="toggle-contact-button" role="button" class="ajax-contact-button">
-                <i class="icon fa fa-address-card fa-fw fa-fw iconsmall text-muted" aria-hidden="true"></i>
-                <span class="sr-only">{{#str}}addtoyourcontacts, core_message{{/str}}</span>
-            </a>
+        <div class="w-50 pull-left result-cell text-truncate">
+            <a id="email-user-{{id}}" role="gridcell" href="{{url}}">{{email}}</a>
         </div>
     {{/name}}
 </div>

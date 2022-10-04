@@ -1221,10 +1221,10 @@ class user extends grade_report {
     }
 
     /**
-     * Build the html for the screen.
+     * Build the html for the zero state of the user report.
      * @return string HTML to display
      */
-    public function output(): string {
+    public function output_report_zerostate(): string {
         global $OUTPUT, $COURSE;
         $context = [
             'courseid' => $COURSE->id,

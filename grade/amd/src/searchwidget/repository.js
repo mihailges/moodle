@@ -28,13 +28,15 @@ import ajax from 'core/ajax';
  *
  * @method userFetch
  * @param {int} courseid ID of the course to fetch the users of.
+ * @param {string} gradeReportPlugin The name of the grade report plugin that fetches the users.
  * @return {object} jQuery promise
  */
-export const userFetch = (courseid) => {
+export const userFetch = (courseid, gradeReportPlugin) => {
     const request = {
-        methodname: 'gradereport_user_get_users_for_search_widget',
+        methodname: 'core_grades_get_enrolled_users_for_search_widget',
         args: {
             courseid: courseid,
+            gradereportplugin: gradeReportPlugin,
         },
     };
     return ajax.call([request])[0];
@@ -51,23 +53,6 @@ export const userFetch = (courseid) => {
 export const gradeitemFetch = (courseid) => {
     const request = {
         methodname: 'gradereport_singleview_get_grade_items_for_search_widget',
-        args: {
-            courseid: courseid,
-        },
-    };
-    return ajax.call([request])[0];
-};
-
-/**
- * Given a course ID, we want to fetch the enrolled learners, so we may fetch their reports.
- *
- * @method userSingleItemFetch
- * @param {int} courseid ID of the course to fetch the users of.
- * @return {object} jQuery promise
- */
-export const userSingleItemFetch = (courseid) => {
-    const request = {
-        methodname: 'gradereport_singleview_get_users_for_search_widget',
         args: {
             courseid: courseid,
         },

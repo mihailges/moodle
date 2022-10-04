@@ -15,19 +15,25 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template core_grades/report/user41/zero_state
+    @template core_grades/searchwidget/error
 
-    The zero state of the user report that contains the image and trigger for the search widget.
+    Chooser error template.
+
+    Variables required for this template:
+    * errormessage - The error message
 
     Example context (json):
     {
-        "imglink": "http://foo.bar/gradereport/?userid=25",
-        "courseid": "2"
+        "errormessage": "Error"
     }
 }}
-<div class="mx-auto w-50 text-center">
-    <img src="{{imglink}}" alt="Temp" class="w-50 h-50 mb-4">
-    <h4>{{#str}}selectuser, gradereport_user{{/str}}</h4>
-    <p>{{#str}}selectuserinstructions, gradereport_user{{/str}}</p>
-    <button class="btn btn-light border-secondary userwidget" data-courseid={{courseid}} data-searchtype="user">{{#str}}selectuserlink, gradereport_user{{/str}}</button>
+<div class="p-2 px-sm-5 py-sm-4">
+    <div class="alert alert-danger" role="alert">
+        <h5 class="alert-heading">
+            <i class="fa fa-exclamation-circle fa-fw text-danger"></i>
+            {{#str}} error, error {{/str}}
+        </h5>
+        <hr>
+        <p class="text-break">{{{errormessage}}}</p>
+    </div>
 </div>

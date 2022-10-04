@@ -421,4 +421,34 @@ class behat_grade extends behat_base {
                 "#{$formid}", 'css_element']);
         }
     }
+
+    /**
+     * Confirm if a value is within the search widget within the gradebook.
+     *
+     * Examples:
+     * - I confirm "User1" in "User" search within the gradebook widget exists
+     *
+     * @Given /^I confirm "(?P<needle>(?:[^"]|\\")*)" in "(?P<haystack>(?:[^"]|\\")*)" search within the gradebook widget exists$/
+     * @param string $needle The value to search for.
+     * @param string $haystack The selector to use within the zero state.
+     */
+    public function i_confirm_in_search_within_the_gradebook_widget_exists($needle, $haystack) {
+        $this->execute("behat_general::wait_until_exists", [$haystack, "dialogue"]);
+        $this->execute("behat_general::assert_element_contains_text", [$needle, $haystack, "dialogue"]);
+    }
+
+    /**
+     * Confirm if a value is not within the search widget within the gradebook.
+     *
+     * Examples:
+     * - I confirm "User1" in "User" search within the gradebook widget does not exist
+     *
+     * @Given /^I confirm "(?P<needle>(?:[^"]|\\")*)" in "(?P<haystack>(?:[^"]|\\")*)" search within the gradebook widget does not exist$/
+     * @param string $needle The value to search for.
+     * @param string $haystack The selector to use within the zero state.
+     */
+    public function i_confirm_in_search_within_the_gradebook_widget_does_not_exist($needle, $haystack) {
+        $this->execute("behat_general::wait_until_exists", [$haystack, "dialogue"]);
+        $this->execute("behat_general::assert_element_not_contains_text", [$needle, $haystack, "dialogue"]);
+    }
 }

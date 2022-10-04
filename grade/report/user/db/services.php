@@ -49,13 +49,4 @@ $functions = [
         'capabilities' => 'gradereport/user:view',
         'services' => [MOODLE_OFFICIAL_MOBILE_SERVICE],
     ],
-    'gradereport_user_get_users_for_search_widget' => [
-        'methodname' => 'get_users_for_search_widget',
-        'classname' => 'gradereport_user\\external\\user',
-        'description' => 'Get the user/(s) for a course',
-        'type' => 'read',
-        'ajax' => true,
-        'capabilities' => 'gradereport/user:view',
-        'services' => [MOODLE_OFFICIAL_MOBILE_SERVICE],
-    ],
 ];

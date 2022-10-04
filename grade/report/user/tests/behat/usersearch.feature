@@ -23,12 +23,11 @@ Feature: Within the User report, a teacher can search for users.
   Scenario: A teacher can search for and find a user to view
     When I navigate to "View > User report" in the course gradebook
     And I click on "Click to select user" "button"
-    And I wait until "User report" "dialogue" exists
-    And I should see "Student 1" in the "User report" "dialogue"
-    And I should see "Student 2" in the "User report" "dialogue"
-    And I should see "Student 32" in the "User report" "dialogue"
+    And I confirm "Student 1" in "Select a user" search within the gradebook widget exists
+    And I confirm "Student 2" in "Select a user" search within the gradebook widget exists
+    And I confirm "Student 32" in "Select a user" search within the gradebook widget exists
     And I set the field "searchinput" to "2"
     And I wait "1" seconds
-    Then I should see "Student 2" in the "User report" "dialogue"
-    And I should see "Student 32" in the "User report" "dialogue"
-    And I should not see "Student 1" in the "User report" "dialogue"
+    Then I confirm "Student 2" in "Select a user" search within the gradebook widget exists
+    And I confirm "Student 32" in "Select a user" search within the gradebook widget exists
+    And I confirm "Student 1" in "Select a user" search within the gradebook widget does not exist

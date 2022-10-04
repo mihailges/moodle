@@ -42,7 +42,6 @@ $itemid = optional_param('itemid', null, PARAM_INT);
 $itemtype = optional_param('item', $defaulttype, PARAM_TEXT);
 $page = optional_param('page', 0, PARAM_INT);
 $perpage = optional_param('perpage', 100, PARAM_INT);
-$zerostate = optional_param('zerostate', 0, PARAM_INT);
 
 if (empty($itemid)) {
     $itemid = $userid;
@@ -58,7 +57,6 @@ $pageparams = [
     'item'      => $itemtype,
     'page'      => $page,
     'perpage'   => $perpage,
-    'zerostate' => $zerostate,
 ];
 $PAGE->set_url(new moodle_url('/grade/report/singleview/index.php', $pageparams));
 $PAGE->set_pagelayout('incourse');
@@ -92,7 +90,7 @@ if (!isset($USER->grade_last_report)) {
 }
 $USER->grade_last_report[$course->id] = 'singleview';
 
-if ($zerostate) {
+if ($itemtype === 'select') {
     $report = new reportbase($courseid, $gpr, $context, $itemtype, $itemid);
     if (isset($report)) {
         // Trigger report viewed event.
@@ -103,8 +101,12 @@ if ($zerostate) {
         echo $OUTPUT->notification(get_string('nostudentsyet'));
     }
 
+    $actionbar = new \core_grades\output\general_action_bar($context,
+        new moodle_url('/grade/report/singleview/index.php', ['id' => $courseid]), 'report', 'singleview');
+
     // Print header.
-    print_grade_page_head($COURSE->id, 'report', 'singleview', ' ', false);
+    print_grade_page_head($COURSE->id, 'report', 'singleview', ' ', false, null,
+        true, null, null, null, $actionbar);
 
     echo $report->output();
 } else {
@@ -122,7 +124,6 @@ if ($zerostate) {
         'group' => $groupid,
         'page' => $page,
         'perpage' => $perpage,
-        'zerostate' => $zerostate
     ];
 
     $PAGE->set_pagelayout('report');

@@ -29,17 +29,9 @@ require_once($CFG->dirroot.'/grade/lib.php');
 use gradereport_singleview\report\singleview_grade as reportbase;
 
 $courseid = required_param('id', PARAM_INT);
-$userid   = optional_param('userid', $USER->id, PARAM_INT);
-$userview = optional_param('userview', 0, PARAM_INT);
 
 $PAGE->set_url(new moodle_url('/grade/report/singleview/grade.php', ['id' => $courseid]));
 $PAGE->requires->js_call_amd('gradereport_singleview/grade', 'init');
-
-if ($userview == 0) {
-    $userview = get_user_preferences('gradereport_singleview_view_user', 0);
-} else {
-    set_user_preference('gradereport_singleview_view_user', $userview);
-}
 
 // Basic access checks.
 if (!$course = $DB->get_record('course', ['id' => $courseid])) {
@@ -51,17 +43,10 @@ $PAGE->set_pagelayout('report');
 $context = context_course::instance($course->id);
 
 require_capability('gradereport/singleview:view', $context);
-
-if (empty($userid)) {
-    require_capability('moodle/grade:viewall', $context);
-} else {
-    if (!$DB->get_record('user', ['id' => $userid, 'deleted' => 0]) || isguestuser($userid)) {
-        throw new \moodle_exception('invaliduser');
-    }
-}
+require_capability('moodle/grade:viewall', $context);
 
 // Return tracking object.
-$gpr = new grade_plugin_return(['type' => 'report', 'plugin' => 'singleview', 'courseid' => $courseid, 'userid' => $userid]);
+$gpr = new grade_plugin_return(['type' => 'report', 'plugin' => 'singleview', 'courseid' => $courseid, 'userid' => $USER->id]);
 
 // Last selected report session tracking.
 if (!isset($USER->grade_last_report)) {
@@ -72,10 +57,7 @@ $USER->grade_last_report[$course->id] = 'singleview';
 // First make sure we have proper final grades.
 grade_regrade_final_grades_if_required($course);
 
-$defaulttype = $userid ? 'user' : 'select';
-$itemid = optional_param('itemid', null, PARAM_INT);
-$itemtype = optional_param('item', $defaulttype, PARAM_TEXT);
-$report = new reportbase($courseid, $gpr, $context, $itemtype, $itemid);
+$report = new reportbase($courseid, $gpr, $context, 'user', null);
 
 if (isset($report)) {
     // Trigger report viewed event.
@@ -86,8 +68,12 @@ if (isset($report)) {
     echo $OUTPUT->notification(get_string('nostudentsyet'));
 }
 
+$actionbar = new \core_grades\output\general_action_bar($context,
+    new moodle_url('/grade/report/singleview/index.php', ['id' => $courseid]), 'report', 'singleview');
+
 // Print header.
-print_grade_page_head($COURSE->id, 'report', 'singleview', ' ', false);
+print_grade_page_head($COURSE->id, 'report', 'singleview', ' ', false, null,
+    true, null, null, null, $actionbar);
 
 echo $report->output();
 echo $OUTPUT->footer();

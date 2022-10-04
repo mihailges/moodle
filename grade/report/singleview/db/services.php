@@ -24,18 +24,9 @@
 defined('MOODLE_INTERNAL') || die;
 
 $functions = [
-    'gradereport_singleview_get_users_for_search_widget' => [
-        'methodname' => 'get_users_for_search_widget',
-        'classname' => 'gradereport_singleview\\external\\user',
-        'description' => 'Get the user/(s) for a course',
-        'type' => 'read',
-        'ajax' => true,
-        'capabilities' => 'gradereport/singleview:view',
-        'services' => [MOODLE_OFFICIAL_MOBILE_SERVICE],
-    ],
     'gradereport_singleview_get_grade_items_for_search_widget' => [
         'methodname' => 'get_grade_items_for_search_widget',
-        'classname' => 'gradereport_singleview\\external\\gradeitems',
+        'classname' => 'gradereport_singleview\\external\\singleview',
         'description' => 'Get the gradeitem/(s) for a course',
         'type' => 'read',
         'ajax' => true,

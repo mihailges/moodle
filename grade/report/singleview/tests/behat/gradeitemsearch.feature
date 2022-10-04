@@ -24,10 +24,9 @@ Feature: Given we have opted to search for a grade item, Lets find and search th
     When I navigate to "View > Single view" in the course gradebook
     And I click on "Grades" "link" in the ".singleindex" "css_element"
     And I click on "Select grade item" "link"
-    And I wait until "Single view" "dialogue" exists
-    And I should see "Test assignment one" in the "Single view" "dialogue"
-    And I should see "Test assignment two" in the "Single view" "dialogue"
+    And I confirm "Test assignment one" in "Select a grade item" search within the gradebook widget exists
+    And I confirm "Test assignment two" in "Select a grade item" search within the gradebook widget exists
     And I set the field "searchinput" to "two"
     And I wait "1" seconds
-    Then I should see "Test assignment two" in the "Single view" "dialogue"
-    And I should not see "Test assignment one" in the "Single view" "dialogue"
+    Then I confirm "Test assignment two" in "Select a grade item" search within the gradebook widget exists
+    And I confirm "Test assignment one" in "Select a grade item" search within the gradebook widget does not exist

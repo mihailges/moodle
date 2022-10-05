@@ -203,7 +203,8 @@ function grade_report_user_profilereport(object $course, object $user, bool $vie
  * @param bool $iscurrentuser
  * @param stdClass $course Course object
  */
-function gradereport_user_myprofile_navigation(tree $tree, stdClass $user, bool $iscurrentuser, stdClass $course) {
+function gradereport_user_myprofile_navigation(tree $tree, stdClass $user, bool $iscurrentuser, ?stdClass $course)
+{
     if (empty($course)) {
         // We want to display these reports under the site context.
         $course = get_fast_modinfo(SITEID)->get_course();
@@ -238,3 +239,4 @@ function gradereport_user_myprofile_navigation(tree $tree, stdClass $user, bool 
         }
     }
 }
+

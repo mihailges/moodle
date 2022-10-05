@@ -64,7 +64,7 @@ const registerListenerEvents = () => {
                 e.preventDefault();
 
                 // If an error occurs while fetching the data, display the error within the modal.
-                const data = await Repository.userFetch(courseID).catch(async(e) => {
+                const data = await Repository.userFetch(courseID, 'user').catch(async(e) => {
                     const errorTemplateData = {
                         'errormessage': e.message
                     };
@@ -87,7 +87,7 @@ const registerListenerEvents = () => {
     });
     // Resolvers for passed functions in the modal creation.
     bodyPromiseResolver(Templates.render(
-        'gradereport_user/usersearch_body',
+        'core_grades/searchwidget/user/usersearch_body',
         []
     ));
 };

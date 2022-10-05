@@ -59,20 +59,3 @@ export const gradeitemFetch = (courseid) => {
     };
     return ajax.call([request])[0];
 };
-
-/**
- * Given a course ID, we want to fetch the enrolled learners, so we may fetch their reports.
- *
- * @method userSingleItemFetch
- * @param {int} courseid ID of the course to fetch the users of.
- * @return {object} jQuery promise
- */
-export const userSingleItemFetch = (courseid) => {
-    const request = {
-        methodname: 'gradereport_singleview_get_users_for_search_widget',
-        args: {
-            courseid: courseid,
-        },
-    };
-    return ajax.call([request])[0];
-};

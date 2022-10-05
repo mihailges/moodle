@@ -64,7 +64,7 @@ const registerListenerEvents = () => {
                 e.preventDefault();
 
                 // If an error occurs while fetching the data, display the error within the modal.
-                const data = await Repository.userSingleItemFetch(courseID).catch(async(e) => {
+                const data = await Repository.userFetch(courseID, 'singleview').catch(async(e) => {
                     const errorTemplateData = {
                         'errormessage': e.message
                     };

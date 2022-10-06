@@ -28,13 +28,15 @@ import ajax from 'core/ajax';
  *
  * @method userFetch
  * @param {int} courseid ID of the course to fetch the users of.
+ * @param {int} groupid ID of the group to fetch the users of.
  * @return {object} jQuery promise
  */
-export const userFetch = (courseid) => {
+export const userFetch = (courseid, groupid) => {
     const request = {
         methodname: 'gradereport_user_get_users_for_search_widget',
         args: {
             courseid: courseid,
+            groupid: groupid,
         },
     };
     return ajax.call([request])[0];

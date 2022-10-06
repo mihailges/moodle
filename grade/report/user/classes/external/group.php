@@ -105,8 +105,7 @@ class group extends external_api {
             $mappedgroups = array_map(function($group) use ($COURSE) {
                 $url = new \moodle_url('/grade/report/user/index.php', [
                     'id' => $COURSE->id,
-                    'gid' => $group->id,
-                    'zerostate' => 1
+                    'group' => $group->id
                 ]);
                 return (object) [
                     'name' => $group->name,

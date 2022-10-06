@@ -61,10 +61,11 @@ const registerListenerEvents = () => {
             const trigger = e.target.closest('.userwidget');
             if (trigger) {
                 const courseID = trigger.dataset.courseid;
+                const groupID = trigger.dataset.groupid;
                 e.preventDefault();
 
                 // If an error occurs while fetching the data, display the error within the modal.
-                const data = await Repository.userFetch(courseID, 'user').catch(async(e) => {
+                const data = await Repository.userFetch(courseID, 'user', groupID).catch(async(e) => {
                     const errorTemplateData = {
                         'errormessage': e.message
                     };

@@ -19416,6 +19416,9 @@ p.arrow_button {
   width: 40px;
   height: 40px; }
 
+.path-grade .user-navigation .container {
+  max-width: 767px; }
+
 #page-grade-grading-manage #activemethodselector label {
   display: inline-block; }
 

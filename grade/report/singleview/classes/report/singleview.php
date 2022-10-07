@@ -40,7 +40,7 @@ class singleview extends grade_report {
      */
     public static function valid_screens(): array {
         // This is a list of all the known classes representing a screen in this plugin.
-        return ['user', 'select', 'grade'];
+        return ['user', 'select', 'grade', 'user_zero', 'grade_zero'];
     }
 
     /**

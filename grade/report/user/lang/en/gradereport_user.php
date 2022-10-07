@@ -24,6 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['allusers'] = 'All users ({$a})';
 $string['eventgradereportviewed'] = 'Grade user report viewed';
 $string['pluginname'] = 'User report';
 $string['user:view'] = 'View your own grade report';
@@ -33,7 +34,7 @@ $string['privacy:metadata:preference:gradereport_user_view_user'] = 'Whether to 
 $string['searchgroups'] = 'Search groups';
 $string['selectgrouplink'] = 'Click to select group';
 $string['searchusers'] = 'Search users';
-$string['selectuser'] = 'Select a user to view their grades';
+$string['selectuser'] = 'Select user';
 $string['selectuserinstructions'] = 'By selecting a user you can view the grades by activity';
 $string['selectuserlink'] = 'Click to select user';
 $string['tablesummary'] = 'The table is arranged as a list of graded items including categories of graded items. When items are in a category they will be indicated as such.';

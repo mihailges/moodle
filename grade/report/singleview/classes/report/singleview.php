@@ -47,9 +47,9 @@ class singleview extends grade_report {
      * Process data from a form submission. Delegated to the current screen.
      *
      * @param array $data The data from the form
-     * @return array List of warnings
+     * @return array|object List of warnings
      */
-    public function process_data($data): array {
+    public function process_data($data) {
         if (has_capability('moodle/grade:edit', $this->context)) {
             return $this->screen->process($data);
         }

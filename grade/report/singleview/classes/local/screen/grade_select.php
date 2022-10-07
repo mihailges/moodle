@@ -24,7 +24,8 @@ namespace gradereport_singleview\local\screen;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class grade_select extends screen {
-    public function init($selfitemisempty = false) {}
+    public function init($selfitemisempty = false) {
+    }
     /**
      * Return the HTML for the page.
      *

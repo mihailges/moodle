@@ -24,6 +24,8 @@ use external_multiple_structure;
 use moodle_url;
 use core_user;
 
+defined('MOODLE_INTERNAL') || die;
+
 require_once($CFG->dirroot.'/grade/lib.php');
 
 defined('MOODLE_INTERNAL') || die;

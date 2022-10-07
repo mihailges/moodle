@@ -23,8 +23,8 @@ Feature: Given we land on the index page, select what type of report we wish to 
     When I navigate to "View > Single view" in the course gradebook
     And I click on "Grades" "link" in the ".singleindex" "css_element"
     And I click on "Select grade item" "link"
-    And I wait until "Single view" "dialogue" exists
-    And I click on "Close" "button" in the "Single view" "dialogue"
+    And I wait until "Select a grade item" "dialogue" exists
+    And I click on "Close" "button" in the "Select a grade item" "dialogue"
     Then I click on "Users" "link" in the ".page-toggler" "css_element"
     And I click on "Click to select user" "link"
-    And I wait until "Single view" "dialogue" exists
+    And I wait until "Select a user" "dialogue" exists

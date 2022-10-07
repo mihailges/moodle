@@ -45,83 +45,51 @@ abstract class screen {
 
     /**
      * The id of the course
-<<<<<<< HEAD
      * @var int $courseid
-=======
-     * @param int $courseid
->>>>>>> b81978a77e8 (MDL-75362 gradereport_singleview: Roll in intial zero state)
      */
-    protected int $courseid;
+    protected $courseid;
 
     /**
      * Either a user id or a grade_item id
-<<<<<<< HEAD
      * @var int|null $itemid
-=======
-     * @param int|null $itemid
->>>>>>> b81978a77e8 (MDL-75362 gradereport_singleview: Roll in intial zero state)
      */
-    protected ?int $itemid;
+    protected $itemid;
 
     /**
      * The currently set groupid (if set)
-<<<<<<< HEAD
      * @var int $groupid
-=======
-     * @param int $groupid
->>>>>>> b81978a77e8 (MDL-75362 gradereport_singleview: Roll in intial zero state)
      */
     protected $groupid;
 
     /**
      * The course context
-<<<<<<< HEAD
      * @var context_course $context
-=======
-     * @param context_course $context
->>>>>>> b81978a77e8 (MDL-75362 gradereport_singleview: Roll in intial zero state)
      */
-    protected context_course $context;
+    protected $context;
 
     /**
      * The page number
-<<<<<<< HEAD
      * @var int $page
-=======
-     * @param int $page
->>>>>>> b81978a77e8 (MDL-75362 gradereport_singleview: Roll in intial zero state)
      */
-    protected int $page;
+    protected $page;
 
     /**
      * Results per page
-<<<<<<< HEAD
      * @var int $perpage
-=======
-     * @param int $perpage
->>>>>>> b81978a77e8 (MDL-75362 gradereport_singleview: Roll in intial zero state)
      */
-    protected int $perpage;
+    protected $perpage;
 
     /**
      * List of items on the page, they could be users or grade_items
-<<<<<<< HEAD
      * @var array $items
-=======
-     * @param array $items
->>>>>>> b81978a77e8 (MDL-75362 gradereport_singleview: Roll in intial zero state)
      */
-    protected array $items;
+    protected $items;
 
     /**
      * List of allowed values for 'perpage' setting
-<<<<<<< HEAD
      * @var array $validperpage
-=======
-     * @param array $validperpage
->>>>>>> b81978a77e8 (MDL-75362 gradereport_singleview: Roll in intial zero state)
      */
-    protected static array $validperpage = [20, 50, 100, 200, 400, 1000, 5000];
+    protected static $validperpage = [20, 50, 100, 200, 400, 1000, 5000];
 
     /**
      * Constructor
@@ -331,10 +299,10 @@ abstract class screen {
     /**
      * Process the data from a form submission.
      *
-     * @param array $data
+     * @param array|object $data
      * @return stdClass of warnings
      */
-    public function process(array $data): stdClass {
+    public function process($data): stdClass {
         $warnings = [];
 
         $fields = $this->definition();

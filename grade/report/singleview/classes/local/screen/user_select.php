@@ -18,8 +18,6 @@ namespace gradereport_singleview\local\screen;
 
 use gradereport_singleview;
 
-defined('MOODLE_INTERNAL') || die;
-
 /**
  * The user search screen.
  *
@@ -28,7 +26,8 @@ defined('MOODLE_INTERNAL') || die;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class user_select extends screen {
-    public function init($selfitemisempty = false) {}
+    public function init($selfitemisempty = false) {
+    }
     /**
      * Return the HTML for the page.
      *

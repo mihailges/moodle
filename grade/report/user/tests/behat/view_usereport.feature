@@ -13,5 +13,5 @@ Feature: We can use the user report
     Given I log in as "admin"
     And I am on "Course 1" course homepage
     And I navigate to "View > User report" in the course gradebook
-    And I select "All users (0)" from the "Select all or one user" singleselect
+    And I navigate to "All participants" in the "Click to select user" zero state within the "user" report
     Then I should see "There are no students enrolled in this course."

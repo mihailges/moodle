@@ -77,7 +77,7 @@ class select extends screen {
     public function html(): string {
         global $OUTPUT, $COURSE;
 
-        if($this->itemid === null) {
+        if ($this->itemid === null) {
             $userlink = new \moodle_url('/grade/report/singleview/index.php', ['id' => $COURSE->id, 'item' => 'user_select']);
             $gradelink = new \moodle_url('/grade/report/singleview/index.php', ['id' => $COURSE->id, 'item' => 'grade_select']);
             $context = [

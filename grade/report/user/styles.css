@@ -21,15 +21,16 @@
 
 .path-grade-report-user .user-grade thead th {
     vertical-align: bottom;
-}
-
-.path-grade-report-user .user-grade th {
+    border: none;
     text-align: left;
+    background-color: #f8f9fa;
 }
 
 .path-grade-report-user .user-grade td {
     min-width: 4.5em;
-    vertical-align: top;
+    background-color: #f8f9fa;
+    border: none;
+    vertical-align: middle;
 }
 
 .path-grade-report-user .user-grade .b1l {
@@ -39,24 +40,15 @@
 }
 
 .path-grade-report-user .user-grade tbody .column-itemname {
-    padding-left: 0;
-    padding-right: 8px;
-}
-
-.path-grade-report-user .user-grade .column-itemname.item,
-.path-grade-report-user .user-grade .gradeitemdescription {
-    font-weight: normal;
     padding-left: 24px;
+    padding-right: 8px;
+    font-weight: normal;
 }
 
 .path-grade-report-user .user-grade .column-itemname.baggt,
 .path-grade-report-user .user-grade .column-itemname.baggb {
-    padding-left: 24px;
-}
-
-.path-grade-report-user .user-grade .baggt,
-.path-grade-report-user .user-grade .baggb {
     font-weight: bold;
+    padding-left: 0;
 }
 
 .searchresultitemscontainer {
@@ -65,6 +57,16 @@
 }
 
 .searchresultitemscontainer a:hover {
+    background-color: #f8f9fa;
+}
+
+.path-grade-report-user  .user-report-container {
+    margin: 20px 0 30px 0;
+    padding: 10px 10px;
+    background-color: #f8f9fa;
+}
+
+.path-grade-report-user .user-grade tbody tr {
     background-color: #f8f9fa;
 }
 

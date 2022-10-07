@@ -43,26 +43,26 @@ abstract class tablelike extends screen {
 
     /**
      * A list of table headers
-     * @param array $headers
+     * @var array $headers
      */
     protected array $headers = [];
 
     /**
      * A list of errors that mean we should not show the table
-     * @param array $initerrors
+     * @var array $initerrors
      */
     protected array $initerrors = [];
 
     /**
      * Describes the columns in the table
-     * @param array $definition
+     * @var array $definition
      */
     protected array $definition = [];
 
     /**
      * Format a row of the table
      *
-     * @param mixed $item
+     * @var mixed $item
      * @return array
      */
     abstract public function format_line($item): array;

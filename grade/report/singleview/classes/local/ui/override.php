@@ -37,7 +37,7 @@ class override extends grade_attribute_format implements be_checked, be_disabled
 
     /**
      * The name for this input
-     * @param string $name
+     * @var string $name
      */
     public string $name = 'override';
 

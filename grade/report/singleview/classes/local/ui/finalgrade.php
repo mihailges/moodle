@@ -38,7 +38,7 @@ class finalgrade extends grade_attribute_format implements unique_value, be_disa
 
     /**
      * Name of this input
-     * @param string $name
+     * @var string $name
      */
     public string $name = 'finalgrade';
 

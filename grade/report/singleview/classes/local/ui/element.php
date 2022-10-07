@@ -37,19 +37,19 @@ abstract class element {
 
     /**
      * The first bit of the name for this input.
-     * @param string $name
+     * @var string $name
      */
     public string $name;
 
     /**
      * The value for this input.
-     * @param string $value
+     * @var string $value
      */
     public string $value;
 
     /**
      * The form label for this input.
-     * @param string $label
+     * @var string $label
      */
     public string $label;
 

@@ -45,49 +45,49 @@ abstract class screen {
 
     /**
      * The id of the course
-     * @param int $courseid
+     * @var int $courseid
      */
     protected int $courseid;
 
     /**
      * Either a user id or a grade_item id
-     * @param int|null $itemid
+     * @var int|null $itemid
      */
     protected ?int $itemid;
 
     /**
      * The currently set groupid (if set)
-     * @param int $groupid
+     * @var int $groupid
      */
     protected $groupid;
 
     /**
      * The course context
-     * @param context_course $context
+     * @var context_course $context
      */
     protected context_course $context;
 
     /**
      * The page number
-     * @param int $page
+     * @var int $page
      */
     protected int $page;
 
     /**
      * Results per page
-     * @param int $perpage
+     * @var int $perpage
      */
     protected int $perpage;
 
     /**
      * List of items on the page, they could be users or grade_items
-     * @param array $items
+     * @var array $items
      */
     protected array $items;
 
     /**
      * List of allowed values for 'perpage' setting
-     * @param array $validperpage
+     * @var array $validperpage
      */
     protected static array $validperpage = [20, 50, 100, 200, 400, 1000, 5000];
 

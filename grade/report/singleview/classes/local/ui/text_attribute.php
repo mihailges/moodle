@@ -37,7 +37,7 @@ class text_attribute extends element {
 
     /**
      * Is this input disabled?
-     * @param bool $isdisabled
+     * @var bool $isdisabled
      */
     private bool $isdisabled;
 

@@ -37,7 +37,7 @@ class feedback extends grade_attribute_format implements unique_value, be_disabl
 
     /**
      * Name of this input
-     * @param string $name
+     * @var string $name
      */
     public string $name = 'feedback';
 

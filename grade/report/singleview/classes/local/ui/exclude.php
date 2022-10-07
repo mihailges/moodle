@@ -39,13 +39,13 @@ class exclude extends grade_attribute_format implements be_checked, be_disabled 
 
     /**
      * The name of the input
-     * @param string $name
+     * @var string $name
      */
     public string $name = 'exclude';
 
     /**
      * Is the checkbox disabled?
-     * @param bool $disabled
+     * @var bool $disabled
      */
     public $disabled = false;
 

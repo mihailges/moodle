@@ -19412,6 +19412,10 @@ p.arrow_button {
 .path-grade #region-main {
   overflow-x: visible; }
 
+.path-grade .user-selector .userinitials {
+  width: 40px;
+  height: 40px; }
+
 #page-grade-grading-manage #activemethodselector label {
   display: inline-block; }
 

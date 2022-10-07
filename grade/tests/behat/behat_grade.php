@@ -451,4 +451,26 @@ class behat_grade extends behat_base {
         $this->execute("behat_general::wait_until_exists", [$haystack, "dialogue"]);
         $this->execute("behat_general::assert_element_not_contains_text", [$needle, $haystack, "dialogue"]);
     }
+
+    /**
+     * Navigate past a zero state page within a given report, so we can use the report in the pre 4.1 way.
+     *
+     * Examples:
+     * - I navigate to "Student1" in the "Search user" zero state within the "singleview" report
+     *
+     * @Given /^I navigate to "(?P<needle>(?:[^"]|\\")*)" in the "(?P<haystack>(?:[^"]|\\")*)" zero state within the "(?P<haystack2>(?:[^"]|\\")*)" report$/
+     * @param string $needle The value to search for.
+     * @param string $haystack The selector to use within the zero state.
+     * @param string $haystack2 The selector to use within the zero state.
+     */
+    public function i_navigate_to_in_the_zero_state_within_the_report(string $needle, string $haystack = 'Click to select user', string $haystack2 = 'singleview') {
+        $this->execute("behat_general::wait_until_the_page_is_ready");
+        if ($haystack === 'Click to select user') {
+            $this->execute("behat_general::i_click_on", [get_string('selectuserlink', 'gradereport_'.$haystack2), "link"]);
+        } else {
+            $this->execute("behat_general::i_click_on", [get_string('selectgradeitemlink', 'gradereport_'.$haystack2), "link"]);
+        }
+
+        $this->execute("behat_general::i_click_on", [$needle, "link"]);
+    }
 }

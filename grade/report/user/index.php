@@ -169,9 +169,8 @@ if ($zerostate) {
                 echo $OUTPUT->heading($studentnamelink);
 
                 if ($report->fill_table()) {
-                    echo '<br />' . $report->print_table(true);
+                    echo $report->print_table(true);
                 }
-                echo "<p style = 'page-break-after: always;'></p>";
             }
             $gui->close();
         } else {
@@ -202,7 +201,7 @@ if ($zerostate) {
                 echo $OUTPUT->notification(get_string('groupusernotmember', 'error'));
             } else {
                 if ($report->fill_table()) {
-                    echo '<br />' . $report->print_table(true);
+                    echo $report->print_table(true);
                 }
             }
         }
@@ -216,7 +215,7 @@ if ($zerostate) {
             get_string('pluginname', 'gradereport_user') . ' - ' . fullname($report->user));
 
         if ($report->fill_table()) {
-            echo '<br />' . $report->print_table(true);
+            echo $report->print_table(true);
         }
     }
 

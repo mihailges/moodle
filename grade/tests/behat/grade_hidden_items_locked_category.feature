@@ -47,7 +47,7 @@ Feature: Hidden grade items should be hidden when grade category is locked, but 
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I navigate to "View > User report" in the course gradebook
-    And I select "Myself" from the "View report as" singleselect
+    And I set the field "View report as" to "Myself"
     When I select "Student 1" from the "Select all or one user" singleselect
     Then the following should exist in the "user-grade" table:
       | Grade item | Calculated weight | Grade | Range | Percentage | Contribution to course total |

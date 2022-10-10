@@ -55,7 +55,7 @@ Feature: Student and teacher's view of aggregated grade items is consistent when
     And I press "Save changes"
     And I am on "Course 1" course homepage
     And I navigate to "View > User report" in the course gradebook
-    And I select "Myself" from the "View report as" singleselect
+    And I set the field "View report as" to "Myself"
     And I select "Student 1" from the "Select all or one user" singleselect
     Then the following should exist in the "user-grade" table:
       | Grade item | Calculated weight | Grade | Range | Percentage | Contribution to course total |

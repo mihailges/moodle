@@ -32,18 +32,4 @@
     <img src="{{imglink}}" alt="Temp" class="w-50 h-50 mb-4">
     <h4>{{#str}}selectuser, gradereport_user{{/str}}</h4>
     <p>{{#str}}selectuserinstructions, gradereport_user{{/str}}</p>
-    {{#groupmodeenabled}}
-        <a href="#"
-           class="btn btn-light border-secondary groupwidget"
-           data-courseid="{{courseid}}"
-           data-action-base-url="{{groupactionbaseurl}}"
-           data-searchtype="group"
-        >{{#str}}selectgrouplink, gradereport_user{{/str}}</a>
-    {{/groupmodeenabled}}
-    <a href="#"
-       class="btn btn-light border-secondary userwidget"
-       data-courseid="{{courseid}}"
-       data-groupid="{{groupid}}"
-       data-searchtype="user"
-    >{{#str}}selectuserlink, gradereport_user{{/str}}</a>
 </div>

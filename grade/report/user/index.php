@@ -27,16 +27,12 @@ require_once $CFG->libdir.'/gradelib.php';
 require_once $CFG->dirroot.'/grade/lib.php';
 require_once $CFG->dirroot.'/grade/report/user/lib.php';
 
-use gradereport_user\report\user as reportbase;
-
 $courseid = required_param('id', PARAM_INT);
-$userid   = optional_param('userid', $USER->id, PARAM_INT);
+$userid   = optional_param('userid', null, PARAM_INT);
 $userview = optional_param('userview', 0, PARAM_INT);
 $zerostate = optional_param('zerostate', 0, PARAM_INT);
 
 $PAGE->set_url(new moodle_url('/grade/report/user/index.php', ['id' => $courseid, 'zerostate' => $zerostate]));
-$PAGE->requires->js_call_amd('gradereport_user/user', 'init');
-$PAGE->requires->js_call_amd('gradereport_user/group', 'init');
 
 if ($userview == 0) {
     $userview = get_user_preferences('gradereport_user_view_user', GRADE_REPORT_USER_VIEW_USER);
@@ -54,9 +50,9 @@ $PAGE->set_pagelayout('report');
 $context = context_course::instance($course->id);
 require_capability('gradereport/user:view', $context);
 
-if (empty($userid)) {
+if ($userid === 0) {
     require_capability('moodle/grade:viewall', $context);
-} else {
+} else if ($userid) {
     if (!$DB->get_record('user', ['id' => $userid, 'deleted' => 0]) || isguestuser($userid)) {
         throw new \moodle_exception('invaliduser');
     }
@@ -66,7 +62,7 @@ $access = false;
 if (has_capability('moodle/grade:viewall', $context)) {
     // User can view all course grades.
     $access = true;
-} else if ($userid == $USER->id && has_capability('moodle/grade:view', $context) && $course->showgrades) {
+} else if (($userid == $USER->id || is_null($userid)) && has_capability('moodle/grade:view', $context) && $course->showgrades) {
     // User can view own grades.
     $access = true;
 } else if (has_capability('moodle/grade:viewall', context_user::instance($userid)) && $course->showgrades) {
@@ -91,141 +87,112 @@ $USER->grade_last_report[$course->id] = 'user';
 // First make sure we have proper final grades.
 grade_regrade_final_grades_if_required($course);
 
-if ($zerostate) {
-    $report = new reportbase($courseid, $gpr, $context, $USER->id);
+$gradesrenderer = $PAGE->get_renderer('core_grades');
 
-    if (isset($report)) {
-        // Trigger report viewed event.
-        $report->viewed();
-    } else {
-        // No students warning.
-        echo html_writer::tag('div', '', array('class' => 'clearfix'));
-        echo $OUTPUT->notification(get_string('nostudentsyet'));
+// Teachers will see all student reports.
+if (has_capability('moodle/grade:viewall', $context)) {
+    // Verify if we are using groups or not.
+    $groupmode = groups_get_course_groupmode($course);
+    $currentgroup = $gpr->groupid;
+
+    // To make some other functions work better later.
+    if (!$currentgroup) {
+        $currentgroup = null;
     }
 
-    // Print header.
-    print_grade_page_head($COURSE->id, 'report', 'user', ' ', false);
+    $isseparategroups = ($course->groupmode == SEPARATEGROUPS && !has_capability('moodle/site:accessallgroups', $context));
 
-    echo $report->output();
-} else {
-    // Teachers will see all student reports.
-    if (has_capability('moodle/grade:viewall', $context)) {
-        // Verify if we are using groups or not.
-        $groupmode = groups_get_course_groupmode($course);
-        $currentgroup = $gpr->groupid;
+    if ($isseparategroups && (!$currentgroup)) {
+        // No separate group access, The user can view only themselves.
+        $userid = $USER->id;
+    }
 
-        // To make some other functions work better later.
-        if (!$currentgroup) {
-            $currentgroup = null;
-        }
+    $defaultgradeshowactiveenrol = !empty($CFG->grade_report_showonlyactiveenrol);
+    $showonlyactiveenrol = get_user_preferences('grade_report_showonlyactiveenrol', $defaultgradeshowactiveenrol);
+    $showonlyactiveenrol = $showonlyactiveenrol || !has_capability('moodle/course:viewsuspendedusers', $context);
 
-        $isseparategroups = ($course->groupmode == SEPARATEGROUPS && !has_capability('moodle/site:accessallgroups', $context));
-
-        if ($isseparategroups && (!$currentgroup)) {
-            // No separate group access, The user can view only themselves.
-            $userid = $USER->id;
-            $user_selector = false;
-        } else {
-            $user_selector = true;
-        }
-
-        $defaultgradeshowactiveenrol = !empty($CFG->grade_report_showonlyactiveenrol);
-        $showonlyactiveenrol = get_user_preferences('grade_report_showonlyactiveenrol', $defaultgradeshowactiveenrol);
-        $showonlyactiveenrol = $showonlyactiveenrol || !has_capability('moodle/course:viewsuspendedusers', $context);
-
-        $renderer = $PAGE->get_renderer('gradereport_user');
-
-        if ($userview == GRADE_REPORT_USER_VIEW_USER) {
-            $viewasuser = true;
-        } else {
-            $viewasuser = false;
-        }
-
-        if (empty($userid)) {
-            $gui = new graded_users_iterator($course, null, $currentgroup);
-            $gui->require_active_enrolment($showonlyactiveenrol);
-            $gui->init();
-            // Add tabs.
-            print_grade_page_head($courseid, 'report', 'user');
-            groups_print_course_menu($course, $gpr->get_return_url('index.php?id=' . $courseid, ['userid' => 0]));
-
-            if ($user_selector) {
-                echo $renderer->graded_users_selector('user', $course, $userid, $currentgroup, true);
-            }
-
-            echo $renderer->view_user_selector($userid, $userview);
-
-            while ($userdata = $gui->next_user()) {
-                $user = $userdata->user;
-                $report = new gradereport_user\report\user($courseid, $gpr, $context, $user->id, $viewasuser);
-
-                $studentnamelink = html_writer::link(
-                    new moodle_url(
-                        '/user/view.php',
-                        ['id' => $report->user->id, 'course' => $courseid]
-                    ),
-                    fullname($report->user)
-                );
-                echo $OUTPUT->heading($studentnamelink);
-
-                if ($report->fill_table()) {
-                    echo $report->print_table(true);
-                }
-            }
-            $gui->close();
-        } else {
-            // Only show one user's report.
-            $report = new gradereport_user\report\user($courseid, $gpr, $context, $userid, $viewasuser);
-
-            $studentnamelink = html_writer::link(
-                new moodle_url(
-                    '/user/view.php',
-                    ['id' => $report->user->id, 'course' => $courseid]
-                ),
-                fullname($report->user)
-            );
-            print_grade_page_head($courseid, 'report', 'user',
-                get_string('pluginname', 'gradereport_user') . ' - ' . $studentnamelink,
-                false, false, true, null, null, $report->user);
-
-            groups_print_course_menu($course, $gpr->get_return_url('index.php?id=' . $courseid, ['userid' => 0]));
-
-            if ($user_selector) {
-                $showallusersoptions = true;
-                echo $renderer->graded_users_selector('user', $course, $userid, $currentgroup, $showallusersoptions);
-            }
-
-            echo $renderer->view_user_selector($userid, $userview);
-
-            if ($currentgroup && !groups_is_member($currentgroup, $userid)) {
-                echo $OUTPUT->notification(get_string('groupusernotmember', 'error'));
-            } else {
-                if ($report->fill_table()) {
-                    echo $report->print_table(true);
-                }
-            }
-        }
+    if ($userview == GRADE_REPORT_USER_VIEW_USER) {
+        $viewasuser = true;
     } else {
-        // Students will see just their own report.
-        // Create a report instance.
-        $report = new gradereport_user\report\user($courseid, $gpr, $context, $userid);
+        $viewasuser = false;
+    }
 
-        // Print the page.
+    $gui = new graded_users_iterator($course, null, $currentgroup);
+    $gui->require_active_enrolment($showonlyactiveenrol);
+    $gui->init();
+
+    if (is_null($userid)) { // Zero state.
+        $report = new gradereport_user\report\user($courseid, $gpr, $context, $USER->id, $viewasuser);
+
+        if (isset($report)) {
+            // Trigger report viewed event.
+            $report->viewed();
+        } else {
+            // No students warning.
+            echo html_writer::tag('div', '', array('class' => 'clearfix'));
+            echo $OUTPUT->notification(get_string('nostudentsyet'));
+        }
+
+        $actionbar = new \gradereport_user\output\action_bar($context, $userview, null, $currentgroup);
+        // Print header.
+        print_grade_page_head($courseid, 'report', 'user', ' ', false, null, true,
+            null, null, null, $actionbar);
+
+        echo $report->output();
+    } else if ($userid == 0) { // Show all reports.
+        $actionbar = new \gradereport_user\output\action_bar($context, $userview, 0, $currentgroup);
+        print_grade_page_head($courseid, 'report', 'user', ' ', false, null, true, null, null, null, $actionbar);
+
+        while ($userdata = $gui->next_user()) {
+            $user = $userdata->user;
+            $report = new gradereport_user\report\user($courseid, $gpr, $context, $user->id, $viewasuser);
+
+            echo $OUTPUT->heading($gradesrenderer->user_heading($report->user, $courseid, false));
+
+            if ($report->fill_table()) {
+                echo $report->print_table(true);
+            }
+        }
+        $gui->close();
+    } else { // Show one user's report.
+        $report = new gradereport_user\report\user($courseid, $gpr, $context, $userid, $viewasuser);
+        $actionbar = new \gradereport_user\output\action_bar($context, $userview, $report->user->id, $currentgroup);
+
         print_grade_page_head($courseid, 'report', 'user',
-            get_string('pluginname', 'gradereport_user') . ' - ' . fullname($report->user));
+            $gradesrenderer->user_heading($report->user, $courseid),
+            false, false, true, null, null, null, $actionbar);
 
-        if ($report->fill_table()) {
-            echo $report->print_table(true);
+        if ($currentgroup && !groups_is_member($currentgroup, $userid)) {
+            echo $OUTPUT->notification(get_string('groupusernotmember', 'error'));
+        } else {
+            if ($report->fill_table()) {
+                echo $report->print_table(true);
+            }
         }
+        // Add previous/next user navigation.
+        echo $gradesrenderer->user_navigation($gui, $userid, $courseid);
     }
+} else {
+    // Students will see just their own report.
+    // Create a report instance.
+    $report = new gradereport_user\report\user($courseid, $gpr, $context, $USER->id);
 
-    if (isset($report)) {
-        // Trigger report viewed event.
-        $report->viewed();
-    } else {
-        echo html_writer::tag('div', '', ['class' => 'clearfix']);
-        echo $OUTPUT->notification(get_string('nostudentsyet'));
+    // Print the page.
+    print_grade_page_head($courseid, 'report', 'user', ' ');
+
+    echo $OUTPUT->heading($gradesrenderer->user_heading($report->user, $courseid, false));
+
+    if ($report->fill_table()) {
+        echo $report->print_table(true);
     }
-
 }
+
+if (isset($report)) {
+    // Trigger report viewed event.
+    $report->viewed();
+} else {
+    echo html_writer::tag('div', '', ['class' => 'clearfix']);
+    echo $OUTPUT->notification(get_string('nostudentsyet'));
+}
+
 echo $OUTPUT->footer();

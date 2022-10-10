@@ -61,6 +61,9 @@
 
 .searchresultitemscontainer {
     max-height: 150px;
-    height: 150px;
     overflow: auto;
+}
+
+.searchresultitemscontainer a:hover {
+    background-color: #f8f9fa;
 }

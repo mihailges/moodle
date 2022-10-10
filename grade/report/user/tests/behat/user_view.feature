@@ -50,7 +50,7 @@ Feature: View the user report as the student will see it
   Scenario: View the report as the teacher themselves
     When I navigate to "View > User report" in the course gradebook
     And I navigate to "Student 1" in the "Click to select user" zero state within the "user" report
-    And I select "Myself" from the "View report as" singleselect
+    And I set the field "View report as" to "Myself"
     Then the following should exist in the "user-grade" table:
       | Grade item              | Calculated weight | Grade  | Range | Percentage | Contribution to course total |
       | Test assignment one     | 50.00 %           | 80.00  | 0–100 | 80.00 %    | 13.33 %                      |
@@ -65,8 +65,13 @@ Feature: View the user report as the student will see it
 
   Scenario: View the report as the student from both the teachers and students perspective
     When I navigate to "View > User report" in the course gradebook
+<<<<<<< HEAD
     And I navigate to "Student 1" in the "Click to select user" zero state within the "user" report
     And I select "User" from the "View report as" singleselect
+=======
+    And I select "Student 1" from the "Select all or one user" singleselect
+    And I set the field "View report as" to "User"
+>>>>>>> f973c1a6fa7... MDL-75513 gradereport_user: Update existing behat tests
     Then the following should exist in the "user-grade" table:
       | Grade item              | Calculated weight | Grade  | Range | Percentage | Contribution to course total |
       | Test assignment one     | -                 | 80.00  | 0–100 | 80.00 %    | -                            |
@@ -107,8 +112,13 @@ Feature: View the user report as the student will see it
     And I set the field with xpath "//select[@name='report_user_showtotalsifcontainhidden']" to "Show totals excluding hidden items"
     And I press "Save changes"
     And I navigate to "View > User report" in the course gradebook
+<<<<<<< HEAD
     When I navigate to "Student 1" in the "Click to select user" zero state within the "user" report
     And I select "User" from the "View report as" singleselect
+=======
+    When I select "Student 1" from the "Select all or one user" singleselect
+    And I set the field "View report as" to "User"
+>>>>>>> f973c1a6fa7... MDL-75513 gradereport_user: Update existing behat tests
     Then the following should exist in the "user-grade" table:
       | Grade item              | Calculated weight | Grade  | Range | Percentage | Contribution to course total |
       | Test assignment one     | 50.00 %           | 80.00  | 0–100 | 80.00 %    | 26.67 %                      |
@@ -145,8 +155,13 @@ Feature: View the user report as the student will see it
     And I set the field with xpath "//select[@name='report_user_showtotalsifcontainhidden']" to "Show totals including hidden items"
     And I press "Save changes"
     And I navigate to "View > User report" in the course gradebook
+<<<<<<< HEAD
     When I navigate to "Student 1" in the "Click to select user" zero state within the "user" report
     And I select "User" from the "View report as" singleselect
+=======
+    When I select "Student 1" from the "Select all or one user" singleselect
+    And I set the field "View report as" to "User"
+>>>>>>> f973c1a6fa7... MDL-75513 gradereport_user: Update existing behat tests
     Then the following should exist in the "user-grade" table:
       | Grade item              | Calculated weight | Grade  | Range | Percentage | Contribution to course total |
       | Test assignment one     | 50.00 %           | 80.00  | 0–100 | 80.00 %    | 13.33 %                      |
@@ -191,8 +206,13 @@ Feature: View the user report as the student will see it
     And I set the field with xpath "//select[@name='report_user_showtotalsifcontainhidden']" to "Show totals excluding hidden items"
     And I press "Save changes"
     And I navigate to "View > User report" in the course gradebook
+<<<<<<< HEAD
     When I navigate to "Student 1" in the "Click to select user" zero state within the "user" report
     And I select "User" from the "View report as" singleselect
+=======
+    When I select "Student 1" from the "Select all or one user" singleselect
+    And I set the field "View report as" to "User"
+>>>>>>> f973c1a6fa7... MDL-75513 gradereport_user: Update existing behat tests
     Then the following should exist in the "user-grade" table:
       | Grade item              | Calculated weight | Grade  | Range | Percentage | Contribution to course total |
       | Test assignment one     | 50.00 %           | 80.00  | 0–100 | 80.00 %    | 13.33 %                      |

@@ -58,9 +58,3 @@
 .path-grade-report-user .user-grade .baggb {
     font-weight: bold;
 }
-
-.searchresultitemscontainer {
-    max-height: 150px;
-    height: 150px;
-    overflow: auto;
-}

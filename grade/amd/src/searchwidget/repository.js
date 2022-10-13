@@ -28,15 +28,15 @@ import ajax from 'core/ajax';
  *
  * @method userFetch
  * @param {int} courseid ID of the course to fetch the users of.
- * @param {string} gradeReportPlugin The name of the grade report plugin that fetches the users.
+ * @param {string} actionBaseUrl The base URL for the user option.
  * @return {object} jQuery promise
  */
-export const userFetch = (courseid, gradeReportPlugin) => {
+export const userFetch = (courseid, actionBaseUrl) => {
     const request = {
         methodname: 'core_grades_get_enrolled_users_for_search_widget',
         args: {
             courseid: courseid,
-            gradereportplugin: gradeReportPlugin,
+            actionbaseurl: actionBaseUrl,
         },
     };
     return ajax.call([request])[0];

@@ -49,7 +49,7 @@ class get_enrolled_users_for_search_widget extends external_api {
         return new external_function_parameters (
             [
                 'courseid' => new external_value(PARAM_INT, 'Course Id', VALUE_REQUIRED),
-                'gradereportplugin' => new external_value(PARAM_ALPHANUM, 'The name of the grade plugin', VALUE_REQUIRED),
+                'actionbaseurl' => new external_value(PARAM_URL, 'The base URL for the user option', VALUE_REQUIRED),
                 'groupid' => new external_value(PARAM_INT, 'Group Id', VALUE_DEFAULT, 0)
             ]
         );
@@ -59,7 +59,7 @@ class get_enrolled_users_for_search_widget extends external_api {
      * Given a course ID find the enrolled users within and map some fields to the returned array of user objects.
      *
      * @param int $courseid
-     * @param string $gradereportplugin The name of the grade report plugin.
+     * @param string $actionbaseurl The base URL for the user option.
      * @param int|null $groupid
      * @return array Users and warnings to pass back to the calling widget.
      * @throws coding_exception
@@ -67,14 +67,14 @@ class get_enrolled_users_for_search_widget extends external_api {
      * @throws moodle_exception
      * @throws restricted_context_exception
      */
-    public static function execute(int $courseid, string $gradereportplugin, ?int $groupid = 0): array {
-        global $DB, $PAGE, $USER;
+    public static function execute(int $courseid, string $actionbaseurl, ?int $groupid = 0): array {
+        global $DB, $PAGE;
 
         $params = self::validate_parameters(
             self::execute_parameters(),
             [
                 'courseid' => $courseid,
-                'gradereportplugin' => $gradereportplugin,
+                'actionbaseurl' => $actionbaseurl,
                 'groupid' => $groupid
             ]
         );
@@ -83,7 +83,7 @@ class get_enrolled_users_for_search_widget extends external_api {
         $coursecontext = \context_course::instance($params['courseid']);
         parent::validate_context($coursecontext);
 
-        require_capability("gradereport/{$gradereportplugin}:view", $coursecontext);
+        require_capability('moodle/course:viewparticipants', $coursecontext);
 
         $course = $DB->get_record('course', ['id' => $params['courseid']]);
         // Create a graded_users_iterator because it will properly check the groups etc.
@@ -96,24 +96,13 @@ class get_enrolled_users_for_search_widget extends external_api {
         $gui->init();
 
         $users = [];
-        // If we are within the user report, allow the user to select all users.
-        if ($gradereportplugin === 'user') {
-            $users[0] = (object) [
-                'fullname' => get_string('allparticipants'),
-                'id' => 0,
-                'url' => (new moodle_url("/grade/report/{$gradereportplugin}/index.php",
-                    ['id' => $courseid, 'userid' => 0, 'item' => 'user']
-                ))->out(false)
-            ];
-        }
+
         while ($userdata = $gui->next_user()) {
             $guiuser = $userdata->user;
             $user = new \stdClass();
             $user->fullname = fullname($guiuser);
             $user->id = $guiuser->id;
-            $user->url = (new moodle_url("/grade/report/{$gradereportplugin}/index.php",
-                ['id' => $courseid, 'userid' => $guiuser->id, 'item' => 'user']
-            ))->out(false);
+            $user->url = (new moodle_url($actionbaseurl, ['id' => $courseid, 'userid' => $guiuser->id,]))->out(false);
             $userpicture = new \user_picture($guiuser);
             $userpicture->size = 1;
             $user->profileimage = $userpicture->get_url($PAGE)->out(false);

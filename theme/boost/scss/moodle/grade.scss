@@ -514,11 +514,21 @@
     width: 80px;
 }
 
-.result-row.active {
-    background-color: $state-info-bg;
+.searchresultitemscontainer {
+    max-height: 150px;
+    overflow: auto;
+
+    a:hover {
+        background-color: $gray-100;
+    }
+
+    .focused-cell {
+        outline-style: dotted;
+        outline-color: green;
+    }
 }
 
-.searchresultitemscontainer .focused-cell {
-    outline-style: dotted;
-    outline-color: green;
+.unsearchablecontentcontainer {
+    border-top: 1px solid #dee2e6;
+    padding-top: 10px;
 }

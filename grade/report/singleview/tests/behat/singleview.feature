@@ -60,7 +60,7 @@ Feature: We can use Single view
   Scenario: I can update grades, add feedback and exclude grades.
     Given I navigate to "View > Single view" in the course gradebook
     And I click on "User" "link" in the ".singleindex" "css_element"
-    And I navigate to "Student" in the "Click to select user" zero state within the "user" report
+    And I click on "Student" in the "user" search widget
     And I set the field "Override for Test assignment one" to "1"
     When I set the following fields to these values:
         | Grade for Test assignment one | 10.00 |
@@ -98,7 +98,7 @@ Feature: We can use Single view
     And I am on "Course 1" course homepage
     Given I navigate to "View > Single view" in the course gradebook
     And I click on "User" "link" in the ".singleindex" "css_element"
-    And I navigate to "Student" in the "Click to select user" zero state within the "user" report
+    And I click on "Student" in the "user" search widget
     And the "Exclude for Test assignment one" "checkbox" should be disabled
     And the "Override for Test assignment one" "checkbox" should be enabled
 

@@ -71,7 +71,7 @@ Feature: We can enter in grades and view reports from the gradebook
   Scenario: Grade a grade item and ensure the results display correctly in the gradebook
     When I navigate to "View > User report" in the course gradebook
     And the "Gradebook navigation menu" select menu should contain "Grader report"
-    And I navigate to "All participants" in the "Click to select user" zero state within the "user" report
+    And I click on "All users (0)" in the "user" search widget
     And the "Select all or one user" select box should contain "All users (1)"
     And I log out
     And I log in as "student1"

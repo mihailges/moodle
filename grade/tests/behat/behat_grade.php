@@ -453,24 +453,27 @@ class behat_grade extends behat_base {
     }
 
     /**
-     * Navigate past a zero state page within a given report, so we can use the report in the pre 4.1 way.
+     * Clicks on an option from the specified search widget in the current gradebook page.
      *
      * Examples:
-     * - I navigate to "Student1" in the "Search user" zero state within the "singleview" report
+     * - I click on "Student1" in the "user" search widget
+     * - I click on "Group1" in the "group" search widget
      *
-     * @Given /^I navigate to "(?P<needle>(?:[^"]|\\")*)" in the "(?P<haystack>(?:[^"]|\\")*)" zero state within the "(?P<haystack2>(?:[^"]|\\")*)" report$/
+     * @Given /^I click on "(?P<needle>(?:[^"]|\\")*)" in the "(?P<haystack>(?:[^"]|\\")*)" search widget$/
      * @param string $needle The value to search for.
-     * @param string $haystack The selector to use within the zero state.
-     * @param string $haystack2 The selector to use within the zero state.
+     * @param string $haystack The type of the search widget.
      */
-    public function i_navigate_to_in_the_zero_state_within_the_report(string $needle, string $haystack = 'Click to select user', string $haystack2 = 'singleview') {
+    public function i_click_on_in_search_widget(string $needle, string $haystack) {
         $this->execute("behat_general::wait_until_the_page_is_ready");
-        if ($haystack === 'Click to select user') {
-            $this->execute("behat_general::i_click_on", [get_string('selectuserlink', 'gradereport_'.$haystack2), "link"]);
+        if ($haystack === 'user') {
+            $this->execute("behat_general::i_click_on", ['.userwidget', "css_element"]);
+            $dialoguetitle = 'Select a user';
         } else {
-            $this->execute("behat_general::i_click_on", [get_string('selectgradeitemlink', 'gradereport_'.$haystack2), "link"]);
+            $this->execute("behat_general::i_click_on", ['.groupwidget', "css_element"]);
+            $dialoguetitle = 'Select a grade item';
         }
 
-        $this->execute("behat_general::i_click_on", [$needle, "link"]);
+        $this->execute("behat_general::wait_until_exists", [$dialoguetitle, "dialogue"]);
+        $this->execute('behat_general::i_click_on_in_the', [$needle, "link", $dialoguetitle, 'dialogue']);
     }
 }

@@ -84,7 +84,10 @@ class select extends screen {
                 'courseid' => $COURSE->id,
                 'imglink' => new \moodle_url('/pix/f/clip-353 1.png'),
                 'userzerolink' => $userlink->out(false),
+                'userselectactive' => false,
                 'gradezerolink' => $gradelink->out(false),
+                'gradeselectactive' => false,
+                'displaylabel' => false
             ];
             return $OUTPUT->render_from_template('gradereport_singleview/zero_state', $context);
         }
@@ -146,5 +149,23 @@ class select extends screen {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Get the heading for the screen.
+     *
+     * @return string
+     */
+    public function heading(): string {
+        return ' ';
+    }
+
+    /**
+     * Does this screen support paging?
+     *
+     * @return bool
+     */
+    public function supports_paging(): bool {
+        return false;
     }
 }

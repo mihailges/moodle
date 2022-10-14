@@ -21,28 +21,31 @@
 
     Example context (json):
     {
-        "userpage": "http://foo.bar/gradereport/?userid=25",
-        "userpageactive": "false",
+        "displaylabel": true,
+        "userzerolink": "http://foo.bar/gradereport/?userid=25",
+        "userselectactive": "false",
         "gradepagepage": "http://foo.bar/gradereport/?userid=25",
-        "gradepagepageactive": "true"
+        "gradeselectactive": "true"
     }
 }}
-<div class="w-100 page-toggler d-flex justify-content-end">
-    <p class="my-auto mr-3 text-uppercase">{{#str}}viewby, gradereport_singleview{{/str}}</p>
+<div class="page-toggler d-flex">
+    {{#displaylabel}}
+        <p class="my-auto mr-3 text-uppercase">{{#str}}viewby, gradereport_singleview{{/str}}</p>
+    {{/displaylabel}}
     <div class="btn-group" role="group" aria-label="TODO">
-        <a href="{{userpage}}"
+        <a href="{{userzerolink}}"
            type="button"
-           class="btn btn-outline-primary {{#userpageactive}}active{{/userpageactive}}"
-           {{#userpageactive}}aria-pressed="true"{{/userpageactive}}
-           {{^userpageactive}}aria-pressed="false"{{/userpageactive}}
+           class="btn btn-outline-primary {{#userselectactive}}active{{/userselectactive}}"
+           {{#userselectactive}}aria-pressed="true"{{/userselectactive}}
+           {{^userselectactive}}aria-pressed="false"{{/userselectactive}}
         >
             {{#str}}users, gradereport_singleview{{/str}}
         </a>
-        <a href="{{gradepagepage}}"
+        <a href="{{gradezerolink}}"
            type="button"
-           class="btn btn-outline-primary {{#gradepagepageactive}}active{{/gradepagepageactive}}"
-           {{#gradepagepageactive}}aria-pressed="true"{{/gradepagepageactive}}
-           {{^gradepagepageactive}}aria-pressed="false"{{/gradepagepageactive}}
+           class="btn btn-outline-primary {{#gradeselectactive}}active{{/gradeselectactive}}"
+           {{#gradeselectactive}}aria-pressed="true"{{/gradeselectactive}}
+           {{^gradeselectactive}}aria-pressed="false"{{/gradeselectactive}}
         >
             {{#str}}gradeitems, gradereport_singleview{{/str}}
         </a>

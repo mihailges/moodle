@@ -95,14 +95,8 @@ class singleview extends core_course_external {
                     'item' => 'grade'
                 ]
             );
+            $item->name = $gradeitem->get_name(true);
             $item->url = $url->out(false);
-            if ($gradeitem->itemtype === 'course') {
-                $item->name = get_string('coursetotal', 'grades');
-            } else if ($gradeitem->itemname === '') {
-                $item->name = get_string('unnameditem', 'gradereport_singleview');
-            } else {
-                $item->name = $gradeitem->itemname;
-            }
 
             return $item;
         }, $gradeableitems);

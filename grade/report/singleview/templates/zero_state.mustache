@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template core_grades/report/singleview/zero_state
+    @template gradereport_singleview/zero_state
 
     The zero state of the user report that contains the image and trigger for the search widget.
 
@@ -26,10 +26,11 @@
         "gradezerolink": "http://foo.bar/gradereport/?userid=25"
     }
 }}
-<div class="mx-auto w-50 text-center singleindex">
+<div class="mx-auto w-50 text-center align-items-center singleindex">
     <img src="{{imglink}}" alt="Temp" class="w-50 h-50 mb-4">
     <h4>{{#str}}whattoview, gradereport_singleview{{/str}}</h4>
     <p>{{#str}}whattoviewselect, gradereport_singleview{{/str}}</p>
-    <a class="btn btn-light border-secondary" href="{{userzerolink}}">User</a>
-    <a class="btn btn-light border-secondary" href="{{gradezerolink}}" aria-label="foo">Grades</a>
+    <div class="justify-content-center d-flex">
+        {{>gradereport_singleview/page_toggler}}
+    </div>
 </div>

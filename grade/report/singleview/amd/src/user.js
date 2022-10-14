@@ -27,6 +27,7 @@ import CustomEvents from "core/custom_interaction_events";
 import * as Repository from 'core_grades/searchwidget/repository';
 import * as WidgetBase from 'core_grades/searchwidget/basewidget';
 import {get_string as getString} from 'core/str';
+import Url from 'core/url';
 
 /**
  * Our entry point into starting to build the search widget.
@@ -63,8 +64,9 @@ const registerListenerEvents = () => {
                 const courseID = trigger.dataset.courseid;
                 e.preventDefault();
 
+                const actionBaseUrl = Url.relativeUrl('/grade/report/singleview/index.php', {item: 'user'}, false);
                 // If an error occurs while fetching the data, display the error within the modal.
-                const data = await Repository.userFetch(courseID, 'singleview').catch(async(e) => {
+                const data = await Repository.userFetch(courseID, actionBaseUrl).catch(async(e) => {
                     const errorTemplateData = {
                         'errormessage': e.message
                     };
@@ -87,7 +89,7 @@ const registerListenerEvents = () => {
     });
     // Resolvers for passed functions in the modal creation.
     bodyPromiseResolver(Templates.render(
-        'gradereport_singleview/usersearch_body',
+        'core_grades/searchwidget/user/usersearch_body',
         []
     ));
 };

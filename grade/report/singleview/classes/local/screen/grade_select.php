@@ -39,10 +39,11 @@ class grade_select extends screen {
         $context = [
             'courseid' => $COURSE->id,
             'imglink' => new \moodle_url('/pix/f/clip-353 1.png'),
-            'userpage' => $userlink->out(false),
-            'userpageactive' => false,
-            'gradepagepage' => $gradelink->out(false),
-            'gradepagepageactive' => true,
+            'userzerolink' => $userlink->out(false),
+            'userselectactive' => false,
+            'gradezerolink' => $gradelink->out(false),
+            'gradeselectactive' => true,
+            'displaylabel' => true
         ];
         return $OUTPUT->render_from_template('gradereport_singleview/zero_state_grade', $context);
     }
@@ -56,6 +57,24 @@ class grade_select extends screen {
      * @return bool
      */
     public function display_group_selector(): bool {
+        return false;
+    }
+
+    /**
+     * Get the heading for the screen.
+     *
+     * @return string
+     */
+    public function heading(): string {
+        return ' ';
+    }
+
+    /**
+     * Does this screen support paging?
+     *
+     * @return bool
+     */
+    public function supports_paging(): bool {
         return false;
     }
 }

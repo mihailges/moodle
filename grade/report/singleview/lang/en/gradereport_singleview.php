@@ -65,7 +65,6 @@ $string['singleview:view'] = 'View report';
 $string['summarygrade'] = 'A table of users, with columns for range, grade, feedback, and whether to override or exclude a particular grade.';
 $string['summaryuser'] = 'A table of grade items, with columns for grade category, range, grade, feedback, and whether to override or exclude a particular grade.';
 $string['userselect'] = 'Select activity';
-$string['unnameditem'] = 'Grade item';
 
 $string['myself'] = 'Myself';
 $string['otheruser'] = 'User';

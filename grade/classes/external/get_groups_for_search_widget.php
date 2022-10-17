@@ -14,11 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace gradereport_user\external;
+namespace core_grades\external;
 
 use coding_exception;
 use context_course;
-use core_user;
 use external_api;
 use external_description;
 use external_function_parameters;
@@ -37,42 +36,46 @@ require_once($CFG->libdir.'/externallib.php');
 /**
  * External group report API implementation
  *
- * @package    gradereport_user
+ * @package    core_grades
  * @copyright  2022 Mathew May <mathew.solutions>
  * @category   external
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class group extends external_api {
+class get_groups_for_search_widget extends external_api {
+
     /**
-     * Describes the parameters for get_users_for_course.
+     * Returns description of method parameters.
      *
      * @return external_function_parameters
      */
-    public static function get_groups_for_search_widget_parameters(): external_function_parameters {
+    public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters (
             [
-                'courseid' => new external_value(PARAM_INT, 'Course Id', VALUE_REQUIRED)
+                'courseid' => new external_value(PARAM_INT, 'Course Id', VALUE_REQUIRED),
+                'actionbaseurl' => new external_value(PARAM_URL, 'The base URL for the group action', VALUE_REQUIRED)
             ]
         );
     }
 
     /**
-     * Given a course ID find the enrolled users within and map some fields to the returned array of user objects.
+     * Given a course ID find the existing user groups and map some fields to the returned array of group objects.
      *
      * @param int $courseid
-     * @return array Users and warnings to pass back to the calling widget.
+     * @param string $actionbaseurl The base URL for the group action.
+     * @return array Groups and warnings to pass back to the calling widget.
      * @throws coding_exception
      * @throws invalid_parameter_exception
      * @throws moodle_exception
      * @throws restricted_context_exception
      */
-    protected static function get_groups_for_search_widget(int $courseid): array {
-        global $DB, $PAGE, $USER, $COURSE;
+    protected static function execute(int $courseid, string $actionbaseurl): array {
+        global $DB, $USER, $COURSE;
 
         $params = self::validate_parameters(
-            self::get_groups_for_search_widget_parameters(),
+            self::execute_parameters(),
             [
-                'courseid' => $courseid
+                'courseid' => $courseid,
+                'actionbaseurl' => $actionbaseurl
             ]
         );
 
@@ -80,13 +83,14 @@ class group extends external_api {
         $context = context_course::instance($params['courseid']);
         parent::validate_context($context);
 
+        $mappedgroups = [];
         $course = $DB->get_record('course', ['id' => $params['courseid']]);
         // Initialise the grade tracking object.
         if ($groupmode = $course->groupmode) {
             $aag = has_capability('moodle/site:accessallgroups', $context);
 
             $usergroups = array();
-            if ($groupmode == VISIBLEGROUPS or $aag) {
+            if ($groupmode == VISIBLEGROUPS || $aag) {
                 $allowedgroups = groups_get_all_groups($course->id, 0, $course->defaultgroupingid);
                 // Get user's own groups and put to the top.
                 $usergroups = groups_get_all_groups($course->id, $USER->id, $course->defaultgroupingid);
@@ -94,19 +98,21 @@ class group extends external_api {
                 $allowedgroups = groups_get_all_groups($course->id, $USER->id, $course->defaultgroupingid);
             }
 
-            $groupsmenu = array_merge($allowedgroups, $usergroups);
-            if (!$allowedgroups or $groupmode == VISIBLEGROUPS or $aag) {
+            $allgroups = array_merge($allowedgroups, $usergroups);
+            // Filter out any duplicate groups.
+            $groupsmenu = array_intersect_key($allgroups, array_unique(array_column($allgroups, 'name')));
+
+            if (!$allowedgroups || $groupmode == VISIBLEGROUPS || $aag) {
                 array_unshift($groupsmenu, (object) [
                     'id' => 0,
                     'name' => get_string('allparticipants'),
                 ]);
             }
 
-            $mappedgroups = array_map(function($group) use ($COURSE) {
-                $url = new \moodle_url('/grade/report/user/index.php', [
+            $mappedgroups = array_map(function($group) use ($COURSE, $actionbaseurl) {
+                $url = new \moodle_url($actionbaseurl, [
                     'id' => $COURSE->id,
-                    'gid' => $group->id,
-                    'zerostate' => 1
+                    'group' => $group->id
                 ]);
                 return (object) [
                     'name' => $group->name,
@@ -126,7 +132,7 @@ class group extends external_api {
      *
      * @return external_single_structure
      */
-    public static function get_groups_for_search_widget_returns(): external_single_structure {
+    public static function execute_returns(): external_single_structure {
         return new external_single_structure([
             'groups' => new external_multiple_structure(self::group_description()),
             'warnings' => new external_warnings(),
@@ -140,7 +146,7 @@ class group extends external_api {
      */
     public static function group_description(): external_description {
         $groupfields = [
-            'url' => new external_value(PARAM_URL, 'The link to reloop upon the zero state', VALUE_REQUIRED),
+            'url' => new external_value(PARAM_URL, 'The link that applies the group action', VALUE_REQUIRED),
             'name' => new external_value(PARAM_TEXT, 'The full name of the group', VALUE_REQUIRED),
         ];
         return new external_single_structure($groupfields);

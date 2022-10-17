@@ -78,6 +78,7 @@ $string['selectuser-neo'] = 'Select a user to view their grades';
 $string['selectgrade-neo'] = 'Which grade item(s) would you like to view';
 $string['selectuserinstructions'] = 'By selecting a user you can view the grades by activity';
 $string['selectgradeinstructions'] = 'Select items to grade...';
+$string['selectgrouplink'] = 'Click to select group';
 $string['selectuserlink'] = 'Click to select user';
 $string['selectgradeitemlink'] = 'Select grade item';
 $string['whattoview'] = 'What would you like to view';

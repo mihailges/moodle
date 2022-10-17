@@ -16,7 +16,7 @@
 /**
  * A small modal to search groups within the gradebook.
  *
- * @module    gradereport_user/group
+ * @module    core_grades/searchwidget/group
  * @copyright 2022 Mathew May <mathew.solutions>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -29,7 +29,8 @@ import * as WidgetBase from 'core_grades/searchwidget/basewidget';
 import {get_string as getString} from 'core/str';
 
 /**
- * Our entry point into starting to build the search widget.
+ * Our entry point into starting to build the group search widget.
+ *
  * It'll eventually, based upon the listeners, open the search widget and allow filtering.
  *
  * @method init
@@ -41,7 +42,7 @@ export const init = () => {
 };
 
 /**
- * Register chooser related event listeners.
+ * Register event listeners.
  *
  * @method registerListenerEvents
  */
@@ -55,21 +56,22 @@ const registerListenerEvents = () => {
 
     let {bodyPromiseResolver, bodyPromise} = WidgetBase.promisesAndResolvers();
 
-    // Display module chooser event listeners.
+    // Register events.
     events.forEach((event) => {
         document.addEventListener(event, async(e) => {
             const trigger = e.target.closest('.groupwidget');
             if (trigger) {
                 const courseID = trigger.dataset.courseid;
+                const actionBaseUrl = trigger.dataset.actionBaseUrl;
                 e.preventDefault();
 
                 // If an error occurs while fetching the data, display the error within the modal.
-                const data = await Repository.groupFetch(courseID).catch(async(e) => {
+                const data = await Repository.groupFetch(courseID, actionBaseUrl).catch(async(e) => {
                     const errorTemplateData = {
                         'errormessage': e.message
                     };
                     bodyPromiseResolver(
-                        await Templates.render('core_course/local/activitychooser/error', errorTemplateData)
+                        await Templates.render('core_grades/searchwidget/error', errorTemplateData)
                     );
                 });
                 // Early return if there is no module data.
@@ -80,14 +82,14 @@ const registerListenerEvents = () => {
                     bodyPromise,
                     data.groups,
                     searchGroups(),
-                    getString('searchgroups', 'gradereport_user')
+                    getString('selectagroup', 'core')
                 );
             }
         });
     });
     // Resolvers for passed functions in the modal creation.
     bodyPromiseResolver(Templates.render(
-        'gradereport_user/groupsearch_body',
+        'core_grades/searchwidget/group/groupsearch_body',
         []
     ));
 };

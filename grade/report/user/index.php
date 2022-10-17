@@ -33,9 +33,9 @@ $courseid = required_param('id', PARAM_INT);
 $userid   = optional_param('userid', null, PARAM_INT);
 $userview = optional_param('userview', 0, PARAM_INT);
 
-$PAGE->set_url(new moodle_url('/grade/report/user/index.php', ['id' => $courseid, 'zerostate' => $zerostate]));
+$PAGE->set_url(new moodle_url('/grade/report/user/index.php', ['id' => $courseid]));
 $PAGE->requires->js_call_amd('gradereport_user/user', 'init');
-$PAGE->requires->js_call_amd('gradereport_user/group', 'init');
+$PAGE->requires->js_call_amd('core_grades/searchwidget/group', 'init');
 
 if ($userview == 0) {
     $userview = get_user_preferences('gradereport_user_view_user', GRADE_REPORT_USER_VIEW_USER);

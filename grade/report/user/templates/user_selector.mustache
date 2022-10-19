@@ -38,8 +38,8 @@
         }
     }
 }}
-<div class="user-selector d-flex">
-    <div role="button" class="userwidget btn dropdown-toggle d-flex text-left align-items-center p-0" data-courseid="{{courseid}}" data-groupid="{{groupid}}" data-searchtype="user" tabindex="0">
+<div class="search-widget dropdown d-flex" data-searchtype="user">
+    <a href="#" aria-expanded="false" role="button" data-toggle="dropdown" class="btn dropdown-toggle d-flex text-left align-items-center p-0" data-courseid="{{courseid}}" data-groupid="{{groupid}}">
         <div class="align-items-center d-flex">
             {{#selectedoption}}
                 <div class="selected-option-img d-block pr-2">
@@ -70,5 +70,7 @@
                 </div>
             {{/selectedoption}}
         </div>
+    </a>
+    <div class="dropdown-menu lg">
     </div>
 </div>

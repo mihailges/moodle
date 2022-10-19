@@ -19707,18 +19707,26 @@ p.arrow_button {
 .path-grade-report-singleview input[name^="finalgrade"] {
   width: 80px; }
 
-.searchresultitemscontainer {
-  max-height: 150px;
-  overflow: auto; }
-  .searchresultitemscontainer a:hover {
-    background-color: #f8f9fa; }
-  .searchresultitemscontainer .focused-cell {
-    outline-style: dotted;
-    outline-color: green; }
-
-.unsearchablecontentcontainer {
-  border-top: 1px solid #dee2e6;
-  padding-top: 10px; }
+.search-widget .dropdown-menu {
+  padding: 0.8rem 1.2rem; }
+  .search-widget .dropdown-menu.lg {
+    width: 400px; }
+  .search-widget .dropdown-menu.md {
+    width: 300px; }
+  .search-widget .dropdown-menu .searchresultscontainer {
+    height: 165px; }
+    .search-widget .dropdown-menu .searchresultscontainer .searchresultitemscontainer {
+      height: 165px;
+      max-height: 165px;
+      overflow: auto; }
+      .search-widget .dropdown-menu .searchresultscontainer .searchresultitemscontainer a:hover {
+        background-color: #f8f9fa; }
+      .search-widget .dropdown-menu .searchresultscontainer .searchresultitemscontainer .focused-cell {
+        outline-style: dotted;
+        outline-color: green; }
+  .search-widget .dropdown-menu .unsearchablecontentcontainer {
+    border-top: 1px solid #dee2e6;
+    padding-top: 10px; }
 
 .columns-autoflow-1to1to1 {
   column-count: 3; }

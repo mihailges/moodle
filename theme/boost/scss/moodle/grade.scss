@@ -528,21 +528,40 @@
     width: 80px;
 }
 
-.searchresultitemscontainer {
-    max-height: 150px;
-    overflow: auto;
+.search-widget {
+    .dropdown-menu {
+        padding: 0.8rem 1.2rem;
 
-    a:hover {
-        background-color: $gray-100;
+        &.lg {
+            width: 400px;
+        }
+
+        &.md {
+            width: 300px;
+        }
+
+        .searchresultscontainer {
+            height: 165px;
+
+            .searchresultitemscontainer {
+                height: 165px;
+                max-height: 165px;
+                overflow: auto;
+
+                a:hover {
+                    background-color: $gray-100;
+                }
+
+                .focused-cell {
+                    outline-style: dotted;
+                    outline-color: green;
+                }
+            }
+        }
+
+        .unsearchablecontentcontainer {
+            border-top: 1px solid #dee2e6;
+            padding-top: 10px;
+        }
     }
-
-    .focused-cell {
-        outline-style: dotted;
-        outline-color: green;
-    }
-}
-
-.unsearchablecontentcontainer {
-    border-top: 1px solid #dee2e6;
-    padding-top: 10px;
 }

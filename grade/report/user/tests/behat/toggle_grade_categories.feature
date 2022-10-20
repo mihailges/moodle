@@ -29,10 +29,8 @@ Feature: User can toggle the visibility of the grade categories within the user 
     And I am on "Course" course homepage
 
   Scenario: A teacher can search for and find a user to view
-    When I navigate to "View > User report" in the course gradebook
-    And I click on ".userwidget" "css_element"
-    And I wait until "User report" "dialogue" exists
-    And I click on "Student 1" "link" in the "User report" "dialogue"
+    Given I navigate to "View > User report" in the course gradebook
+    And I click on "Student 1" in the "user" search widget
     And I should see "Test assignment one" in the "user-grade" "table"
     And I should see "Test assignment two" in the "user-grade" "table"
     And I should see "Category 1 total" in the "user-grade" "table"

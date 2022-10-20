@@ -26,7 +26,6 @@ defined('MOODLE_INTERNAL') || die();
 
 // General Strings.
 $string['all_grades'] = 'All grades';
-$string['allparticipants'] = 'All participants';
 $string['assessmentname'] = 'Grade item';
 $string['blanks'] = 'Empty grades';
 $string['bulkappliesto'] = 'For';
@@ -66,21 +65,12 @@ $string['summarygrade'] = 'A table of users, with columns for range, grade, feed
 $string['summaryuser'] = 'A table of grade items, with columns for grade category, range, grade, feedback, and whether to override or exclude a particular grade.';
 $string['userselect'] = 'Select activity';
 
-$string['myself'] = 'Myself';
-$string['otheruser'] = 'User';
-$string['viewas'] = 'View report as';
+$string['ariareporttype'] = 'Select a report type to view';
 $string['viewby'] = 'View by';
-$string['searchusers'] = 'Search users';
 $string['searchgrades'] = 'Search grade items';
-$string['selectauser'] = 'Select a user';
 $string['selectagrade'] = 'Select a grade item';
-$string['selectuser-neo'] = 'Select a user to view their grades';
-$string['selectgrade-neo'] = 'Which grade item(s) would you like to view';
 $string['selectuserinstructions'] = 'By selecting a user you can view the grades by activity';
 $string['selectgradeinstructions'] = 'Select items to grade...';
-$string['selectuserlink'] = 'Click to select user';
-$string['selectgradeitemlink'] = 'Select grade item';
+$string['selectgradeitemlink'] = 'Click to select grade item';
 $string['whattoview'] = 'What would you like to view';
 $string['whattoviewselect'] = 'Select to view by users or grade items';
-$string['users'] = 'Users';
-$string['gradeitems'] = 'Grade items';

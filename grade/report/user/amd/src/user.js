@@ -92,7 +92,7 @@ const registerListenerEvents = () => {
                     bodyPromise,
                     data.users,
                     searchUsers(),
-                    getString('selectauser', 'gradereport_user'),
+                    getString('selectauser', 'grades'),
                     allUsersOption
                 );
             }

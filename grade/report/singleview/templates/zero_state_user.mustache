@@ -30,10 +30,12 @@
 </div>
 <div class="mx-auto w-50 text-center">
     <img src="{{imglink}}" alt="Temp" class="w-50 h-50 mb-4">
-    <h4>{{#str}}selectuser, gradereport_singleview{{/str}}</h4>
+    <h3>{{#str}}selectuser, gradereport_singleview{{/str}}</h3>
     <p>{{#str}}selectuserinstructions, gradereport_singleview{{/str}}</p>
     <a href="#"
        class="btn btn-light border-secondary userwidget"
-       data-courseid={{courseid}} data-searchtype="user"
-    >{{#str}}selectuserlink, gradereport_singleview{{/str}}</a>
+       data-courseid="{{courseid}}"
+       data-groupid="{{groupid}}"
+       data-searchtype="user"
+    >{{#str}}selectuserlink, grades{{/str}}</a>
 </div>

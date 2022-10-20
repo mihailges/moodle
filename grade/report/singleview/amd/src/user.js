@@ -82,7 +82,7 @@ const registerListenerEvents = () => {
                     bodyPromise,
                     data.users,
                     searchUsers(),
-                    getString('selectauser', 'gradereport_singleview')
+                    getString('selectauser', 'grades')
                 );
             }
         });

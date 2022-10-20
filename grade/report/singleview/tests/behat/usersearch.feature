@@ -16,20 +16,19 @@ Feature: Within the singleview report, a teacher can search for users.
       | student1  | C1     | student        |
       | student2  | C1     | student        |
       | student32 | C1     | student        |
-    And I log in as "teacher1"
-    And I am on "Course 1" course homepage
+    And I am on the "Course 1" "Course" page logged in as "teacher1"
     And I change window size to "large"
 
   Scenario: A teacher can search for and find a user to view
-    When I navigate to "View > Single view" in the course gradebook
-    And I click on "User" "link" in the ".singleindex" "css_element"
+    Given I navigate to "View > Single view" in the course gradebook
+    When I click on "User" "link" in the ".singleindex" "css_element"
     And I wait until the page is ready
     And I click on "Click to select user" "link"
-    And I confirm "Student 1" in "Select a user" search within the gradebook widget exists
+    Then I confirm "Student 1" in "Select a user" search within the gradebook widget exists
     And I confirm "Student 2" in "Select a user" search within the gradebook widget exists
     And I confirm "Student 32" in "Select a user" search within the gradebook widget exists
     And I set the field "searchinput" to "2"
     And I wait "1" seconds
-    Then I confirm "Student 2" in "Select a user" search within the gradebook widget exists
+    And I confirm "Student 2" in "Select a user" search within the gradebook widget exists
     And I confirm "Student 32" in "Select a user" search within the gradebook widget exists
     And I confirm "Student 1" in "Select a user" search within the gradebook widget does not exist

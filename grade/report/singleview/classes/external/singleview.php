@@ -19,8 +19,6 @@ namespace gradereport_singleview\external;
 use coding_exception;
 use context_course;
 use core_course_external;
-use core_user;
-use external_description;
 use external_function_parameters;
 use external_multiple_structure;
 use external_single_structure;
@@ -30,7 +28,6 @@ use invalid_parameter_exception;
 use moodle_exception;
 use moodle_url;
 use restricted_context_exception;
-use user_picture;
 use grade_tree;
 
 defined('MOODLE_INTERNAL') || die;

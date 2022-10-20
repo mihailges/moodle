@@ -16,17 +16,16 @@ Feature: Given we have opted to search for a grade item, Lets find and search th
       | activity | course | idnumber | name                |
       | assign   | C1     | a1       | Test assignment one |
       | assign   | C1     | a2       | Test assignment two |
-    And I log in as "teacher1"
-    And I am on "Course 1" course homepage
+    And I am on the "Course 1" "Course" page logged in as "teacher1"
     And I change window size to "large"
 
   Scenario: A teacher can search for and find a grade item to view
-    When I navigate to "View > Single view" in the course gradebook
+    Given I navigate to "View > Single view" in the course gradebook
     And I click on "Grade items" "link" in the ".singleindex" "css_element"
-    And I click on "Select grade item" "link"
-    And I confirm "Test assignment one" in "Select a grade item" search within the gradebook widget exists
+    When I click on "Select grade item" "link"
+    Then I confirm "Test assignment one" in "Select a grade item" search within the gradebook widget exists
     And I confirm "Test assignment two" in "Select a grade item" search within the gradebook widget exists
     And I set the field "searchinput" to "two"
     And I wait "1" seconds
-    Then I confirm "Test assignment two" in "Select a grade item" search within the gradebook widget exists
+    And I confirm "Test assignment two" in "Select a grade item" search within the gradebook widget exists
     And I confirm "Test assignment one" in "Select a grade item" search within the gradebook widget does not exist

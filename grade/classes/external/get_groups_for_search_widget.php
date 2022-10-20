@@ -89,14 +89,15 @@ class get_groups_for_search_widget extends external_api {
         if ($groupmode = $course->groupmode) {
             $aag = has_capability('moodle/site:accessallgroups', $context);
 
-            $usergroups = array();
+            $usergroups = [];
+            $groupuserid = 0;
             if ($groupmode == VISIBLEGROUPS || $aag) {
-                $allowedgroups = groups_get_all_groups($course->id, 0, $course->defaultgroupingid);
                 // Get user's own groups and put to the top.
                 $usergroups = groups_get_all_groups($course->id, $USER->id, $course->defaultgroupingid);
             } else {
-                $allowedgroups = groups_get_all_groups($course->id, $USER->id, $course->defaultgroupingid);
+                $groupuserid = $USER->id;
             }
+            $allowedgroups = groups_get_all_groups($course->id, $groupuserid, $course->defaultgroupingid);
 
             $allgroups = array_merge($allowedgroups, $usergroups);
             // Filter out any duplicate groups.

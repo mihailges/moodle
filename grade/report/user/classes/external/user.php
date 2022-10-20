@@ -98,7 +98,7 @@ class user extends external_api {
         if (has_capability('moodle/grade:viewall', $context)) {
             // Can view all course grades.
             $access = true;
-        } else if ($userid == $USER->id and has_capability('moodle/grade:view', $context) and $course->showgrades) {
+        } else if ($userid == $USER->id && has_capability('moodle/grade:view', $context) && $course->showgrades) {
             // View own grades.
             $access = true;
         }
@@ -405,7 +405,7 @@ class user extends external_api {
         if (has_capability('moodle/grade:viewall', $context)) {
             // Can view all course grades (any user).
             $access = true;
-        } else if ($userid == $USER->id and has_capability('moodle/grade:view', $context) and $course->showgrades) {
+        } else if ($userid == $USER->id && has_capability('moodle/grade:view', $context) && $course->showgrades) {
             // View own grades.
             $access = true;
         }
@@ -468,7 +468,7 @@ class user extends external_api {
         list($gradeitems, $warnings) = self::get_report_data($course, $context, $user, $userid, $groupid, false);
 
         foreach ($gradeitems as $gradeitem) {
-            if (isset($gradeitem['feedback']) and isset($gradeitem['feedbackformat'])) {
+            if (isset($gradeitem['feedback']) && isset($gradeitem['feedbackformat'])) {
                 list($gradeitem['feedback'], $gradeitem['feedbackformat']) =
                     external_format_text($gradeitem['feedback'], $gradeitem['feedbackformat'], $context->id);
             }

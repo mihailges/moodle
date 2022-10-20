@@ -1,4 +1,4 @@
-@core @core_grades @gradereport_user @javascript
+@core @core_grades @gradereport_user @javascript @testtt
 Feature: Within the User report, a teacher can search for users.
   Background:
     Given the following "courses" exist:

@@ -1,4 +1,4 @@
-@core @core_grades @gradereport_user @javascript @testtt
+@core @core_grades @gradereport_user @javascript
 Feature: Teacher can navigate to the previous or next user report.
   In order to get go the previous or next user report
   As a teacher
@@ -28,9 +28,7 @@ Feature: Teacher can navigate to the previous or next user report.
 
   Scenario: A teacher can navigate to the next user report
     When I navigate to "View > User report" in the course gradebook
-    And I click on ".userwidget" "css_element"
-    And I wait until "User report" "dialogue" exists
-    And I click on "Student 1" "link" in the "User report" "dialogue"
+    And I click on "Student 1" in the "user" search widget
     And I should see "Student 1" in the ".user-heading" "css_element"
     And ".previous" "css_element" should not exist in the ".user-navigation" "css_element"
     And ".next" "css_element" should exist in the ".user-navigation" "css_element"
@@ -49,9 +47,7 @@ Feature: Teacher can navigate to the previous or next user report.
 
   Scenario: A teacher can navigate to the previous user report
     When I navigate to "View > User report" in the course gradebook
-    And I click on ".userwidget" "css_element"
-    And I wait until "User report" "dialogue" exists
-    And I click on "Student 3" "link" in the "User report" "dialogue"
+    And I click on "Student 3" in the "user" search widget
     And I should see "Student 3" in the ".user-heading" "css_element"
     And ".previous" "css_element" should exist in the ".user-navigation" "css_element"
     And I should see "Student 2" in the ".previous" "css_element"

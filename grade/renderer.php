@@ -84,6 +84,7 @@ class core_grades_renderer extends plugin_renderer_base {
         $this->page->requires->js_call_amd('core_grades/searchwidget/group', 'init');
         return $this->render_from_template('core_grades/group_selector', $data);
     }
+<<<<<<< HEAD
 
     /**
      * Creates and renders a custom user heading.
@@ -147,4 +148,6 @@ class core_grades_renderer extends plugin_renderer_base {
 
         return $this->render_from_template('core_grades/user_heading', $headingdata);
     }
+=======
+>>>>>>> 22646bb40a2... MDL-75423 core_grades: Create trigger element for the group selector
 }

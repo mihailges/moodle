@@ -101,7 +101,7 @@ class gradereport_user_renderer extends plugin_renderer_base {
             if ($userid) { // A single user selected.
                 $user = core_user::get_user($userid);
                 $data['selectedoption'] = [
-                    'image' => $this->user_picture($user, array('size' => 40, 'link' => false)),
+                    'image' => $this->user_picture($user, ['size' => 40, 'link' => false]),
                     'text' => fullname($user),
                     'additionaltext' => $user->email,
                 ];

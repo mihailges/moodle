@@ -14,7 +14,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * A small modal to search groups within the gradebook.
+ * A widget to search groups within the gradebook.
  *
  * @module    core_grades/searchwidget/group
  * @copyright 2022 Mathew May <mathew.solutions>
@@ -23,10 +23,9 @@
 
 import Pending from 'core/pending';
 import * as Templates from 'core/templates';
-import CustomEvents from "core/custom_interaction_events";
 import * as Repository from 'core_grades/searchwidget/repository';
 import * as WidgetBase from 'core_grades/searchwidget/basewidget';
-import {get_string as getString} from 'core/str';
+import $ from 'jquery';
 
 /**
  * Our entry point into starting to build the group search widget.
@@ -41,57 +40,59 @@ export const init = () => {
     pendingPromise.resolve();
 };
 
+const Selectors = {
+    dropdown: ".search-widget[data-searchtype='group']",
+    dropdownMenu: ".search-widget[data-searchtype='group'] .dropdown-menu",
+};
+
 /**
  * Register event listeners.
  *
  * @method registerListenerEvents
  */
 const registerListenerEvents = () => {
-    const events = [
-        'click',
-        CustomEvents.events.activate,
-        CustomEvents.events.keyboardActivate
-    ];
-    CustomEvents.define(document, events);
-
     let {bodyPromiseResolver, bodyPromise} = WidgetBase.promisesAndResolvers();
+    const dropdownMenuContainer = document.querySelector(Selectors.dropdownMenu);
 
-    // Register events.
-    events.forEach((event) => {
-        document.addEventListener(event, async(e) => {
-            const trigger = e.target.closest('.groupwidget');
-            if (trigger) {
-                const courseID = trigger.dataset.courseid;
-                const actionBaseUrl = trigger.dataset.actionBaseUrl;
-                e.preventDefault();
+    // Handle the 'shown.bs.dropdown' event (Fired when the dropdown menu is fully displayed).
+    $(Selectors.dropdown).on('show.bs.dropdown', async(e) => {
+        const courseID = e.relatedTarget.dataset.courseid;
+        const actionBaseUrl = e.relatedTarget.dataset.actionBaseUrl;
+        // Display a loading icon in the dropdown menu container until the body promise is resolved.
+        await WidgetBase.showLoader(dropdownMenuContainer);
 
-                // If an error occurs while fetching the data, display the error within the modal.
-                const data = await Repository.groupFetch(courseID, actionBaseUrl).catch(async(e) => {
-                    const errorTemplateData = {
-                        'errormessage': e.message
-                    };
-                    bodyPromiseResolver(
-                        await Templates.render('core_grades/searchwidget/error', errorTemplateData)
-                    );
-                });
-                // Early return if there is no module data.
-                if (data === []) {
-                    return;
-                }
-                WidgetBase.init(
-                    bodyPromise,
-                    data.groups,
-                    searchGroups(),
-                    getString('selectagroup', 'core')
-                );
-            }
+        // If an error occurs while fetching the data, display the error within the dropdown menu.
+        const data = await Repository.groupFetch(courseID, actionBaseUrl).catch(async(e) => {
+            const errorTemplateData = {
+                'errormessage': e.message
+            };
+            bodyPromiseResolver(
+                await Templates.render('core_grades/searchwidget/error', errorTemplateData)
+            );
         });
+        // Early return if there is no module data.
+        if (data === []) {
+            return;
+        }
+        WidgetBase.init(
+            dropdownMenuContainer,
+            bodyPromise,
+            data.groups,
+            searchGroups(),
+        );
     });
-    // Resolvers for passed functions in the modal creation.
+
+    // Resolvers for passed functions in the dropdown creation.
     bodyPromiseResolver(Templates.render(
         'core_grades/searchwidget/group/groupsearch_body',
         []
     ));
+
+    // Handle the 'hide.bs.dropdown' event (Fired when the dropdown menu is being closed).
+    $(Selectors.dropdown).on('hide.bs.dropdown', () => {
+        // Reset the state once the groups menu dropdown is closed.
+        dropdownMenuContainer.innerHTML = '';
+    });
 };
 
 /**

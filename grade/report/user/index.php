@@ -52,7 +52,7 @@ $PAGE->set_pagelayout('report');
 $context = context_course::instance($course->id);
 require_capability('gradereport/user:view', $context);
 
-if ($userid === 0) {
+if ($userid === 0 || is_null($userid)) {
     require_capability('moodle/grade:viewall', $context);
 } else if ($userid) {
     if (!$DB->get_record('user', ['id' => $userid, 'deleted' => 0]) || isguestuser($userid)) {
@@ -88,7 +88,6 @@ $USER->grade_last_report[$course->id] = 'user';
 
 // First make sure we have proper final grades.
 grade_regrade_final_grades_if_required($course);
-
 
 // Teachers will see all student reports.
 if (has_capability('moodle/grade:viewall', $context)) {
@@ -129,14 +128,10 @@ if (has_capability('moodle/grade:viewall', $context)) {
         if (isset($report)) {
             // Trigger report viewed event.
             $report->viewed();
-        } else {
-            // No students warning.
-            echo html_writer::tag('div', '', array('class' => 'clearfix'));
-            echo $OUTPUT->notification(get_string('nostudentsyet'));
         }
 
         // Print header.
-        print_grade_page_head($COURSE->id, 'report', 'user', ' ', false);
+        print_grade_page_head($course->id, 'report', 'user', ' ', false);
 
         echo $report->output_report_zerostate();
     } else if (empty($userid)) {

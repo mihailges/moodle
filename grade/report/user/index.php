@@ -53,7 +53,7 @@ $PAGE->set_pagelayout('report');
 $context = context_course::instance($course->id);
 require_capability('gradereport/user:view', $context);
 
-if ($userid === 0 || is_null($userid)) {
+if ($userid === 0) {
     require_capability('moodle/grade:viewall', $context);
 } else if ($userid) {
     if (!$DB->get_record('user', ['id' => $userid, 'deleted' => 0]) || isguestuser($userid)) {

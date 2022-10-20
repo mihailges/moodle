@@ -55,7 +55,7 @@ const toggleCategory = (toggleElement) => {
     const target = toggleElement.dataset.target;
     const categoryId = toggleElement.dataset.categoryid;
     // Whether the toggle action is collapsing the category or not.
-    const isCollapsing = toggleElement.getAttribute('aria-expanded') == "true";
+    const isCollapsing = toggleElement.getAttribute('aria-expanded') === "true";
     const userReport = toggleElement.closest(SELECTORS.USER_REPORT_TABLE);
 
     // Find all targeted 'children' rows of the toggled category.
@@ -80,7 +80,6 @@ const toggleCategory = (toggleElement) => {
             row.dataset.hidden = 'true';
             row.dataset.hiddenBy = categoryId;
         } else {
-            //
             row.dataset.hidden = 'false';
             row.dataset.hiddenBy = '';
         }
@@ -117,8 +116,8 @@ const updateParentCategoryRowspans = (toggleElement, num) => {
             const categoryRowSpanElement = categoryRowElement.nextElementSibling.querySelector('[rowspan]');
 
             // Depending on whether the toggle action has expanded or collapsed the category, either add or
-            // subtract from the the 'parent' category rowspan.
-            if (toggleElement.getAttribute('aria-expanded') == "true") {
+            // subtract from the 'parent' category rowspan.
+            if (toggleElement.getAttribute('aria-expanded') === "true") {
                 categoryRowSpanElement.rowSpan = categoryRowSpanElement.rowSpan + num;
             } else { // The category has been collapsed.
                 categoryRowSpanElement.rowSpan = categoryRowSpanElement.rowSpan - num;

@@ -94,17 +94,18 @@ $reportname = $report->screen->heading();
 
 $PAGE->set_pagelayout('report');
 
-$actionbar = new \core_grades\output\general_action_bar($context,
-    new moodle_url('/grade/report/singleview/index.php', ['id' => $courseid]), 'report', 'singleview');
+if ($itemtype == 'user' || $itemtype == 'user_select') {
+    $actionbar = new \gradereport_singleview\output\action_bar($context, $report, 'user');
+} else if ($itemtype == 'grade' || $itemtype == 'grade_select') {
+    $actionbar = new \gradereport_singleview\output\action_bar($context, $report, 'grade');
+} else {
+    $actionbar = new \core_grades\output\general_action_bar($context, new moodle_url('/grade/report/singleview/index.php',
+        ['id' => $courseid]), 'report', 'singleview');
+}
 
 if ($itemtype == 'user') {
-    $actionbar = new \gradereport_singleview\output\user_action_bar($context, $report);
     print_grade_page_head($course->id, 'report', 'singleview', $reportname, false, false,
         true, null, null, $report->screen->item, $actionbar);
-} else if ($itemtype == 'grade') {
-    $actionbar = new \gradereport_singleview\output\gradeitem_action_bar($context, $report);
-    print_grade_page_head($course->id, 'report', 'singleview', $reportname, false, false,
-        true, null, null, null, $actionbar);
 } else {
     print_grade_page_head($course->id, 'report', 'singleview', $reportname, false, false,
         true, null, null, null, $actionbar);

@@ -2978,3 +2978,9 @@ body.dragging {
         }
     }
 }
+
+// Modify bootstrap's .dropdown-menu and make it 'static' at all times.
+.dropdown-menu {
+    transform: none !important; /* stylelint-disable-line declaration-no-important */
+    top: 100% !important; /* stylelint-disable-line declaration-no-important */
+}

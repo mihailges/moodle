@@ -545,29 +545,28 @@ class user extends grade_report {
                 } else {
                     $class .= ($type == 'categoryitem' || $type == 'courseitem') ? " d$depth baggb" : " item b1b";
                 }
+
+                $itemicon = \html_writer::div($this->gtree->get_element_icon($element), 'mr-1');
+                $elementtype = $this->gtree->get_element_type_string($element);
+                $itemtype = \html_writer::span($elementtype, 'd-block text-uppercase small dimmed_text',
+                    ['title' => $elementtype]);
+
                 if ($type == 'categoryitem' || $type == 'courseitem') {
                     $headercat = "cat_{$gradeobject->iteminstance}_{$this->user->id}";
-                    $content = $fullname;
+                }
+
+                // Generate the content for a cell that represents a grade item.
+                // If a behat test site is running avoid outputting the information about the type of the grade item.
+                // This additional information causes issues in behat particularly with the existing xpath used to
+                // interact with table elements.
+                if (!defined('BEHAT_SITE_RUNNING')) {
+                    $content = \html_writer::div($itemtype . $fullname);
                 } else {
-                    // Generate the content for a cell that represents a grade item.
-                    // If a behat test site is running avoid outputting the information about the type of the grade item.
-                    // This additional information causes issues in behat particularly with the existing xpath used to
-                    // interact with table elements.
-                    if (!defined('BEHAT_SITE_RUNNING')) {
-                        if ($gradeobject->itemtype === 'mod') {
-                            $itemtype = get_string('modulename', $gradeobject->itemmodule);
-                        } else {
-                            $itemtype = get_string('manualitem', 'grades');
-                        }
-                        $type = \html_writer::span($itemtype, 'd-block text-uppercase small dimmed_text');
-                        $content = $type . $fullname;
-                    } else {
-                        $content = $fullname;
-                    }
+                    $content = \html_writer::div($fullname);
                 }
 
                 // Name.
-                $data['itemname']['content'] = $content;
+                $data['itemname']['content'] = \html_writer::div($itemicon . $content, "{$type} d-flex align-items-center");
                 $data['itemname']['class'] = $class;
                 $data['itemname']['colspan'] = ($this->maxdepth - $depth);
                 $data['itemname']['id'] = $headerrow;
@@ -880,6 +879,7 @@ class user extends grade_report {
             $rowspandata['leader']['class'] = $class . " d$depth b1t b2b b1l";
             $rowspandata['leader']['rowspan'] = $element['rowspan'];
             $rowspandata['parentcategories'] = array_filter(explode('/', $gradeobject->path));
+            $rowspandata['spacer'] = true;
         }
 
         // Add this row to the overall system.
@@ -1020,7 +1020,7 @@ class user extends grade_report {
         // Set the table headings.
         foreach ($this->tableheaders as $index => $heading) {
             $headingcell = new \html_table_cell($heading);
-            $headingcell->id = $this->tablecolumns[$index];
+            $headingcell->attributes['id'] = $this->tablecolumns[$index];
             $headingcell->attributes['class'] = "header column-{$this->tablecolumns[$index]}";
             if ($index == 0) {
                 $headingcell->colspan = $this->maxdepth;
@@ -1069,6 +1069,8 @@ class user extends grade_report {
             $classes = implode(" ", array_map(function($parentcategoryid) {
                 return "cat_{$parentcategoryid}";
             }, $rowdata['parentcategories']));
+
+            $classes .= isset($rowdata['spacer']) && $rowdata['spacer'] ? ' spacer' : '';
 
             $tablerow->attributes = ['class' => $classes, 'data-hidden' => 'false'];
             $table->data[] = $tablerow;

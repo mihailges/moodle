@@ -1280,7 +1280,7 @@ class user extends grade_report {
         global $OUTPUT;
 
         $context = [
-            'imglink' => new \moodle_url('/pix/f/clip-353 1.png'),
+            'imglink' => $OUTPUT->image_url('zero_state', 'gradereport_user'),
         ];
         return $OUTPUT->render_from_template('gradereport_user/zero_state', $context);
     }

@@ -39,6 +39,7 @@ export const init = async (widgetContentContainer, bodyPromise, data, searchFunc
     bodyPromise.then(async(bodyContent) => {
         widgetContentContainer.innerHTML = bodyContent;
         const searchInput = widgetContentContainer.querySelector('input[data-action="search"]');
+        const clearSearchButton = widgetContentContainer.querySelector('[data-action="clearsearch"]');
         const searchResultsContainer = widgetContentContainer.querySelector('[data-region="search-results-container-widget"]');
 
         await showLoader(searchResultsContainer);
@@ -52,6 +53,12 @@ export const init = async (widgetContentContainer, bodyPromise, data, searchFunc
 
         // The search input is triggered.
         searchInput.addEventListener('input', debounce(async() => {
+            // If search query is present display the 'clear search' button, otherwise hide it.
+            if (searchInput.value.length > 0) {
+                clearSearchButton.classList.remove('d-none');
+            } else {
+                clearSearchButton.classList.add('d-none');
+            }
             // Display the search results.
             await renderSearchResults(
                 searchResultsContainer,
@@ -62,6 +69,26 @@ export const init = async (widgetContentContainer, bodyPromise, data, searchFunc
                 )
             );
         }, 300));
+
+        // Clear search is triggered.
+        clearSearchButton.addEventListener('click', async(e) => {
+            e.stopPropagation();
+            // Clear the entered search query in the search bar.
+            searchInput.value = "";
+            searchInput.focus();
+            clearSearchButton.classList.add('d-none');
+
+            // Display all results.
+            await renderSearchResults(
+                searchResultsContainer,
+                debounceCallee(
+                    searchInput.value,
+                    data,
+                    searchFunc()
+                )
+            );
+        });
+
         // Trigger event handling for the results in line with aria guidelines.
         comboBox(searchInput);
     });

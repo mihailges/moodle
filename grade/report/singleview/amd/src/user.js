@@ -23,11 +23,10 @@
 
 import Pending from 'core/pending';
 import * as Templates from 'core/templates';
-import CustomEvents from "core/custom_interaction_events";
 import * as Repository from 'core_grades/searchwidget/repository';
 import * as WidgetBase from 'core_grades/searchwidget/basewidget';
-import {get_string as getString} from 'core/str';
 import Url from 'core/url';
+import $ from 'jquery';
 
 /**
  * Our entry point into starting to build the search widget.
@@ -41,58 +40,59 @@ export const init = () => {
     pendingPromise.resolve();
 };
 
+const Selectors = {
+    dropdown: ".search-widget[data-searchtype='user']",
+    dropdownMenuContainer: ".search-widget[data-searchtype='user'] .dropdown-menu",
+};
+
 /**
  * Register user search widget related event listeners.
  *
  * @method registerListenerEvents
  */
 const registerListenerEvents = () => {
-    const events = [
-        'click',
-        CustomEvents.events.activate,
-        CustomEvents.events.keyboardActivate
-    ];
-    CustomEvents.define(document, events);
-
     let {bodyPromiseResolver, bodyPromise} = WidgetBase.promisesAndResolvers();
+    const dropdownMenuContainer = document.querySelector(Selectors.dropdownMenuContainer);
 
-    // Register events.
-    events.forEach((event) => {
-        document.addEventListener(event, async(e) => {
-            const trigger = e.target.closest('.userwidget');
-            if (trigger) {
-                const courseID = trigger.dataset.courseid;
-                const groupId = trigger.dataset.groupid;
-                e.preventDefault();
+    // Handle the 'shown.bs.dropdown' event (Fired when the dropdown menu is fully displayed).
+    $(Selectors.dropdown).on('show.bs.dropdown', async(e) => {
+        const courseID = e.relatedTarget.dataset.courseid;
+        const groupId = e.relatedTarget.dataset.groupid;
+        const actionBaseUrl = Url.relativeUrl('/grade/report/singleview/index.php', {item: 'user'}, false);
+        // Display a loading icon in the dropdown menu container until the body promise is resolved.
+        await WidgetBase.showLoader(dropdownMenuContainer);
 
-                const actionBaseUrl = Url.relativeUrl('/grade/report/singleview/index.php', {item: 'user'}, false);
-                // If an error occurs while fetching the data, display the error within the modal.
-                const data = await Repository.userFetch(courseID, actionBaseUrl, groupId).catch(async(e) => {
-                    const errorTemplateData = {
-                        'errormessage': e.message
-                    };
-                    bodyPromiseResolver(
-                        await Templates.render('core_grades/searchwidget/error', errorTemplateData)
-                    );
-                });
-                // Early return if there is no module data.
-                if (data === []) {
-                    return;
-                }
-                WidgetBase.init(
-                    bodyPromise,
-                    data.users,
-                    searchUsers(),
-                    getString('selectauser', 'grades')
-                );
-            }
+        // If an error occurs while fetching the data, display the error within the dropdown menu.
+        const data = await Repository.userFetch(courseID, actionBaseUrl, groupId).catch(async(e) => {
+            const errorTemplateData = {
+                'errormessage': e.message
+            };
+            bodyPromiseResolver(
+                await Templates.render('core_grades/searchwidget/error', errorTemplateData)
+            );
         });
+
+        // Early return if there is no module data.
+        if (data === []) {
+            return;
+        }
+
+        WidgetBase.init(
+            dropdownMenuContainer,
+            bodyPromise,
+            data.users,
+            searchUsers()
+        );
+
+        // Resolvers for passed functions in the dropdown menu creation.
+        bodyPromiseResolver(Templates.render('core_grades/searchwidget/user/usersearch_body', []));
     });
-    // Resolvers for passed functions in the modal creation.
-    bodyPromiseResolver(Templates.render(
-        'core_grades/searchwidget/user/usersearch_body',
-        []
-    ));
+
+    // Handle the 'hide.bs.dropdown' event (Fired when the dropdown menu is being closed).
+    $(Selectors.dropdown).on('hide.bs.dropdown', () => {
+        // Reset the state once the user menu dropdown is closed.
+        dropdownMenuContainer.innerHTML = '';
+    });
 };
 
 /**

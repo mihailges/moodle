@@ -37,6 +37,9 @@ class action_bar extends \core_grades\output\action_bar {
     /** @var int|null $currentgroupid The user report view mode. */
     protected $currentgroupid;
 
+    /** @var array $users The array of gradable users in the course. */
+    protected $users;
+
     /**
      * The class constructor.
      *
@@ -44,12 +47,15 @@ class action_bar extends \core_grades\output\action_bar {
      * @param int $userview The user report view mode.
      * @param int|null $userid The user ID or 0 if displaying all users.
      * @param int|null $currentgroupid The ID of the current group.
+     * @param array $users The array of gradable users in the course.
      */
-    public function __construct(\context $context, int $userview, ?int $userid = null, ?int $currentgroupid = null) {
+    public function __construct(\context $context, int $userview, ?int $userid = null, ?int $currentgroupid = null,
+            array $users = []) {
         parent::__construct($context);
         $this->userview = $userview;
         $this->userid = $userid;
         $this->currentgroupid = $currentgroupid;
+        $this->users = $users;
     }
 
     /**
@@ -85,7 +91,8 @@ class action_bar extends \core_grades\output\action_bar {
             $userreportrenderer = $PAGE->get_renderer('gradereport_user');
 
             $data['groupselector'] = $gradesrenderer->group_selector($course);
-            $data['userselector'] = $userreportrenderer->users_selector($course, $this->userid, $this->currentgroupid);
+            $data['userselector'] = $userreportrenderer->users_selector($course, $this->userid, $this->currentgroupid,
+                $this->users);
 
             // Do not output the 'view mode' selector when in zero state or when the current user is viewing its own report.
             if (!is_null($this->userid) && $USER->id != $this->userid) {

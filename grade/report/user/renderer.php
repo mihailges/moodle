@@ -86,10 +86,15 @@ class gradereport_user_renderer extends plugin_renderer_base {
      * @param object $course The course object.
      * @param int|null $userid The user ID.
      * @param int|null $groupid The group ID.
-     * @return string The raw HTML to render.
+     * @param array $users The array of gradable users in the course.
+     * @return string|null The raw HTML to render.
      * @throws coding_exception
      */
-    public function users_selector(object $course, ?int $userid = null, ?int $groupid = null): string {
+    public function users_selector(object $course, ?int $userid = null, ?int $groupid = null, array $users = []): ?string {
+
+        if (empty($users)) {
+            return null;
+        }
 
         $data = [
             'courseid' => $course->id,
@@ -106,22 +111,8 @@ class gradereport_user_renderer extends plugin_renderer_base {
                     'additionaltext' => $user->email,
                 ];
             } else { // All users selected.
-                // Get the total number of users.
-                $defaultgradeshowactiveenrol = !empty($CFG->grade_report_showonlyactiveenrol);
-                $showonlyactiveenrol = get_user_preferences('grade_report_showonlyactiveenrol', $defaultgradeshowactiveenrol);
-                $showonlyactiveenrol = $showonlyactiveenrol ||
-                    !has_capability('moodle/course:viewsuspendedusers', context_course::instance($course->id));
-                $gui = new graded_users_iterator($course, null, $groupid);
-                $gui->require_active_enrolment($showonlyactiveenrol);
-                $gui->init();
-                $totalusersnum = 0;
-                while ($userdata = $gui->next_user()) {
-                    $totalusersnum++;
-                }
-                $gui->close();
-
                 $data['selectedoption'] = [
-                    'text' => get_string('allusersnum', 'gradereport_user', $totalusersnum),
+                    'text' => get_string('allusersnum', 'gradereport_user', count($users)),
                 ];
             }
         }
@@ -136,16 +127,16 @@ class gradereport_user_renderer extends plugin_renderer_base {
      * @param graded_users_iterator $gui Objects that is used to iterate over a list of gradable users in the course.
      * @param int $userid The ID of the current user.
      * @param int $courseid The course ID.
-     * @return string The raw HTML to render.
+     * @param array $users The array of gradable users in the course.
+     * @return string|null The raw HTML to render.
      */
-    public function user_navigation(graded_users_iterator $gui, int $userid, int $courseid): string {
+    public function user_navigation(graded_users_iterator $gui, int $userid, int $courseid, array $users): ?string {
+
+        if (empty($users)) {
+            return null;
+        }
 
         $navigationdata = [];
-
-        while ($userdata = $gui->next_user()) {
-            $users[$userdata->user->id] = $userdata->user;
-        }
-        $gui->close();
 
         $arraykeys = array_keys($users);
         $keynumber = array_search($userid, $arraykeys);

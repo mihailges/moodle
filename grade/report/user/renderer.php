@@ -197,4 +197,16 @@ class gradereport_user_renderer extends plugin_renderer_base {
         return $this->render_from_template('gradereport_user/view_mode_selector',
             $viewasselect->export_for_template($this));
     }
+
+    /**
+     * Build the html for the zero state of the user report.
+     *
+     * @return string HTML to display
+     */
+    public function zero_state(): string {
+        $context = [
+            'imglink' => $this->image_url('zero_state', 'gradereport_user'),
+        ];
+        return $this->render_from_template('gradereport_user/zero_state', $context);
+    }
 }

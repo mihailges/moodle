@@ -1276,10 +1276,15 @@ class user extends grade_report {
 
     /**
      * Build the html for the zero state of the user report.
+     *
+     * @deprecated since Moodle 4.2
      * @return string HTML to display
      */
     public function output_report_zerostate(): string {
         global $OUTPUT;
+
+        debugging('output_report_zerostate() is deprecated. Please use gradereport_user_renderer::zero_state() instead.',
+            DEBUG_DEVELOPER);
 
         $context = [
             'imglink' => $OUTPUT->image_url('zero_state', 'gradereport_user'),

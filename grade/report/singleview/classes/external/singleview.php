@@ -80,7 +80,7 @@ class singleview extends core_course_external {
         $gradeableitems = $gtree->get_items();
 
         $gradeitems = array_map(function ($gradeitem) use ($PAGE, $USER, $params) {
-            $item = new \stdClass();
+            $item = new \stdClass();grade/report/upgrade.txt
             $item->id = $gradeitem->id;
             $url = new moodle_url('/grade/report/singleview/index.php', [
                     'id' => $params['courseid'],

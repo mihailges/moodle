@@ -127,8 +127,9 @@ if (has_capability('moodle/grade:viewall', $context)) {
         // Print header.
         print_grade_page_head($courseid, 'report', 'user', ' ', false, null, true,
             null, null, null, $actionbar);
-
-        echo $report->output_report_zerostate();
+        $userreportrenderer = $PAGE->get_renderer('gradereport_user');
+        // Output the zero state content.
+        echo $userreportrenderer->zero_state();
     } else {
         // Store the id of the current user item in a session variable which represents the last viewed item.
         $SESSION->gradereport_user["useritem-{$context->id}"] = $userid;

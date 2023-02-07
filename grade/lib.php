@@ -2005,7 +2005,7 @@ class grade_structure {
             $title = $streditgradecategory;
         }
         $gpr->add_url_params($url);
-        return $url = html_writer::link($url, $title,
+        return html_writer::link($url, $title,
             ['class' => 'dropdown-item', 'aria-label' => $title, 'role' => 'menuitem']);
     }
 
@@ -2063,6 +2063,39 @@ class grade_structure {
             }
         }
 
+        return null;
+    }
+
+    /**
+     * Returns an action menu item leading to the edit grade/grade item page
+     *
+     * @param array  $element An array representing an element in the grade_tree
+     * @param object $gpr A grade_plugin_return object
+     * @return action_menu_link_secondary|null
+     */
+    public function get_singleview_grading_menu_item(array $element, object $gpr, object $context) {
+
+        // View all grades items.
+        // FIXME: MDL-52678 This is extremely hacky we should have an API for inserting grade column links.
+        if (get_capability_info('gradereport/singleview:view')) {
+            if (has_all_capabilities(['gradereport/singleview:view', 'moodle/grade:viewall',
+                'moodle/grade:edit'], $context)) {
+
+                static $strsingleview = null;
+                if (is_null($strsingleview)) {
+                    $strsingleview = get_string('singleview', 'grades');
+                }
+
+                $url = new moodle_url('/grade/report/singleview/index.php', [
+                    'id' => $this->courseid,
+                    'item' => 'grade',
+                    'itemid' => $element['object']->id
+                ]);
+                $gpr->add_url_params($url);
+                return html_writer::link($url, $strsingleview,
+                    ['class' => 'dropdown-item', 'aria-label' => $strsingleview, 'role' => 'menuitem']);
+            }
+        }
         return null;
     }
 

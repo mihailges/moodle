@@ -113,16 +113,14 @@ $reportname = get_string('pluginname', 'gradereport_grader');
 // Do this check just before printing the grade header (and only do it once).
 grade_regrade_final_grades_if_required($course);
 
-if ($sort == 'asc') {
-    $SESSION->gradeuserreport->sort = 'ASC';
-} else if ($sort == 'desc') {
-    $SESSION->gradeuserreport->sort = 'DESC';
-} else {
-}
-
 //Initialise the grader report object that produces the table
 //the class grade_report_grader_ajax was removed as part of MDL-21562
-$report = new grade_report_grader($courseid, $gpr, $context, $page, $sortitemid, strtoupper($sort));
+if ($sort) {
+    $sort = strtoupper($sort);
+} else {
+    $sort = '';
+}
+$report = new grade_report_grader($courseid, $gpr, $context, $page, $sortitemid, $sort);
 $numusers = $report->get_numusers(true, true);
 
 $actionbar = new \gradereport_grader\output\action_bar($context, $report, $numusers);

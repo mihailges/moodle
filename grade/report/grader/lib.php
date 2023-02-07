@@ -112,11 +112,13 @@ class grade_report_grader extends grade_report {
      * Constructor. Sets local copies of user preferences and initialises grade_tree.
      * @param int $courseid
      * @param object $gpr grade plugin return tracking object
-     * @param string $context
-     * @param int $page The current page being viewed (when report is paged)
-     * @param int $sortitemid The id of the grade_item by which to sort the table
+     * @param object $context
+     * @param int|null $page The current page being viewed (when report is paged)
+     * @param int|null $sortitemid The id of the grade_item by which to sort the table
+     * @param string $sort Sorting direction
      */
-    public function __construct($courseid, $gpr, $context, $page=null, $sortitemid=null, $sort = '') {
+    public function __construct(int $courseid, object $gpr, object $context, ?int $page = null,
+            ?int $sortitemid = null, string $sort = '') {
         global $CFG;
         parent::__construct($courseid, $gpr, $context, $page);
 
@@ -324,8 +326,10 @@ class grade_report_grader extends grade_report {
      * Setting the sort order, this depends on last state
      * all this should be in the new table class that we might need to use
      * for displaying grades.
+
+     * @param string $sort sorting direction
      */
-    private function setup_sortitemid($sort) {
+    private function setup_sortitemid(string $sort = '') {
 
         global $SESSION;
 
@@ -368,8 +372,10 @@ class grade_report_grader extends grade_report {
             }
         }
 
+        // If explicit sorting direction exists.
         if ($sort) {
             $this->sortorder = $sort;
+            $SESSION->gradeuserreport->sort = $sort;
         }
     }
 
@@ -1644,7 +1650,7 @@ class grade_report_grader extends grade_report {
      * @param array $element Array with cell info.
      * @return string
      */
-    public function get_grade_action_menu(array $element) : ?string {
+    public function get_grade_action_menu(array $element) : string {
         global $OUTPUT, $USER;
 
         $editable = true;
@@ -1678,28 +1684,14 @@ class grade_report_grader extends grade_report {
             }
         } else if (($element['type'] == 'item') ||
             ($element['type'] == 'categoryitem') ||
-            ($element['type'] == 'courseitem') || $element['type'] == 'userfield') {
+            ($element['type'] == 'courseitem') ||
+            ($element['type'] == 'userfield')) {
 
             $context->isgradeitem = true;
 
             if ($element['type'] !== 'userfield') {
-                // View all grades items.
-                // FIXME: MDL-52678 This is extremely hacky we should have an API for inserting grade column links.
-                if (get_capability_info('gradereport/singleview:view')) {
-                    if (has_all_capabilities(['gradereport/singleview:view', 'moodle/grade:viewall',
-                        'moodle/grade:edit'], $this->context)) {
-
-                        $title = $this->get_lang_string('singleview', 'grades');
-                        $url = new moodle_url('/grade/report/singleview/index.php', [
-                            'id' => $this->course->id,
-                            'item' => 'grade',
-                            'itemid' => $element['object']->id
-                        ]);
-                        $this->gpr->add_url_params($url);
-                        $context->singleviewreporturl = html_writer::link($url, $title,
-                            ['class' => 'dropdown-item', 'aria-label' => $title, 'role' => 'menuitem']);;
-                    }
-                }
+                $context->singleviewreporturl =
+                    $this->gtree->get_singleview_grading_menu_item($element, $this->gpr, $this->context);
 
                 if ($element['type'] == 'item') {
                     $advancedgrading = $this->gtree->get_advanced_grading_menu_item($element, $this->gpr);

@@ -24,8 +24,35 @@ namespace gradereport_singleview\local\screen;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class grade_select extends screen {
+
     public function init($selfitemisempty = false) {
+        $seq = new \grade_seq($this->courseid, true);
+
+        $this->selectableitems = [];
+        foreach ($seq->items as $itemid => $item) {
+            if (grade::filter($item)) {
+                $this->selectableitems[$itemid] = $item;
+            }
+        }
     }
+
+    /**
+     * Convert this list of items into an options list
+     *
+     * @return array
+     */
+    public function options(): array {
+        $result = [];
+        $seq = new \grade_seq($this->courseid, true);
+
+        foreach ($seq->items as $itemid => $item) {
+            if (grade::filter($item)) {
+                $result[$itemid] = $item->get_name();
+            }
+        }
+        return $result;
+    }
+
     /**
      * Return the HTML for the page.
      *
@@ -53,8 +80,22 @@ class grade_select extends screen {
         return $OUTPUT->render_from_template('gradereport_singleview/zero_state_grade', $context);
     }
 
-    public function item_type(): ?string {
-        return false;
+    /**
+     * Return the type of the things in this list.
+     *
+     * @return string
+     */
+    public function item_type(): string {
+        return 'grade';
+    }
+
+    /**
+     * Returns the name of the screen.
+     *
+     * @return string
+     */
+    public function name(): string {
+        return 'grade_select';
     }
 
     /**

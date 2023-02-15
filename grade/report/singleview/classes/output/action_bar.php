@@ -90,7 +90,9 @@ class action_bar extends \core_grades\output\action_bar {
         ];
 
         $data['groupselector'] = $this->report->group_selector;
-        $data['itemselector'] = $this->report->itemselector;
+        if (!empty($this->report->screen->options())) {
+            $data['itemselector'] = $this->report->get_item_selector();
+        }
 
         $data['pbarurl'] = $this->report->pbarurl->out(false);
 

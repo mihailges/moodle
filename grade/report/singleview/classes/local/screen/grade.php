@@ -86,7 +86,7 @@ class grade extends tablelike implements selectable_items, filterable_items {
      * @return string
      */
     public function select_label(): string {
-        return get_string('selectuser', 'gradereport_singleview');
+        return get_string('selectgrade', 'gradereport_singleview');
     }
 
     /**
@@ -94,7 +94,7 @@ class grade extends tablelike implements selectable_items, filterable_items {
      * @return string
      */
     public function description(): string {
-        return get_string('users');
+        return get_string('gradeitems', 'grades');
     }
 
     /**
@@ -103,12 +103,15 @@ class grade extends tablelike implements selectable_items, filterable_items {
      * @return array
      */
     public function options(): array {
-        $options = [];
-        foreach ($this->items as $userid => $user) {
-            $options[$userid] = fullname($user);
-        }
+        $result = [];
+        $seq = new \grade_seq($this->courseid, true);
 
-        return $options;
+        foreach ($seq->items as $itemid => $item) {
+            if (grade::filter($item)) {
+                $result[$itemid] = $item->get_name();
+            }
+        }
+        return $result;
     }
 
     /**
@@ -116,7 +119,16 @@ class grade extends tablelike implements selectable_items, filterable_items {
      * @return string
      */
     public function item_type(): string {
-        return 'user';
+        return 'grade';
+    }
+
+    /**
+     * Returns the name of the screen.
+     *
+     * @return string
+     */
+    public function name(): string {
+        return 'grade';
     }
 
     /**
@@ -151,10 +163,24 @@ class grade extends tablelike implements selectable_items, filterable_items {
             'courseid' => $this->courseid
         ];
 
-        $this->item = grade_item::fetch($params);
-        if (!self::filter($this->item)) {
-            $this->items = [];
-            $this->set_init_error(get_string('gradeitemcannotbeoverridden', 'gradereport_singleview'));
+        $seq = new \grade_seq($this->courseid, true);
+
+        $selectableitems = [];
+        foreach ($seq->items as $itemid => $item) {
+            if (self::filter($item)) {
+                $selectableitems[$itemid] = $item;
+            }
+        }
+
+        if (!isset($selectableitems[$this->itemid])) { // The passed item id (grade item id) is not valid.
+            $this->item = null;
+            // If there are other grade items in the course, show the first grade item from the list instead.
+            if (!empty($selectableitems)) {
+                $this->item = reset($selectableitems);
+                $this->itemid = $this->item->id;
+            }
+        } else {
+            $this->item = $selectableitems[$this->itemid];
         }
 
         $this->requiresextra = !$this->item->is_manual_item();

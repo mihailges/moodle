@@ -210,6 +210,13 @@ abstract class screen {
     abstract public function item_type(): ?string;
 
     /**
+     * Returns the name of the screen.
+     *
+     * @return string
+     */
+    abstract public function name(): string;
+
+    /**
      * Get the entire screen as a string.
      *
      * @return string
@@ -435,5 +442,18 @@ abstract class screen {
         $out .= $OUTPUT->render($select);
 
         return $out;
+    }
+
+    public function get_itemid() {
+        return $this->itemid;
+    }
+
+    /**
+     * Should we show the item selector?
+     *
+     * @return bool
+     */
+    public function display_item_selector(): bool {
+        return !empty($this->selectableitems);
     }
 }

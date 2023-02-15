@@ -113,7 +113,7 @@ class gradereport_singleview_renderer extends plugin_renderer_base {
 
         $relreport = new gradereport_singleview\report\singleview(
             $courseid, $gpr, $context,
-            $report->screen->item_type(), $optionitemid
+            $report->screen->name(), $optionitemid
         );
         $reloptions = $relreport->screen->options();
         $reloptionssorting = array_keys($relreport->screen->options());

@@ -21,6 +21,7 @@ use grade_report;
 use moodle_url;
 use renderer_base;
 use stdClass;
+use gradereport_singleview\local\screen\screen_factory;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -75,7 +76,7 @@ class singleview extends grade_report {
      * @param int $courseid The course id.
      * @param object $gpr grade plugin return tracking object
      * @param context_course $context
-     * @param string $itemtype Should be user, select or grade
+     * @param string|null $itemtype Should be user, user_select, grade or grade_select
      * @param int|null $itemid The id of the user or grade item
      * @param string|null $unused Used to be group id but that was removed and this is now unused.
      */
@@ -83,20 +84,26 @@ class singleview extends grade_report {
         int $courseid,
         object $gpr,
         context_course $context,
-        string $itemtype,
+        ?string $itemtype,
         ?int $itemid,
         ?string $unused = null
     ) {
         parent::__construct($courseid, $gpr, $context);
 
-        $base = '/grade/report/singleview/index.php';
+        $this->screen = screen_factory::build($courseid, $itemtype, $itemid, $gpr->groupid);
 
+        if (isset($this->screen->item) && $this->screen->item->id !== $itemid) {
+            $itemid = $this->screen->item->id;
+        } else {
+            $itemid = null;
+        }
+
+        $base = '/grade/report/singleview/index.php';
         $idparams = ['id' => $courseid];
 
         $this->baseurl = new moodle_url($base, $idparams);
-
         $this->pbarurl = new moodle_url($base, $idparams + [
-                'item' => $itemtype,
+                'item' => $this->screen->name(),
                 'itemid' => $itemid
             ]);
 
@@ -115,6 +122,16 @@ class singleview extends grade_report {
 
         // Load custom or predifined js.
         $this->screen->js();
+    }
+
+    public function save_last_viewed() {
+        global $SESSION;
+        // Save the screen state in a session variable as last viewed state.
+        $SESSION->gradereport_singleview["type-{$this->context->id}"] = $this->screen->name();
+        if ($this->screen->get_itemid()) {
+            $SESSION->gradereport_singleview["{$this->screen->item_type()}item-{$this->context->id}"] =
+                $this->screen->get_itemid();
+        }
     }
 
     /**
@@ -166,6 +183,23 @@ class singleview extends grade_report {
             $this->itemselector = $renderer->users_selector($this->course, $itemid, $this->currentgroup);
         } else if ($itemtype === 'grade' || $itemtype === 'grade_select' ) {
             $this->itemselector = $renderer->grade_items_selector($this->course, $itemid);
+        }
+    }
+
+    /**
+     * Function that returns the appropriate item selector (raw HTML) based on the selected single view item type.
+     *
+     * @return string The HTML of the item selector.
+     */
+    public function get_item_selector() {
+        global $PAGE;
+
+        $renderer = $PAGE->get_renderer('gradereport_singleview');
+
+        if ($this->screen->name() === 'user' || $this->screen->name() === 'user_select' ) {
+            return $renderer->users_selector($this->course, $this->screen->get_itemid(), $this->currentgroup);
+        } else if ($this->screen->name() === 'grade' || $this->screen->name() === 'grade_select' ) {
+            return $renderer->grade_items_selector($this->course, $this->screen->get_itemid());
         }
     }
 

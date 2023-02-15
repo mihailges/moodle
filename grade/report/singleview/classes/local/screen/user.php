@@ -57,7 +57,7 @@ class user extends tablelike implements selectable_items {
      * @return string
      */
     public function select_label(): string {
-        return get_string('selectgrade', 'gradereport_singleview');
+        return get_string('selectuser', 'gradereport_singleview');
     }
 
     /**
@@ -66,7 +66,7 @@ class user extends tablelike implements selectable_items {
      * @return string
      */
     public function description(): string {
-        return get_string('gradeitems', 'grades');
+        return get_string('users');
     }
 
     /**
@@ -75,11 +75,12 @@ class user extends tablelike implements selectable_items {
      * @return array
      */
     public function options(): array {
-        $result = [];
-        foreach ($this->items as $itemid => $item) {
-            $result[$itemid] = $item->get_name();
+        $options = [];
+        foreach ($this->load_users() as $userid => $user) {
+            $options[$userid] = fullname($user);
         }
-        return $result;
+
+        return $options;
     }
 
     /**
@@ -88,7 +89,16 @@ class user extends tablelike implements selectable_items {
      * @return string
      */
     public function item_type(): string {
-        return 'grade';
+        return 'user';
+    }
+
+    /**
+     * Returns the name of the screen.
+     *
+     * @return string
+     */
+    public function name(): string {
+        return 'user';
     }
 
     /**
@@ -98,14 +108,14 @@ class user extends tablelike implements selectable_items {
      */
     public function init($selfitemisempty = false) {
 
+        $selectableitems = $this->load_users();
         if (!$selfitemisempty) {
-            $validusers = $this->load_users();
-            if (!isset($validusers[$this->itemid])) {
+            if (!isset($selectableitems[$this->itemid])) {
                 // If the passed user id is not valid, show the first user from the list instead.
-                $this->item = reset($validusers);
+                $this->item = reset($selectableitems);
                 $this->itemid = $this->item->id;
             } else {
-                $this->item = $validusers[$this->itemid];
+                $this->item = $selectableitems[$this->itemid];
             }
         }
 

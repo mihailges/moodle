@@ -26,8 +26,24 @@ use gradereport_singleview;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class user_select extends screen {
-    public function init($selfitemisempty = false) {
+
+    /**
+     * Init this page
+     *
+     * @param bool $selfitemisempty True if we have not selected a user.
+     */
+    public function init($selfitemisempty = true) {
     }
+
+    /**
+     * Returns the array of selectable items.
+     *
+     * @return array
+     */
+    public function selectable_items(): array {
+        return $this->load_users();
+    }
+
     /**
      * Return the HTML for the page.
      *
@@ -35,6 +51,12 @@ class user_select extends screen {
      */
     public function html(): string {
         global $OUTPUT, $COURSE, $USER;
+
+        $currentgroup = groups_get_course_group($COURSE, true) ?? null;
+        if (empty($this->selectable_items())) {
+            $message = $currentgroup ? get_string('nostudentsingroup') : get_string('nostudentsyet');
+            return $OUTPUT->notification($message);
+        }
 
         $userlink = new \moodle_url('/grade/report/singleview/index.php', ['id' => $COURSE->id, 'item' => 'user_select']);
         $gradelink = new \moodle_url('/grade/report/singleview/index.php', ['id' => $COURSE->id, 'item' => 'grade_select']);
@@ -55,8 +77,22 @@ class user_select extends screen {
         return $OUTPUT->render_from_template('gradereport_singleview/zero_state_user', $context);
     }
 
-    public function item_type(): ?string {
+    /**
+     * Return the type of the things in this list.
+     *
+     * @return string
+     */
+    public function item_type(): string {
         return false;
+    }
+
+    /**
+     * Returns the name of the screen.
+     *
+     * @return string
+     */
+    public function name(): string {
+        return 'user_select';
     }
 
     /**

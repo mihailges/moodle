@@ -2174,6 +2174,49 @@ class grade_structure {
     }
 
     /**
+     * Returns an action menu item with url to view feedback
+     *
+     * @param array  $element An array representing an element in the grade_tree
+     * @param object $gpr A grade_plugin_return object
+     *
+     * @return mixed
+     */
+    public function get_feedback_link(array $element, object $gpr, string $viewfeedbackstring) {
+        static $strfeedback = null;
+
+        if (is_null($strfeedback)) {
+            $strfeedback = get_string('viewfeedback', 'grades');
+        }
+
+        $url = null;
+
+        $object = $element['object'];
+
+        if ($element['type'] == 'grade') {
+            if (empty($object->id)) {
+                $url = new moodle_url('/grade/edit/tree/grade.php',
+                    ['courseid' => $this->courseid, 'itemid' => $object->itemid, 'userid' => $object->userid]);
+            } else {
+                $url = new moodle_url('/grade/edit/tree/grade.php',
+                    ['courseid' => $this->courseid, 'id' => $object->id]);
+            }
+
+            $url = $gpr->add_url_params($url);
+
+            /*if (!empty($object->feedback)) {
+                $attributes = [
+                    'data-action' => 'feedback'
+                ];
+
+                $url = new action_menu_link_secondary($url, null, $strfeedback, $attributes);
+            }*/
+        }
+
+        return html_writer::link($url, $viewfeedbackstring,
+            ['class' => 'dropdown-item', 'aria-label' => $viewfeedbackstring, 'role' => 'menuitem', 'data-action' => 'feedback']);
+    }
+
+    /**
      * Return calculation icon for given element
      *
      * @param array  $element An array representing an element in the grade_tree

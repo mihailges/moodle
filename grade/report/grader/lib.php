@@ -1131,7 +1131,11 @@ class grade_report_grader extends grade_report {
                     }
                 }
 
-                if (!$item->needsupdate) {
+                if ($item->gradetype == GRADE_TYPE_TEXT && !empty($grade->feedback)) {
+                    $context->text = html_writer::span(shorten_text(strip_tags($grade->feedback), 20), '', ['data-action' => 'feedback', 'role' => 'button']);
+                }
+
+                if (!$item->needsupdate && !($item->gradetype == GRADE_TYPE_TEXT && empty($USER->editing))) {
                     $context->actionmenu = $this->get_grade_action_menu($element);
                 }
 
@@ -1190,6 +1194,11 @@ class grade_report_grader extends grade_report {
 
         if ($grade->is_excluded()) {
             $statusicons .= $OUTPUT->pix_icon('i/excluded', $this->get_lang_string('excluded', 'grades'),
+                'moodle', $attributes);
+        }
+
+        if (!empty($grade->feedback) && $grade->load_grade_item()->gradetype != GRADE_TYPE_TEXT) {
+            $statusicons .= $OUTPUT->pix_icon('i/asterisk', $this->get_lang_string('feedbackprovided', 'grades'),
                 'moodle', $attributes);
         }
 
@@ -1696,6 +1705,8 @@ class grade_report_grader extends grade_report {
 
         $gradeanalysisstring = $this->get_lang_string('gradeanalysis', 'grades');
 
+        $viewfeedbackstring = $this->get_lang_string('viewfeedback', 'grades');
+
         if ($element['type'] == 'grade') {
             $context->isgrade = true;
             $item = $element['object']->grade_item;
@@ -1717,7 +1728,11 @@ class grade_report_grader extends grade_report {
             $context->gradeanalysisurl = $this->gtree->get_grade_analysis_link($element['object'], $gradeanalysisstring);
         }
 
-        if (!empty($USER->editing) || isset($context->gradeanalysisurl)) {
+        if ($element['type'] != 'text' && !empty($element['object']->feedback)) {
+            $context->viewfeedbackurl = $this->gtree->get_feedback_link($element, $this->gpr, $viewfeedbackstring);
+        }
+
+        if (!empty($USER->editing) || isset($context->gradeanalysisurl) || isset($context->viewfeedbackurl)) {
             return $OUTPUT->render_from_template('gradereport_grader/grademenu', $context);
         }
         return '';

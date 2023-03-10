@@ -33,16 +33,22 @@
         "name": "grade[313][624]"
     }
 }}
-{{#iseditable}}
-    {{#scale}}
-        {{>core_grades/grades/grader/scale}}
-    {{/scale}}
-    {{^scale}}
-        {{>core_grades/grades/grader/input}}
-    {{/scale}}
-{{/iseditable}}
-{{^iseditable}}
-    {{>core_grades/grades/grader/text}}
-{{/iseditable}}
-{{{actionmenu}}}
-{{{statusicons}}}
+<div class="cellcontent">
+    <div>
+        <div class="d-inline-flex">
+            {{#iseditable}}
+                {{#scale}}
+                    {{>core_grades/grades/grader/scale}}
+                {{/scale}}
+                {{^scale}}
+                    {{>core_grades/grades/grader/input}}
+                {{/scale}}
+            {{/iseditable}}
+            {{^iseditable}}
+                {{>core_grades/grades/grader/text}}
+            {{/iseditable}}
+            {{{actionmenu}}}
+        </div>
+    </div>
+    {{{statusicons}}}
+</div>

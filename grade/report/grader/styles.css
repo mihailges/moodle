@@ -25,7 +25,14 @@
     border-top-width: 0;
     border-left-width: 0;
     padding: 10px;
-    vertical-align: text-top;
+    vertical-align: top;
+    height: 1em;
+}
+
+.path-grade-report-grader .gradeparent .cell .cellcontent {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .path-grade-report-grader .action-menu {
@@ -52,13 +59,16 @@
 }
 
 .path-grade-report-grader .grade_icons {
-    position: absolute;
     left: 10px;
     bottom: 10px;
     white-space: nowrap;
+    margin-top: 10px;
+    display: flex;
+    flex-grow: 1;
+    align-items: flex-end;
 }
 .path-grade-report-grader .grade_type_value .grade_icons {
-    left: auto;
+    margin-left: auto;
     right: 10px;
 }
 

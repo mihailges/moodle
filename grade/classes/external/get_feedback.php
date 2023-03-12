@@ -57,7 +57,7 @@ class get_feedback extends external_api {
      * @return array Feedback and user details
      */
     public static function execute(int $userid, int $itemid): array {
-        global $DB, $OUTPUT, $PAGE;
+        global $DB, $OUTPUT;
 
         $params = self::validate_parameters(
             self::execute_parameters(),
@@ -71,7 +71,6 @@ class get_feedback extends external_api {
 
         $context = \context_course::instance($gradeitem->courseid);
         parent::validate_context($context);
-        $PAGE->set_context($context);
 
         require_capability('gradereport/grader:view', $context);
 

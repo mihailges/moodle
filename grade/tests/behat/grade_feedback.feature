@@ -40,29 +40,30 @@ Feature: Display feedback on the Grader report
       | Grade out of 100  | 50               |
       | Feedback comments | This is feedback |
     And I press "Save changes"
-    And I am on "Course 1" course homepage
 
   Scenario: View the feedback icon on the Grader report
+    Given I am on "Course 1" course homepage
     When I navigate to "View > Grader report" in the course gradebook
     Then I should see "Test assignment name 1"
     And I should see "Test assignment name 2"
     And "Feedback provided" "icon" should exist in the "Student 1" "table_row"
     And "Feedback provided" "icon" should not exist in the "Student 2" "table_row"
 
-  @javascript
   Scenario: View the feedback modal from the action menu
-    When I navigate to "View > Grader report" in the course gradebook
+    Given I am on "Course 1" course homepage
+    And I navigate to "View > Grader report" in the course gradebook
     And I click on ".action-menu.grader" "css_element"
-    And I click on ".action-menu a[data-action='feedback']" "css_element"
+    When I click on ".action-menu a[data-action='feedback']" "css_element"
     Then I should see "This is feedback" in the ".modal .modal-body" "css_element"
 
   Scenario: View the feedback text for text only grade
+    Given I am on "Course 1" course homepage
     When I navigate to "View > Grader report" in the course gradebook
     Then I should see "Grade item 1"
     And "Longer feedback ..." "text" should exist in the "Student 1" "table_row"
 
-  @javascript
   Scenario: View the feedback modal for text only grade
-    When I navigate to "View > Grader report" in the course gradebook
-    And I click on "Longer feedback ..." "text"
+    Given I am on "Course 1" course homepage
+    And I navigate to "View > Grader report" in the course gradebook
+    When I click on "Longer feedback ..." "text"
     Then I should see "Longer feedback text content" in the ".modal .modal-body" "css_element"

@@ -1704,9 +1704,6 @@ class grade_report_grader extends grade_report {
         $lockstrings[] = $this->get_lang_string('lock', 'grades');
 
         $gradeanalysisstring = $this->get_lang_string('gradeanalysis', 'grades');
-
-        $viewfeedbackstring = $this->get_lang_string('viewfeedback', 'grades');
-
         if ($element['type'] == 'grade') {
             $context->isgrade = true;
             $item = $element['object']->grade_item;
@@ -1728,9 +1725,7 @@ class grade_report_grader extends grade_report {
             $context->gradeanalysisurl = $this->gtree->get_grade_analysis_link($element['object'], $gradeanalysisstring);
         }
 
-        if ($element['type'] != 'text' && !empty($element['object']->feedback)) {
-            $context->viewfeedbackurl = $this->gtree->get_feedback_link($element, $this->gpr, $viewfeedbackstring);
-        }
+        $context->viewfeedbacklink = $this->gtree->get_feedback_link($element);
 
         if (!empty($USER->editing) || isset($context->gradeanalysisurl) || isset($context->viewfeedbackurl)) {
             return $OUTPUT->render_from_template('gradereport_grader/grademenu', $context);

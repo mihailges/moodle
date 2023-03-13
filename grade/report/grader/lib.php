@@ -1132,7 +1132,8 @@ class grade_report_grader extends grade_report {
                 }
 
                 if ($item->gradetype == GRADE_TYPE_TEXT && !empty($grade->feedback)) {
-                    $context->text = html_writer::span(shorten_text(strip_tags($grade->feedback), 20), '', ['data-action' => 'feedback', 'role' => 'button']);
+                    $context->text = html_writer::span(shorten_text(strip_tags($grade->feedback), 20), '',
+                        ['data-action' => 'feedback', 'role' => 'button', 'data-courseid' => $this->courseid]);
                 }
 
                 if (!$item->needsupdate && !($item->gradetype == GRADE_TYPE_TEXT && empty($USER->editing))) {
@@ -1705,8 +1706,6 @@ class grade_report_grader extends grade_report {
 
         $gradeanalysisstring = $this->get_lang_string('gradeanalysis', 'grades');
 
-        $viewfeedbackstring = $this->get_lang_string('viewfeedback', 'grades');
-
         if ($element['type'] == 'grade') {
             $context->isgrade = true;
             $item = $element['object']->grade_item;
@@ -1729,7 +1728,10 @@ class grade_report_grader extends grade_report {
         }
 
         if ($element['type'] != 'text' && !empty($element['object']->feedback)) {
-            $context->viewfeedbackurl = $this->gtree->get_feedback_link($element, $this->gpr, $viewfeedbackstring);
+            $viewfeedbackstring = $this->get_lang_string('viewfeedback', 'grades');
+            $context->viewfeedbackurl = html_writer::link('#', $viewfeedbackstring, ['class' => 'dropdown-item',
+                'aria-label' => $viewfeedbackstring, 'role' => 'menuitem', 'data-action' => 'feedback',
+                'data-courseid' => $this->courseid]);
         }
 
         if (!empty($USER->editing) || isset($context->gradeanalysisurl) || isset($context->viewfeedbackurl)) {

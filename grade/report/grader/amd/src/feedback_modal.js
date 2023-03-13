@@ -25,28 +25,26 @@ import ajax from 'core/ajax';
 import Templates from 'core/templates';
 
 const Selectors = {
-    showFeedback: '[data-action="feedback"]',
-    userId: 'tr[data-uid]',
-    itemId: 'td[data-itemid]'
+    showFeedback: '[data-action="feedback"]'
 };
 
 /**
  * Create the modal to display the feedback.
  *
+ * @param {int} courseid
  * @param {int} userid
  * @param {int} itemid
  * @returns {Promise}
  */
-const getModal = async(userid, itemid) => {
-    let feedbackData = await fetchFeedback(userid, itemid);
+const getModal = async(courseid, userid, itemid) => {
+    const feedbackData = await fetchFeedback(courseid, userid, itemid);
 
     return ModalFactory.create({
-        title: 'Feedback',
         removeOnClose: true,
         large: true
     })
     .then(modal => {
-        let body = Templates.render('core_grades/feedback_modal', {
+        const body = Templates.render('core_grades/feedback_modal', {
             feedbacktext: feedbackData.feedbacktext,
             user: {
                 picture: feedbackData.picture,
@@ -66,14 +64,16 @@ const getModal = async(userid, itemid) => {
 /**
  * Fetch the feedback data.
  *
+ * @param {int} courseid
  * @param {int} userid
  * @param {int} itemid
  * @returns {Promise}
  */
-export const fetchFeedback = (userid, itemid) => {
+const fetchFeedback = (courseid, userid, itemid) => {
     const request = {
         methodname: 'core_grades_get_feedback',
         args: {
+            courseid: courseid,
             userid: userid,
             itemid: itemid,
         },
@@ -86,12 +86,15 @@ export const fetchFeedback = (userid, itemid) => {
  */
 const registerEventListeners = () => {
     document.addEventListener('click', e => {
-        if (e.target.closest(Selectors.showFeedback)) {
+        const showFeedbackTrigger = e.target.closest(Selectors.showFeedback);
+        if (showFeedbackTrigger) {
             e.preventDefault();
 
-            getModal(e.target.closest(Selectors.userId).dataset.uid, e.target.closest(Selectors.itemId).dataset.itemid);
+            const courseid = showFeedbackTrigger.dataset.courseid;
+            const userid = e.target.closest('tr').dataset.uid;
+            const itemid = e.target.closest('td').dataset.itemid;
 
-            return;
+            getModal(courseid, userid, itemid);
         }
     });
 };

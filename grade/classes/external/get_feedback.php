@@ -43,6 +43,7 @@ class get_feedback extends external_api {
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters (
             [
+                'courseid' => new external_value(PARAM_INT, 'Course ID', VALUE_REQUIRED),
                 'userid' => new external_value(PARAM_INT, 'User ID', VALUE_REQUIRED),
                 'itemid' => new external_value(PARAM_INT, 'Grade Item ID', VALUE_REQUIRED)
             ]
@@ -52,36 +53,38 @@ class get_feedback extends external_api {
     /**
      * Given a user ID and grade item ID, return feedback and user details.
      *
+     * @param int $courseid The course ID.
      * @param int $userid
      * @param int $itemid
      * @return array Feedback and user details
      */
-    public static function execute(int $userid, int $itemid): array {
-        global $DB, $OUTPUT, $PAGE;
+    public static function execute(int $courseid, int $userid, int $itemid): array {
+        global $DB, $OUTPUT, $CFG;
 
         $params = self::validate_parameters(
             self::execute_parameters(),
             [
+                'courseid' => $courseid,
                 'userid' => $userid,
                 'itemid' => $itemid
             ]
         );
 
-        $gradeitem = $DB->get_record('grade_items', ['id' => $params['itemid']]);
+        $gtree = new \grade_tree($params['courseid'], false, false, null, !$CFG->enableoutcomes);
+        $gradeitem = $gtree->get_item($itemid);
 
         $context = \context_course::instance($gradeitem->courseid);
         parent::validate_context($context);
-        $PAGE->set_context($context);
 
         require_capability('gradereport/grader:view', $context);
 
-        $grade = $DB->get_record('grade_grades', ['userid' => $params['userid'], 'itemid' => $params['itemid']]);
+        $grade = $gradeitem->get_grade($params['userid'], false);
         $user = \core_user::get_user($params['userid']);
         $extrafields = \core_user\fields::get_identity_fields($context);
 
         return [
             'feedbacktext' => $grade->feedback,
-            'title' => $gradeitem->itemname,
+            'title' => $gradeitem->get_name(true),
             'fullname' => fullname($user),
             'picture' => $OUTPUT->user_picture($user, ['size' => 45, 'link' => false]),
             'additionalfield' => empty($extrafields) ? '' : $user->{$extrafields[0]},

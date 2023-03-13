@@ -978,7 +978,7 @@ $functions = array(
         'services' => [MOODLE_OFFICIAL_MOBILE_SERVICE],
     ],
     'core_grades_get_feedback' => [
-        'classname' =>  'core_grades\external\get_feedback',
+        'classname' => 'core_grades\external\get_feedback',
         'description' => 'Get the feedback data for a grade item',
         'type' => 'read',
         'ajax' => true,

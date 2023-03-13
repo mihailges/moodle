@@ -22,6 +22,7 @@ Feature: Gradebook calculations for calculated grade items before the fix 201506
     And I log in as "admin"
     And I am on "Course 1" course homepage
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
 
   @javascript
   Scenario: The max grade for a category item, with a calculation using Natural aggregation, can be changed
@@ -77,6 +78,7 @@ Feature: Gradebook calculations for calculated grade items before the fix 201506
       | Calc cat totalInclude empty grades. | 100.00 %          | 37.50  | 0–100 | 37.50 %    | -                            |
       | Course total                        | -                 | 37.50  | 0–100 | 37.50 %    | -                            |
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     And I set the following settings for grade item "Calc cat":
       | Maximum grade | 40 |
     And I navigate to "View > Grader report" in the course gradebook
@@ -143,6 +145,7 @@ Feature: Gradebook calculations for calculated grade items before the fix 201506
       | calc item    | 50.00 %           | 37.50  | 0–100 | 37.50 %    | 18.75 %                      |
       | Course total | -                 | 112.50 | 0–200 | 56.25 %    | -                            |
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     And I set the following settings for grade item "calc item":
       | Rescale existing grades | No |
       | Maximum grade | 40 |

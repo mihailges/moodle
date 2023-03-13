@@ -93,6 +93,7 @@ Feature: View gradebook when scales are used
       | Sub category 1 total      | 3.00  | 0–5   | 60.00 %    | -                            |
       | Course total        | 3.00  | 0–5   | 60.00 %    | -                            |
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     And the following should exist in the "grade_edit_tree_table" table:
       | Name                | Max grade |
       | Test assignment one | 5.00      |
@@ -139,6 +140,7 @@ Feature: View gradebook when scales are used
       | Sub category (<aggregation>) total<aggregation>. | 3.00           | 1–5   | 50.00 %       | -                            |
       | Course total<aggregation>.   | <coursetotal3> | 0–100 | <courseperc3> | -                            |
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     And the following should exist in the "grade_edit_tree_table" table:
       | Name                | Max grade |
       | Test assignment one | A (5)     |

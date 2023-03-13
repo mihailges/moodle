@@ -31,6 +31,7 @@ Feature: Student and teacher's view of aggregated grade items is consistent when
     And the "multilang" filter applies to "content and headings"
     And I am on "Course 1" course homepage
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     And I press "Add grade item"
     And I set the following fields to these values:
       | Item name | calculated |

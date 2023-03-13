@@ -1,4 +1,4 @@
-@core @core_grades @javascript
+@core @core_grades @javascript @testtt
 Feature: Teachers can toggle the visibility of the grade categories in the Gradebook setup page.
   In order to focus only on the information that I am interested in
   As a teacher
@@ -218,6 +218,7 @@ Feature: Teachers can toggle the visibility of the grade categories in the Grade
     And I log in as "teacher1"
     And I am on "Course" course homepage
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     And I wait until the page is ready
     And I should see "Course" in the "setup-grades" "table"
     And "Collapse" "link" should exist in the "Course" "table_row"

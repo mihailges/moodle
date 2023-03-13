@@ -88,6 +88,7 @@ Feature: Control the aggregation of the scales
     When I set the following settings for grade item "Course 1":
       | Aggregation | Natural |
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     And I set the field "Override weight of Grade me" to "1"
     Then the field "Override weight of Grade me" matches value "100.00"
     And I open the action menu in "Scale me" "table_row"
@@ -99,6 +100,7 @@ Feature: Control the aggregation of the scales
       | grade_includescalesinaggregation | 1 |
     And I am on "Course 1" course homepage
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     And I set the field "Override weight of Grade me" to "1"
     And the field "Override weight of Grade me" matches value "95.238"
     And I set the field "Override weight of Scale me" to "1"

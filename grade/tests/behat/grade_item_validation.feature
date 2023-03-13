@@ -32,6 +32,7 @@ Feature: Grade item validation
     And I press "Save changes"
     And I am on "Course 1" course homepage
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     And I press "Add grade item"
     And I set the following fields to these values:
       | Item name | <span lang="en" class="multilang">EN</span><span lang="fr" class="multilang">FR</span> MI 1 |
@@ -60,6 +61,7 @@ Feature: Grade item validation
     And I give the grade "20.00" to the user "Student 1" for the grade item "EN MI 1"
     And I press "Save changes"
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     And I open the action menu in "EN MI 1" "table_row"
     When I choose "Edit settings" in the open action menu
     Then I should see "Some grades have already been awarded, so the grade type cannot be changed. If you wish to change the maximum grade, you must first choose whether or not to rescale existing grades."
@@ -76,6 +78,7 @@ Feature: Grade item validation
     And I give the grade "C" to the user "Student 1" for the grade item "EN MI 1"
     And I press "Save changes"
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     And I open the action menu in "EN MI 1" "table_row"
     When I choose "Edit settings" in the open action menu
     Then I should see "Some grades have already been awarded, so the grade type and scale cannot be changed."
@@ -87,6 +90,7 @@ Feature: Grade item validation
     And I give the grade "20.00" to the user "Student 1" for the grade item "EN MI 1"
     And I press "Save changes"
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     And I open the action menu in "EN MI 1" "table_row"
     When I choose "Edit settings" in the open action menu
     Then I should see "Some grades have already been awarded, so the grade type cannot be changed. If you wish to change the maximum grade, you must first choose whether or not to rescale existing grades."

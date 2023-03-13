@@ -245,6 +245,7 @@ Feature: We can use calculated grade totals
       | itemname              | course | outcome | gradetype | scale      |
       | Test outcome item one | C1     | OT1     | Scale     | Test Scale |
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     And I set the following settings for grade item "Course 1":
       | Aggregation                     | Natural |
       | Include outcomes in aggregation | 1       |
@@ -267,6 +268,7 @@ Feature: We can use calculated grade totals
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     And I set the following settings for grade item "Test outcome item one":
      | Extra credit     | 1   |
     And I log out
@@ -279,6 +281,7 @@ Feature: We can use calculated grade totals
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     And I set the following settings for grade item "Course 1":
       | Aggregation                     | Natural |
       | Include outcomes in aggregation | 0       |
@@ -302,6 +305,7 @@ Feature: We can use calculated grade totals
       | itemname              | course | outcome | gradetype | scale      |
       | Test outcome item one | C1     | OT1     | Scale     | Test Scale |
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     And I set the following settings for grade item "Course 1":
       | Aggregation                     | Natural |
       | Include outcomes in aggregation | 1       |
@@ -394,6 +398,7 @@ Feature: We can use calculated grade totals
       | Aggregation          | Natural |
       | Exclude empty grades | 0       |
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     And I press "Add category"
     And I set the following fields to these values:
       | Category name | Sub category 3 |
@@ -454,6 +459,7 @@ Feature: We can use calculated grade totals
     And I turn editing mode off
     And I should see "250.00 (25.25 %)" in the ".course" "css_element"
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     And I press "Add category"
     And I set the following fields to these values:
       | Category name | Sub sub category 1 |
@@ -464,6 +470,7 @@ Feature: We can use calculated grade totals
 
   Scenario: Natural aggregation from the setup screen
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
 
     And I set the following settings for grade item "Course 1":
       | Aggregation          | Natural |
@@ -527,6 +534,7 @@ Feature: We can use calculated grade totals
       | Exclude empty grades | 0       |
     And I turn editing mode off
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     And "//span[@class='grateitemheader'][@title='Sub category 2 &amp;']" "xpath_element" should not exist
     And "//span[@class='grateitemheader'][@title='Link to Test assignment one &amp; Assignment']" "xpath_element" should not exist
     And I set the field "Override weight of Test assignment one &" to "1"

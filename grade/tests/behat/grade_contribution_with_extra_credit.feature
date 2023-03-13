@@ -21,6 +21,7 @@ Feature: Extra credit contributions are normalised when going out of bounds
       | grade_aggregations_visible | Simple weighted mean of grades,Mean of grades (with extra credits),Natural |
     And I am on "Course 1" course homepage
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     And I press "Add grade item"
     And I set the following fields to these values:
       | Item name | Manual item 1 |

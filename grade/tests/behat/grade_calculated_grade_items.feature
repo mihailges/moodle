@@ -21,6 +21,7 @@ Feature: Calculated grade items can be used in the gradebook
     And I log in as "admin"
     And I am on "Course 1" course homepage
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
 
   @javascript
   Scenario: The max grade for a category item, with a calculation using Natural aggregation, can be changed
@@ -76,6 +77,7 @@ Feature: Calculated grade items can be used in the gradebook
       | Calc cat totalInclude empty grades. | 100.00 %          | 37.50  | 0–50  | 75.00 %    | -                            |
       | Course total                        | -                 | 37.50  | 0–50  | 75.00 %    | -                            |
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     And I set the following settings for grade item "Calc cat":
       | Maximum grade | 40 |
     And I navigate to "View > Grader report" in the course gradebook
@@ -142,6 +144,7 @@ Feature: Calculated grade items can be used in the gradebook
       | calc item    | 33.33 %           | 37.50  | 0–50  | 75.00 %    | 25.00 %                      |
       | Course total | -                 | 112.50 | 0–150 | 75.00 %    | -                            |
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     And I set the following settings for grade item "calc item":
       | Rescale existing grades | No |
       | Maximum grade | 40 |

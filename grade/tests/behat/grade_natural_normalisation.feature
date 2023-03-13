@@ -35,6 +35,7 @@ Feature: We can use natural aggregation and weights will be normalised to a tota
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
 
   @javascript
   Scenario: Setting all weights in a category to exactly one hundred in total.

@@ -330,6 +330,7 @@ Feature: Set up contextual data for tests
     When I log in as "admin"
     And I am on "Course 1" course homepage
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     Then I should see "Test Grade Item 1"
     And I open the action menu in "Test Grade Item 1" "table_row"
     And I choose "Edit" in the open action menu
@@ -410,6 +411,7 @@ Feature: Set up contextual data for tests
     When I log in as "admin"
     And I am on "Course 1" course homepage
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     Then I should see "Test Outcome Grade Item 1"
     And I open the action menu in "Test Outcome Grade Item 1" "table_row"
     And I choose "Edit" in the open action menu

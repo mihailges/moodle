@@ -24,5 +24,6 @@ Feature: Rename external tools via inline editing
       | Accept grades from the tool | 1 |
     And I set the field "Edit title" in the "li#section-1" "css_element" to "Test tool activity renamed"
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     Then I should not see "Test tool activity 1"
     And I should see "Test tool activity renamed"

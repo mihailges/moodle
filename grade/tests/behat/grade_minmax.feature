@@ -26,6 +26,7 @@ Feature: We can choose what min or max grade to use when aggregating grades.
       | grade_minmaxtouse | Min and max grades as specified in grade item settings |
     And I am on "C1" course homepage
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     And I press "Add grade item"
     And I set the following fields to these values:
       | Item name | MI 1 |
@@ -61,6 +62,7 @@ Feature: We can choose what min or max grade to use when aggregating grades.
     And I set the field "Show contribution to course total" to "Show"
     And I press "Save changes"
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     And I set the following settings for grade item "CAT1":
       | Aggregation          | Natural |
     And I log out
@@ -97,6 +99,7 @@ Feature: We can choose what min or max grade to use when aggregating grades.
       | CAT1 total   | 33.33 %           | 10.00  | 0–100 | 10.00 %    | -                            |
       | Course total | -                 | 60.00  | 0–300 | 20.00 %    | -                            |
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     And I set the following settings for grade item "MI 1":
       | Rescale existing grades | No    |
       | Maximum grade           | 50.00 |
@@ -127,6 +130,7 @@ Feature: We can choose what min or max grade to use when aggregating grades.
       | CAT1 total   | 25.00 %           | 10.00  | 0–50  | 20.00 %    | -                            |
       | Course total | -                 | 60.00  | 0–200 | 30.00 %    | -                            |
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     And I set the following settings for grade item "MI 5":
       | Rescale existing grades | No    |
       | Maximum grade          | 200.00 |

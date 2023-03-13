@@ -79,6 +79,7 @@ Feature: View gradebook when single item scales are used
       | EN Sub category 1 total| -     | 0–1       | -                            |
       | Course total           | -     | 0–1       | -                            |
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     And the following should exist in the "grade_edit_tree_table" table:
       | Name                   | Max grade |
       | Test assignment one    | 1.00      |
@@ -111,6 +112,7 @@ Feature: View gradebook when single item scales are used
       | Sub category (<aggregation>) total<aggregation>. | <cattotal1>    | 0–100       | -                            |
       | Course total<aggregation>.                       | <coursetotal1> | 0–100       | -                            |
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     And the following should exist in the "grade_edit_tree_table" table:
       | Name                                             | Max grade |
       | Test assignment one                              | Ace! (1)  |

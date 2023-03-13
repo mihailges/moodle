@@ -34,6 +34,7 @@ Feature: Gradebook calculations for natural weights normalisation before the fix
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
 
   @javascript
   Scenario: Grade items weights are normalised when all grade item weights are overridden (sum exactly 100). Extra credit is set to zero (before the fix 20150619).

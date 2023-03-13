@@ -42,6 +42,7 @@ Feature: Regrading grades does not unnecessarily mark some as overriden
     And I press "Save changes"
     And I navigate to "View > Grader report" in the course gradebook
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     And I click on "Actions" "link" in the ".coursecategory" "css_element"
     And I click on "Edit settings" "link" in the ".coursecategory" "css_element"
     And I set the field "Aggregation" to "Weighted mean of grades"

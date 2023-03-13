@@ -59,6 +59,7 @@ Feature: Students will be shown relevant completion state based on grade item vi
   Scenario: Passing grade and receive a grade completions for hidden grade item (passgrade completion enabled)
     Given I am on the "Course 1" course page logged in as teacher1
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     And I hide the grade item "Test assignment name"
     And I navigate to "View > Grader report" in the course gradebook
     And I turn editing mode on
@@ -119,6 +120,7 @@ Feature: Students will be shown relevant completion state based on grade item vi
     And I log out
     And I am on the "Course 1" course page logged in as teacher1
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     And I hide the grade item "Test assignment name"
     And I navigate to "View > Grader report" in the course gradebook
     And I turn editing mode on

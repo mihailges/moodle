@@ -28,6 +28,7 @@ Feature: We can duplicate grade items that already exist.
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I navigate to "Setup > Gradebook setup" in the course gradebook
+    And I wait until the page is ready
     And I should not see "Duplicate   Category1"
     And I should not see "Duplicate   Assignment1"
     When I duplicate the grade item "Item1"

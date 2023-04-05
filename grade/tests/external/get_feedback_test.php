@@ -36,15 +36,90 @@ class get_feedback_test extends \externallib_advanced_testcase {
     /**
      * Test get_feedback.
      *
+     * @covers ::get_feedback
+     * @dataProvider get_feedback_provider
+     * @param string|null $feedback The feedback text added for the grade item.
+     * @param array $expected The expected feedback data.
      * @return void
      */
-    public function test_get_feedback() {
+    public function test_get_feedback(?string $feedback, array $expected) {
+
         $this->resetAfterTest(true);
+        $course = $this->getDataGenerator()->create_course();
+        $user = $this->getDataGenerator()->create_user(['firstname' => 'John', 'lastname' => 'Doe',
+            'email' => 'johndoe@example.com']);
+        $this->getDataGenerator()->enrol_user($user->id, $course->id);
+        $gradeitem = $this->getDataGenerator()->create_grade_item(['itemname' => 'Grade item 1',
+            'courseid' => $course->id]);
+
+        $gradegradedata = [
+            'itemid' => $gradeitem->id,
+            'userid' => $user->id,
+        ];
+
+        if ($feedback) {
+            $gradegradedata['feedback'] = $feedback;
+        }
+
+        $this->getDataGenerator()->create_grade_grade($gradegradedata);
+        $this->setAdminUser();
+
+        $feedbackdata = get_feedback::execute($course->id, $user->id, $gradeitem->id);
+
+        $this->assertEquals($expected['feedbacktext'], $feedbackdata['feedbacktext']);
+        $this->assertEquals($expected['title'], $feedbackdata['title']);
+        $this->assertEquals($expected['fullname'], $feedbackdata['fullname']);
+        $this->assertEquals($expected['additionalfield'], $feedbackdata['additionalfield']);
+    }
+
+    /**
+     * Data provider for test_get_feedback().
+     *
+     * @return array
+     */
+    public function get_feedback_provider(): array {
+        return [
+            'Return when feedback is set.' => [
+                'Test feedback',
+                [
+                    'feedbacktext' => 'Test feedback',
+                    'title' => 'Grade item 1',
+                    'fullname' => 'John Doe',
+                    'additionalfield' => 'johndoe@example.com'
+                ]
+            ],
+            'Return when feedback is not set.' => [
+                null,
+                [
+                    'feedbacktext' => null,
+                    'title' => 'Grade item 1',
+                    'fullname' => 'John Doe',
+                    'additionalfield' => 'johndoe@example.com'
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * Test get_feedback with invalid requests.
+     *
+     * @covers ::get_feedback
+     * @dataProvider get_feedback_invalid_request_provider
+     * @param string $loggeduserrole The role of the logged user.
+     * @param bool $feedbacknotincourse Whether to request a feedback for a grade item which is not a part of the course.
+     * @param array $expectedexception The expected exception.
+     * @return void
+     */
+    public function test_get_feedback_invalid_request(string $loggeduserrole, bool $feedbacknotincourse,
+            array $expectedexception = []) {
+
+        $this->resetAfterTest(true);
+        // Create a course with a user and a grade item.
         $course = $this->getDataGenerator()->create_course();
         $user = $this->getDataGenerator()->create_user();
         $this->getDataGenerator()->enrol_user($user->id, $course->id);
         $gradeitem = $this->getDataGenerator()->create_grade_item(['courseid' => $course->id]);
-
+        // Add feedback for the grade item in course.
         $gradegradedata = [
             'itemid' => $gradeitem->id,
             'userid' => $user->id,
@@ -52,48 +127,53 @@ class get_feedback_test extends \externallib_advanced_testcase {
         ];
 
         $this->getDataGenerator()->create_grade_grade($gradegradedata);
-        $this->setAdminUser();
+        // Set the current user as specified.
+        if ($loggeduserrole === 'user') {
+            $this->setUser($user);
+        } else if ($loggeduserrole === 'guest') {
+            $this->setGuestUser();
+        } else {
+            $this->setAdminUser();
+        }
 
-        // Test that correct data is returned for a valid request.
-        $feedback = get_feedback::execute($course->id, $user->id, $gradeitem->id);
+        if ($feedbacknotincourse) { // Create a new course which will be later used in the feedback request call.
+            $course = $this->getDataGenerator()->create_course();
+        }
 
-        $this->assertEquals('Test feedback', $feedback['feedbacktext']);
-        $this->assertEquals($gradeitem->itemname, $feedback['title']);
-        $this->assertEquals(fullname($user), $feedback['fullname']);
+        $this->expectException($expectedexception['exceptionclass']);
 
-        // Test that empty data is returned if feedback isn't set.
-        $userwithoutfeedback = $this->getDataGenerator()->create_user();
-        $this->getDataGenerator()->enrol_user($userwithoutfeedback->id, $course->id);
+        if (!empty($expectedexception['exceptionmessage'])) {
+            $this->expectExceptionMessage($expectedexception['exceptionmessage']);
+        }
 
-        $gradegradedata = [
-            'itemid' => $gradeitem->id,
-            'userid' => $userwithoutfeedback->id,
+        get_feedback::execute($course->id, $user->id, $gradeitem->id);
+    }
+
+    /**
+     * Data provider for test_get_feedback_invalid_request().
+     *
+     * @return array
+     */
+    public function get_feedback_invalid_request_provider(): array {
+        return [
+            'Logged user does not have permissions to view feedback.' => [
+                'user',
+                false,
+                ['exceptionclass' => \required_capability_exception::class]
+            ],
+            'Guest user cannot view feedback.' => [
+                'guest',
+                false,
+                ['exceptionclass' => \require_login_exception::class]
+            ],
+            'Request feedback for a grade item which is not a part of the course.' => [
+                'admin',
+                true,
+                [
+                    'exceptionclass' => \invalid_parameter_exception::class,
+                    'exceptionmessage' => 'Course ID and item ID mismatch',
+                ]
+            ]
         ];
-
-        $this->getDataGenerator()->create_grade_grade($gradegradedata);
-        $emptyfeedback = get_feedback::execute($course->id, $userwithoutfeedback->id, $gradeitem->id);
-
-        $this->assertEquals('', $emptyfeedback['feedbacktext']);
-        $this->assertEquals($gradeitem->itemname, $emptyfeedback['title']);
-        $this->assertEquals(fullname($userwithoutfeedback), $emptyfeedback['fullname']);
-
-        // Test that exception is thrown if the Course ID and Item ID mismatch.
-        $invalidcourse = $this->getDataGenerator()->create_course();
-        $this->expectException(\invalid_parameter_exception::class);
-        $this->expectExceptionMessage('Course ID and item ID mismatch');
-
-        get_feedback::execute($invalidcourse->id, $user->id, $gradeitem->id);
-
-        // Test that exception is thrown if enrolled user doesn't have permission to view feedback.
-        $this->setUser($user);
-        $this->expectException(\required_capability_exception::class);
-
-        get_feedback::execute($course->id, $user->id, $gradeitem->id);
-
-        // Test that exception is thrown for guest user.
-        $this->setGuestUser();
-        $this->expectException(\require_login_exception::class);
-
-        get_feedback::execute($course->id, $user->id, $gradeitem->id);
     }
 }

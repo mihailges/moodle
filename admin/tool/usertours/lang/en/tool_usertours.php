@@ -289,6 +289,20 @@ $string['tour_navigation_mycourses_title'] = 'Courses and categories';
 $string['tour_navigation_mycourses_tour_des'] = 'Course management options on the My courses page';
 $string['tour_navigation_mycourses_tour_name'] = 'Course management';
 
+// 4.2 New gradebook tour.
+$string['tour_gradebook_tour_name'] = 'Gradebook';
+$string['tour_gradebook_tour_description'] = 'New grader report features for 4.2';
+$string['tour_gradebook_search_title'] = 'Search and Filter Users';
+$string['tour_gradebook_search_content'] = 'You can search for users by their name, or additional fields such as email address or ID. You can choose to view a single user, or all users that match the search.';
+$string['tour_gradebook_filter_title'] = 'Filter By Name';
+$string['tour_gradebook_filter_content'] = 'You can filter users by the first letter of their names from this menu.';
+$string['tour_gradebook_action_title'] = 'Action menu';
+$string['tour_gradebook_action_content'] = 'This menu allows you to sort the column, view the grade item, or collapse the column to save space.';
+$string['tour_gradebook_feedback_title'] = 'Feedback';
+$string['tour_gradebook_feedback_content'] = 'If feedback has been provided for a grade item, it will be shown with the feedback icon (@@PIXICON::i/asterisk::tool_usertours@@). You can use the grade item menu (@@PIXICON::i/ellipsis::tool_usertours@@) to view the feedback.';
+$string['tour_gradebook_text_title'] = 'Text Only Grade Item';
+$string['tour_gradebook_text_content'] = 'For a text-only grade item, you can view the full feedback by clicking on the grade text.';
+
 $string['tour_final_step_title'] = 'End of tour';
 $string['tour_final_step_content'] = 'This is the end of your user tour. It won\'t show again unless you reset it using the link in the footer.';
 

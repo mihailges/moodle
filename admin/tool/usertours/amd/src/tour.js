@@ -1561,7 +1561,15 @@ const Tour = class {
             this.currentStepConfig.hasBackdrop = true;
             let backdrop = $('<div data-flexitour="backdrop"></div>');
 
-            if (stepConfig.zIndex) {
+            // If the element is inside a relative or sticky container, the tour works better attached to the body.
+            const hasPositionRelativeStickyParent = $(stepConfig.attachTo)
+                .parents()
+                .filter(function() {
+                    let cssPosition = $(this).css('position');
+                    return cssPosition === 'relative' || cssPosition === 'sticky';
+                }).length > 0;
+
+            if (stepConfig.zIndex && !hasPositionRelativeStickyParent) {
                 if (stepConfig.attachPoint === 'append') {
                     stepConfig.attachTo.append(backdrop);
                 } else {
@@ -1644,7 +1652,13 @@ const Tour = class {
                     background.append(targetClone);
                 }
 
-                if (stepConfig.zIndex) {
+                if (targetNode.parents('#user-grades').length > 0) {
+                    let targetClone = targetNode.clone();
+                    targetClone.css('padding-left', 0);
+                    background.append(targetClone[0]);
+                }
+
+                if (stepConfig.zIndex && !hasPositionRelativeStickyParent) {
                     if (stepConfig.attachPoint === 'append') {
                         stepConfig.attachTo.append(background);
                     } else {

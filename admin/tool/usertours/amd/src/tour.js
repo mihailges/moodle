@@ -1647,15 +1647,9 @@ const Tour = class {
                 });
                 fader.attr('data-flexitour', 'step-background-fader');
 
-                if (targetNode.parents('[data-region="fixed-drawer"]').length) {
+                if (targetNode.parents('[data-region="fixed-drawer"]').length || hasPositionRelativeStickyParent) {
                     let targetClone = targetNode.clone();
-                    background.append(targetClone);
-                }
-
-                if (targetNode.parents('#user-grades').length > 0) {
-                    let targetClone = targetNode.clone();
-                    targetClone.css('padding-left', 0);
-                    background.append(targetClone[0]);
+                    background.append(targetClone.first());
                 }
 
                 if (stepConfig.zIndex && !hasPositionRelativeStickyParent) {

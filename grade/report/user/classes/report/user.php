@@ -446,7 +446,7 @@ class user extends grade_report {
         $gradeobject = $element['object'];
         $eid = $gradeobject->id;
         $element['userid'] = $this->user->id;
-        $fullname = $this->gtree->get_element_header($element, true, false, true, true, true);
+        $fullname = $this->gtree->get_element_header($element, true, false, true, false, true);
         $data = [];
         $gradeitemdata = [];
         $hidden = '';
@@ -603,6 +603,33 @@ class user extends grade_report {
                 }
 
                 if ($this->showgrade) {
+                    $gradestatus = '';
+                    // We only show status icons for a teacher if he views report as himself.
+                    if (isset($this->viewasuser) && !$this->viewasuser) {
+                        if ($gradegrade->is_hidden()) {
+                            $gradestatus .= $OUTPUT->pix_icon('i/show', grade_helper::get_lang_string('hidden', 'grades'),
+                                'moodle', ['class' => 'inline']);
+                        }
+
+                        if ($gradegrade->is_locked()) {
+                            $gradestatus .= $OUTPUT->pix_icon('i/lock', grade_helper::get_lang_string('locked', 'grades'),
+                                'moodle', ['class' => 'inline']);
+                        }
+
+                        if ($gradegrade->is_overridden()) {
+                            $gradestatus .= $OUTPUT->pix_icon('i/overriden_grade',
+                                grade_helper::get_lang_string('overridden', 'grades'), 'moodle', ['class' => 'inline']);
+                        }
+
+                        if ($gradegrade->is_excluded()) {
+                            $gradestatus .= $OUTPUT->pix_icon('i/excluded', grade_helper::get_lang_string('excluded', 'grades'),
+                                'moodle', ['class' => 'inline']);
+                        }
+                        if ($gradestatus) {
+                            $gradestatus = $OUTPUT->container($gradestatus, ['class' => 'text-muted gradestatus']);
+                        }
+                    }
+
                     $gradeitemdata['graderaw'] = null;
                     $gradeitemdata['gradehiddenbydate'] = false;
                     $gradeitemdata['gradeneedsupdate'] = $gradegrade->grade_item->needsupdate;
@@ -633,7 +660,7 @@ class user extends grade_report {
                             userdate(
                                 $gradegrade->get_datesubmitted(),
                                 get_string('strftimedatetimeshort')
-                            )
+                            ) . $gradestatus
                         );
                         $gradeitemdata['gradehiddenbydate'] = true;
                     } else if ($gradegrade->is_hidden()) {
@@ -644,7 +671,7 @@ class user extends grade_report {
                             $gradeitemdata['graderaw'] = $gradeval;
                             $data['grade']['content'] = grade_format_gradevalue($gradeval,
                                 $gradegrade->grade_item,
-                                true);
+                                true) . $gradestatus;
                         }
                     } else {
                         $gradestatusclass = '';
@@ -671,7 +698,7 @@ class user extends grade_report {
 
                         $data['grade']['class'] = "{$class} {$gradestatusclass}";
                         $data['grade']['content'] = $gradepassicon . grade_format_gradevalue($gradeval,
-                                $gradegrade->grade_item, true);
+                                $gradegrade->grade_item, true) . $gradestatus;
                         $gradeitemdata['graderaw'] = $gradeval;
                     }
                     $data['grade']['headers'] = "$headercat $headerrow grade";
@@ -814,17 +841,10 @@ class user extends grade_report {
                         );
                     }
 
-                    if ($gradegrade->overridden > 0 && ($type == 'categoryitem' || $type == 'courseitem')) {
-                        $data['feedback']['class'] = $classfeedback.' feedbacktext';
-                        $data['feedback']['content'] = get_string('overridden', 'grades').': ' .
-                            format_text($gradegrade->feedback, $gradegrade->feedbackformat,
-                                ['context' => $gradegrade->get_context()]);
-                        $gradeitemdata['feedback'] = $gradegrade->feedback;
-                    } else if (empty($gradegrade->feedback) || (!$this->canviewhidden && $gradegrade->is_hidden())) {
-                        $data['feedback']['class'] = $classfeedback.' feedbacktext';
+                    $data['feedback']['class'] = $classfeedback.' feedbacktext';
+                    if (empty($gradegrade->feedback) || (!$this->canviewhidden && $gradegrade->is_hidden())) {
                         $data['feedback']['content'] = '&nbsp;';
                     } else {
-                        $data['feedback']['class'] = $classfeedback.' feedbacktext';
                         $data['feedback']['content'] = format_text($gradegrade->feedback, $gradegrade->feedbackformat,
                             ['context' => $gradegrade->get_context()]);
                         $gradeitemdata['feedback'] = $gradegrade->feedback;

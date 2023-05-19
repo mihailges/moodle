@@ -33,7 +33,7 @@ class gradeimport_direct_import_form extends moodleform {
      * Definition method.
      */
     public function definition() {
-        global $COURSE;
+        global $COURSE, $OUTPUT;
 
         $mform = $this->_form;
 
@@ -74,6 +74,10 @@ class gradeimport_direct_import_form extends moodleform {
         $mform->addElement('advcheckbox', 'forceimport', get_string('forceimport', 'grades'));
         $mform->addHelpButton('forceimport', 'forceimport', 'grades');
         $mform->setDefault('forceimport', false);
-        $this->add_action_buttons(false, get_string('uploadgrades', 'grades'));
+
+        $uploadbutton = $mform->createElement('submit', 'submitbutton', get_string('uploadgrades', 'grades'));
+        $uploadbutton->updateAttributes(['class' => 'btn btn-primary']);
+        $stickyfooter = new core\output\sticky_footer($uploadbutton->toHtml());
+        $mform->addElement('html', $OUTPUT->render($stickyfooter));
     }
 }

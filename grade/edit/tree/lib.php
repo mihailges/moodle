@@ -741,6 +741,9 @@ abstract class grade_edit_tree_column {
         $cell = clone($this->categorycell);
         $cell->attributes['class'] .= ' ' . $levelclass;
         $cell->attributes['text'] = '';
+        if (preg_match('/^grade_edit_tree_column_(\w*)$/', get_class($this), $matches)) {
+            $cell->attributes['aria-label'] = $matches[1] . ' category ' . $category->get_name();
+        }
         return $cell;
     }
 
@@ -751,6 +754,9 @@ abstract class grade_edit_tree_column {
             $level = $params['level'] + (($item->itemtype == 'category' || $item->itemtype == 'course') ? 0 : 1);
             $cell->attributes['class'] .= ' level' . $level;
             $cell->attributes['class'] .= ' level' . ($level % 2 ? 'odd' : 'even');
+        }
+        if (preg_match('/^grade_edit_tree_column_(\w*)$/', get_class($this), $matches)) {
+            $cell->attributes['aria-label'] = $matches[1] . ' item ' . $item->get_name(true);;
         }
         return $cell;
     }
@@ -1157,8 +1163,8 @@ class grade_edit_tree_column_actions extends grade_edit_tree_column {
 /**
  * Class grade_edit_tree_column_select
  *
- * @deprecated Since Moodle 4.3.
- * @todo Final deprecation on Moodle 4.7 MDL-77668
+ * @deprecated Since Moodle 4.2.
+ * @todo Final deprecation on Moodle 4.6 MDL-77668
  *
  * @package   core_grades
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -1166,8 +1172,7 @@ class grade_edit_tree_column_actions extends grade_edit_tree_column {
 class grade_edit_tree_column_select extends grade_edit_tree_column {
 
     /**
-     * @deprecated Since Moodle 4.3.
-     * @todo Final deprecation on Moodle 4.7 MDL-77668
+     * @deprecated Since Moodle 4.2.
      */
     public function get_header_cell() {
         debugging('Method grade_edit_tree_column_select::get_header_cell() is deprecated, ' .
@@ -1179,8 +1184,8 @@ class grade_edit_tree_column_select extends grade_edit_tree_column {
     }
 
     /**
-     * @deprecated Since Moodle 4.3.
-     * @todo Final deprecation on Moodle 4.7 MDL-77668
+     * @deprecated Since Moodle 4.2.
+     * @todo Final deprecation on Moodle 4.6 MDL-77668
      */
     public function get_category_cell($category, $levelclass, $params) {
         global $OUTPUT;
@@ -1223,8 +1228,8 @@ class grade_edit_tree_column_select extends grade_edit_tree_column {
     }
 
     /**
-     * @deprecated Since Moodle 4.3.
-     * @todo Final deprecation on Moodle 4.7 MDL-77668
+     * @deprecated Since Moodle 4.2.
+     * @todo Final deprecation on Moodle 4.6 MDL-77668
      */
     public function get_item_cell($item, $params) {
         debugging('Method grade_edit_tree_column_select::get_item_cell() is deprecated, ' .
@@ -1258,8 +1263,8 @@ class grade_edit_tree_column_select extends grade_edit_tree_column {
     /**
      * Generates a toggle group name for a bulk-action checkbox based on the given grade category.
      *
-     * @deprecated Since Moodle 4.3.
-     * @todo Final deprecation on Moodle 4.7 MDL-77668
+     * @deprecated Since Moodle 4.2.
+     * @todo Final deprecation on Moodle 4.6 MDL-77668
      *
      * @param grade_category $category The grade category.
      * @return string

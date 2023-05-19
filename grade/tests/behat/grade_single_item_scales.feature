@@ -79,11 +79,9 @@ Feature: View gradebook when single item scales are used
       | ENFR Sub category 1 total | -     | 0–1       | -                            |
       | Course total              | -     | 0–1       | -                            |
     And I navigate to "Setup > Gradebook setup" in the course gradebook
-    And the following should exist in the "grade_edit_tree_table" table:
-      | Name                      | Max grade |
-      | Test assignment one       | 1.00      |
-      | ENFR Sub category 1 total | 1.00      |
-      | Course total              | 1.00      |
+    And I should see "1.00" in the "//td[contains(@aria-label,\"range item Test assignment one\")]" "xpath_element"
+    And I should see "1.00" in the "//td[contains(@aria-label,\"range item ENFR Sub category 1 total\")]" "xpath_element"
+    And I should see "1.00" in the "//td[contains(@aria-label,\"range item Course total\")]" "xpath_element"
 
   Scenario Outline: Test displaying single item scales in gradebook in all other aggregation methods
     Given I set the following settings for grade item "Course 1" of type "course" on "grader" page:
@@ -108,11 +106,9 @@ Feature: View gradebook when single item scales are used
       | Sub category (<aggregation>) total<aggregation>. | <cattotal1>    | 0–100       | -                            |
       | Course total<aggregation>.                       | <coursetotal1> | 0–100       | -                            |
     And I navigate to "Setup > Gradebook setup" in the course gradebook
-    And the following should exist in the "grade_edit_tree_table" table:
-      | Name                                             | Max grade |
-      | Test assignment one                              | Ace! (1)  |
-      | Sub category (<aggregation>) total               | 100.00    |
-      | Course total                                     | 100.00    |
+    And I should see "Ace! (1)" in the "//td[contains(@aria-label,\"range item Test assignment one\")]" "xpath_element"
+    And I should see "100.00" in the "//td[contains(@aria-label,\"range item Sub category (<aggregation>) total\")]" "xpath_element"
+    And I should see "100.00" in the "//td[contains(@aria-label,\"range item Course total\")]" "xpath_element"
 
     Examples:
       | aggregation                         | contrib1 | cattotal1 | coursetotal1 | catavg | overallavg |

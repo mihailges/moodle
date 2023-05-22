@@ -21,41 +21,44 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+import $ from 'jquery';
+
 const SELECTORS = {
     GRADEPARENT: '.gradeparent',
     STUDENTHEADER: '#studentheader',
     TABLEHEADER: 'th.header',
     BEHAT: 'body.behat-site',
-    AVERAGEROW: 'tr.lastrow',
-    TABLEHEADING: 'tr.heading',
-    GRADERDROPDOWN: 'tr th.category .dropdown-menu',
+    USERHEADERDROPDOWN: 'tr.userrow th.header .dropdown',
+    DROPDOWNMENU: '.dropdown-menu'
 };
 
 /**
  * Initialize module
  */
 export const init = () => {
-    const grader = document.querySelector(SELECTORS.GRADEPARENT);
-    const tableHeaders = grader.querySelectorAll(SELECTORS.TABLEHEADER);
-
-    let i = 0;
-    tableHeaders.forEach((tableHeader) => {
-        if (tableHeader.colSpan <= 1) {
-            tableHeader.style.zIndex = tableHeaders.length - i;
-        }
-        i++;
+    let userHeaderDropdownMenu;
+    // The sticky positioning attributed to the user header cells affects the stacking context and makes the dropdowns
+    // within these cells appear cut off. To solve this issue we need to detach the dropdown menu element (on show)
+    // from the the current context and attach it to the body.
+    $(SELECTORS.USERHEADERDROPDOWN).on('show.bs.dropdown', (e) => {
+        userHeaderDropdownMenu = e.target.querySelector(SELECTORS.DROPDOWNMENU);
+        // Calculate the proper positioning.
+        const left = userHeaderDropdownMenu.offsetLeft -  window.scrollLeft;
+        const top = userHeaderDropdownMenu.offsetTop - window.scrollLeft;
+        userHeaderDropdownMenu.setAttribute('style',
+            `position: fixed; display: block; z-index: 999; left: ${left}, top: ${top}`);
+        // Move the dropdown menu element to the document's body.
+        document.body.append(userHeaderDropdownMenu.parentNode.removeChild(userHeaderDropdownMenu));
     });
-
-    const categoryDropdowns = grader.querySelectorAll(SELECTORS.GRADERDROPDOWN);
-    categoryDropdowns.forEach(dropdown => {
-        // Ensure we take all the displayed users + any & all categories and add a bit extra for safe measure.
-        dropdown.style.zIndex = (tableHeaders.length + categoryDropdowns.length) + 1;
+    // Return the dropdown menu element to its original context on hide.
+    $(SELECTORS.USERHEADERDROPDOWN).on('hide.bs.dropdown', (e) => {
+        userHeaderDropdownMenu.style.display = '';
+        $(e.target).append(e.target.appendChild(userHeaderDropdownMenu));
     });
-
-    const tableHeader = grader.querySelector(SELECTORS.TABLEHEADING);
-    tableHeader.style.zIndex = tableHeaders.length + 1;
 
     if (!document.querySelector(SELECTORS.BEHAT)) {
+        const grader = document.querySelector(SELECTORS.GRADEPARENT);
+        const tableHeaders = grader.querySelectorAll(SELECTORS.TABLEHEADER);
         const studentHeader = grader.querySelector(SELECTORS.STUDENTHEADER);
         const leftOffset = getComputedStyle(studentHeader).getPropertyValue('left');
         const rightOffset = getComputedStyle(studentHeader).getPropertyValue('right');

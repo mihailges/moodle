@@ -24,6 +24,7 @@
 
 namespace gradereport_singleview\local\screen;
 
+use grade_helper;
 use grade_seq;
 use gradereport_singleview;
 use moodle_url;
@@ -159,18 +160,20 @@ class user extends tablelike implements selectable_items {
         global $OUTPUT;
 
         $grade = $this->fetch_grade_or_default($item, $this->item->id);
-        $lockicon = '';
+        $gradestatus = '';
 
-        $lockeditem = $lockeditemgrade = 0;
-        if (!empty($grade->locked)) {
-            $lockeditem = 1;
+        if ($grade->is_locked()) {
+            $gradestatus .= $OUTPUT->pix_icon('i/lock', grade_helper::get_lang_string('locked', 'grades'),
+                'moodle', ['class' => 'inline']);
         }
-        if (!empty($grade->grade_item->locked)) {
-            $lockeditemgrade = 1;
+
+        if ($grade->is_hidden()) {
+            $gradestatus .= $OUTPUT->pix_icon('i/show', grade_helper::get_lang_string('hidden', 'grades'),
+                'moodle', ['class' => 'inline']);
         }
-        // Check both grade and grade item.
-        if ($lockeditem || $lockeditemgrade) {
-             $lockicon = $OUTPUT->pix_icon('t/locked', 'grade is locked', 'moodle', ['class' => 'ml-3']);
+
+        if ($gradestatus) {
+            $gradestatus = $OUTPUT->container($gradestatus, ['class' => 'text-muted gradestatus']);
         }
 
         // Create a fake gradetreeitem so we can call get_element_header().
@@ -200,10 +203,10 @@ class user extends tablelike implements selectable_items {
         }
 
         $line = [
-            html_writer::div($itemicon . $itemcontent .  $lockicon, "{$type} d-flex align-items-center"),
+            html_writer::div($itemicon . $itemcontent, "{$type} d-flex align-items-center"),
             $this->get_item_action_menu($item),
             $this->category($item),
-            $formatteddefinition['finalgrade'],
+            $formatteddefinition['finalgrade'] . $gradestatus,
             new range($item),
             $formatteddefinition['feedback'],
             $formatteddefinition['override'],

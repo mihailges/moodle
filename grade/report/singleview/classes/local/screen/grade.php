@@ -24,6 +24,7 @@
 
 namespace gradereport_singleview\local\screen;
 
+use grade_helper;
 use gradereport_singleview\local\ui\range;
 use gradereport_singleview\local\ui\bulk_insert;
 use grade_grade;
@@ -205,24 +206,26 @@ class grade extends tablelike implements selectable_items, filterable_items {
 
         $grade = $this->fetch_grade_or_default($this->item, $item->id);
 
-        $lockicon = '';
+        $gradestatus = '';
 
-        $lockedgrade = $lockedgradeitem = 0;
-        if (!empty($grade->locked)) {
-            $lockedgrade = 1;
+        if ($grade->is_locked()) {
+            $gradestatus .= $OUTPUT->pix_icon('i/lock', grade_helper::get_lang_string('locked', 'grades'),
+                'moodle', ['class' => 'inline']);
         }
-        if (!empty($grade->grade_item->locked)) {
-            $lockedgradeitem = 1;
+
+        if ($grade->is_hidden()) {
+            $gradestatus .= $OUTPUT->pix_icon('i/show', grade_helper::get_lang_string('hidden', 'grades'),
+                'moodle', ['class' => 'inline']);
         }
-        // Check both grade and grade item.
-        if ( $lockedgrade || $lockedgradeitem ) {
-            $lockicon = $OUTPUT->pix_icon('t/locked', 'grade is locked') . ' ';
+
+        if ($gradestatus) {
+            $gradestatus = $OUTPUT->container($gradestatus, ['class' => 'text-muted gradestatus']);
         }
 
         if (has_capability('moodle/site:viewfullnames', \context_course::instance($this->courseid))) {
-            $fullname = $lockicon . fullname($item, true);
+            $fullname = fullname($item, true);
         } else {
-            $fullname = $lockicon . fullname($item);
+            $fullname = fullname($item);
         }
 
         $item->imagealt = $fullname;
@@ -235,7 +238,7 @@ class grade extends tablelike implements selectable_items, filterable_items {
         $line = [
             html_writer::link($url, $userpic . $fullname),
             $this->get_user_action_menu($item),
-            $formatteddefinition['finalgrade'],
+            $formatteddefinition['finalgrade'] . $gradestatus,
             $this->item_range(),
             $formatteddefinition['feedback'],
             $formatteddefinition['override'],

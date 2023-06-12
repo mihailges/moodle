@@ -106,25 +106,31 @@ Feature: Teachers can toggle the visibility of the grade categories in the Grade
 
   Scenario: A teacher can see the aggregated max grade for a grade category even when the category is collapsed
     Given I navigate to "Setup > Gradebook setup" in the course gradebook
-    And I should see "" in the "//td[contains(@aria-label,\"range category Course\")]" "xpath_element"
-    And I should see "" in the "//td[contains(@aria-label,\"range category Category 1\")]" "xpath_element"
-    And I should see "240.00" in the "//td[contains(@aria-label,\"range item Course total\")]" "xpath_element"
-    And I should see "140.00" in the "//td[contains(@aria-label,\"range item Category 1 total\")]" "xpath_element"
+    And the following should exist in the "setup-grades" table:
+      | Name             | Max grade |
+      | Course           |           |
+      | Category 1       |           |
+      | Category 1 total | 140.00    |
+      | Course total     | 240.00    |
     # Collapse the grade category 'Category 1'. The aggregated max grade should now be displayed within the 'Category 1' row.
     When I click on "Collapse" "link" in the "Category 1" "table_row"
-    Then I should see "" in the "//td[contains(@aria-label,\"range category Course\")]" "xpath_element"
-    And I should see "140" in the "//td[contains(@aria-label,\"range category Category 1\")]" "xpath_element"
-    And I should see "240.00" in the "//td[contains(@aria-label,\"range item Course total\")]" "xpath_element"
+    Then the following should exist in the "setup-grades" table:
+      | Name             | Max grade |
+      | Course           |           |
+      | Category 1       | 140.00    |
+      | Course total     | 240.00    |
     And I should not see "Category 1 total" in the "setup-grades" "table"
     # Collapse the grade category 'Course'. The aggregated max grade should now be displayed within the 'Course' row.
     And I click on "Collapse" "link" in the "Course" "table_row"
-    And I should see "240.00" in the "//td[contains(@aria-label,\"range category Course\")]" "xpath_element"
+    And "Course" row "Max grade" column of "setup-grades" table should contain "240.00"
     And I should not see "Course total" in the "setup-grades" "table"
     # Expand the grade category 'Course'. The aggregated max grade should not be displayed within the 'Course' row anymore.
     And I click on "Expand" "link" in the "Course" "table_row"
-    And I should see "" in the "//td[contains(@aria-label,\"range category Course\")]" "xpath_element"
-    And I should see "140" in the "//td[contains(@aria-label,\"range category Category 1\")]" "xpath_element"
-    And I should see "240.00" in the "//td[contains(@aria-label,\"range item Course total\")]" "xpath_element"
+    And the following should exist in the "setup-grades" table:
+      | Name             | Max grade |
+      | Course           |           |
+      | Category 1       | 140.00    |
+      | Course total     | 240.00    |
     And I should not see "Category 1 total" in the "setup-grades" "table"
 
   Scenario: A teacher can collapse and expand grade categories in the Gradebook setup when moving grade items

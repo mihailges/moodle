@@ -91,9 +91,11 @@ Feature: View gradebook when scales are used
       | Sub category 1 total      | 3.00  | 0–5   | 60.00 %    | -                            |
       | Course total        | 3.00  | 0–5   | 60.00 %    | -                            |
     And I navigate to "Setup > Gradebook setup" in the course gradebook
-    And I should see "5.00" in the "//td[contains(@aria-label,\"range item Test assignment one\")]" "xpath_element"
-    And I should see "5.00" in the "//td[contains(@aria-label,\"range item Sub category 1 total\")]" "xpath_element"
-    And I should see "5.00" in the "//td[contains(@aria-label,\"range item Course total\")]" "xpath_element"
+    And the following should exist in the "grade_edit_tree_table" table:
+      | Name                | Max grade |
+      | Test assignment one | 5.00      |
+      | Sub category 1 total      | 5.00      |
+      | Course total        | 5.00      |
     And I log out
     And I log in as "student2"
     And I follow "Grades" in the user menu

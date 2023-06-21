@@ -185,15 +185,3 @@
         display: none;
     }
 }
-
-#fitem_id_submitbutton {
-    padding-right: 2em;
-}
-
-.gradestatus {
-    padding-top: 10px;
-}
-
-.gradestatus .icon {
-    margin-right: 1rem;
-}

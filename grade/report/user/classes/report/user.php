@@ -24,6 +24,7 @@ use grade_report;
 use grade_tree;
 use html_writer;
 use moodle_url;
+use stdClass;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -606,27 +607,26 @@ class user extends grade_report {
                     $gradestatus = '';
                     // We only show status icons for a teacher if he views report as himself.
                     if (isset($this->viewasuser) && !$this->viewasuser) {
+                        $context = new stdClass();
                         if ($gradegrade->is_hidden()) {
-                            $gradestatus .= $OUTPUT->pix_icon('i/show', grade_helper::get_lang_string('hidden', 'grades'),
-                                'moodle', ['class' => 'inline']);
+                            $context->hidden = grade_helper::get_lang_string('hidden', 'grades');
                         }
 
                         if ($gradegrade->is_locked()) {
-                            $gradestatus .= $OUTPUT->pix_icon('i/lock', grade_helper::get_lang_string('locked', 'grades'),
-                                'moodle', ['class' => 'inline']);
+                            $context->locked = grade_helper::get_lang_string('locked', 'grades');
                         }
 
                         if ($gradegrade->is_overridden()) {
-                            $gradestatus .= $OUTPUT->pix_icon('i/overriden_grade',
-                                grade_helper::get_lang_string('overridden', 'grades'), 'moodle', ['class' => 'inline']);
+                            $context->overridden = grade_helper::get_lang_string('overridden', 'grades');
                         }
 
                         if ($gradegrade->is_excluded()) {
-                            $gradestatus .= $OUTPUT->pix_icon('i/excluded', grade_helper::get_lang_string('excluded', 'grades'),
-                                'moodle', ['class' => 'inline']);
+                            $context->excluded = grade_helper::get_lang_string('excluded', 'grades');
                         }
-                        if ($gradestatus) {
-                            $gradestatus = $OUTPUT->container($gradestatus, ['class' => 'text-muted gradestatus']);
+
+                        if ((array)$context) {
+                            $context->classes = 'text-muted gradestatus';
+                            $gradestatus = $OUTPUT->render_from_template('core_grades/status_icons', $context);
                         }
                     }
 

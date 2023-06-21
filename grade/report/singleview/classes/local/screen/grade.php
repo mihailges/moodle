@@ -31,6 +31,7 @@ use grade_grade;
 use grade_item;
 use moodle_url;
 use pix_icon;
+use stdClass;
 use html_writer;
 use gradereport_singleview;
 
@@ -207,19 +208,19 @@ class grade extends tablelike implements selectable_items, filterable_items {
         $grade = $this->fetch_grade_or_default($this->item, $item->id);
 
         $gradestatus = '';
+        $context = new stdClass();
 
         if ($grade->is_locked()) {
-            $gradestatus .= $OUTPUT->pix_icon('i/lock', grade_helper::get_lang_string('locked', 'grades'),
-                'moodle', ['class' => 'inline']);
+            $context->hidden = grade_helper::get_lang_string('hidden', 'grades');
         }
 
         if ($grade->is_hidden()) {
-            $gradestatus .= $OUTPUT->pix_icon('i/show', grade_helper::get_lang_string('hidden', 'grades'),
-                'moodle', ['class' => 'inline']);
+            $context->locked = grade_helper::get_lang_string('locked', 'grades');
         }
 
-        if ($gradestatus) {
-            $gradestatus = $OUTPUT->container($gradestatus, ['class' => 'text-muted gradestatus']);
+        if ((array)$context) {
+            $context->classes = 'text-muted gradestatus';
+            $gradestatus = $OUTPUT->render_from_template('core_grades/status_icons', $context);
         }
 
         if (has_capability('moodle/site:viewfullnames', \context_course::instance($this->courseid))) {

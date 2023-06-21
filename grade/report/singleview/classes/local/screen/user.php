@@ -161,19 +161,19 @@ class user extends tablelike implements selectable_items {
 
         $grade = $this->fetch_grade_or_default($item, $this->item->id);
         $gradestatus = '';
+        $context = new stdClass();
 
         if ($grade->is_locked()) {
-            $gradestatus .= $OUTPUT->pix_icon('i/lock', grade_helper::get_lang_string('locked', 'grades'),
-                'moodle', ['class' => 'inline']);
+            $context->hidden = grade_helper::get_lang_string('hidden', 'grades');
         }
 
         if ($grade->is_hidden()) {
-            $gradestatus .= $OUTPUT->pix_icon('i/show', grade_helper::get_lang_string('hidden', 'grades'),
-                'moodle', ['class' => 'inline']);
+            $context->locked = grade_helper::get_lang_string('locked', 'grades');
         }
 
-        if ($gradestatus) {
-            $gradestatus = $OUTPUT->container($gradestatus, ['class' => 'text-muted gradestatus']);
+        if ((array)$context) {
+            $context->classes = 'text-muted gradestatus';
+            $gradestatus = $OUTPUT->render_from_template('core_grades/status_icons', $context);
         }
 
         // Create a fake gradetreeitem so we can call get_element_header().

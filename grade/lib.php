@@ -2454,44 +2454,35 @@ class grade_structure {
      * Sets status icons for the grade.
      *
      * @param array $element array with grade item info
-     * @return string status icons container HTML
+     * @return string|null status icons container HTML
      */
-    public function set_grade_status_icons(array $element): string {
+    public function set_grade_status_icons(array $element): ?string {
         global $OUTPUT;
 
-        $statusicons = '';
-        $context = new stdClass();
-        if ($element['object']->is_hidden()) {
-            $context->hidden = grade_helper::get_lang_string('hidden', 'grades');
-        }
-
-        if ($element['object']->is_locked()) {
-            $context->locked = grade_helper::get_lang_string('locked', 'grades');
-        }
+        $context = [
+            'hidden' => $element['object']->is_hidden(),
+            'locked' => $element['object']->is_locked(),
+        ];
 
         if ($element['object'] instanceof grade_grade) {
             $grade = $element['object'];
-            if ($grade->is_overridden()) {
-                $context->overridden = grade_helper::get_lang_string('overridden', 'grades');
-            }
-
-            if ($grade->is_excluded()) {
-                $context->excluded = grade_helper::get_lang_string('excluded', 'grades');
-            }
+            $context['overridden'] = $grade->is_overridden();
+            $context['excluded'] = $grade->is_excluded();
+            $context['feedback'] = !empty($grade->feedback) && $grade->load_grade_item()->gradetype != GRADE_TYPE_TEXT;
         }
 
-        if (!empty($grade->feedback) && $grade->load_grade_item()->gradetype != GRADE_TYPE_TEXT) {
-            $context->feedback = grade_helper::get_lang_string('feedbackprovided', 'grades');
+        // Early return if there aren't any statuses that we need to show.
+        if(!in_array(true, $context)) {
+            return null;
         }
 
-        if ((array)$context) {
-            $context->classes = 'grade_icons data-collapse_gradeicons text-muted';
-            if (isset($element['type']) && ($element['type'] == 'category')) {
-                $context->classes = 'category_grade_icons text-muted';
-            }
-            $statusicons = $OUTPUT->render_from_template('core_grades/status_icons', $context);
+        $context['classes'] = 'grade_icons data-collapse_gradeicons';
+
+        if (isset($element['type']) && ($element['type'] == 'category')) {
+            $context['classes'] = 'category_grade_icons';
         }
-        return $statusicons;
+
+        return $OUTPUT->render_from_template('core_grades/status_icons', $context);
     }
 
     /**

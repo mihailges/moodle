@@ -18,18 +18,18 @@
 
     Example context (json):
     {
-        "classes": "text-muted gradestatus",
-        "hidden": "Hidden",
-        "locked": "Locked",
-        "overridden": "Overridden",
-        "excluded": "Excluded",
-        "feedback": "Feedback provided"
+        "classes": "gradestatus",
+        "hidden": true,
+        "locked": true,
+        "overridden": false,
+        "excluded": false,
+        "feedback": false
     }
 }}
-<div class="{{classes}}">
-    {{#hidden}}{{#pix}}i/show, moodle, {{hidden}}{{/pix}}{{/hidden}}
-    {{#locked}}{{#pix}}i/lock, moodle, {{locked}}{{/pix}}{{/locked}}
-    {{#overridden}}{{#pix}}i/overriden_grade, moodle, {{overridden}}{{/pix}}{{/overridden}}
-    {{#excluded}}{{#pix}}i/excluded, moodle, {{excluded}}{{/pix}}{{/excluded}}
-    {{#feedback}}{{#pix}}i/asterisk, moodle, {{feedback}}{{/pix}}{{/feedback}}
+<div class="text-muted {{classes}}">
+    {{#hidden}}{{#pix}}i/show, moodle, {{#str}} hidden, grades {{/str}}{{/pix}}{{/hidden}}
+    {{#locked}}{{#pix}}i/lock, moodle, {{#str}} locked, grades {{/str}}{{/pix}}{{/locked}}
+    {{#overridden}}{{#pix}}i/overriden_grade, moodle, {{#str}} overridden, grades {{/str}}{{/pix}}{{/overridden}}
+    {{#excluded}}{{#pix}}i/excluded, moodle, {{#str}} excluded, grades {{/str}}{{/pix}}{{/excluded}}
+    {{#feedback}}{{#pix}}i/asterisk, moodle, {{#str}} feedbackprovided, grades {{/str}}{{/pix}}{{/feedback}}
 </div>

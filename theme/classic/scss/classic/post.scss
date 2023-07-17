@@ -222,6 +222,25 @@
             }
         }
     }
+
+    .path-mod-book {
+        #mod_book-chaptersnavigation {
+            margin: 0 -5px;
+        }
+
+        .book_content {
+            margin-left: 30px;
+            margin-right: 30px;
+        }
+    }
+}
+
+@include media-breakpoint-down(md) {
+    .path-mod-book {
+        #mod_book-chaptersnavigation {
+            top: calc(100% - 150px);
+        }
+    }
 }
 
 // Settings and Navigation blocks don't render well from default boost.

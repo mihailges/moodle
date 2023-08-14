@@ -52,12 +52,8 @@
 .path-mod-book #mod_book-chaptersnavigation {
     top: 80px;
     width: inherit;
-    margin: 0 -35px;
+    margin: 0 -35px -80px -35px;
     position: sticky; /* Make navigation sticky. */
-}
-
-.path-mod-book #mod_book-chaptersnavigation .tertiary-navigation .navitem {
-    margin-bottom: -52px;
 }
 
 .path-mod-book .book_content {

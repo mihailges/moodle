@@ -21,6 +21,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+import {getString} from 'core/str';
+import {prefetchStrings} from 'core/prefetch';
+
 /**
  * Selectors.
  *
@@ -199,9 +202,59 @@ const recalculateNaturalWeights = (categoryElement) => {
                 // If the normalised total equals zero, or the weight value is less than zero,
                 // set the weight for the grade item to zero.
                 weightInput.value = formatWeight(0);
-            } else {
-                weightInput.value = formatWeight(100 * overrideArray[childElement.dataset.itemid].weight / normaliseTotal);
             }
+        }
+    }
+};
+
+const validateWeights = (categoryElement) => {
+    const childElements = document.querySelectorAll(
+        `tr[data-parent-category="${categoryElement.dataset.category}"]`
+    );
+
+    let totalCategoryWeight = 0;
+
+    for (const childElement of childElements) {
+        const weightInput = childElement.querySelector(selectors.weightOverrideInput);
+        if (!weightInput) {
+            continue;
+        }
+        if (parseInt(childElement.dataset.aggregationcoef) > 0) {
+            // An extra credit grade item doesn't contribute to totalOverriddenGradeMax.
+            continue;
+        }
+
+        totalCategoryWeight += parseWeight(weightInput.value);
+    }
+
+    let error = '';
+    // Allowing for a small margin of difference due to precision.
+    if (totalCategoryWeight > 100.001) {
+        error = 'erroroverweight';
+    } else if (totalCategoryWeight < 99.999) {
+        error = 'errorunderweight';
+    }
+
+    for (const childElement of childElements) {
+        const weightInput = childElement.querySelector(selectors.weightOverrideInput);
+        if (!weightInput) {
+            continue;
+        }
+        if (parseInt(childElement.dataset.aggregationcoef) > 0) {
+            // An extra credit grade item doesn't contribute to totalOverriddenGradeMax.
+            continue;
+        }
+
+        // Show error only for the elements that the user can edit.
+        if (error && !weightInput.disabled) {
+            weightInput.classList.add('is-invalid');
+            const errorArea = weightInput.closest('td').querySelector('.invalid-feedback');
+            // eslint-disable-next-line promise/always-return,promise/catch-or-return
+            getString(error, 'core_grades').then((errorString) => {
+                errorArea.textContent = errorString;
+            });
+        } else {
+            weightInput.classList.remove('is-invalid');
         }
     }
 };
@@ -236,6 +289,7 @@ const parseWeight = (weightString) => {
 export const init = (decSep, oldCalculation) => {
     decimalSeparator = decSep;
     oldExtraCreditCalculation = oldCalculation;
+    prefetchStrings('core_grades', ['erroroverweight', 'errorunderweight']);
 
     document.addEventListener('change', e => {
         // Update the weights of all grade items in the category when the weight of any grade item in the category is changed.
@@ -250,6 +304,24 @@ export const init = (decSep, oldCalculation) => {
                 const weightElement = gradeItemRow.querySelector(selectors.weightOverrideInput);
                 weightElement.value = formatWeight(parseWeight(weightElement.value));
                 recalculateNaturalWeights(categoryElement);
+                validateWeights(categoryElement);
+            }
+        }
+    });
+
+    document.addEventListener('submit', e => {
+        // If the form is being submitted, then we need to ensure that the weight input fields are all set to
+        // a valid value.
+        if (e.target.matches('#gradetreeform')) {
+            const firstInvalidWeightInput = e.target.querySelector('input.is-invalid');
+            if (firstInvalidWeightInput) {
+                const firstFocusableInvalidWeightInput = e.target.querySelector('input.is-invalid:enabled');
+                if (firstFocusableInvalidWeightInput) {
+                    firstFocusableInvalidWeightInput.focus();
+                } else {
+                    firstInvalidWeightInput.scrollIntoView({block: 'center'});
+                }
+                e.preventDefault();
             }
         }
     });

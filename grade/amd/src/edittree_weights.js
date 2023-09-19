@@ -207,11 +207,15 @@ const recalculateNaturalWeights = (categoryElement) => {
     }
 };
 
+/**
+ * Validate the weights for a category.
+ *
+ * @param {HTMLElement} categoryElement The DOM element representing the category.
+ */
 const validateWeights = (categoryElement) => {
-    const childElements = document.querySelectorAll(
-        `tr[data-parent-category="${categoryElement.dataset.category}"]`
-    );
+    const childElements = document.querySelectorAll(selectors.childrenByCategory(categoryElement.dataset.category));
 
+    let enabledWeightInputs = [];
     let totalCategoryWeight = 0;
 
     for (const childElement of childElements) {
@@ -223,7 +227,12 @@ const validateWeights = (categoryElement) => {
             // An extra credit grade item doesn't contribute to totalOverriddenGradeMax.
             continue;
         }
-
+        // Remove any pre-existing validation errors.
+        weightInput.classList.remove('is-invalid');
+        // Store the enabled weight inputs so we can add validation errors to them later if needed.
+        if (!weightInput.disabled) {
+            enabledWeightInputs.push(weightInput);
+        }
         totalCategoryWeight += parseWeight(weightInput.value);
     }
 
@@ -235,26 +244,14 @@ const validateWeights = (categoryElement) => {
         error = 'errorunderweight';
     }
 
-    for (const childElement of childElements) {
-        const weightInput = childElement.querySelector(selectors.weightOverrideInput);
-        if (!weightInput) {
-            continue;
-        }
-        if (parseInt(childElement.dataset.aggregationcoef) > 0) {
-            // An extra credit grade item doesn't contribute to totalOverriddenGradeMax.
-            continue;
-        }
-
-        // Show error only for the elements that the user can edit.
-        if (error && !weightInput.disabled) {
-            weightInput.classList.add('is-invalid');
-            const errorArea = weightInput.closest('td').querySelector('.invalid-feedback');
+    if (error) {
+        for (const enabledWeightInput of enabledWeightInputs) {
+            enabledWeightInput.classList.add('is-invalid');
+            const errorArea = enabledWeightInput.closest('td').querySelector('.invalid-feedback');
             // eslint-disable-next-line promise/always-return,promise/catch-or-return
             getString(error, 'core_grades').then((errorString) => {
                 errorArea.textContent = errorString;
             });
-        } else {
-            weightInput.classList.remove('is-invalid');
         }
     }
 };

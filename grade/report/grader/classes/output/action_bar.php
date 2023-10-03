@@ -41,6 +41,11 @@ class action_bar extends \core_grades\output\action_bar {
         parent::__construct($context);
 
         $this->usersearch = optional_param('searchvalue', '', PARAM_NOTAGS);
+        $usersearch = optional_param('gpr_search', '', PARAM_NOTAGS);
+        if ($usersearch) {
+            $this->usersearch = $usersearch;
+        }
+
     }
 
     /**

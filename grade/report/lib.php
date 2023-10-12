@@ -214,17 +214,8 @@ abstract class grade_report {
         // init gtree in child class
 
         // Set any url params.
-        $this->usersearch = optional_param('searchvalue', '', PARAM_NOTAGS);
-        $this->userid = optional_param('userid', -1, PARAM_INT);
-
-        if (!$this->userid) {
-            $this->userid = optional_param('gpr_userid', -1, PARAM_INT);
-        }
-
-        if (!$this->usersearch) {
-            $this->usersearch = optional_param('gpr_search', '', PARAM_NOTAGS);
-        }
-
+        $this->usersearch = optional_param('gpr_search', '', PARAM_NOTAGS);
+        $this->userid = optional_param('gpr_userid', -1, PARAM_INT);
     }
 
     /**

@@ -14,14 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Unit tests for the ordering question type class.
- *
- * @package   qtype_ordering
- * @copyright 2018 The Open University
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace qtype_ordering;
 
 use core_question_generator;
@@ -32,7 +24,7 @@ use qtype_ordering_question;
 use test_question_maker;
 use question_bank;
 use question_possible_response;
-
+use qformat_xml;
 use qformat_gift;
 use question_check_specified_fields_expectation;
 
@@ -52,11 +44,13 @@ require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
 /**
  * Unit tests for the ordering question type class.
  *
- * @copyright 20018 The Open University
+ * @package   qtype_ordering
+ * @copyright 2018 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers    \qtype_ordering
+ * @covers    \qtype_ordering_question
  */
-class questiontype_test extends \question_testcase {
+final class questiontype_test extends \question_testcase {
     /** @var qtype_ordering instance of the question type class to test. */
     protected $qtype;
 
@@ -256,7 +250,7 @@ class questiontype_test extends \question_testcase {
         // Import a question from XML.
         $xml = file_get_contents(__DIR__ . '/fixtures/testimport.moodle.xml');
         $xmldata = xmlize($xml);
-        $format = new \qformat_xml();
+        $format = new qformat_xml();
         $imported = $format->try_importing_using_qtypes(
             $xmldata['question'], null, null, 'ordering');
 
@@ -268,7 +262,7 @@ class questiontype_test extends \question_testcase {
         // Import a question from XML.
         $xml = file_get_contents(__DIR__ . '/fixtures/testimportempty.moodle.xml');
         $xmldata = xmlize($xml);
-        $format = new \qformat_xml();
+        $format = new qformat_xml();
         $imported = $format->try_importing_using_qtypes(
             $xmldata['question'], null, null, 'ordering');
 
@@ -282,7 +276,7 @@ class questiontype_test extends \question_testcase {
         // Import a question from XML.
         $xml = file_get_contents(__DIR__ . '/fixtures/testimportlong.moodle.xml');
         $xmldata = xmlize($xml);
-        $format = new \qformat_xml();
+        $format = new qformat_xml();
         $imported = $format->try_importing_using_qtypes(
             $xmldata['question'], null, null, 'ordering');
 
@@ -300,6 +294,9 @@ class questiontype_test extends \question_testcase {
 
         // Export it.
         $questiondata = question_bank::load_question_data($question->id);
+        // Force the question id to be 123, to ensure it comes through the export.
+        $questiondata->id = 123;
+        $questiondata->options->numberingstyle = null;
         // Add some feedback to ensure it comes through the export.
         foreach ($questiondata->options->answers as $answer) {
             $answer->feedback = $answer->answer . ' is correct.';
@@ -307,7 +304,7 @@ class questiontype_test extends \question_testcase {
             $answer->feedbackfiles = 0;
         }
 
-        $exporter = new \qformat_xml();
+        $exporter = new qformat_xml();
         $xml = $exporter->writequestion($questiondata);
 
         $expectedxml = file_get_contents(__DIR__ . '/fixtures/testexport.moodle.xml');
@@ -323,8 +320,7 @@ class questiontype_test extends \question_testcase {
         $lines = preg_split('/[\\n\\r]/', str_replace("\r\n", "\n", $gift));
         $imported = $format->readquestion($lines);
 
-        // TODO - MDL-XXXXX format_gift: Set ID & tags from comment for third parties.
-        // $this->assert(new question_check_specified_fields_expectation($this->expectedimportobj), $imported);
+        $this->assert(new question_check_specified_fields_expectation($this->expectedimportobj), $imported);
     }
 
     public function test_gift_export(): void {
@@ -336,13 +332,14 @@ class questiontype_test extends \question_testcase {
 
         // Export it.
         $questiondata = question_bank::load_question_data($question->id);
+        // Force the question id to be 123, to ensure it comes through the export.
+        $questiondata->id = 123;
 
         $exporter = new qformat_gift();
         $gift = $exporter->writequestion($questiondata);
 
         $expectedgift = file_get_contents(__DIR__ . '/fixtures/testexport.gift.txt');
 
-        // TODO - MDL-XXXXX format_gift: Set ID & tags from comment for third parties.
-        // $this->assertEquals($expectedgift, $gift);
+        $this->assertEquals($expectedgift, $gift);
     }
 }

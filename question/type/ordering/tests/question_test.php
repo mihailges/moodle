@@ -14,15 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
-/**
- * Unit tests for the ordering question definition class.
- *
- * @package    qtype_ordering
- * @copyright  2018 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace qtype_ordering;
 
 use test_question_maker;
@@ -41,11 +32,13 @@ require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
 /**
  * Unit tests for the ordering question definition class.
  *
+ * @package   qtype_ordering
  * @copyright 2018 The Open University
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @covers  \qtype_ordering_question
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @covers    \qtype_ordering
+ * @covers    \qtype_ordering_question
  */
-class question_test extends \advanced_testcase {
+final class question_test extends \advanced_testcase {
     /**
      * Array of draggable items in correct order.
      */
@@ -579,11 +572,12 @@ class question_test extends \advanced_testcase {
         /** @var qtype_ordering_question $question */
         $question = test_question_maker::make_question('ordering');
 
-        if ($question->layouttype === 0) {
-            $this->assertEquals('vertical', $question->get_ordering_layoutclass());
-        } else if ($question->layouttype === 1) {
-            $this->assertEquals('horizontal', $question->get_ordering_layoutclass());
-        }
+        $question->layouttype = 0;
+        $this->assertEquals('vertical', $question->get_ordering_layoutclass());
+
+        $question->layouttype = 1;
+        $this->assertEquals('horizontal', $question->get_ordering_layoutclass());
+
         // Confirm that if an invalid layouttype is set, an empty string is returned.
         $question->layouttype = 3;
         $error = $question->get_ordering_layoutclass();
@@ -814,8 +808,5 @@ class question_test extends \advanced_testcase {
         $this->assertEquals(true, $question->is_complete_response([]));
         $this->assertEquals(true, $question->is_gradable_response([]));
         $this->assertEquals('', $question->get_validation_error([]));
-
-        $this->expectException(\coding_exception::class);
-        qtype_ordering_question::get_types(['foo', 'bar', 'baz'], 'notexist');
     }
 }

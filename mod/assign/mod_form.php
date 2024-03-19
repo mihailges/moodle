@@ -268,7 +268,9 @@ class mod_assign_mod_form extends moodleform_mod {
                 $errors['gradingduedate'] = get_string('gradingdueduedatevalidation', 'assign');
             }
         }
-        if ($data['blindmarking'] && $data['attemptreopenmethod'] == ASSIGN_ATTEMPT_REOPEN_METHOD_UNTILPASS) {
+        $multipleattemptsallowed = $data['maxattempts'] > 1 || $data['maxattempts'] == ASSIGN_UNLIMITED_ATTEMPTS;
+        if ($data['blindmarking'] && $multipleattemptsallowed &&
+                $data['attemptreopenmethod'] == ASSIGN_ATTEMPT_REOPEN_METHOD_UNTILPASS) {
             $errors['attemptreopenmethod'] = get_string('reopenuntilpassincompatiblewithblindmarking', 'assign');
         }
 

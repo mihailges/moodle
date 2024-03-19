@@ -87,9 +87,9 @@ class assign_submission_status implements \renderable {
     /** @var string gradingcontrollerpreview */
     public $gradingcontrollerpreview = '';
     /** @var string attemptreopenmethod */
-    public $attemptreopenmethod = 'none';
+    public $attemptreopenmethod = ASSIGN_ATTEMPT_REOPEN_METHOD_UNTILPASS;
     /** @var int maxattempts */
-    public $maxattempts = -1;
+    public $maxattempts = 1;
     /** @var string gradingstatus */
     public $gradingstatus = '';
     /** @var bool preventsubmissionnotingroup */

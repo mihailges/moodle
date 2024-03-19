@@ -138,19 +138,18 @@ class mod_assign_mod_form extends moodleform_mod {
                               'assign');
         $mform->setType('requiresubmissionstatement', PARAM_BOOL);
 
-        $options = array(
-            ASSIGN_ATTEMPT_REOPEN_METHOD_NONE => get_string('attemptreopenmethod_none', 'mod_assign'),
-            ASSIGN_ATTEMPT_REOPEN_METHOD_MANUAL => get_string('attemptreopenmethod_manual', 'mod_assign'),
-            ASSIGN_ATTEMPT_REOPEN_METHOD_UNTILPASS => get_string('attemptreopenmethod_untilpass', 'mod_assign')
-        );
-        $mform->addElement('select', 'attemptreopenmethod', get_string('attemptreopenmethod', 'mod_assign'), $options);
-        $mform->addHelpButton('attemptreopenmethod', 'attemptreopenmethod', 'mod_assign');
-
-        $options = array(ASSIGN_UNLIMITED_ATTEMPTS => get_string('unlimitedattempts', 'mod_assign'));
+        $options = [ASSIGN_UNLIMITED_ATTEMPTS => get_string('unlimitedattempts', 'mod_assign')];
         $options += array_combine(range(1, 30), range(1, 30));
         $mform->addElement('select', 'maxattempts', get_string('maxattempts', 'mod_assign'), $options);
         $mform->addHelpButton('maxattempts', 'maxattempts', 'assign');
-        $mform->hideIf('maxattempts', 'attemptreopenmethod', 'eq', ASSIGN_ATTEMPT_REOPEN_METHOD_NONE);
+
+        $options = [
+            ASSIGN_ATTEMPT_REOPEN_METHOD_MANUAL => get_string('attemptreopenmethod_manual', 'mod_assign'),
+            ASSIGN_ATTEMPT_REOPEN_METHOD_UNTILPASS => get_string('attemptreopenmethod_untilpass', 'mod_assign')
+        ];
+        $mform->addElement('select', 'attemptreopenmethod', get_string('attemptreopenmethod', 'mod_assign'), $options);
+        $mform->addHelpButton('attemptreopenmethod', 'attemptreopenmethod', 'mod_assign');
+        $mform->hideIf('attemptreopenmethod', 'maxattempts', 'eq', 1);
 
         $mform->addElement('header', 'groupsubmissionsettings', get_string('groupsubmissionsettings', 'assign'));
 

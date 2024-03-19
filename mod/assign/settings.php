@@ -192,32 +192,23 @@ if ($ADMIN->fulltree) {
     $settings->add($setting);
 
     // Constants from "locallib.php".
-    $options = array(
-        'none' => get_string('attemptreopenmethod_none', 'mod_assign'),
-        'manual' => get_string('attemptreopenmethod_manual', 'mod_assign'),
-        'untilpass' => get_string('attemptreopenmethod_untilpass', 'mod_assign')
-    );
-    $name = new lang_string('attemptreopenmethod', 'mod_assign');
-    $description = new lang_string('attemptreopenmethod_help', 'mod_assign');
-    $setting = new admin_setting_configselect('assign/attemptreopenmethod',
-                                                    $name,
-                                                    $description,
-                                                    'none',
-                                                    $options);
+    $options = [-1 => get_string('unlimitedattempts', 'mod_assign')];
+    $options += array_combine(range(1, 30), range(1, 30));
+    $name = new lang_string('maxattempts', 'mod_assign');
+    $description = new lang_string('maxattempts_help', 'mod_assign');
+    $setting = new admin_setting_configselect('assign/maxattempts', $name, $description, 1, $options);
     $setting->set_advanced_flag_options(admin_setting_flag::ENABLED, false);
     $setting->set_locked_flag_options(admin_setting_flag::ENABLED, false);
     $settings->add($setting);
 
     // Constants from "locallib.php".
-    $options = array(-1 => get_string('unlimitedattempts', 'mod_assign'));
-    $options += array_combine(range(1, 30), range(1, 30));
-    $name = new lang_string('maxattempts', 'mod_assign');
-    $description = new lang_string('maxattempts_help', 'mod_assign');
-    $setting = new admin_setting_configselect('assign/maxattempts',
-                                                    $name,
-                                                    $description,
-                                                    -1,
-                                                    $options);
+    $options = [
+        'manual' => get_string('attemptreopenmethod_manual', 'mod_assign'),
+        'untilpass' => get_string('attemptreopenmethod_untilpass', 'mod_assign'),
+    ];
+    $name = new lang_string('attemptreopenmethod', 'mod_assign');
+    $description = new lang_string('attemptreopenmethod_help', 'mod_assign');
+    $setting = new admin_setting_configselect('assign/attemptreopenmethod', $name, $description, 'untilpass', $options);
     $setting->set_advanced_flag_options(admin_setting_flag::ENABLED, false);
     $setting->set_locked_flag_options(admin_setting_flag::ENABLED, false);
     $settings->add($setting);

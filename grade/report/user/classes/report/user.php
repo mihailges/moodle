@@ -665,6 +665,7 @@ class user extends grade_report {
                             $gradestatus = $OUTPUT->render_from_template('core_grades/status_icons', $context);
                         }
                     }
+                    $gradeitemmenu = $this->gtree->get_grade_action_menu($gradegrade);
 
                     $gradeitemdata['graderaw'] = null;
                     $gradeitemdata['gradehiddenbydate'] = false;
@@ -674,6 +675,7 @@ class user extends grade_report {
                     $gradeitemdata['gradedategraded'] = $gradegrade->get_dategraded();
                     $gradeitemdata['gradeislocked'] = $canviewall ? $gradegrade->is_locked() : null;
                     $gradeitemdata['gradeisoverridden'] = $canviewall ? $gradegrade->is_overridden() : null;
+
 
                     if ($gradegrade->grade_item->needsupdate) {
                         $data['grade']['class'] = $class.' gradingerror';
@@ -701,13 +703,13 @@ class user extends grade_report {
                         $gradeitemdata['gradehiddenbydate'] = true;
                     } else if ($gradegrade->is_hidden()) {
                         $data['grade']['class'] = $class.' dimmed_text';
-                        $data['grade']['content'] = '-';
+                        $data['grade']['content'] = '-' . $gradeitemmenu;
 
                         if ($this->canviewhidden) {
                             $gradeitemdata['graderaw'] = $gradeval;
                             $data['grade']['content'] = grade_format_gradevalue($gradeval,
                                 $gradegrade->grade_item,
-                                true) . $gradestatus;
+                                true) . $gradestatus . $gradeitemmenu;
                         }
                     } else {
                         $gradestatusclass = '';
@@ -733,8 +735,11 @@ class user extends grade_report {
                         }
 
                         $data['grade']['class'] = "{$class} {$gradestatusclass}";
-                        $data['grade']['content'] = $gradepassicon . grade_format_gradevalue($gradeval,
-                                $gradegrade->grade_item, true) . $gradestatus;
+                        $gradecontainer = html_writer::div($gradepassicon . grade_format_gradevalue($gradeval,
+                                $gradegrade->grade_item, true) . $gradestatus);
+                        $gradeitemmenucontainer = html_writer::div($gradeitemmenu);
+
+                        $data['grade']['content'] = html_writer::div($gradecontainer . $gradeitemmenucontainer, 'd-flex');
                         $gradeitemdata['graderaw'] = $gradeval;
                     }
                     $data['grade']['headers'] = "$headercat $headerrow grade$userid";

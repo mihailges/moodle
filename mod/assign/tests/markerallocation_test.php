@@ -64,8 +64,8 @@ class markerallocation_test extends \advanced_testcase {
             'requireallteammemberssubmit'       => 0,
             'teamsubmissiongroupingid'          => 0,
             'blindmarking'                      => 0,
-            'attemptreopenmethod'               => 'none',
-            'maxattempts'                       => -1,
+            'attemptreopenmethod'               => 'untilpass',
+            'maxattempts'                       => 1,
             'markingworkflow'                   => 1,
             'markingallocation'                 => 1,
         );

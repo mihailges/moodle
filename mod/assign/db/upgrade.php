@@ -63,5 +63,46 @@ function xmldb_assign_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2023103000, 'assign');
     }
 
+    if ($oldversion < 2023103001) {
+        // The 'Never' ('none') option for the additional attempts (attemptreopenmethod) setting is no longer supported
+        // and needs to be updated in all relevant instances.
+
+        // The default value for the 'attemptreopenmethod' field in the 'assign' database table is currently set to 'none',
+        // This needs to be updated to 'untilpass' to ensure the system functions correctly. Additionally, the default
+        // value for the 'maxattempts' field needs to be changed to '1' to prevent multiple attempts and maintain the
+        // original behavior.
+        $table = new xmldb_table('assign');
+        $attemptreopenmethodfield = new xmldb_field('attemptreopenmethod', XMLDB_TYPE_CHAR, '10', null, XMLDB_NOTNULL,
+            null, 'untilpass');
+        $maxattemptsfield = new xmldb_field('maxattempts', XMLDB_TYPE_INTEGER, '6', null, XMLDB_NOTNULL,
+            null, '1');
+        $dbman->change_field_default($table, $attemptreopenmethodfield);
+        $dbman->change_field_default($table, $maxattemptsfield);
+
+        // If the current value for the 'attemptreopenmethod' global configuration in the assignment is set to 'none'.
+        if (get_config('assign', 'attemptreopenmethod') == 'none') {
+            // Reset the value to 'untilpass'.
+            set_config('attemptreopenmethod', 'untilpass', 'assign');
+            // Also, setting the value for the 'maxattempts' global config in the assignment to '1' ensures that the
+            // original behaviour is preserved by disallowing any additional attempts by default.
+            set_config('maxattempts', 1, 'assign');
+        }
+
+        // Update all the current assignment instances that have their 'attemptreopenmethod' set to 'none'.
+        $assignments = $DB->get_recordset_sql("SELECT * FROM {assign} WHERE attemptreopenmethod = :attemptreopenmethod",
+            ['attemptreopenmethod' => 'none']);
+
+        foreach ($assignments as $assignment) {
+            $assignment->attemptreopenmethod = 'untilpass';
+            // By setting 'maxattempts' to 1, any additional attempts are disallowed, preserving the original behavior.
+            $assignment->maxattempts = 1;
+            $DB->update_record('assign', $assignment);
+        }
+        $assignments->close();
+
+        // Assign savepoint reached.
+        upgrade_mod_savepoint(true, 2023103001, 'assign');
+    }
+
     return true;
 }

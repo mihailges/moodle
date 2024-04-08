@@ -563,7 +563,9 @@ class qtype_ordering extends question_type {
         $output .= "    <shownumcorrect>$shownumcorrect</shownumcorrect>\n";
 
         foreach ($question->options->answers as $answer) {
-            $output .= '    <answer fraction="'.$answer->fraction.'" '.$format->format($answer->answerformat).">\n";
+            // Ensure the output of the fraction is consistent on different db engines.
+            $fraction = number_format($answer->fraction, 7);
+            $output .= '    <answer fraction="' . $fraction . '" '.$format->format($answer->answerformat).">\n";
             $output .= $format->writetext($answer->answer, 3);
             if (trim($answer->feedback)) { // Usually there is no feedback.
                 $output .= '      <feedback '.$format->format($answer->feedbackformat).">\n";

@@ -42,7 +42,7 @@ class mod_assign_mod_form extends moodleform_mod {
      * @return void
      */
     public function definition() {
-        global $CFG, $COURSE, $DB, $PAGE;
+        global $CFG, $COURSE, $DB, $OUTPUT;
         $mform = $this->_form;
 
         $mform->addElement('header', 'general', get_string('general', 'form'));
@@ -138,19 +138,26 @@ class mod_assign_mod_form extends moodleform_mod {
                               'assign');
         $mform->setType('requiresubmissionstatement', PARAM_BOOL);
 
-        $options = array(
-            ASSIGN_ATTEMPT_REOPEN_METHOD_NONE => get_string('attemptreopenmethod_none', 'mod_assign'),
-            ASSIGN_ATTEMPT_REOPEN_METHOD_MANUAL => get_string('attemptreopenmethod_manual', 'mod_assign'),
-            ASSIGN_ATTEMPT_REOPEN_METHOD_UNTILPASS => get_string('attemptreopenmethod_untilpass', 'mod_assign')
-        );
-        $mform->addElement('select', 'attemptreopenmethod', get_string('attemptreopenmethod', 'mod_assign'), $options);
-        $mform->addHelpButton('attemptreopenmethod', 'attemptreopenmethod', 'mod_assign');
-
-        $options = array(ASSIGN_UNLIMITED_ATTEMPTS => get_string('unlimitedattempts', 'mod_assign'));
+        $options = [ASSIGN_UNLIMITED_ATTEMPTS => get_string('unlimitedattempts', 'mod_assign')];
         $options += array_combine(range(1, 30), range(1, 30));
         $mform->addElement('select', 'maxattempts', get_string('maxattempts', 'mod_assign'), $options);
         $mform->addHelpButton('maxattempts', 'maxattempts', 'assign');
-        $mform->hideIf('maxattempts', 'attemptreopenmethod', 'eq', ASSIGN_ATTEMPT_REOPEN_METHOD_NONE);
+
+        $choice = new core\output\choicelist();
+
+        $choice->add_option(
+            value: ASSIGN_ATTEMPT_REOPEN_METHOD_MANUAL,
+            name: get_string('attemptreopenmethod_manual', 'mod_assign'),
+            definition: ['description' => get_string('attemptreopenmethod_manual_help', 'mod_assign')]
+        );
+        $choice->add_option(
+            value: ASSIGN_ATTEMPT_REOPEN_METHOD_UNTILPASS,
+            name: get_string('attemptreopenmethod_untilpass', 'mod_assign'),
+            definition: ['description' => get_string('attemptreopenmethod_untilpass_help', 'mod_assign')]
+        );
+
+        $mform->addElement('choicedropdown', 'attemptreopenmethod', get_string('attemptreopenmethod', 'mod_assign'), $choice);
+        $mform->hideIf('attemptreopenmethod', 'maxattempts', 'eq', 1);
 
         $mform->addElement('header', 'groupsubmissionsettings', get_string('groupsubmissionsettings', 'assign'));
 
@@ -269,7 +276,9 @@ class mod_assign_mod_form extends moodleform_mod {
                 $errors['gradingduedate'] = get_string('gradingdueduedatevalidation', 'assign');
             }
         }
-        if ($data['blindmarking'] && $data['attemptreopenmethod'] == ASSIGN_ATTEMPT_REOPEN_METHOD_UNTILPASS) {
+        $multipleattemptsallowed = $data['maxattempts'] > 1 || $data['maxattempts'] == ASSIGN_UNLIMITED_ATTEMPTS;
+        if ($data['blindmarking'] && $multipleattemptsallowed &&
+                $data['attemptreopenmethod'] == ASSIGN_ATTEMPT_REOPEN_METHOD_UNTILPASS) {
             $errors['attemptreopenmethod'] = get_string('reopenuntilpassincompatiblewithblindmarking', 'assign');
         }
 

@@ -62,21 +62,30 @@ class MoodleQuickForm_choicedropdown extends HTML_QuickForm_select implements te
     protected string $dropdownwidth = status::WIDTH['small'];
 
     /**
+     * @var string|null CSS classes for customizing the dropdown button.
+     */
+    protected ?string $buttonclasses;
+
+    /**
      * Constructor.
      *
      * @param string $elementname Select name attribute
      * @param mixed $elementlabel Label(s) for the select
      * @param choicelist $options Data to be used to populate options
      * @param mixed $attributes Either a typical HTML attribute string or an associative array
+     * @param string|null $buttonclasses CSS classes for customizing the dropdown button. If none are specified,
+     *                                   a default styling will be applied.
      */
     public function __construct(
         $elementname = null,
         $elementlabel = null,
         choicelist $options = null,
-        $attributes = null
+        $attributes = null,
+        ?string $buttonclasses = null
     ) {
         parent::__construct($elementname, $elementlabel, $options, $attributes);
         $this->_type = 'choicedropdown';
+        $this->buttonclasses = $buttonclasses;
     }
 
     /**
@@ -205,6 +214,7 @@ class MoodleQuickForm_choicedropdown extends HTML_QuickForm_select implements te
         $context['dropdown'] = $dialog->export_for_template($output);
         $context['select'] = $this->choice->export_for_template($output);
         $context['nameraw'] = $this->getName();
+        $context['buttonclasses'] = $this->buttonclasses;
         return $context;
     }
 }

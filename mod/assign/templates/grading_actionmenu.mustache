@@ -31,8 +31,24 @@
     }
 
 }}
-<div class="container-fluid tertiary-navigation">
+<div class="container-fluid tertiary-navigation full-width-bottom-border">
     <div class="row">
+        <div class="navitem">
+            <h2>{{#str}}gradeitem:submissions, mod_assign{{/str}}</h2>
+        </div>
+        <div class="navitem-divider d-none d-sm-flex"></div>
+        {{#groupselector}}
+            <div class="navitem">
+                {{{.}}}
+            </div>
+            <div class="navitem-divider d-none d-sm-flex"></div>
+        {{/groupselector}}
+        {{#pagereset}}
+            <div class="navitem align-self-center">
+                <a href="{{{.}}}" class="btn btn-link">{{#str}}clearall, core{{/str}}</a>
+            </div>
+            <div class="navitem-divider"></div>
+        {{/pagereset}}
         {{#downloadall}}
         <div class="navitem ml-sm-auto">
             <a class="btn btn-secondary" href="{{downloadall}}">{{#str}}downloadall, mod_assign{{/str}}</a>

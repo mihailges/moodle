@@ -24,6 +24,7 @@
 
 namespace mod_assign\output;
 
+use assign;
 use templatable;
 use renderable;
 use moodle_url;
@@ -38,25 +39,34 @@ use moodle_url;
 class grading_actionmenu implements templatable, renderable {
 
     /** @var int Course module ID. */
-    protected $cmid;
+    protected int $cmid;
     /** @var bool If any submission plugins are enabled. */
-    protected $submissionpluginenabled;
+    protected bool $submissionpluginenabled;
     /** @var int The number of submissions made. */
-    protected $submissioncount;
-
+    protected int $submissioncount;
+    /** @var assign The assign instance. */
+    protected assign $assign;
 
     /**
      * Constructor for this object.
      *
      * @param int $cmid Course module ID.
-     * @param bool $submissionpluginenabled If any submission plugins are enabled.
-     * @param int $submissioncount The number of submissions made.
+     * @param null|bool $submissionpluginenabled This parameter has been deprecated since 4.5 and should not be used anymore.
+     * @param null|int $submissioncount This parameter has been deprecated since 4.5 and should not be used anymore.
+     * @param assign|null $assign The assign instance. If not provided, it will be loaded based on the cmid.
      */
-    public function __construct(int $cmid, bool $submissionpluginenabled = false, int $submissioncount = 0) {
+    public function __construct(
+        int $cmid,
+        ?bool $submissionpluginenabled = null,
+        ?int $submissioncount = null,
+        assign $assign = null
+    ) {
         $this->cmid = $cmid;
-        $this->submissionpluginenabled = $submissionpluginenabled;
-        $this->submissioncount = $submissioncount;
-
+        if (!$assign) {
+            $context = \context_module::instance($cmid);
+            $assign = new assign($context, null, null);
+        }
+        $this->assign = $assign;
     }
 
     /**
@@ -70,12 +80,6 @@ class grading_actionmenu implements templatable, renderable {
 
         $course = $PAGE->course;
         $data = [];
-
-        if ($this->submissionpluginenabled && $this->submissioncount) {
-            $data['downloadall'] = (
-                new moodle_url('/mod/assign/view.php', ['id' => $this->cmid, 'action' => 'downloadall'])
-            )->out(false);
-        }
 
         if ($course->groupmode) {
             $actionbarrenderer = $PAGE->get_renderer('core_course', 'actionbar');
@@ -91,6 +95,71 @@ class grading_actionmenu implements templatable, renderable {
             $data['pagereset'] = $reset->out(false);
         }
 
+        $actions = $this->get_actions();
+        if ($actions) {
+            $menu = new \action_menu();
+            $menu->set_menu_trigger(get_string('actions'), 'btn btn-outline-primary');
+            foreach ($actions as $groupkey => $actiongroup) {
+                foreach ($actiongroup as $label => $url) {
+                    $menu->add(new \action_menu_link_secondary(new \moodle_url($url), null, $label));
+                }
+                if ($groupkey !== array_key_last($actions)) {
+                    $divider = new \action_menu_filler();
+                    $divider->primary = false;
+                    $menu->add($divider);
+                }
+            }
+
+            $renderer = $PAGE->get_renderer('core');
+            $data['actions'] = $renderer->render($menu);
+        }
+
         return $data;
+    }
+
+    /**
+     * Get the actions for the grading action menu.
+     *
+     * @return array A 2D array of actions grouped by a key in the form of key => label => URL.
+     */
+    private function get_actions() {
+        $actions = [];
+        if (
+            has_capability('gradereport/grader:view', $this->assign->get_course_context())
+            && has_capability('moodle/grade:viewall', $this->assign->get_course_context())
+        ) {
+            $url = new moodle_url('/grade/report/grader/index.php', ['id' => $this->assign->get_course()->id]);
+            $actions['gradebook'][get_string('viewgradebook', 'assign')] = $url->out(false);
+        }
+        if ($this->assign->is_blind_marking() && has_capability('mod/assign:revealidentities', $this->assign->get_context())) {
+            $url = new moodle_url('/mod/assign/view.php', [
+                'id' => $this->assign->get_course_module()->id,
+                'action' => 'revealidentities',
+            ]);
+            $actions['blindmarking'][get_string('revealidentities', 'assign')] = $url->out(false);
+        }
+        foreach ($this->assign->get_feedback_plugins() as $plugin) {
+            if ($plugin->is_enabled() && $plugin->is_visible()) {
+                foreach ($plugin->get_grading_actions() as $action => $description) {
+                    $url = new moodle_url('/mod/assign/view.php', [
+                        'id' => $this->assign->get_course_module()->id,
+                        'plugin' => $plugin->get_type(),
+                        'pluginsubtype' => 'assignfeedback',
+                        'action' => 'viewpluginpage',
+                        'pluginaction' => $action,
+                    ]);
+                    $actions['assignfeedback_' . $plugin->get_type()][$description] = $url->out(false);
+                }
+            }
+        }
+        if ($this->assign->is_any_submission_plugin_enabled() && $this->assign->count_submissions()) {
+            $url = new moodle_url('/mod/assign/view.php', [
+                    'id' => $this->assign->get_course_module()->id,
+                    'action' => 'downloadall']
+            );
+            $actions['downloadall'][get_string('downloadall', 'mod_assign')] = $url->out(false);
+        }
+
+        return $actions;
     }
 }

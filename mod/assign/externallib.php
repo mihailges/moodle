@@ -31,6 +31,7 @@ use core_external\external_single_structure;
 use core_external\external_value;
 use core_external\external_warnings;
 use core_external\util as external_util;
+use core_user\fields;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -2702,18 +2703,61 @@ class mod_assign_external extends \mod_assign\external\external_api {
 
         $result = array();
         $index = 0;
+        $identityfields = fields::for_identity($context, false)->with_userpic();
+        $identityfields = $identityfields->get_required_fields();
         foreach ($participants as $record) {
             // Preserve the fullname set by the assignment.
             $fullname = $record->fullname;
-            $searchable = $fullname;
             $match = false;
             if (empty($filter)) {
                 $match = true;
             } else {
                 $filter = core_text::strtolower($filter);
+
+                // Search by email.
+                $searchable = $fullname;
                 $value = core_text::strtolower($searchable);
                 if (is_string($value) && (core_text::strpos($value, $filter) !== false)) {
                     $match = true;
+                }
+
+                // Search by email.
+                if (!$match) {
+                    $searchable = $record->email;
+                    $value = core_text::strtolower($searchable);
+                    if (is_string($value) && (core_text::strpos($value, $filter) !== false) &&
+                        $record->maildisplay != core_user::MAILDISPLAY_HIDE) {
+                        $match = true;
+                    }
+                }
+
+                // Search by idnumber.
+                if (!$match) {
+                    $searchable = $record->idnumber;
+                    $value = core_text::strtolower($searchable);
+                    if (is_string($value) && (core_text::strpos($value, $filter) !== false)) {
+                        $match = true;
+                    }
+                }
+
+                if (!$match) {
+                    // Search all user identify fields.
+                    $extrasearchfields = fields::get_identity_fields(null, false);
+                    foreach ($extrasearchfields as $extrasearchfield) {
+                        if (!$match) {
+                            if (in_array($extrasearchfield, ['email', 'idnumber', 'country'])) {
+                                // Already covered above.
+                                continue;
+                            }
+                            $searchable = $record->$extrasearchfield;
+                            $value = core_text::strtolower($searchable);
+
+                            if (is_string($value) && (core_text::strpos($value, $filter) !== false) &&
+                                in_array($extrasearchfield, $identityfields)) {
+                                $match = true;
+                            }
+                        }
+                    }
                 }
             }
             if ($match) {

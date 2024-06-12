@@ -53,6 +53,11 @@ class user_selector implements renderable, templatable {
     protected moodle_url $resetlink;
 
     /**
+     * @var int $instanceid Module instance id.
+     */
+    protected ?int $instanceid = null;
+
+    /**
      * @var stdClass The course object.
      */
     protected $course;
@@ -62,15 +67,23 @@ class user_selector implements renderable, templatable {
      *
      * @param stdClass $course The course object.
      */
-    public function __construct(stdClass $course, moodle_url $resetlink = null, ?int $userid = null, ?int $groupid = null, $usersearch = '') {
+    public function __construct(
+        stdClass $course,
+        moodle_url $resetlink = null,
+        ?int $userid = null,
+        ?int $groupid = null,
+        $usersearch = '',
+        ?int $instanceid = null
+    ) {
         $this->course = $course;
         $this->userid = $userid;
         $this->usersearch = $usersearch;
+        $this->instanceid = $instanceid;
 
         $this->groupid = $groupid;
         $this->resetlink  = $resetlink;
 
-            if ($this->userid !== 0) {
+        if (isset($this->userid) && $this->userid) {
             $user = \core_user::get_user($this->userid);
             $this->usersearch = fullname($user);
         }
@@ -88,7 +101,7 @@ class user_selector implements renderable, templatable {
         $searchinput = $OUTPUT->render_from_template('core_user/comboboxsearch/user_selector', [
             'currentvalue' => $this->usersearch,
             'courseid' => $this->course->id,
-            'instance' => rand(),
+            'instance' => $this->instanceid ?? rand(),
             'resetlink' => $this->resetlink->out(false),
             'group' => $this->groupid ?? 0,
             'name' => 'usersearch',

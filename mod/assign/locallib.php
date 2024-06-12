@@ -100,6 +100,7 @@ require_once($CFG->dirroot . '/mod/assign/renderable.php');
 require_once($CFG->dirroot . '/mod/assign/gradingtable.php');
 require_once($CFG->libdir . '/portfolio/caller.php');
 
+use core_user\fields;
 use mod_assign\event\submission_removed;
 use mod_assign\event\submission_status_updated;
 use \mod_assign\output\grading_app;
@@ -207,6 +208,15 @@ class assign {
     /** @var float grade value. */
     public $grade;
 
+    /** @var string $usersearch The content that the current user is looking for. */
+    protected string $usersearch = '';
+
+    /** @var int $userid The ID of the user that the current user is looking for. */
+    protected ?int $userid = null;
+
+    /** @var int $groupid The ID of the current group. */
+    protected ?int $groupid = null;
+
     /**
      * Constructor for the base assign class.
      *
@@ -236,6 +246,15 @@ class assign {
 
         // Extra entropy is required for uniqid() to work on cygwin.
         $this->useridlistid = clean_param(uniqid('', true), PARAM_ALPHANUM);
+
+        $this->userid = optional_param('userid', null, PARAM_INT);
+        $this->usersearch = optional_param('search', '', PARAM_NOTAGS);
+        $this->groupid = optional_param('groupid', null, PARAM_INT);
+
+        if (isset($this->userid)) {
+            $user = \core_user::get_user($this->userid);
+            $this->usersearch = fullname($user);
+        }
     }
 
     /**
@@ -2317,6 +2336,23 @@ class assign {
 
                 $additionalfilters .= ' AND uf.allocatedmarker = :markerid';
                 $params['markerid'] = $USER->id;
+            }
+
+            // When a user wants to view a particular user rather than a set of users.
+            // By omission when selecting one user, also allow passing the search value around.
+            if (isset($this->userid)) {
+                $additionalfilters .= " AND u.id = :uid";
+                $params['uid'] = $this->userid;
+            }
+
+            // A user wants to return a subset of learners that match their search criteria.
+            if ($this->usersearch !== '' && !isset($this->userid)) {
+                [
+                    'where' => $keywordswhere,
+                    'params' => $keywordsparams,
+                ] = \core_user::get_users_search_sql($this->usersearch, $this->context);
+                $additionalfilters .= " AND $keywordswhere";
+                $params = array_merge($params, $keywordsparams);
             }
 
             $sql = "SELECT $fields
@@ -4568,6 +4604,8 @@ class assign {
         $actionformtext = $this->get_renderer()->render($buttons);
         $currenturl = new moodle_url('/mod/assign/view.php', ['id' => $this->get_course_module()->id, 'action' => 'grading']);
         $PAGE->activityheader->set_attrs(['hidecompletion' => true]);
+
+        $PAGE->requires->js_call_amd('mod_assign/user', 'init', [$currenturl->out(false)]);
 
         // Conditionally add the group JS if we have groups enabled.
         if ($this->get_course()->groupmode) {

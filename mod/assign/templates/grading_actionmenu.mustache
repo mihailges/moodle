@@ -39,6 +39,12 @@
             <h2>{{#str}}gradeitem:submissions, mod_assign{{/str}}</h2>
         </div>
         <div class="navitem-divider d-none d-sm-flex"></div>
+        {{#userselector}}
+            <div class="navitem">
+                {{{.}}}
+            </div>
+            <div class="navitem-divider d-none d-sm-flex"></div>
+        {{/userselector}}
         {{#groupselector}}
             <div class="navitem">
                 {{{.}}}

@@ -42,39 +42,24 @@ class gradereport_singleview_renderer extends plugin_renderer_base {
      * @param object $course The course object.
      * @param int|null $userid The user ID.
      * @param int|null $groupid The group ID.
+     * @param string $usersearch Search string.
      * @return string The raw HTML to render.
      */
-    public function users_selector(object $course, ?int $userid = null, ?int $groupid = null): string {
+    public function users_selector(object $course, ?int $userid = null, ?int $groupid = null, string $usersearch = ''): string {
+        $userid = optional_param('userid', 0, PARAM_INT);
+        $actionbarrenderer = $this->page->get_renderer('core_course', 'actionbar');
         $resetlink = new moodle_url('/grade/report/singleview/index.php', ['id' => $course->id, 'group' => $groupid ?? 0]);
-        $submitteduserid = optional_param('userid', '', PARAM_INT);
 
+        // Why we need this?
+        $submitteduserid = optional_param('userid', '', PARAM_INT);
         if ($submitteduserid) {
             $user = core_user::get_user($submitteduserid);
-            $currentvalue = fullname($user);
+            $usersearch = fullname($user);
         } else {
-            $currentvalue = '';
+            $usersearch = '';
         }
 
-        $data = [
-            'currentvalue' => $currentvalue,
-            'courseid' => $course->id,
-            'instance' => rand(),
-            'group' => $groupid ?? 0,
-            'resetlink' => $resetlink->out(false),
-            'name' => 'userid',
-            'value' => $submitteduserid ?? '',
-        ];
-        $dropdown = new comboboxsearch(
-            true,
-            $this->render_from_template('core_user/comboboxsearch/user_selector', $data),
-            null,
-            'user-search d-flex',
-            null,
-            'usersearchdropdown overflow-auto',
-            null,
-            false,
-        );
-        return $this->render_from_template($dropdown->get_template(), $dropdown->export_for_template($this));
+        return $actionbarrenderer->render(new \core_course\output\actionbar\user_selector($course, $resetlink, $userid, $groupid, $usersearch));
     }
 
     /**

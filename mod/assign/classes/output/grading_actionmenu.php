@@ -39,34 +39,15 @@ use moodle_url;
  */
 class grading_actionmenu implements templatable, renderable {
 
-    /** @var int Course module ID. */
-    protected int $cmid;
-    /** @var bool If any submission plugins are enabled. */
-    protected bool $submissionpluginenabled;
-    /** @var int The number of submissions made. */
-    protected int $submissioncount;
     /** @var assign The assign instance. */
     protected assign $assign;
 
     /**
      * Constructor for this object.
      *
-     * @param int $cmid Course module ID.
-     * @param null|bool $submissionpluginenabled This parameter has been deprecated since 4.5 and should not be used anymore.
-     * @param null|int $submissioncount This parameter has been deprecated since 4.5 and should not be used anymore.
-     * @param assign|null $assign The assign instance. If not provided, it will be loaded based on the cmid.
+     * @param assign $assign The assign instance.
      */
-    public function __construct(
-        int $cmid,
-        ?bool $submissionpluginenabled = null,
-        ?int $submissioncount = null,
-        assign $assign = null
-    ) {
-        $this->cmid = $cmid;
-        if (!$assign) {
-            $context = context_module::instance($cmid);
-            $assign = new assign($context, null, null);
-        }
+    public function __construct(assign $assign) {
         $this->assign = $assign;
     }
 
@@ -88,7 +69,10 @@ class grading_actionmenu implements templatable, renderable {
         // string with the full name of the selected user.
         $usersearch = $userid ? fullname(\core_user::get_user($userid)) : optional_param('search', '', PARAM_NOTAGS);
 
-        $resetlink = new moodle_url('/mod/assign/view.php', ['id' => $this->cmid, 'action' => 'grading']);
+        $resetlink = new moodle_url('/mod/assign/view.php', [
+            'id' => $this->assign->get_course_module()->id,
+            'action' => 'grading',
+        ]);
         $groupid = groups_get_course_group($course, true);
         $userselector = new \core_course\output\actionbar\user_selector(
             course: $course,
@@ -106,7 +90,7 @@ class grading_actionmenu implements templatable, renderable {
 
         if (groups_get_course_group($course)) {
             $reset = new moodle_url('/mod/assign/view.php', [
-                'id' => $this->cmid,
+                'id' => $this->assign->get_course_module()->id,
                 'action' => 'grading',
                 'group' => 0,
             ]);

@@ -4533,7 +4533,7 @@ class assign {
         $gradingoptionsdata->workflowfilter = $workflowfilter;
         $gradingoptionsform->set_data($gradingoptionsdata);
 
-        $buttons = new \mod_assign\output\grading_actionmenu(cmid: $this->get_course_module()->id, assign: $this);
+        $buttons = new \mod_assign\output\grading_actionmenu($this);
         $actionformtext = $this->get_renderer()->render($buttons);
         $currenturl = new moodle_url('/mod/assign/view.php', ['id' => $this->get_course_module()->id, 'action' => 'grading']);
         $PAGE->activityheader->set_attrs(['hidecompletion' => true]);

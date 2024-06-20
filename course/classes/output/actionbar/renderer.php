@@ -28,7 +28,7 @@ class renderer extends \plugin_renderer_base {
     /**
      * Renders the user selector trigger element in the action bar.
      *
-     * @param user_selector $userselector The group selector object.
+     * @param user_selector $userselector The user selector object.
      * @return string The HTML output.
      */
     public function render_user_selector(user_selector $userselector) {

@@ -18,10 +18,7 @@ namespace core_course\output\actionbar;
 
 use core\output\comboboxsearch;
 use moodle_url;
-use renderable;
-use renderer_base;
 use stdClass;
-use templatable;
 
 /**
  * Renderable class for the user selector element in the action bar.
@@ -30,105 +27,56 @@ use templatable;
  * @copyright  2024 Ilya Tregubov <ilyatregubov@proton.me>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class user_selector implements renderable, templatable {
-
-    /**
-     * @var string $usersearch The content that the current user is looking for.
-     */
-    protected string $usersearch = '';
-
-    /**
-     * @var int $userid The ID of the user that the current user is looking for.
-     */
-    protected ?int $userid = null;
-
-    /**
-     * @var int $groupid Currently selected group.
-     */
-    protected ?int $groupid = null;
-
-    /**
-     * @var moodle_url $resetlink Reset search URL.
-     */
-    protected moodle_url $resetlink;
-
-    /**
-     * @var int $instanceid Module instance id.
-     */
-    protected ?int $instanceid = null;
-
-    /**
-     * @var stdClass The course object.
-     */
-    protected $course;
+class user_selector extends comboboxsearch {
 
     /**
      * The class constructor.
      *
      * @param stdClass $course The course object.
+     * @param moodle_url $resetlink The reset link.
+     * @param int|null $userid The user ID.
+     * @param int|null $groupid The group ID.
+     * @param string $usersearch The user search query.
+     * @param int|null $instanceid The instance ID.
      */
-    public function __construct(
-        stdClass $course,
-        moodle_url $resetlink = null,
-        ?int $userid = null,
-        ?int $groupid = null,
-        $usersearch = '',
-        ?int $instanceid = null
-    ) {
-        $this->course = $course;
-        $this->userid = $userid;
-        $this->usersearch = $usersearch;
-        $this->instanceid = $instanceid;
-
-        $this->groupid = $groupid;
-        $this->resetlink  = $resetlink;
-
-        if (isset($this->userid) && $this->userid) {
-            $user = \core_user::get_user($this->userid);
-            $this->usersearch = fullname($user);
-        }
+    public function __construct(stdClass $course, moodle_url $resetlink, ?int $userid = null, ?int $groupid = null,
+            string $usersearch = '', ?int $instanceid = null) {
+        $userselectorontent = $this->user_selector_output($course, $resetlink, $userid, $groupid, $usersearch, $instanceid);
+        parent::__construct(true, $userselectorontent, null, 'user-search d-flex',
+            null, 'usersearchdropdown overflow-auto', null, false);
     }
 
     /**
-     * Export the data for the mustache template.
+     * Method that generates the output for the user selector.
      *
-     * @param renderer_base $output The renderer that will be used to render the output.
-     * @return array
+     * @param stdClass $course The course object.
+     * @param moodle_url $resetlink The reset link.
+     * @param int|null $userid The user ID.
+     * @param int|null $groupid The group ID.
+     * @param string|null $usersearch The user search query.
+     * @param int|null $instanceid The instance ID.
+     * @return string The output.
      */
-    public function export_for_template(renderer_base $output) {
+    private function user_selector_output(stdClass $course, moodle_url $resetlink = null, ?int $userid = null,
+            ?int $groupid = null, $usersearch = '', ?int $instanceid = null): string {
         global $OUTPUT;
+        // If the user ID is set, it indicates that a user has been selected. In this case, override the user search
+        // string with the full name of the selected user.
+        if ($userid) {
+            $usersearch = fullname(\core_user::get_user($userid));
+        }
 
-        $searchinput = $OUTPUT->render_from_template('core_user/comboboxsearch/user_selector', [
-            'currentvalue' => $this->usersearch,
-            'courseid' => $this->course->id,
-            'instance' => $this->instanceid ?? rand(),
-            'resetlink' => $this->resetlink->out(false),
-            'group' => $this->groupid ?? 0,
+        return $OUTPUT->render_from_template('core_user/comboboxsearch/user_selector', [
+            'currentvalue' => $usersearch,
+            'courseid' => $course->id,
+            'instance' => $instanceid ?? rand(),
+            'resetlink' => $resetlink->out(false),
+            'group' => $groupid ?? 0,
             'name' => 'usersearch',
             'value' => json_encode([
-                'userid' => $this->userid,
-                'search' => $this->usersearch,
+                'userid' => $userid,
+                'search' => $usersearch,
             ]),
         ]);
-        $searchdropdown = new comboboxsearch(
-            true,
-            $searchinput,
-            null,
-            'user-search d-flex',
-            null,
-            'usersearchdropdown overflow-auto',
-            null,
-            false,
-        );
-        return $searchdropdown->export_for_template($output);
-    }
-
-    /**
-     * Returns the template for the group selector.
-     *
-     * @return string
-     */
-    public function get_template(): string {
-        return 'core/comboboxsearch';
     }
 }

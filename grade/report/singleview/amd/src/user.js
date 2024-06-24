@@ -28,6 +28,7 @@ export default class User extends UserSearch {
 
     /**
      * Construct the class.
+     *
      * @param {string} baseUrl The base URL for the page.
      */
     constructor(baseUrl) {
@@ -70,9 +71,7 @@ export default class User extends UserSearch {
      */
     selectOneLink(userID) {
         const url = new URL(this.baseUrl);
-        url.searchParams.set('id', this.courseID);
         url.searchParams.set('searchvalue', this.getSearchTerm());
-        url.searchParams.set('item', 'user');
         url.searchParams.set('userid', userID);
         return url.toString();
     }

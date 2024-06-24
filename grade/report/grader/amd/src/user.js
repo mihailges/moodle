@@ -62,7 +62,6 @@ export default class User extends UserSearch {
      */
     selectAllResultsLink() {
         const url = new URL(this.baseUrl);
-        url.searchParams.set('id', this.courseID);
         url.searchParams.set('gpr_search', this.getSearchTerm());
         return url.toString();
     }
@@ -75,7 +74,6 @@ export default class User extends UserSearch {
      */
     selectOneLink(userID) {
         const url = new URL(this.baseUrl);
-        url.searchParams.set('id', this.courseID);
         url.searchParams.set('gpr_search', this.getSearchTerm());
         url.searchParams.set('gpr_userid', userID);
         return url.toString();

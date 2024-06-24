@@ -42,24 +42,20 @@ class gradereport_singleview_renderer extends plugin_renderer_base {
      * @param object $course The course object.
      * @param int|null $userid The user ID.
      * @param int|null $groupid The group ID.
-     * @param string $usersearch Search string.
      * @return string The raw HTML to render.
      */
-    public function users_selector(object $course, ?int $userid = null, ?int $groupid = null, string $usersearch = ''): string {
-        $userid = optional_param('userid', 0, PARAM_INT);
+    public function users_selector(object $course, ?int $userid = null, ?int $groupid = null): string {
         $actionbarrenderer = $this->page->get_renderer('core_course', 'actionbar');
         $resetlink = new moodle_url('/grade/report/singleview/index.php', ['id' => $course->id, 'group' => $groupid ?? 0]);
+        $usersearch = '';
 
-        // Why we need this?
-        $submitteduserid = optional_param('userid', '', PARAM_INT);
-        if ($submitteduserid) {
-            $user = core_user::get_user($submitteduserid);
+        if ($userid) {
+            $user = core_user::get_user($userid);
             $usersearch = fullname($user);
-        } else {
-            $usersearch = '';
         }
 
-        return $actionbarrenderer->render(new \core_course\output\actionbar\user_selector($course, $resetlink, $userid, $groupid, $usersearch));
+        return $actionbarrenderer->render(new \core_course\output\actionbar\user_selector($course, $resetlink, $userid,
+            $groupid, $usersearch));
     }
 
     /**

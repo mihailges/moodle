@@ -35,6 +35,7 @@ export default class GradeItems extends GradeItemSearch {
 
     /**
      * Construct the class.
+     *
      * @param {string} baseUrl The base URL for the page.
      */
     constructor(baseUrl) {
@@ -54,9 +55,7 @@ export default class GradeItems extends GradeItemSearch {
      */
     selectOneLink(gradeID) {
         const url = new URL(this.baseUrl);
-        url.searchParams.set('id', this.courseID);
         url.searchParams.set('gradesearchvalue', this.getSearchTerm());
-        url.searchParams.set('item', 'grade');
         url.searchParams.set('itemid', gradeID);
         return url.toString();
     }

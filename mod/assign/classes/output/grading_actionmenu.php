@@ -83,14 +83,18 @@ class grading_actionmenu implements templatable, renderable {
             )->out(false);
         }
 
-        $usersearch   = optional_param('search', '', PARAM_NOTAGS);
+        $userid = optional_param('userid', null, PARAM_INT);
+        // If the user ID is set, it indicates that a user has been selected. In this case, override the user search
+        // string with the full name of the selected user.
+        $usersearch = $userid ? fullname(\core_user::get_user($userid)) : optional_param('search', '', PARAM_NOTAGS);
+
         $actionbarrenderer = $PAGE->get_renderer('core_course', 'actionbar');
         $resetlink = new moodle_url('/mod/assign/view.php', ['id' => $this->cmid, 'action' => 'grading']);
         $groupid = groups_get_course_group($course, true);
         $userselector = new \core_course\output\actionbar\user_selector(
             course: $course,
             resetlink: $resetlink,
-            userid: null,
+            userid: $userid,
             groupid: $groupid,
             usersearch: $usersearch,
             instanceid: $assignid

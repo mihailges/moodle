@@ -101,7 +101,6 @@ require_once($CFG->dirroot . '/mod/assign/renderable.php');
 require_once($CFG->dirroot . '/mod/assign/gradingtable.php');
 require_once($CFG->libdir . '/portfolio/caller.php');
 
-use core_user\fields;
 use mod_assign\event\submission_removed;
 use mod_assign\event\submission_status_updated;
 use \mod_assign\output\grading_app;
@@ -251,11 +250,6 @@ class assign {
         $this->userid = optional_param('userid', null, PARAM_INT);
         $this->usersearch = optional_param('search', '', PARAM_NOTAGS);
         $this->groupid = optional_param('groupid', null, PARAM_INT);
-
-        if (isset($this->userid)) {
-            $user = \core_user::get_user($this->userid);
-            $this->usersearch = fullname($user);
-        }
     }
 
     /**
@@ -2339,15 +2333,11 @@ class assign {
                 $params['markerid'] = $USER->id;
             }
 
-            // When a user wants to view a particular user rather than a set of users.
-            // By omission when selecting one user, also allow passing the search value around.
-            if (isset($this->userid)) {
+            // A user wants to view a particular user rather than a set of users.
+            if ($this->userid) {
                 $additionalfilters .= " AND u.id = :uid";
                 $params['uid'] = $this->userid;
-            }
-
-            // A user wants to return a subset of learners that match their search criteria.
-            if ($this->usersearch !== '' && !isset($this->userid)) {
+            } else if ($this->usersearch !== '') { // A user wants to view a subset of learners that match the search criteria.
                 [
                     'where' => $keywordswhere,
                     'params' => $keywordsparams,

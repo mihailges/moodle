@@ -19,13 +19,11 @@ import * as Repository from 'mod_assign/repository';
 // Define our standard lookups.
 const selectors = {
     component: '.user-search',
-    courseid: '[data-region="courseid"]',
     groupid: '[data-region="groupid"]',
     instance: '[data-region="instance"]',
     currentvalue: '[data-region="currentvalue"]',
 };
 const component = document.querySelector(selectors.component);
-const courseID = component.querySelector(selectors.courseid).dataset.courseid;
 const groupID = component.querySelector(selectors.groupid).dataset.groupid;
 const assignID = component.querySelector(selectors.instance).dataset.instance;
 const userSearch = component.querySelector(selectors.currentvalue).dataset.currentvalue;
@@ -33,7 +31,7 @@ const userSearch = component.querySelector(selectors.currentvalue).dataset.curre
 /**
  * Allow the user to search for users in the action bar.
  *
- * @module    core_course/search
+ * @module    mod_assign/user
  * @copyright 2024 Ilya Tregubov <ilyatregubov@proton.me>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -41,6 +39,7 @@ export default class User extends UserSearch {
 
     /**
      * Construct the class.
+     *
      * @param {string} baseUrl The base URL for the page.
      */
     constructor(baseUrl) {
@@ -65,7 +64,6 @@ export default class User extends UserSearch {
      */
     selectAllResultsLink() {
         const url = new URL(this.baseUrl);
-        url.searchParams.set('id', courseID);
         url.searchParams.set('search', this.getSearchTerm());
 
         return url.toString();
@@ -93,5 +91,4 @@ export default class User extends UserSearch {
 
         return url.toString();
     }
-
 }

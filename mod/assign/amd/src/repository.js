@@ -24,21 +24,20 @@
 import ajax from 'core/ajax';
 
 /**
- * Given a course ID, we want to fetch the learners within this report.
+ * Given a course ID, we want to fetch the learners within this assignment.
  *
  * @method userFetch
  * @param {int} assignid ID of the assignment.
  * @param {int} groupid ID of the selected group.
- * @param {string} usersearch string to search users.
  * @return {object} jQuery promise
  */
-export const userFetch = (assignid, groupid, usersearch) => {
+export const userFetch = (assignid, groupid) => {
     const request = {
         methodname: 'mod_assign_list_participants',
         args: {
             assignid: assignid,
             groupid: groupid,
-            filter: usersearch,
+            filter: '',
         },
     };
     return ajax.call([request])[0];

@@ -39,26 +39,16 @@ use moodle_url;
  */
 class grading_actionmenu implements templatable, renderable {
 
-    /** @var int Course module ID. */
-    protected $cmid;
-    /** @var bool If any submission plugins are enabled. */
-    protected $submissionpluginenabled;
-    /** @var int The number of submissions made. */
-    protected $submissioncount;
-
+    /** @var assign The assign instance. */
+    protected assign $assign;
 
     /**
      * Constructor for this object.
      *
-     * @param int $cmid Course module ID.
-     * @param bool $submissionpluginenabled If any submission plugins are enabled.
-     * @param int $submissioncount The number of submissions made.
+     * @param assign $assign The assign instance.
      */
-    public function __construct(int $cmid, bool $submissionpluginenabled = false, int $submissioncount = 0) {
-        $this->cmid = $cmid;
-        $this->submissionpluginenabled = $submissionpluginenabled;
-        $this->submissioncount = $submissioncount;
-
+    public function __construct(assign $assign) {
+        $this->assign = $assign;
     }
 
     /**
@@ -73,13 +63,14 @@ class grading_actionmenu implements templatable, renderable {
         $course = $PAGE->course;
         $data = [];
 
-        $context = context_module::instance($this->cmid);
-        $assign = new assign($context, null, null);
-        $assignid = $assign->get_instance()->id;
+        $cmid = $this->assign->get_course_module()->id;
+        $context = context_module::instance($cmid);
+        $assignid = $this->assign->get_instance()->id;
+
 
         if ($this->submissionpluginenabled && $this->submissioncount) {
             $data['downloadall'] = (
-                new moodle_url('/mod/assign/view.php', ['id' => $this->cmid, 'action' => 'downloadall'])
+                new moodle_url('/mod/assign/view.php', ['id' => $cmid, 'action' => 'downloadall'])
             )->out(false);
         }
 
@@ -89,7 +80,7 @@ class grading_actionmenu implements templatable, renderable {
         $usersearch = $userid ? fullname(\core_user::get_user($userid)) : optional_param('search', '', PARAM_NOTAGS);
 
         $actionbarrenderer = $PAGE->get_renderer('core_course', 'actionbar');
-        $resetlink = new moodle_url('/mod/assign/view.php', ['id' => $this->cmid, 'action' => 'grading']);
+        $resetlink = new moodle_url('/mod/assign/view.php', ['id' => $cmid, 'action' => 'grading']);
         $groupid = groups_get_course_group($course, true);
         $userselector = new \core_course\output\actionbar\user_selector(
             course: $course,
@@ -107,13 +98,78 @@ class grading_actionmenu implements templatable, renderable {
 
         if (groups_get_course_group($course)) {
             $reset = new moodle_url('/mod/assign/view.php', [
-                'id' => $this->cmid,
+                'id' => $cmid,
                 'action' => 'grading',
                 'group' => 0,
             ]);
             $data['pagereset'] = $reset->out(false);
         }
 
+        $actions = $this->get_actions();
+        if ($actions) {
+            $menu = new \action_menu();
+            $menu->set_menu_trigger(get_string('actions'), 'btn btn-outline-primary');
+            foreach ($actions as $groupkey => $actiongroup) {
+                foreach ($actiongroup as $label => $url) {
+                    $menu->add(new \action_menu_link_secondary(new \moodle_url($url), null, $label));
+                }
+                if ($groupkey !== array_key_last($actions)) {
+                    $divider = new \action_menu_filler();
+                    $divider->primary = false;
+                    $menu->add($divider);
+                }
+            }
+
+            $renderer = $PAGE->get_renderer('core');
+            $data['actions'] = $renderer->render($menu);
+        }
+
         return $data;
+    }
+
+    /**
+     * Get the actions for the grading action menu.
+     *
+     * @return array A 2D array of actions grouped by a key in the form of key => label => URL.
+     */
+    private function get_actions() {
+        $actions = [];
+        if (
+            has_capability('gradereport/grader:view', $this->assign->get_course_context())
+            && has_capability('moodle/grade:viewall', $this->assign->get_course_context())
+        ) {
+            $url = new moodle_url('/grade/report/grader/index.php', ['id' => $this->assign->get_course()->id]);
+            $actions['gradebook'][get_string('viewgradebook', 'assign')] = $url->out(false);
+        }
+        if ($this->assign->is_blind_marking() && has_capability('mod/assign:revealidentities', $this->assign->get_context())) {
+            $url = new moodle_url('/mod/assign/view.php', [
+                'id' => $this->assign->get_course_module()->id,
+                'action' => 'revealidentities',
+            ]);
+            $actions['blindmarking'][get_string('revealidentities', 'assign')] = $url->out(false);
+        }
+        foreach ($this->assign->get_feedback_plugins() as $plugin) {
+            if ($plugin->is_enabled() && $plugin->is_visible()) {
+                foreach ($plugin->get_grading_actions() as $action => $description) {
+                    $url = new moodle_url('/mod/assign/view.php', [
+                        'id' => $this->assign->get_course_module()->id,
+                        'plugin' => $plugin->get_type(),
+                        'pluginsubtype' => 'assignfeedback',
+                        'action' => 'viewpluginpage',
+                        'pluginaction' => $action,
+                    ]);
+                    $actions['assignfeedback_' . $plugin->get_type()][$description] = $url->out(false);
+                }
+            }
+        }
+        if ($this->assign->is_any_submission_plugin_enabled() && $this->assign->count_submissions()) {
+            $url = new moodle_url('/mod/assign/view.php', [
+                    'id' => $this->assign->get_course_module()->id,
+                    'action' => 'downloadall']
+            );
+            $actions['downloadall'][get_string('downloadall', 'mod_assign')] = $url->out(false);
+        }
+
+        return $actions;
     }
 }

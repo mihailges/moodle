@@ -27,6 +27,7 @@ namespace mod_assign\output;
 use templatable;
 use renderable;
 use moodle_url;
+use \core_course\output\actionbar\group_selector;
 
 /**
  * Output the grading actionbar for this activity.
@@ -70,6 +71,7 @@ class grading_actionmenu implements templatable, renderable {
 
         $course = $PAGE->course;
         $data = [];
+        $cm = get_coursemodule_from_id('assign', $this->cmid);
 
         if ($this->submissionpluginenabled && $this->submissioncount) {
             $data['downloadall'] = (
@@ -77,12 +79,12 @@ class grading_actionmenu implements templatable, renderable {
             )->out(false);
         }
 
-        if ($course->groupmode) {
+        if (groups_get_activity_groupmode($cm, $course)) {
             $actionbarrenderer = $PAGE->get_renderer('core_course', 'actionbar');
-            $data['groupselector'] = $actionbarrenderer->render(new \core_course\output\actionbar\group_selector($course));
+            $data['groupselector'] = $actionbarrenderer->render(new group_selector($course));
         }
 
-        if (groups_get_course_group($course)) {
+        if (groups_get_activity_group($cm)) {
             $reset = new moodle_url('/mod/assign/view.php', [
                 'id' => $this->cmid,
                 'action' => 'grading',

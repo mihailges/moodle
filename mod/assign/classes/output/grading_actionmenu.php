@@ -72,6 +72,7 @@ class grading_actionmenu implements templatable, renderable {
         $course = $PAGE->course;
         $data = [];
         $cm = get_coursemodule_from_id('assign', $this->cmid);
+        $context = \context_module::instance($this->cmid);
 
         if ($this->submissionpluginenabled && $this->submissioncount) {
             $data['downloadall'] = (
@@ -81,7 +82,7 @@ class grading_actionmenu implements templatable, renderable {
 
         if (groups_get_activity_groupmode($cm, $course)) {
             $actionbarrenderer = $PAGE->get_renderer('core_course', 'actionbar');
-            $data['groupselector'] = $actionbarrenderer->render(new group_selector($course));
+            $data['groupselector'] = $actionbarrenderer->render(new group_selector($course, $context));
         }
 
         if (groups_get_activity_group($cm)) {

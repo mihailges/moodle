@@ -34,12 +34,19 @@ class group_selector extends comboboxsearch {
     protected $course;
 
     /**
+     * @var context The context object.
+     */
+    protected stdClass $context;
+
+    /**
      * The class constructor.
      *
      * @param stdClass $course The course object.
+     * @param context $context The context object.
      */
-    public function __construct(stdClass $course) {
+    public function __construct(stdClass $course, $context) {
         $this->course = $course;
+        $this->context = $context;
 
         parent::__construct(false, $this->group_selector_output(), $this->searchbody_output(), 'group-search',
             'groupsearchwidget', 'groupsearchdropdown overflow-auto', null, true, $this->get_label(), 'group',
@@ -78,18 +85,29 @@ class group_selector extends comboboxsearch {
     }
 
     private function get_label() {
-        return $this->course->groupmode === VISIBLEGROUPS ? get_string('selectgroupsvisible') :
+        return $this->get_group_mode() === VISIBLEGROUPS ? get_string('selectgroupsvisible') :
             get_string('selectgroupsseparate');
     }
 
     private function get_active_group() {
         global $USER;
 
-        $context = \context_course::instance($this->course->id);
-        $userid = $this->course->groupmode == VISIBLEGROUPS || has_capability('moodle/site:accessallgroups', $context) ?
-            0 : $USER->id;
+        $canaccessallgroups = has_capability('moodle/site:accessallgroups', $this->context);
+        $userid = $this->get_group_mode() == VISIBLEGROUPS || $canaccessallgroups ? 0 : $USER->id;
         $allowedgroups = groups_get_all_groups($this->course->id, $userid, $this->course->defaultgroupingid);
 
+        if ($this->context->contextlevel == CONTEXT_MODULE) {
+            $cm = get_coursemodule_from_id(false, $this->context->instanceid);
+            return groups_get_activity_group($cm, true, $allowedgroups);
+        }
         return groups_get_course_group($this->course, true, $allowedgroups);
+    }
+
+    private function get_group_mode() {
+        if ($this->context->contextlevel == CONTEXT_MODULE) {
+            $cm = get_coursemodule_from_id(false, $this->context->instanceid);
+            return groups_get_activity_groupmode($cm);
+        }
+        return $this->course->groupmode;
     }
 }

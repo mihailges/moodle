@@ -29,6 +29,7 @@ import Notification from 'core/notification';
 export default class GroupSearch extends search_combobox {
 
     courseID;
+    moduleID = null;
     bannedFilterFields = ['id', 'link', 'groupimageurl'];
 
     constructor() {
@@ -36,11 +37,17 @@ export default class GroupSearch extends search_combobox {
         this.selectors = {...this.selectors,
             courseid: '[data-region="courseid"]',
             placeholder: '.groupsearchdropdown [data-region="searchplaceholder"]',
+            moduleid: '[data-region="moduleid"]',
         };
         const component = document.querySelector(this.componentSelector());
         this.courseID = component.querySelector(this.selectors.courseid).dataset.courseid;
         // Override the instance since the body is built outside the constructor for the combobox.
         this.instance = component.querySelector(this.selectors.instance).dataset.instance;
+        // Obtain and set the module ID, if available.
+        const moduleIDRegion = component.querySelector(this.selectors.moduleid);
+        if (moduleIDRegion) {
+            this.moduleID = moduleIDRegion.dataset.moduleid;
+        }
 
         const searchValueElement = this.component.querySelector(`#${this.searchInput.dataset.inputElement}`);
         searchValueElement.addEventListener('change', () => {
@@ -131,7 +138,7 @@ export default class GroupSearch extends search_combobox {
      * @returns {Promise<*>}
      */
     async fetchDataset() {
-        return await groupFetch(this.courseID).then((r) => r.groups);
+        return await groupFetch(this.courseID, this.moduleID).then((r) => r.groups);
     }
 
     /**

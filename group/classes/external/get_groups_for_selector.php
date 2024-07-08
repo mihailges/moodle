@@ -17,6 +17,7 @@
 namespace core_group\external;
 
 use context_course;
+use context_module;
 use core_external\external_api;
 use core_external\external_description;
 use core_external\external_function_parameters;
@@ -49,6 +50,7 @@ class get_groups_for_selector extends external_api {
         return new external_function_parameters (
             [
                 'courseid' => new external_value(PARAM_INT, 'Course Id', VALUE_REQUIRED),
+                'moduleid' => new external_value(PARAM_INT, 'Module Id', VALUE_DEFAULT, 0),
             ]
         );
     }
@@ -56,27 +58,41 @@ class get_groups_for_selector extends external_api {
     /**
      * Given a course ID find the existing user groups and map some fields to the returned array of group objects.
      *
+     * If a module ID is provided, this function will return only the available groups within the module's context,
+     * adhering to the set group mode for that context. All validation checks will be performed within this specific
+     * context.
+     *
      * @param int $courseid
+     * @param int|null $moduleid The module ID (optional).
      * @return array Groups and warnings to pass back to the calling widget.
      */
-    public static function execute(int $courseid): array {
+    public static function execute(int $courseid, ?int $moduleid = null): array {
         global $DB, $USER, $OUTPUT;
 
         $params = self::validate_parameters(
             self::execute_parameters(),
             [
                 'courseid' => $courseid,
+                'moduleid' => $moduleid,
             ]
         );
 
         $warnings = [];
-        $context = context_course::instance($params['courseid']);
+        $course = $DB->get_record('course', ['id' => $params['courseid']]);
+
+        if ($moduleid) {
+            $context = context_module::instance($params['moduleid']);
+            $cm = get_coursemodule_from_id('assign', $params['moduleid']);
+            $groupmode = groups_get_activity_groupmode($cm, $course);
+        } else {
+            $context = context_course::instance($params['courseid']);
+            $groupmode = $course->groupmode;
+        }
         parent::validate_context($context);
 
         $mappedgroups = [];
-        $course = $DB->get_record('course', ['id' => $params['courseid']]);
         // Initialise the grade tracking object.
-        if ($groupmode = $course->groupmode) {
+        if ($groupmode) {
             $aag = has_capability('moodle/site:accessallgroups', $context);
 
             $usergroups = [];
@@ -103,7 +119,8 @@ class get_groups_for_selector extends external_api {
             $mappedgroups = array_map(function($group) use ($context, $OUTPUT) {
                 if ($group->id) { // Particular group. Get the group picture if it exists, otherwise return a generic image.
                     $picture = get_group_picture_url($group, $group->courseid, true) ??
-                        moodle_url::make_pluginfile_url($context->id, 'group', 'generated', $group->id, '/', 'group.svg');
+                        moodle_url::make_pluginfile_url($context->get_course_context()->id, 'group', 'generated', $group->id,
+                            '/', 'group.svg');
                 } else { // All participants.
                     $picture = $OUTPUT->image_url('g/g1');
                 }

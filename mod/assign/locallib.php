@@ -4571,7 +4571,7 @@ class assign {
         $PAGE->activityheader->set_attrs(['hidecompletion' => true]);
 
         // Conditionally add the group JS if we have groups enabled.
-        if ($this->get_course()->groupmode) {
+        if (groups_get_activity_groupmode($this->get_course_module(), $this->get_course())) {
             $PAGE->requires->js_call_amd('core_course/actionbar/group', 'init', [$currenturl->out(false)]);
         }
 

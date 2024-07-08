@@ -18,12 +18,14 @@
 
     Context variables required for this template:
     * courseid - The id of the course to search within.
+    * moduleid - (optional) The id of the module to search within.
     * groupid - The id of the group to search within.
     * currentvalue - The prefill value for the search input if provided
 
     Example context (json):
     {
         "courseid": 2,
+        "moduleid": 10,
         "groupid": 25,
         "currentvalue": "bar"
     }
@@ -32,6 +34,9 @@
     <span class="d-none" data-region="courseid" data-courseid="{{courseid}}"></span>
     <span class="d-none" data-region="groupid" data-groupid="{{groupid}}"></span>
     <span class="d-none" data-region="instance" data-instance="{{instance}}"></span>
+    {{#moduleid}}
+        <span class="d-none" data-region="moduleid" data-moduleid="{{.}}"></span>
+    {{/moduleid}}
 
     {{< core/search_input_auto }}
         {{$label}}{{#str}}

@@ -63,17 +63,6 @@ class grading_options_temp_form extends \moodleform {
             }
         }
         $mform->addElement('select', 'perpage', get_string('assignmentsperpage', 'assign'), $options);
-        if (!empty($instance['markingallocationopt'])) {
-            $markingfilter = get_string('markerfilter', 'assign');
-            $mform->addElement('select', 'markerfilter', $markingfilter, $instance['markingallocationopt']);
-        }
-
-        // Show active/suspended user option.
-        if ($instance['showonlyactiveenrolopt']) {
-            $mform->addElement('checkbox', 'showonlyactiveenrol', get_string('showonlyactiveenrol', 'grades'));
-            $mform->addHelpButton('showonlyactiveenrol', 'showonlyactiveenrol', 'grades');
-            $mform->setDefault('showonlyactiveenrol', $instance['showonlyactiveenrol']);
-        }
 
         // Hidden params.
         $mform->addElement('hidden', 'contextid', $instance['contextid']);

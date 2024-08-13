@@ -131,18 +131,6 @@ M.mod_assign.init_grading_options = function(Y) {
         paginationelement.on('change', function(e) {
             Y.one('form.gradingoptionsform').submit();
         });
-        var markerfilterelement = Y.one('#id_markerfilter');
-        if (markerfilterelement) {
-            markerfilterelement.on('change', function(e) {
-                Y.one('form.gradingoptionsform').submit();
-            });
-        }
-        var showonlyactiveenrolelement = Y.one('#id_showonlyactiveenrol');
-        if (showonlyactiveenrolelement) {
-            showonlyactiveenrolelement.on('change', function(e) {
-            Y.one('form.gradingoptionsform').submit();
-            });
-        }
         var downloadasfolderselement = Y.one('#id_downloadasfolders');
         if (downloadasfolderselement) {
             downloadasfolderselement.on('change', function(e) {

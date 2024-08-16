@@ -1327,12 +1327,22 @@ EOF;
      * browser window has same viewport size even when you run Behat on multiple operating systems.
      *
      * @throws ExpectationException
-     * @Then /^I change (window|viewport) size to "(mobile|tablet|small|medium|large|\d+x\d+)"$/
-     * @Then /^I change the (window|viewport) size to "(mobile|tablet|small|medium|large|\d+x\d+)"$/
+     * @Then /^I change (window|viewport) size to "(mobile|tablet|small|medium|large|\d+x\d+)"( without runtime scaling)?$/
+     * @Then /^I change the (window|viewport) size to "(mobile|tablet|small|medium|large|\d+x\d+)"( without runtime scaling)?$/
+     * @param string $windowviewport Whether this is a window or viewport size hcange
      * @param string $windowsize size of the window (mobile|tablet|small|medium|large|wxh).
+     * @param null|string $scale whether to lock runtime scaling (string) or to allow it (null)
      */
-    public function i_change_window_size_to($windowviewport, $windowsize) {
-        $this->resize_window($windowsize, $windowviewport === 'viewport');
+    public function i_change_window_size_to(
+        $windowviewport,
+        $windowsize,
+        ?string $scale = null,
+    ): void {
+        $this->resize_window(
+            $windowsize,
+            $windowviewport === 'viewport',
+            $scale === null,
+        );
     }
 
     /**
@@ -2366,6 +2376,7 @@ EOF;
      * @param string $plugin Plugin we look for
      * @param string $plugintype The type of the plugin
      */
+    #[\core\attribute\example('I enable "subsection" "mod" plugin')]
     public function i_enable_plugin($plugin, $plugintype) {
         $class = core_plugin_manager::resolve_plugininfo_class($plugintype);
         $class::enable_plugin($plugin, true);
@@ -2378,6 +2389,7 @@ EOF;
      * @param string $plugin Plugin we look for
      * @param string $plugintype The type of the plugin
      */
+    #[\core\attribute\example('I disable "page" "mod" plugin')]
     public function i_disable_plugin($plugin, $plugintype) {
         $class = core_plugin_manager::resolve_plugininfo_class($plugintype);
         $class::enable_plugin($plugin, false);

@@ -1972,7 +1972,7 @@ function feedback_delete_completedtmp() {
 function feedback_create_pagebreak($feedbackid) {
     global $DB;
 
-    //check if there already is a pagebreak on the last position
+    // Disallow pagebreak if there's already one present in last position, or the feedback has no items.
     $lastposition = $DB->count_records('feedback_item', array('feedback'=>$feedbackid));
     if ($lastposition == feedback_get_last_break_position($feedbackid)) {
         return false;
@@ -2917,8 +2917,8 @@ function feedback_can_view_analysis($feedback, $context, $courseid = false) {
  */
 function mod_feedback_get_fontawesome_icon_map() {
     return [
-        'mod_feedback:required' => 'fa-exclamation-circle',
-        'mod_feedback:notrequired' => 'fa-question-circle-o',
+        'mod_feedback:notrequired' => 'fa-circle-question',
+        'mod_feedback:required' => 'fa-circle-exclamation',
     ];
 }
 

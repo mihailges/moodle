@@ -144,19 +144,6 @@ export default class extends Reactive {
                 resolve([]);
                 return;
             }
-            // Check the cache.
-            const handlersCacheKey = `course/${this.courseId}/fileHandlers`;
-
-            const cacheValue = Storage.get(handlersCacheKey);
-            if (cacheValue) {
-                try {
-                    const cachedHandlers = JSON.parse(cacheValue);
-                    resolve(cachedHandlers);
-                    return;
-                } catch (error) {
-                    log.error("ERROR PARSING CACHED FILE HANDLERS");
-                }
-            }
             // Call file handlers webservice.
             ajax.call([{
                 methodname: 'core_courseformat_file_handlers',
@@ -164,7 +151,6 @@ export default class extends Reactive {
                     courseid: this.courseId,
                 }
             }])[0].then((handlers) => {
-                Storage.set(handlersCacheKey, JSON.stringify(handlers));
                 resolve(handlers);
                 return;
             }).catch(error => {

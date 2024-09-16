@@ -4481,7 +4481,6 @@ class assign {
         global $USER, $CFG, $SESSION, $PAGE, $OUTPUT;
 
         // Include grading options form.
-        require_once($CFG->dirroot . '/mod/assign/gradingoptionsform.php');
         require_once($CFG->dirroot . '/mod/assign/quickgradingform.php');
 
         $submittedfilter = optional_param('status', null, PARAM_ALPHA);
@@ -4550,23 +4549,6 @@ class assign {
             has_capability('mod/assign:manageallocations', $this->context);
 
         $markingworkflow = $this->get_instance()->markingworkflow;
-
-        // Print options for changing the filter and changing the number of results per page.
-        $gradingoptionsformparams = [
-            'cm' => $cmid,
-            'contextid' => $this->context->id,
-            'userid' => $USER->id,
-        ];
-
-        $classoptions = array('class'=>'gradingoptionsform');
-        $gradingoptionsform = new \mod_assign\form\grading_options_temp_form(null,
-                                                                  $gradingoptionsformparams,
-                                                                  'post',
-                                                                  '',
-                                                                  $classoptions);
-
-        $gradingoptionsdata = new stdClass();
-        $gradingoptionsform->set_data($gradingoptionsdata);
 
         // Load the table of submissions, to be printed further down.
         // This initialises the selected first/last initials for the action menu.
@@ -4656,9 +4638,6 @@ class assign {
             $o .= $this->get_renderer()->render($footer);
         }
 
-        // Print the table of submissions.
-        $o .= $gradingtableoutput;
-
         if ($this->can_grade()) {
             // We need to store the order of uses in the table as the person may wish to grade them.
             // This is done based on the row number of the user.
@@ -4666,11 +4645,6 @@ class assign {
             $useridlist = $gradingtable->get_column_data('userid');
             $SESSION->mod_assign_useridlist[$this->get_useridlist_key()] = $useridlist;
         }
-
-        $assignform = new assign_form('gradingoptionsform',
-                                      $gradingoptionsform,
-                                      'M.mod_assign.init_grading_options');
-        $o .= $this->get_renderer()->render($assignform);
 
         $currentgroup = groups_get_activity_group($this->get_course_module(), true);
         $users = array_keys($this->list_participants($currentgroup, true));
@@ -7407,21 +7381,9 @@ class assign {
     protected function process_save_grading_options() {
         global $USER, $CFG;
 
-        // Include grading options form.
-        require_once($CFG->dirroot . '/mod/assign/gradingoptionsform.php');
-
         // Need submit permission to submit an assignment.
         $this->require_view_grades();
         require_sesskey();
-
-        $gradingoptionsparams = [
-            'cm' => $this->get_course_module()->id,
-            'contextid' => $this->context->id,
-            'userid' => $USER->id,
-        ];
-        $mform = new mod_assign\form\grading_options_temp_form(null, $gradingoptionsparams);
-        if ($formdata = $mform->get_data()) {
-        }
     }
 
     /**

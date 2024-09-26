@@ -1806,7 +1806,8 @@ class structure {
         $categorynames = [];
         foreach ($categories as $id => $category) {
             if ($category->name === 'top') {
-                $categoryname = $DB->get_field('question_categories', 'name', ['parent' => $id]);
+                $context = \context::instance_by_id($category->contextid);
+                $categoryname = get_string('topfor', 'question', $context->get_context_name(false));
             } else {
                 $categoryname = $category->name;
             }

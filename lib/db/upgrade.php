@@ -1487,7 +1487,7 @@ function xmldb_main_upgrade($oldversion) {
         $DB->execute($sql, array_merge($params, $inparams));
 
         // Main savepoint reached.
-        upgrade_main_savepoint(true, 2024100700.02);
+        upgrade_main_savepoint(true, 2024102500.02);
     }
 
     if ($oldversion < 2024102500.03) {
@@ -1526,7 +1526,7 @@ function xmldb_main_upgrade($oldversion) {
         }
 
         // Main savepoint reached.
-        upgrade_main_savepoint(true, 2024100700.03);
+        upgrade_main_savepoint(true, 2024102500.03);
     }
 
     return true;

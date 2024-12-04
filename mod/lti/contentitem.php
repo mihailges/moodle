@@ -28,14 +28,16 @@ require_once($CFG->dirroot . '/mod/lti/lib.php');
 require_once($CFG->dirroot . '/mod/lti/locallib.php');
 
 $id = required_param('id', PARAM_INT);
-$courseid = required_param('course', PARAM_INT);
+$contextid = required_param('contextid', PARAM_INT);
 $title = optional_param('title', '', PARAM_TEXT);
 $text = optional_param('text', '', PARAM_RAW);
+
+$context = \context_helper::instance_by_id($contextid);
 
 $config = \core_ltix\helper::get_type_type_config($id);
 if ($config->lti_ltiversion === LTI_VERSION_1P3) {
     if (!isset($SESSION->lti_initiatelogin_status)) {
-        echo \core_ltix\helper::initiate_login($courseid, 0, null, $config, 'ContentItemSelectionRequest', $title, $text);
+        echo \core_ltix\helper::initiate_login($context->instanceid, 0, null, $config, 'ContentItemSelectionRequest', $title, $text);
         exit;
     } else {
         unset($SESSION->lti_initiatelogin_status);
@@ -43,15 +45,22 @@ if ($config->lti_ltiversion === LTI_VERSION_1P3) {
 }
 
 // Check access and capabilities.
-$course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
-require_login($course);
-$context = context_course::instance($courseid);
+if ($context instanceof context_course) {
+    $course = $DB->get_record('course', array('id' => $context->instanceid), '*', MUST_EXIST);
+    require_login($course);
+} else if ($context instanceof context_module) {
+    $cm = get_coursemodule_from_id('', $context->instanceid, 0, false, MUST_EXIST);
+    require_login(null, true, $cm, true, true);
+} else {
+    require_login();
+}
+
 require_capability('moodle/course:manageactivities', $context);
 require_capability('moodle/ltix:addcoursetool', $context);
 
 // Set the return URL. We send the launch container along to help us avoid frames-within-frames when the user returns.
 $returnurlparams = [
-    'course' => $course->id,
+    'contextid' => $context->id,
     'id' => $id,
     'sesskey' => sesskey()
 ];

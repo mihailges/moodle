@@ -26,11 +26,11 @@
 require_once('../config.php');
 
 $id = required_param('id', PARAM_INT);
-$courseid = required_param('course', PARAM_INT);
+$contextid = required_param('contextid', PARAM_INT);
 
 $jwt = optional_param('JWT', '', PARAM_RAW);
 
-$context = context_course::instance($courseid);
+$context = context_course::instance($contextid);
 
 $pageurl = new moodle_url('/ltix/contentitem_return.php');
 $PAGE->set_url($pageurl);
@@ -70,7 +70,7 @@ if (!empty($jwt)) {
     \core_ltix\oauth_helper::verify_oauth_signature($id, $consumerkey);
 }
 
-$course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
+$course = $DB->get_record('course', array('id' => $context->instanceid), '*', MUST_EXIST);
 require_login($course);
 require_sesskey();
 require_capability('moodle/course:manageactivities', $context);

@@ -31,12 +31,12 @@
 
     Example context (json):
     {
-        "url": "/",
+        "url": "contentitem.php",
         "postData": {
-            "id": "1",
-            "course": "1",
-            "title": "Sample title",
-            "text": "This is a description"
+            "toolid": "1",
+            "contextid": "1",
+            "toolinstancetitle": "Sample title",
+            "toolinstancetext": "This is a description"
         }
     }
 
@@ -51,10 +51,10 @@
         <iframe id="contentitem-page-iframe" name="contentitem-page-iframe" class="hidden" tabindex="0">
         </iframe>
         <form target="contentitem-page-iframe" action="{{url}}" id="contentitem-request-form" method="post">
-            <input type="hidden" name="id" value="{{postData.id}}" />
-            <input type="hidden" name="course" value="{{postData.course}}" />
-            <input type="hidden" name="title" value="{{postData.title}}" />
-            <input type="hidden" name="text" value="{{postData.text}}" />
+            <input type="hidden" name="id" value="{{postData.toolid}}" />
+            <input type="hidden" name="contextid" value="{{postData.contextid}}" />
+            <input type="hidden" name="title" value="{{postData.toolinstancetitle}}" />
+            <input type="hidden" name="text" value="{{postData.toolinstancetext}}" />
         </form>
     </div>
 </div>

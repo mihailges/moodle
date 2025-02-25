@@ -42,9 +42,9 @@ class group_selector extends comboboxsearch {
      * @param stdClass $context The context object.
      */
     public function __construct(private stdClass $context, bool $participationonly = true) {
+        $this->participationonly = $participationonly;
         $this->activegroup = $this->get_active_group();
         $this->label = $this->get_label();
-        $this->participationonly = $participationonly;
 
         // The second and third arguments (buttoncontent and dropdowncontent) need to be rendered here, since the comboboxsearch
         // template expects HTML in its respective context properties. Ideally, children of comboboxsearch would leverage Mustache's

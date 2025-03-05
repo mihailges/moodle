@@ -151,7 +151,7 @@ final class missingtype_test extends \question_testcase {
      */
     public function test_move_question_category_with_missing_question_types(): void {
 
-        global $DB;
+        global $DB, $USER;
 
         $this->resetAfterTest();
 
@@ -170,15 +170,29 @@ final class missingtype_test extends \question_testcase {
             'contextid' => \core\context\module::instance($module1->cmid)->id
         ]);
 
+        $user = $this->getDataGenerator()->create_user();
+        $usercontext = \context_user::instance($user->id);
+        $USER = $DB->get_record('user', ['id' => $user->id]);
+
         // Create a question of an invalid type and put it in the category.
-        $question = $generator->create_question('missingtype', null, array('category' => $category->id));
+        $question = $generator->create_question('missingtype', 'twosubq', array('category' => $category->id));
+      //  print_r($question);
+        // Add a fake inline image to the feedback text.
+        $filerecordinline = [
+            'contextid' => \core\context\module::instance($module1->cmid)->id,
+            'component' => 'question',
+            'filearea'  => 'hint',
+            'itemid'    => 1,
+            'filepath'  => '/',
+            'filename'  => 'test.jpg',
+        ];
+        $fs = get_file_storage();
+        $fs->create_file_from_string($filerecordinline, 'image contents (not really)');
 
         // Update the question to set an invalid qtype, as "missingtype" is actually installed and won't fail.
         $question->qtype = 'invalid';
         $DB->update_record('question', $question);
 
-        // We just want to assert that no exception is thrown.
-        $this->expectNotToPerformAssertions();
 
         // Try and move the categories.
         question_move_category_to_context(
@@ -186,6 +200,12 @@ final class missingtype_test extends \question_testcase {
             \core\context\module::instance($module1->cmid)->id,
             \core\context\module::instance($module2->cmid)->id,
         );
+
+        $test = $fs->get_area_files(\core\context\module::instance($module2->cmid)->id, 'question', 'hint');
+
+      //  print_r($test);
+
+        $this->assertCount(2, $test);
 
     }
 

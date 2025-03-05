@@ -265,6 +265,68 @@ final class questionlib_test extends \advanced_testcase {
     }
 
     /**
+     * This function tests that the functions responsible for moving questions to
+     * different contexts properly moves invalid questions and their files.
+     */
+    public function test_question_move_category_to_context_invalid_question(): void {
+        global $CFG, $DB;
+
+        // Set to admin user.
+        $this->setAdminUser();
+
+        // Create 2 qbank instances - we are going to delete one of these later and will expect
+        // all the questions belonging to the deleted module to be moved.
+        $coursecat1 = $this->getDataGenerator()->create_category();
+        $course1 = $this->getDataGenerator()->create_course(['category' => $coursecat1->id]);
+        $modqbank1 = $this->getDataGenerator()->create_module('qbank', ['course' => $course1->id]);
+        $coursecat2 = $this->getDataGenerator()->create_category();
+        $course2 = $this->getDataGenerator()->create_course(['category' => $coursecat2->id]);
+        $modqbank2 = $this->getDataGenerator()->create_module('qbank', ['course' => $course2->id]);
+
+        // Create a couple of categories and questions.
+        $context1 = \context_module::instance($modqbank1->cmid);
+        $context2 = \context_module::instance($modqbank2->cmid);
+        /** @var \core_question_generator $questiongenerator */
+        $questiongenerator = $this->getDataGenerator()->get_plugin_generator('core_question');
+        $questioncat1 = $questiongenerator->create_question_category(['contextid' =>
+            $context1->id]);
+        $questioncat2 = $questiongenerator->create_question_category(['contextid' =>
+            $context2->id]);
+
+        $question = $questiongenerator->create_question('multianswer', 'twosubq', ['category' => $questioncat1->id]);
+        $question->qtype = 'invalid';
+        $DB->update_record('question', $question);
+
+        $hintids = $DB->get_records_menu('question_hints', ['questionid' => $question->id], 'id', 'id,1');
+        $fs = get_file_storage();
+        foreach ($hintids as $hintid => $notused) {
+            $filerecordinline = [
+                'contextid' => $context1->id,
+                'component' => 'question',
+                'filearea'  => 'hint',
+                'itemid'    => $hintid,
+                'filepath'  => '/',
+                'filename'  => 'test.jpg',
+            ];
+            $fs->create_file_from_string($filerecordinline, 'image contents (not really)');
+        }
+
+        $test = $fs->get_area_files($questioncat1->contextid, 'question', 'hint');
+        $this->assertCount(4, $test);
+        $test = $fs->get_area_files($questioncat2->contextid, 'question', 'hint');
+        $this->assertCount(0, $test);
+
+
+        // Test moving a whole question category to another context.
+        question_move_category_to_context($questioncat1->id, $questioncat1->contextid, $questioncat2->contextid);
+        $test = $fs->get_area_files($questioncat1->contextid, 'question', 'hint');
+        $this->assertCount(0, $test);
+        $test = $fs->get_area_files($questioncat2->contextid, 'question', 'hint');
+//        print_r($test);
+        $this->assertCount(4, $test);
+    }
+
+    /**
      * Test that deleting a question from the question bank works in the normal case.
      */
     public function test_question_delete_question(): void {

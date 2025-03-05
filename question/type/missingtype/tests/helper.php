@@ -43,6 +43,12 @@ class qtype_missingtype_test_helper extends question_test_helper {
         $form->defaultmark = 1.0;
         $form->generalfeedback = array('text' => 'How did you even submit this?', 'format' => FORMAT_HTML);
         $form->status = \core_question\local\bank\question_version_status::QUESTION_STATUS_READY;
+        $form->hint = [
+            [
+                'text' => ' dsadas',
+                'format' => FORMAT_HTML,
+            ],
+        ];
         return $form;
 
     }

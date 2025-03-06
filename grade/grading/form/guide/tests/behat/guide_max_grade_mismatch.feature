@@ -34,8 +34,7 @@ Feature: Marking guide can handle maximum grade mismatches
     # Confirm that marking guide is successfully set as ready.
     Then I should see "Assign 1 marking guide Ready for use"
     # The corresponding warning message that grades will be scaled is displayed.
-    And I should see "WARNING: Your marking guide has a maximum grade of <totalmaxscore> points"
-    And I should see "but the maximum grade set in your activity is 100  The maximum score set in your marking guide will be scaled to the maximum grade in the module."
+    And I should see "WARNING: Your marking guide has a maximum grade of <totalmaxscore> points but the maximum grade set in your activity is 100  The maximum score set in your marking guide will be scaled to the maximum grade in the module."
     And I should see "Intermediate scores will be converted respectively and rounded to the nearest available grade."
 
     Examples:

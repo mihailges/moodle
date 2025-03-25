@@ -53,7 +53,7 @@ final class lib_test extends \advanced_testcase {
      * @return void
      */
     public function test_lti_view(): void {
-        global $CFG;
+        global $CFG, $DB;
 
         $CFG->enablecompletion = 1;
         $this->resetAfterTest();
@@ -88,6 +88,11 @@ final class lib_test extends \advanced_testcase {
         $completion = new \completion_info($course);
         $completiondata = $completion->get_data($cm);
         $this->assertEquals(1, $completiondata->completionstate);
+        $this->assertEquals(1, $DB->count_records('lti_resource_link', [
+            'itemid' => $lti->id,
+            'component' => 'mod_lti',
+            'itemtype' => 'mod_lti:activityplacement'
+        ]));
 
     }
 
@@ -95,6 +100,7 @@ final class lib_test extends \advanced_testcase {
      * Test deleting LTI instance.
      */
     public function test_lti_delete_instance(): void {
+        global $DB;
         $this->resetAfterTest();
 
         $this->setAdminUser();
@@ -104,6 +110,11 @@ final class lib_test extends \advanced_testcase {
 
         // Must not throw notices.
         course_delete_module($cm->id);
+        $this->assertEquals(0, $DB->count_records('lti_resource_link', [
+            'itemid' => $lti->id,
+            'component' => 'mod_lti',
+            'itemtype' => 'mod_lti:activityplacement'
+        ]));
     }
 
     public function test_lti_core_calendar_provide_event_action(): void {

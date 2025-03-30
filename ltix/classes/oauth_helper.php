@@ -35,6 +35,7 @@ use core_ltix\OAuthserver;
 use core_ltix\OAuthRequest;
 use core_ltix\OAuthSignatureMethod_HMAC_SHA1;
 use core_ltix\TrivialOAuthDataStore;
+use Packback\Lti1p3\LtiConstants;
 
 /**
  * Helper class specifically dealing with LTI OAuth.
@@ -747,6 +748,11 @@ class oauth_helper {
                 }
             }
         }
+        // If there is a deep-linking 'data' claim, make sure to include its properties.
+        if (isset($claims[LtiConstants::DL_DATA])) {
+            $params['data'] = $claims[LtiConstants::DL_DATA];
+        }
+
         if (isset($params['content_items'])) {
             $params['content_items'] = helper::convert_content_items($params['content_items']);
         }

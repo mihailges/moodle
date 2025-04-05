@@ -135,10 +135,18 @@ final class oauth_helper_test extends lti_testcase {
                 'isarray' => true
             ],
             'data' => [
-                'suffix' => 'dl',
-                'group' => 'deep_linking_settings',
-                'claim' => 'data',
-                'isarray' => false
+                [
+                    'suffix' => 'dl',
+                    'group' => 'deep_linking_settings',
+                    'claim' => 'data',
+                    'isarray' => false
+                ],
+                [
+                    'suffix' => 'dl',
+                    'group' => '',
+                    'claim' => 'data',
+                    'isarray' => false
+                ],
             ],
             'text' => [
                 'suffix' => 'dl',

@@ -35,7 +35,6 @@ use core_ltix\OAuthserver;
 use core_ltix\OAuthRequest;
 use core_ltix\OAuthSignatureMethod_HMAC_SHA1;
 use core_ltix\TrivialOAuthDataStore;
-use Packback\Lti1p3\LtiConstants;
 
 /**
  * Helper class specifically dealing with LTI OAuth.
@@ -220,10 +219,21 @@ class oauth_helper {
                 'isarray' => true
             ],
             'data' => [
-                'suffix' => 'dl',
-                'group' => 'deep_linking_settings',
-                'claim' => 'data',
-                'isarray' => false
+                // This message parameter can be set by two different claims. One is the 'deep_linking_settings' claim
+                // in the deep linking request message, while the other is the 'data' claim in the deep linking response
+                // message.
+                [
+                    'suffix' => 'dl',
+                    'group' => 'deep_linking_settings',
+                    'claim' => 'data',
+                    'isarray' => false
+                ],
+                [
+                    'suffix' => 'dl',
+                    'group' => '',
+                    'claim' => 'data',
+                    'isarray' => false
+                ],
             ],
             'text' => [
                 'suffix' => 'dl',
@@ -531,7 +541,10 @@ class oauth_helper {
         foreach ($parms as $key => $value) {
             $claim = \core_ltix\constants::LTI_JWT_CLAIM_PREFIX;
             if (array_key_exists($key, $claimmapping)) {
-                $mapping = $claimmapping[$key];
+                // The 'data' message parameter maps to multiple claims for deep-linking request and response phases.
+                // Here, we only handle the request phase, so use the first claim mapping associated to this parameter.
+                // For all other parameters, use their direct mapping from the claim map.
+                $mapping = $key == 'data' ? $claimmapping[$key][0] : $claimmapping[$key];
                 $type = $mapping["type"] ?? "string";
                 if ($mapping['isarray']) {
                     $value = explode(',', $value);
@@ -694,6 +707,15 @@ class oauth_helper {
             $params['oauth_consumer_key'] = $claims['iss'];
             foreach (self::get_jwt_claim_mapping() as $key => $mapping) {
                 $claim = \core_ltix\constants::LTI_JWT_CLAIM_PREFIX;
+                // The 'data' message parameter maps to multiple claims for deep-linking request and response phases.
+                // Here, we only handle the response phase, so use the second claim mapping associated to this parameter.
+                // For all other parameters, use their direct mapping from the claim map.
+                if ($key == 'data') {
+                    $mapping = $mapping[1];
+                }
+                if (isset($mapping['multiple'])) {
+                    $mapping = $mapping['multiple'][1];
+                }
                 if (!empty($mapping['suffix'])) {
                     $claim .= "-{$mapping['suffix']}";
                 }
@@ -747,10 +769,6 @@ class oauth_helper {
                     }
                 }
             }
-        }
-        // If there is a deep-linking 'data' claim, make sure to include its properties.
-        if (isset($claims[LtiConstants::DL_DATA])) {
-            $params['data'] = $claims[LtiConstants::DL_DATA];
         }
 
         if (isset($params['content_items'])) {

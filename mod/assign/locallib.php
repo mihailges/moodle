@@ -5415,7 +5415,13 @@ class assign {
                         '',
                         $cangrade
                     );
-                    $gradefordisplay = $gradebookgrade->str_long_grade;
+                    // Display the penalty indicator next to the penalized grade, if applicable.
+                    $gradegrade = new \grade_grade();
+                    $gradegrade->deductedmark = $gradebookgrade->deductedmark ?? 0;
+                    $gradegrade->overridden = $gradebookgrade->overridden ?? 0;
+                    $penaltyindicator = \core_grades\penalty_manager::show_penalty_indicator($gradegrade);
+
+                    $gradefordisplay = $penaltyindicator . $gradebookgrade->str_long_grade;
                 } else {
                     // This grade info is the grade from gradebook.
                     // We need user id to determine if the grade is overridden or not.
@@ -5639,11 +5645,14 @@ class assign {
             // Now get the gradefordisplay.
             if ($controller) {
                 $controller->set_grade_range(make_grades_menu($this->get_instance()->grade), $this->get_instance()->grade > 0);
-                $grade->gradefordisplay = $controller->render_grade($PAGE,
-                                                                     $grade->id,
-                                                                     $gradingitem,
-                                                                     $penalisedgrade,
-                                                                     $cangrade);
+                // Display the penalty indicator next to the penalized grade, if applicable.
+                $gradegrade = new \grade_grade();
+                $gradegrade->deductedmark = $grade->penalty ?? 0;
+                $gradegrade->overridden = $userid > 0 ? $this->get_grade_item()->get_grade($userid)->overridden : 0;
+                $penaltyindicator = \core_grades\penalty_manager::show_penalty_indicator($gradegrade);
+                $gradeoutput = $penaltyindicator . $penalisedgrade;
+
+                $grade->gradefordisplay = $controller->render_grade($PAGE, $grade->id, $gradingitem, $gradeoutput, $cangrade);
             } else {
                 // We do not need user id here as the overriden grade should not affect the previous attempts.
                 $grade->gradefordisplay = $this->display_grade($penalisedgrade, false, 0, 0, $deductedmark);

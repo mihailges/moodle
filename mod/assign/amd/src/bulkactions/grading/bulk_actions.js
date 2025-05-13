@@ -67,7 +67,7 @@ export default class extends BulkActions {
     /** @type {boolean} Whether to show the set workflow state action. */
     #workflowState;
 
-    /** @type {boolean} Whether this assignment supports submissions (text or file). */
+    /** @type {boolean} Whether this assignment supports submissions. */
     #supportsSubmissions;
 
     /** @type {boolean} Whether this assignment has submissions. */
@@ -87,7 +87,7 @@ export default class extends BulkActions {
      * @param {boolean} options.markingallocation - Whether to show the set marking allocation action.
      * @param {Array} options.pluginoperations - The list of plugin operations.
      * @param {string} options.sesskey - The session key.
-     * @param {boolean} options.supportssubmissions - Whether this assignment supports submissions (text or file).
+     * @param {boolean} options.supportssubmissions - Whether this assignment supports submissions.
      * @param {boolean} options.hassubmissions - Whether this assignment has submissions.
      * @returns {this} An instance of the anonymous class extending BulkActions.
      */

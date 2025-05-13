@@ -1,8 +1,8 @@
 @mod @mod_assign
 Feature: In an assignment, teachers can download submissions through the actions dropdown
-  In order to download
+  In order to download all submissions in an assignment
   As a teacher
-  I need to click the actions dropdown and select 'download all submissions'
+  I need to have the option available in the actions dropdown menu
 
   Background:
     Given the following "courses" exist:
@@ -17,49 +17,33 @@ Feature: In an assignment, teachers can download submissions through the actions
       | teacher1  | C1      | editingteacher  |
       | student1  | C1      | student         |
 
-  Scenario Outline: Submissions actions dropdown download button visibility
+  Scenario: The option to download all submissions is available when there are submissions.
     Given the following "activity" exists:
       | activity                            | assign                  |
       | course                              | C1                      |
       | name                                | Test assignment name    |
-      | intro                               | Submit your online text |
-      | assignsubmission_onlinetext_enabled | <onlinetext_enabled>    |
-      | assignsubmission_file_enabled       | <file_enabled>          |
-      | maxattempts                         | -1                      |
-      | attemptreopenmethod                 | manual                  |
-      | hidegrader                          | 1                       |
-      | submissiondrafts                    | 0                       |
+      | assignsubmission_onlinetext_enabled | 1                       |
     And the following "mod_assign > submissions" exist:
       | assign                | user      | onlinetext                       |
-      | Test assignment name  | student1  | <submission_text>                |
+      | Test assignment name  | student1  | I'm the student first submission |
     And I am on the "Test assignment name" Activity page logged in as teacher1
     And I change window size to "large"
     When I navigate to "Submissions" in current page administration
-    And I click on "Actions" "link"
-    Then I should <see_or_not_see> "Download all submissions"
-    And I should see "View gradebook"
+    Then the "Download all submissions" item should exist in the "Actions" action menu
 
-    Examples:
-      | onlinetext_enabled | file_enabled | submission_text                  | see_or_not_see |
-      | 1                  | 0            | I'm the student first submission | see            |
-      | 0                  | 0            |                                  | not see        |
-
-  Scenario: Submissions actions dropdown download button should not be visible when no submission is made
+  Scenario Outline: Option to download all submissions is unavailable if no submissions have been made.
     Given the following "activity" exists:
       | activity                            | assign                  |
       | course                              | C1                      |
       | name                                | Test assignment name    |
-      | intro                               | Submit your online text |
-      | assignsubmission_onlinetext_enabled | 1                       |
-      | assignsubmission_file_enabled       | 0                       |
-      | maxattempts                         | -1                      |
-      | attemptreopenmethod                 | manual                  |
-      | hidegrader                          | 1                       |
-      | submissiondrafts                    | 0                       |
-
+      | assignsubmission_onlinetext_enabled | <onlinetext_enabled>    |
+      | file_enabled                        | <file_enabled>          |
     And I am on the "Test assignment name" Activity page logged in as teacher1
     And I change window size to "large"
     When I navigate to "Submissions" in current page administration
-    And I click on "Actions" "link"
-    Then I should not see "Download all submissions"
-    And I should see "View gradebook"
+    Then the "Download all submissions" item should not exist in the "Actions" action menu
+
+    Examples:
+      | onlinetext_enabled | file_enabled |
+      | 1                  | 0            |
+      | 0                  | 0            |

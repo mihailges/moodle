@@ -42,6 +42,8 @@ require_once("{$CFG->dirroot}/ltix/tests/generator/lib.php");
 class mod_lti_generator extends core_ltix_generator {
 
     public function create_instance($record = null, ?array $options = null) {
+        global $DB;
+
         $record  = (object) (array) $record;
 
         if (!isset($record->toolurl)) {
@@ -69,7 +71,24 @@ class mod_lti_generator extends core_ltix_generator {
             $record->instructorchoiceacceptgrades = 1;
         }
         if (!isset($record->typeid)) {
-            $record->typeid = 0;
+            // Ensure that if the typeid is not set, a tool type is created with all the prerequisites required to enable
+            // the creation of a new mod_lti instance.
+            $typeid = $this->create_tool_types([
+                'name' => 'Example tool',
+                'baseurl' => 'http://example.com/tool/1',
+                'lti_coursevisible' => \core_ltix\constants::LTI_COURSEVISIBLE_PRECONFIGURED,
+                'state' => \core_ltix\constants::LTI_TOOL_STATE_CONFIGURED
+            ]);
+
+            $placementtype = $DB->get_record('lti_placement_type', ['type' => 'mod_lti:activityplacement']);
+
+            // Create a placement.
+            $this->create_placement($typeid, $placementtype->id, [
+                'default_usage' => 'enabled',
+                'supports_deep_linking' => 0,
+            ]);
+
+            $record->typeid = $typeid;
         }
         return parent::create_instance($record, (array)$options);
     }

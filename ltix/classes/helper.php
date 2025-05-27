@@ -1081,8 +1081,8 @@ class helper {
     public static function get_tools_with_enabled_placement_in_course(string $placementtype, int $courseid): array {
         global $DB, $SITE;
 
-        if (!placements_manager::is_valid_placement_type_string($placementtype)) {
-            throw new coding_exception("Invalid placement type. Should be of the form 'component:placementtypename'.");
+        if (!placements_manager::is_valid_placement_type($placementtype)) {
+            throw new coding_exception("Invalid placement type.");
         }
 
         $coursecontext =  \core\context\course::instance($courseid);

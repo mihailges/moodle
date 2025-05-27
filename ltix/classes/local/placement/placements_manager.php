@@ -178,7 +178,7 @@ final class placements_manager {
      * @param string $placementtype the placement type string.
      * @return bool true if valid, false otherwise.
      */
-    public static function is_valid_placement_type_string(string $placementtype): bool {
+    private static function is_valid_placement_type_string(string $placementtype): bool {
         if (!preg_match('/^[a-z0-9_]+:[a-z0-9_]+$/', $placementtype)) {
             return false;
         }
@@ -187,6 +187,19 @@ final class placements_manager {
             self::get_component_string_from_placement_type($placementtype),
             \core_component::get_component_names(includecore: true)
         );
+    }
+
+    /**
+     * Validate both the format of a given placement type and its implementation (existence) in the system.
+     *
+     * @param string $placementtype The placement type string.
+     * @return bool true if valid, false otherwise.
+     */
+    public static function is_valid_placement_type(string $placementtype): bool {
+        global $DB;
+
+        return placements_manager::is_valid_placement_type_string($placementtype) &&
+            $DB->record_exists('lti_placement_type', ['type' => $placementtype]);
     }
 
     /**

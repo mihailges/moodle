@@ -47,6 +47,7 @@
  */
 
 use core_ltix\local\lticore\models\resource_link;
+use core_ltix\local\placement\service\resource_link_manager;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -130,25 +131,16 @@ function lti_add_instance($lti, $mform) {
     $completiontimeexpected = !empty($lti->completionexpected) ? $lti->completionexpected : null;
     \core_completion\api::update_completion_date_event($lti->coursemodule, 'lti', $lti->id, $completiontimeexpected);
 
-    $ltiresourcelink = [
-        'typeid' => $lti->typeid,
-        'component' => 'mod_lti',
-        'itemtype' => 'mod_lti:activityplacement',
-        'itemid' => $lti->id,
-        'contextid' => $lti->coursemodule,
-        'url' => $lti->toolurl,
-        'title' => $lti->name,
-        'text' => $lti->intro,
-        'textformat' => $lti->introformat,
-        'gradable' => $lti->instructorchoiceacceptgrades,
-        'servicesalt' => $lti->servicesalt,
-        ...(isset($lti->launchcontainer) ? ['launchcontainer' => $lti->launchcontainer] : []),
-        ...(!empty($lti->icon) ? ['icon' => $lti->icon] : []),
-        ...(!empty($lti->instructorcustomparameters) ? ['customparams' => $lti->instructorcustomparameters] : []),
-    ];
+    $context = context_module::instance($lti->coursemodule);
+    $resourcelinkmanager = resource_link_manager::create('mod_lti:activityplacement', 'mod_lti',
+        $context, $lti->typeid);
 
-    $rl = new resource_link(0, (object) $ltiresourcelink);
-    $rl->save();
+    $launchcontainer = $lti->launchcontainer ?? null;
+    $icon = !empty($lti->icon) ? $lti->icon : null;
+    $customparams = !empty($lti->instructorcustomparameters) ? $lti->instructorcustomparameters : null;
+    // Create a resource link.
+    $resourcelinkmanager->create_resource_link($lti->id, $lti->toolurl, $lti->name, $lti->intro, $lti->introformat,
+        $lti->instructorchoiceacceptgrades, $lti->servicesalt, $launchcontainer, $icon, $customparams);
 
     return $lti->id;
 }
@@ -202,15 +194,11 @@ function lti_update_instance($lti, $mform) {
     $completiontimeexpected = !empty($lti->completionexpected) ? $lti->completionexpected : null;
     \core_completion\api::update_completion_date_event($lti->coursemodule, 'lti', $lti->id, $completiontimeexpected);
 
-    $rl = new resource_link();
-    $ltiresourcelink = $rl->get_record(['itemid' => $lti->id, 'component' => 'mod_lti', 'itemtype' => 'mod_lti:activityplacement']);
+    $context = context_module::instance($lti->coursemodule);
+    $resourcelinkmanager = resource_link_manager::create('mod_lti:activityplacement', 'mod_lti',
+        $context, $lti->typeid);
 
     $ltiresourcelinkformvalues = [
-        'typeid' => $lti->typeid,
-        'component' => 'mod_lti',
-        'itemtype' => 'mod_lti:activityplacement',
-        'itemid' => $lti->id,
-        'contextid' => $lti->coursemodule,
         'url' => $lti->toolurl,
         'title' => $lti->name,
         'text' => $lti->intro,
@@ -221,13 +209,8 @@ function lti_update_instance($lti, $mform) {
         ...(!empty($lti->icon) ? ['icon' => $lti->icon] : []),
         ...(!empty($lti->instructorcustomparameters) ? ['customparams' => $lti->instructorcustomparameters] : []),
     ];
-
-    foreach ($ltiresourcelinkformvalues as $name => $value) {
-        $ltiresourcelink->set($name, $value);
-    }
-    $ltiresourcelink->update();
-
-    return $DB->update_record('lti', $lti);
+    // Update the resource link.
+    return $resourcelinkmanager->update_resource_link($lti->id, $ltiresourcelinkformvalues);
 }
 
 /**
@@ -269,6 +252,12 @@ function lti_delete_instance($id) {
         $rl = new resource_link();
         $ltiresourcelink = $rl->get_record(['itemid' => $id, 'component' => 'mod_lti', 'itemtype' => 'mod_lti:activityplacement']);
         $ltiresourcelink->delete();
+
+        $context = context_module::instance($cm->id);
+        $resourcelinkmanager = resource_link_manager::create('mod_lti:activityplacement', 'mod_lti',
+            $context, $lti->typeid);
+        $resourcelinkmanager->delete_resource_link($id);
+
         return true;
     }
     return false;

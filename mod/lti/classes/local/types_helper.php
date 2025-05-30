@@ -39,7 +39,8 @@ class types_helper {
      * @return \stdClass[] the array of tool type objects.
      *
      * DO NOT USE: This method is retained for backward compatibility on legacy tools and does not fully follow the latest
-     * architecture. Please use core_ltix\helper::get_tools_with_enabled_placement_in_course() for new implementations.
+     * architecture. Please use core_ltix\local\placement\placement_repository::get_tools_with_enabled_placement_in_course()
+     * for new implementations.
      */
     public static function get_lti_types_by_course(int $courseid, int $userid, array $coursevisible = []): array {
         global $DB, $SITE;

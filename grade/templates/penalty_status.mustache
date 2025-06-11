@@ -12,42 +12,37 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template core_grades/penalty_indicator
+    @template core_grades/penalty_status
 
-    This template is used to render the penalty indicator.
-
+    This template is used to render the penalty status.
 
     Example context (json):
     {
-        "penalty": 20,
-        "finalgrade": 50,
-        "maxgrade": 100,
-        "info": "Late penalty applied -20 marks"
+        "isexempt": true,
+        "penaltyapplied": false,
+        "exemptionicon": {"name": "i/shield", "component": "core"},
+        "exemptioninfo": "Grade penalty exemption applied"
     }
 }}
 
-{{#icon}}
-    <span data-bs-toggle="tooltip" class="penalty-indicator-icon" title="{{info}}">
-        {{#pix}}{{name}}, {{component}}{{/pix}}
-    </span>
-{{/icon}}
-{{#finalgrade}}
-    <span class="penalty-indicator-value">
-        {{#grademax}}
-            {{finalgrade}} / {{grademax}}
-        {{/grademax}}
-        {{^grademax}}
-            {{finalgrade}}
-        {{/grademax}}
-    </span>
-{{/finalgrade}}
+{{#isexempt}}
+    <span class="gradepenaltystatus" data-bs-toggle="tooltip" title="{{exemptioninfo}}"><!-- Prevent whitespace
+    -->{{#pix}}{{exemptionicon.name}}, {{exemptionicon.component}}, {{exemptioninfo}}{{/pix}}</span>
+{{/isexempt}}
+{{^isexempt}}
+    {{#penaltyapplied}}
+        <span class="gradepenaltystatus" data-bs-toggle="tooltip" title="{{penaltyinfo}}"><!-- Prevent whitespace
+        -->{{#pix}}{{penaltyicon.name}}, {{penaltyicon.component}}, {{penaltyinfo}}{{/pix}}</span>
+    {{/penaltyapplied}}
+{{/isexempt}}
 
 {{#js}}
 require(['theme_boost/bootstrap/tooltip'], function(Tooltip) {
     // Re-init the tooltip to ensure those dynamically added through AJAX are initialized
-    document.querySelectorAll('.penalty-indicator-icon[data-bs-toggle="tooltip"]').forEach(tooltipElement => {
+    document.querySelectorAll('.gradepenaltystatus[data-bs-toggle="tooltip"]').forEach(tooltipElement => {
         Tooltip.getInstance(tooltipElement)?.dispose();
         new Tooltip(tooltipElement);
+        tooltipElement.querySelector('i[title]').removeAttribute('title');
     });
 });
 {{/js}}

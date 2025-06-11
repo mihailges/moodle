@@ -761,7 +761,7 @@ class assign_grading_table extends table_sql implements renderable {
      * @param float $deductedmark The deducted mark if penalty is applied
      * @return string The formatted grade
      */
-    public function display_grade($grade, $editable, $userid, $modified, float $deductedmark = 0) {
+    public function display_grade($grade, $editable, $userid, $modified, float $deductedmark = 0, bool $showexemptions = true) {
         if ($this->is_downloading()) {
             if ($this->assignment->get_instance()->grade >= 0) {
                 if ($grade == -1 || $grade === null) {
@@ -778,7 +778,7 @@ class assign_grading_table extends table_sql implements renderable {
                 return $scale;
             }
         }
-        return $this->assignment->display_grade($grade, $editable, $userid, $modified, $deductedmark);
+        return $this->assignment->display_grade($grade, $editable, $userid, $modified, $deductedmark, $showexemptions);
     }
 
     /**
@@ -989,7 +989,14 @@ class assign_grading_table extends table_sql implements renderable {
      */
     public function col_grade(stdClass $row): string {
         $gradingdisabled = $this->assignment->grading_disabled($row->id, true, $this->gradinginfo);
-        $displaygrade = $this->display_grade($row->grade, $this->quickgrading && !$gradingdisabled, $row->userid, $row->timemarked);
+        $displaygrade = $this->display_grade(
+            $row->grade,
+            $this->quickgrading && !$gradingdisabled,
+            $row->userid,
+            $row->timemarked,
+            0,
+            false
+        );
 
         if (!$this->is_downloading() && $this->hasgrade) {
             $urlparams = [
@@ -1041,7 +1048,13 @@ class assign_grading_table extends table_sql implements renderable {
 
         $grade = $this->get_gradebook_data_for_user($row->userid);
         if ($grade) {
-            $o = $this->display_grade($grade->grade, false, $row->userid, $row->timemarked, $grade->deductedmark);
+            $o = $this->display_grade(
+                $grade->grade,
+                false,
+                $row->userid,
+                $row->timemarked,
+                $grade->deductedmark
+            );
         }
 
         return $o;

@@ -19,9 +19,13 @@
 
     Template for displaying the placement description in the form.
 
+    Context variables required for this template:
+      * placementdescription - Placement description text
+
     Example context (json):
     {
+        "placementdescription": "Placement description"
     }
 }}
 
-<div class="ltix-placementdescription mb-3">{{placementdescription}}</div>
+<div class="mb-3">{{placementdescription}}</div>

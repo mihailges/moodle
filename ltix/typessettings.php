@@ -173,7 +173,7 @@ if ($action == 'update') {
     // Get the placement config linked to this tool.
     $placementconfig = \core_ltix\helper::load_placement_config($id);
 
-    $mergeddata = (object) array_merge((array)$type, (array)$placementconfig);
+    $mergeddata = (object) array_merge((array) $type, (array) $placementconfig);
     $form->set_data($mergeddata);
 }
 

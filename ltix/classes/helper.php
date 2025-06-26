@@ -1279,10 +1279,11 @@ class helper {
 
     /**
      * Load the placement configuration from the database.
+     *
      * @param int $toolid The tool id.
      * @return object The placement configuration.
      */
-    public static function load_placement_config($toolid) {
+    public static function load_placement_config(int $toolid): object {
         global $DB;
 
         $config = new \stdClass();
@@ -1297,7 +1298,7 @@ class helper {
 
         foreach ($configrecords as $record) {
             // Suffix to append to the config element names so that they match the form element names.
-            $elementsuffix = '_placement_' . $toolplacements[$record->placementid];
+            $elementsuffix = '_placementconfig' . $toolplacements[$record->placementid];
 
             $config->{$record->name . $elementsuffix} = $record->value;
         }
@@ -1307,10 +1308,11 @@ class helper {
 
     /**
      * Save the placement configuration for a tool type.
+     *
      * @param object $type
      * @param object $config
      */
-    public static function update_placement_config($type, $config) {
+    public static function update_placement_config(object $type, object $config) {
         global $DB;
 
         // Update placement type config.
@@ -1321,33 +1323,20 @@ class helper {
         foreach ($placementtypeids as $pid) {
             // Get the placement type record.
             $placementtype = $registeredplacementtypes[$pid];
+            $placementdata = [
+                'toolid' => $type->id,
+                'placementtypeid' => $placementtype->id,
+            ];
 
-            // Placement record.
-            $newrecord = new \stdClass();
-            $newrecord->toolid = $type->id;
-            $newrecord->placementtypeid = $placementtype->id;
+            // Check if the record already exists.
+            $existingrecord = $DB->get_record('lti_placement', $placementdata);
 
-            // Save the placement record.
-            try {
-                // Attempt to insert first.
-                $placementid = $DB->insert_record('lti_placement', $newrecord);
-            } catch (\Exception $e) {
-                // Check if the record already exists.
-                $existingrecord = $DB->get_record('lti_placement',
-                    ['toolid' => $type->id, 'placementtypeid' => $placementtype->id]);
-
-                if ($existingrecord) {
-                    $placementid = $existingrecord->id;
-                } else {
-                    // Nothing found, this is weird. We can't proceed.
-                    // Throw an exception.
-                    throw new \moodle_exception('errorsavingplacement', 'core_ltix');
-                }
-            }
+            // Use the existing placement ID if found; otherwise, insert a new record and return its ID.
+            $placementid = $existingrecord ? $existingrecord->id : $DB->insert_record('lti_placement', $placementdata);
 
             // Now save the placement config for this placement.
             // Suffix used for the config element names in $config.
-            $elementsuffix = "_placement_{$placementtype->id}";
+            $elementsuffix = "_placementconfig{$placementtype->id}";
 
             // Get config for this placement type from $config.
             $placementconfig = array_filter(
@@ -1357,11 +1346,7 @@ class helper {
             );
 
             // Disabled if there are no config for this placement type.
-            if (empty($placementconfig)) {
-                $placementconfig["default_usage{$elementsuffix}"] = 'disabled';
-            } else {
-                $placementconfig["default_usage{$elementsuffix}"] = 'enabled';
-            }
+            $placementconfig["default_usage{$elementsuffix}"] = empty($placementconfig) ? 'disabled' : 'enabled';
 
             // Save the config values.
             foreach ($placementconfig as $name => $value) {
@@ -1394,21 +1379,7 @@ class helper {
         $idstoremove = array_diff(array_keys($registeredplacementtypes), $placementtypeids);
 
         if (!empty($idstoremove)) {
-            [$insql, $inparams] = $DB->get_in_or_equal($idstoremove);
-
-            // Delete configs for the placement.
-            $DB->delete_records_select('lti_placement_config',
-                'placementid IN (
-                    SELECT id FROM {lti_placement} lp WHERE lp.toolid = ?
-                    AND lp.placementtypeid ' . $insql . ')',
-                [$type->id, ...$inparams]
-            );
-
-            // Delete placement.
-            $DB->delete_records_select('lti_placement',
-                'toolid = ? AND placementtypeid ' . $insql,
-                [$type->id, ...$inparams]
-            );
+            self::delete_tool_placements_by_type($type->id, $idstoremove);
         }
     }
 
@@ -1416,28 +1387,49 @@ class helper {
      * Insert or update a placement config record.
      *
      * @param object $record Placement config record
-     * @throws \moodle_exception if unable to save
      */
-    public static function insert_or_update_placement_config($record) {
+    public static function insert_or_update_placement_config(object $record) {
         global $DB;
 
-        try {
-            // Attempt to insert first.
-            $DB->insert_record('lti_placement_config', $record);
-        } catch (\Exception $e) {
-            // Check if the record already exists.
-            $existingrecord = $DB->get_record('lti_placement_config',
-                ['placementid' => $record->placementid, 'name' => $record->name]);
+        // Check if the record already exists.
+        $existingrecord = $DB->get_record('lti_placement_config', [
+            'placementid' => $record->placementid,
+            'name' => $record->name,
+        ]);
 
-            if ($existingrecord) {
-                $record->id = $existingrecord->id;
-                $DB->update_record('lti_placement_config', $record);
-            } else {
-                // Nothing found, this is weird. We shouldn't proceed.
-                // Throw an exception.
-                throw new \moodle_exception('errorsavingplacementconfig', 'core_ltix');
-            }
+        // Update the existing placement config if found; otherwise, insert a new record.
+        if ($existingrecord) {
+            $record->id = $existingrecord->id;
+            $DB->update_record('lti_placement_config', $record);
+        } else {
+            $DB->insert_record('lti_placement_config', $record);
         }
+    }
+
+    /**
+     * Removes tool placements and related config based on the provided placement type IDs.
+     *
+     * @param int $toolid The tool ID.
+     * @param array $placementtypeids The placement type IDs corresponding to the placements to be deleted.
+     */
+    public static function delete_tool_placements_by_type(int $toolid, array $placementtypeids): void {
+        global $DB;
+
+        [$insql, $inparams] = $DB->get_in_or_equal($placementtypeids);
+
+        // Delete configs for the placement.
+        $DB->delete_records_select('lti_placement_config',
+            "placementid IN (
+                    SELECT id FROM {lti_placement} lp WHERE lp.toolid = ?
+                    AND lp.placementtypeid {$insql})",
+            [$toolid, ...$inparams]
+        );
+
+        // Delete placement.
+        $DB->delete_records_select('lti_placement',
+            "toolid = ? AND placementtypeid {$insql}",
+            [$toolid, ...$inparams]
+        );
     }
 
     public static function update_type($type, $config) {

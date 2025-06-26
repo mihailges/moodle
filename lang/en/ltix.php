@@ -111,8 +111,6 @@ $string['errorbadurl'] = 'URL is not a valid tool URL or cartridge.';
 $string['errorincorrectconsumerkey'] = 'Consumer key is incorrect.';
 $string['errorinvaliddata'] = 'Invalid data: {$a}';
 $string['errorinvalidresponseformat'] = 'Invalid Content-Item response format.';
-$string['errorsavingplacement'] = 'Error! Cannot save placement record.';
-$string['errorsavingplacementconfig'] = 'Error! Cannot save placement config record.';
 $string['errortooltypenotfound'] = 'LTI tool type not found.';
 $string['existing_window'] = 'Existing window';
 $string['external_tool_types'] = 'Preconfigured tools';
@@ -140,14 +138,16 @@ $string['lti_deeplinking_help'] = 'If ticked, you can set the deep linking url f
 $string['lti_deeplinkingurl'] = 'LTI Deep Linking URL';
 $string['lti_deeplinkingurl_help'] = 'If set, this URL will be used to launch the tool for deep linking requests.';
 $string['lti_placementtext'] = 'Text';
-$string['lti_placementtext_help'] = 'Text help??';
+$string['lti_placementtext_help'] = 'Allows you to specify the text that will be displayed for the LTI link associated with this placement.';
 $string['lti_resourcelinking'] = 'LTI Resource Linking Request';
 $string['lti_resourcelinking_help'] = 'If ticked, you can set the resource linking url for this placement.';
 $string['lti_resourcelinkingurl'] = 'LTI Resource Linking URL';
 $string['lti_resourcelinkingurl_help'] = 'If set, this URL will be used to launch the tool for resource linking requests.';
 $string['lti_tool_placements'] = 'Placements';
-$string['lti_tool_placements_emptyconfig'] = 'To ensure the LTI tool is usable within Moodle, please configure its placement. Without proper placement settings, the tool won\'t be accessible to users.';
-$string['lti_tool_placements_help'] = 'Placement help todo';
+$string['lti_tool_placements_config_warning'] = 'To ensure the LTI tool is usable within Moodle, please configure its placements. Without proper placement settings, the tool won\'t be accessible to users.';
+$string['lti_tool_placements_help'] = 'Allows you to specify where the tool is visible and accessible by selecting from the available placements.
+
+Selected placements will display their corresponding configuration sections below in the form.';
 $string['ltix_launch_error'] = 'An error occurred when launching the external tool:';
 $string['ltix_launch_error_tool_request'] = '<p>
 To submit a request for an administrator to complete the tool configuration, click <a href="{$a->admin_request_url}" target="_top">here</a>.
@@ -224,7 +224,7 @@ may not require a shared secret.';
 $string['pending'] = 'Pending';
 $string['placement'] = 'Placement';
 $string['placement_activityplacement'] = 'Placement: Activity chooser';
-$string['placement_activityplacementdescription'] = 'Lets you add an external tool as a new activity option in your course.';
+$string['placement_activityplacement_desc'] = 'Lets you add an external tool as a new activity option in your course.';
 $string['privacy'] = 'Privacy';
 $string['privacy:metadata:core_ltix'] = 'The LTI subsystem stores user data for LTI submissions and tools';
 $string['privacy:metadata:courseid'] = 'The ID of the course the user is accessing the LTI Consumer from';

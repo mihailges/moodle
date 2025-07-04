@@ -224,7 +224,6 @@ $string['placement'] = 'Placement';
 $string['placement_header'] = 'Placement: {$a}';
 $string['placementstatussaved'] = 'Placement status saved.';
 $string['privacy'] = 'Privacy';
-$string['privacy:metadata:core_ltix'] = 'The LTI subsystem stores user data for LTI submissions and tools';
 $string['privacy:metadata:courseid'] = 'The ID of the course the user is accessing the LTI Consumer from';
 $string['privacy:metadata:courseidnumber'] = 'The ID number of the course the user is accessing the LTI Consumer from';
 $string['privacy:metadata:coursefullname'] = 'The fullname of the course the user is accessing the LTI Consumer from';

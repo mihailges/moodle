@@ -41,6 +41,8 @@ Feature: Teacher can specify different display options for a url
       | intro          | URL description     |
       | externalurl    | https://moodle.org/ |
       | display        | 6                   |
+      | popupwidth     | 800                 |
+      | popupheight    | 600                 |
     When I am on the "Music history" "url activity" page logged in as student1
     Then the "class" attribute of "body" "css_element" should contain "limitedwidth"
 
@@ -67,19 +69,6 @@ Feature: Teacher can specify different display options for a url
       | display        | 3                   |
     When I am on the "Music history" "url activity" page logged in as student1
     Then the "class" attribute of "body" "css_element" should contain "limitedwidth"
-
-  Scenario: URL resource module with in frame display option to an external website shows in full width
-    Given the following "activity" exists:
-      | activity       | url                 |
-      | course         | C1                  |
-      | idnumber       | Music history       |
-      | name           | Music history       |
-      | intro          | URL description     |
-      | externalurl    | https://moodle.org/ |
-      | display        | 2                   |
-    When I am on the "Music history" "url activity" page logged in as student1
-    Then "frameset" "css_element" should exist
-    And the "class" attribute of "body" "css_element" should not contain "limitedwidth"
 
   Scenario: URL resource module with embed display option to an external website shows in full width
     Given the following "activity" exists:

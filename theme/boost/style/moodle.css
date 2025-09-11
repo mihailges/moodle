@@ -38263,12 +38263,12 @@ body.reset-style .btn:not(.btn-icon) {
  * Reset the Bootstrap _reboot.scss styles for tables.
  * That reboot mainly affects tables added by the tiny editor.
  */
-table:not(.table):not(.ygtvtable) thead,
-table:not(.table):not(.ygtvtable) tbody,
-table:not(.table):not(.ygtvtable) tfoot,
-table:not(.table):not(.ygtvtable) tr,
-table:not(.table):not(.ygtvtable) td,
-table:not(.table):not(.ygtvtable) th {
+table:not(.table):not(.ygtvtable):not(.yui3-datatable-table) thead,
+table:not(.table):not(.ygtvtable):not(.yui3-datatable-table) tbody,
+table:not(.table):not(.ygtvtable):not(.yui3-datatable-table) tfoot,
+table:not(.table):not(.ygtvtable):not(.yui3-datatable-table) tr,
+table:not(.table):not(.ygtvtable):not(.yui3-datatable-table) td,
+table:not(.table):not(.ygtvtable):not(.yui3-datatable-table) th {
   border-color: var(--bs-border-color);
   border-style: solid;
   border-width: var(--bs-border-width);

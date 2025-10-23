@@ -50,9 +50,9 @@ $linkid = required_param('id', PARAM_INT);
 $link = new resource_link($linkid);
 $context = context::instance_by_id($link->get('contextid'));
 $toolconfig = helper::get_tool_config_for_link($link);
+$PAGE->set_context($context);
 if (is_null($toolconfig)) {
     $PAGE->set_url(new moodle_url('/ltix/launch.php'));
-    $PAGE->set_context($context);
     $PAGE->set_pagelayout('incourse');
     echo $OUTPUT->header();
     throw new moodle_exception('errortooltypenotfound', 'core_ltix');

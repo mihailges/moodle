@@ -360,7 +360,7 @@ class mod_lti_mod_form extends moodleform_mod {
         $supportscontentitemselection = !empty($placementconfig->deep_linking_url);
 
         if ($supportscontentitemselection) {
-            $contentitemurl = new moodle_url('/mod/lti/contentitem.php');
+            $contentitemurl = new moodle_url('/ltix/contentitemselection.php');
             $contentbuttonattributes = [
                 'data-contentitemurl' => $contentitemurl->out(false),
             ];

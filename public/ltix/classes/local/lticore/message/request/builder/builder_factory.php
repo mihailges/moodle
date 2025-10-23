@@ -20,12 +20,17 @@ use core\context;
 use core_ltix\helper;
 use core_ltix\local\lticore\exception\lti_exception;
 use core_ltix\local\lticore\facades\service\resource_link_launch_service_facade;
+use core_ltix\local\lticore\facades\service\deep_linking_launch_service_facade;
 use core_ltix\local\lticore\message\payload\custom\custom_param_parser;
 use core_ltix\local\lticore\message\payload\lis_vocab_converter;
 use core_ltix\local\lticore\message\payload\lti_1px_payload_converter;
+use core_ltix\local\lticore\message\payload\v1p1_deep_linking_launch_payload_builder;
 use core_ltix\local\lticore\message\payload\v1p1_resource_link_launch_payload_builder;
+use core_ltix\local\lticore\message\payload\v1p3_deep_linking_launch_payload_builder;
 use core_ltix\local\lticore\message\payload\v1p3_resource_link_launch_payload_builder;
 use core_ltix\local\lticore\message\request\builder\v1p1\v1p1_resource_link_launch_request_builder;
+use core_ltix\local\lticore\message\request\builder\v1p1\v1p1_deep_linking_launch_request_builder;
+use core_ltix\local\lticore\message\request\builder\v1p3\v1p3_deep_linking_launch_request_builder;
 use core_ltix\local\lticore\message\request\builder\v1p3\v1p3_resource_link_launch_request_builder;
 
 /**
@@ -38,7 +43,6 @@ use core_ltix\local\lticore\message\request\builder\v1p3\v1p3_resource_link_laun
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class builder_factory {
-
     /**
      * Get a builder instance based on launch config.
      *
@@ -95,8 +99,51 @@ class builder_factory {
                     roles: \core_ltix\helper::get_lti_message_roles($launchconfig->user->id, $coursecontext),
                     extraclaims: $extraclaims
                 );
+            } else if (!empty($launchconfig->messagetype) && $launchconfig->messagetype === 'LtiDeepLinkingRequest') {
+                // Deep Linking launches.
+                $servicefacade = new deep_linking_launch_service_facade(
+                    toolconfig: $launchconfig->toolconfig,
+                    context: $launchconfig->context,
+                    userid: $launchconfig->user->id,
+                    returnurl: $launchconfig->returnurl
+                );
+                $customparamparser = new custom_param_parser(
+                    sourcedatamap: helper::get_capabilities(),
+                    servicefacade: $servicefacade,
+                    context: $launchconfig->context,
+                    user: $launchconfig->user
+                );
+                $claimconverter = new lti_1px_payload_converter(
+                    lisvocabconverter: new lis_vocab_converter()
+                );
+                $extraclaims = (new v1p3_deep_linking_launch_payload_builder(
+                    toolconfig: $launchconfig->toolconfig,
+                    user: $launchconfig->user,
+                    servicefacade: $servicefacade,
+                    customparamparser: $customparamparser,
+                    claimconverter: $claimconverter,
+                    contextid: $launchconfig->context->id,
+                ))->get_claims();
+
+                $coursecontext = context::instance_by_id($launchconfig->context->id)->get_course_context();
+
+                return new v1p3_deep_linking_launch_request_builder(
+                    toolconfig: $launchconfig->toolconfig,
+                    issuer: $issuer,
+                    userid: $launchconfig->user->id,
+                    launchid: $launchconfig->launchid,
+                    returnurl: $launchconfig->returnurl,
+                    accepttypes: $launchconfig->accepttypes ?? ['ltiResourceLink'],
+                    acceptpresentationtargets: $launchconfig->acceptpresentationtargets ?? ['frame', 'iframe', 'window'],
+                    acceptmediatypes: $launchconfig->acceptmediatypes ?? [],
+                    autocreate: $launchconfig->autocreate ?? false,
+                    acceptmultiple: $launchconfig->acceptmultiple ?? false,
+                    placementtype: $launchconfig->placementtype ?? null,
+                    roles: \core_ltix\helper::get_lti_message_roles($launchconfig->user->id, $coursecontext),
+                    extraclaims: $extraclaims,
+                );
             } else {
-                // TODO: Need to add support above for other message types (e.g submission review, deep linking).
+                // TODO: Need to add support above for other message types (e.g submission review).
                 throw new lti_exception('builder_factory error: cannot create request builder. Unknown message type');
             }
         } else if ($launchconfig->toolconfig->lti_ltiversion === \core_ltix\constants::LTI_VERSION_1) {
@@ -129,6 +176,43 @@ class builder_factory {
                     extraparams: $extraparams
                 );
                 return $builder;
+            } else if (!empty($launchconfig->messagetype) && $launchconfig->messagetype === 'ContentItemSelectionRequest') {
+                // Deep Linking launches (Content Item Selection in LTI 1.1).
+                $servicefacade = new deep_linking_launch_service_facade(
+                    toolconfig: $launchconfig->toolconfig,
+                    context: $launchconfig->context,
+                    userid: $launchconfig->user->id,
+                    returnurl: $launchconfig->returnurl,
+                    messagetype: $launchconfig->messagetype,
+                );
+                $customparamparser = new custom_param_parser(
+                    sourcedatamap: helper::get_capabilities(),
+                    servicefacade: $servicefacade,
+                    context: $launchconfig->context,
+                    user: $launchconfig->user
+                );
+                $extraparams = (new v1p1_deep_linking_launch_payload_builder(
+                    toolconfig: $launchconfig->toolconfig,
+                    user: $launchconfig->user,
+                    servicefacade: $servicefacade,
+                    customparamparser: $customparamparser,
+                    contextid: $launchconfig->context->id,
+                ))->get_params();
+
+                return new v1p1_deep_linking_launch_request_builder(
+                    toolconfig: $launchconfig->toolconfig,
+                    userid: $launchconfig->user->id,
+                    launchid: $launchconfig->launchid,
+                    returnurl: $launchconfig->returnurl,
+                    accepttypes: $launchconfig->accepttypes ?? ['application/vnd.ims.lti.v1.ltilink'],
+                    acceptpresentationtargets: $launchconfig->acceptpresentationtargets ?? ['frame', 'iframe', 'window'],
+                    acceptmediatypes: $launchconfig->acceptmediatypes ?? ['*/*'],
+                    autocreate: $launchconfig->autocreate ?? false,
+                    acceptmultiple: $launchconfig->acceptmultiple ?? false,
+                    placementtype: $launchconfig->placementtype ?? null,
+                    roles: helper::get_launch_roles($launchconfig->user->id, $launchconfig->context),
+                    extraparams: $extraparams,
+                );
             } else {
                 // TODO: Need to add support above for other message types (e.g deep linking).
                 throw new lti_exception('builder_factory error: cannot create request builder. Unknown message type');
@@ -138,8 +222,9 @@ class builder_factory {
             //  Remember: convert the roles to v2 roles when using LTI 2.0.
             //  e.g.
             //  roles: $vc->to_v2_roles(helper::get_launch_roles($launchconfig->user->id, $launchconfig->context), true)
+            throw new lti_exception('builder_factory error: LTI 2.0 support not yet implemented');
         } else {
-            throw new lti_exception('builder_factory error: cannot create request builder for ltiversion '.$launchconfig->ltiversion);
+            throw new lti_exception('builder_factory error: cannot create request builder for ltiversion ' . $launchconfig->toolconfig->lti_ltiversion);
         }
     }
 }

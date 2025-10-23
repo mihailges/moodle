@@ -3,6 +3,7 @@
 namespace core_ltix\local\lticore\message\payload\custom\factory;
 
 use core_ltix\local\lticore\exception\lti_exception;
+use core_ltix\local\lticore\facades\service\deep_linking_launch_service_facade;
 use core_ltix\local\lticore\facades\service\resource_link_launch_service_facade;
 use core_ltix\local\lticore\message\payload\custom\custom_param_parser;
 use core_ltix\local\lticore\models\resource_link;
@@ -24,9 +25,11 @@ class custom_param_parser_factory {
      * @throws lti_exception if a parser instance cannot be created.
      */
     public function get_parser_from_auth_request(\stdClass $toolconfig, lti_token $launchtoken, lti_user $ltiuser): custom_param_parser {
+        $messagetype = $launchtoken->get_claim(\core_ltix\constants::LTI_JWT_CLAIM_PREFIX . '/claim/message_type');
+
         // TODO: below 'LtiResourceLinkRequest' should be replaced with a const.
-        if ($launchtoken->get_claim(\core_ltix\constants::LTI_JWT_CLAIM_PREFIX.'/claim/message_type') === 'LtiResourceLinkRequest') {
-            global $USER;
+        if ($messagetype === 'LtiResourceLinkRequest') {
+            global $USER, $DB;
             $user = $USER->id == $ltiuser->id ? $USER : \core_user::get_user($ltiuser->id);
 
             $context = \core\context\course::instance(
@@ -46,9 +49,38 @@ class custom_param_parser_factory {
                 context: $context,
                 user: $user
             );
+        } else if ($messagetype === 'LtiDeepLinkingRequest') {
+            global $USER, $DB;
+            $user = $USER->id == $ltiuser->id ? $USER : \core_user::get_user($ltiuser->id);
+
+            $context = \core\context\course::instance(
+                $launchtoken->get_claim(\core_ltix\constants::LTI_JWT_CLAIM_PREFIX . '/claim/context')['id']
+            );
+            $deeplinkingsettings = $launchtoken->get_claim('https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings');
+
+            if (!$context || !isset($context->id)) {
+                throw new lti_exception('Missing or invalid context claim in deep linking request');
+            }
+
+            if (!$deeplinkingsettings || !isset($deeplinkingsettings['deep_link_return_url'])) {
+                throw new lti_exception('Missing or invalid deep linking settings claim');
+            }
+
+            $servicefacade = new deep_linking_launch_service_facade(
+                toolconfig: $toolconfig,
+                context: $context,
+                userid: $ltiuser->id,
+                returnurl: $deeplinkingsettings['deep_link_return_url']
+            );
+
+            return new custom_param_parser(
+                \core_ltix\helper::get_capabilities(),
+                $servicefacade,
+                context: $context,
+                user: $user
+            );
         }
-        throw new lti_exception('Could not create custom_param_parser instance for message type: '.
-            $launchtoken->get_claim(\core_ltix\constants::LTI_JWT_CLAIM_PREFIX.'/claim/message_type'));
+        throw new lti_exception('Could not create custom_param_parser instance for message type: ' . $messagetype);
     }
 
 }

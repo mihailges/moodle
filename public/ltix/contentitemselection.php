@@ -23,6 +23,7 @@
  */
 
 use core_ltix\local\placement\placements_manager;
+use core_ltix\local\lticore\message\request\builder\builder_factory;
 
 require_once('../config.php');
 require_once($CFG->dirroot . '/mod/lti/lib.php');
@@ -55,18 +56,9 @@ $placementinstance->content_item_selection_capabilities($context);
 // Currently, the expected context is always course due to the lack flexibility of the methods that are used for constructing
 // the login or the content item selection request. This should be improved once these calls are replaced by the builder API.
 
-$messagetype = 'ContentItemSelectionRequest';
 $config = \core_ltix\helper::get_type_type_config($id);
-
-if ($config->lti_ltiversion === \core_ltix\constants::LTI_VERSION_1P3) {
-    if (!isset($SESSION->lti_initiatelogin_status)) {
-        echo \core_ltix\helper::initiate_login($context->get_course_context()->instanceid, 0, null, $config,
-            $messagetype, $placementtype, $title, $text);
-        exit;
-    } else {
-        unset($SESSION->lti_initiatelogin_status);
-    }
-}
+$messagetype = $config->lti_ltiversion === \core_ltix\constants::LTI_VERSION_1P3 ?
+    'LtiDeepLinkingRequest' : 'ContentItemSelectionRequest';
 
 // Set the return URL. We send the launch container along to help us avoid frames-within-frames when the user returns.
 $returnurlparams = [
@@ -83,11 +75,23 @@ $launchid = "ltilaunch_$messagetype" . rand();
 $SESSION->$launchid = "{$context->get_course_context()->instanceid},{$config->typeid},,{$messagetype},0," .
     base64_encode($title) . ',' . base64_encode($text) . ",{$placementtype}";
 
-// Prepare the request.
-$request = \core_ltix\helper::build_content_item_selection_request($id, $course, $returnurl, $launchid, $title, $text,
-    [], []);
+// Prepare launch configuration for the builder factory.
+$launchconfig = (object)[
+    'toolconfig'    => $config,
+    'context'       => $context,
+    'user'          => $USER,
+    'messagetype'   => $messagetype,
+    'returnurl'     => $returnurl->out(false),
+    'launchid'      => $launchid,
+    'placementtype' => $placementtype,
+];
+
+// Use the builder factory to create the appropriate request builder.
+$requestbuilderfactory = new builder_factory();
+
+// Build the deep linking request (or LTI 1.1 content item selection).
+$builder = $requestbuilderfactory->get_request_builder($launchconfig);
+$message = $builder->build_message();
 
 // Get the launch HTML.
-$content = \core_ltix\helper::post_launch_html($request->params, $request->url, false);
-
-echo $content;
+echo $message->to_html_form();

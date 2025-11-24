@@ -425,26 +425,26 @@ notes:
         \core_ltix\helper::new_access_token() instead.
       type: deprecated
     - message: >-
-        jwks_helper class is deprecrated. Please use
+        jwks_helper class is deprecated. Please use
         \core_ltix\local\ltiopenid\jwks_helper instead.
       type: deprecated
     - message: >-
-        registration_exception class is deprecrated. Please use
+        registration_exception class is deprecated. Please use
         \core_ltix\local\ltiopenid\registration_exception instead.
       type: deprecated
     - message: >-
-        registration_helper class is deprecrated. Please use
+        registration_helper class is deprecated. Please use
         \core_ltix\local\ltiopenid\registration_helper instead.
       type: deprecated
     - message: >-
-        get_tool_proxy_sql() method is deprecrated. Please use
-        \core_ltix\helper::get_tool_proxy_sql instead.
+        get_tool_proxy_sql() method is deprecated. Please use
+        \core_ltix\helper::get_tool_proxy_sql() instead.
       type: deprecated
     - message: >-
-        lti_get_lti_types() method is deprecrated. Please use
-        \core_ltix\helper::get_config instead.
+        lti_get_lti_types() method is deprecated. Please use
+        \core_ltix\helper::get_lti_types() instead.
       type: deprecated
     - message: >-
-        lti_get_lti_types_from_proxy_id() method is deprecrated.
-        Please use \core_ltix\helper::get_lti_types_from_proxy_id instead.
+        lti_get_lti_types_from_proxy_id() method is deprecated.
+        Please use \core_ltix\helper::get_lti_types_from_proxy_id() instead.
       type: deprecated

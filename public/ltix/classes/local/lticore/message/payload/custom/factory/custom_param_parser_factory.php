@@ -29,7 +29,7 @@ class custom_param_parser_factory {
 
         // TODO: below 'LtiResourceLinkRequest' should be replaced with a const.
         if ($messagetype === 'LtiResourceLinkRequest') {
-            global $USER, $DB;
+            global $USER;
             $user = $USER->id == $ltiuser->id ? $USER : \core_user::get_user($ltiuser->id);
 
             $context = \core\context\course::instance(
@@ -50,27 +50,17 @@ class custom_param_parser_factory {
                 user: $user
             );
         } else if ($messagetype === 'LtiDeepLinkingRequest') {
-            global $USER, $DB;
+            global $USER;
             $user = $USER->id == $ltiuser->id ? $USER : \core_user::get_user($ltiuser->id);
 
             $context = \core\context\course::instance(
                 $launchtoken->get_claim(\core_ltix\constants::LTI_JWT_CLAIM_PREFIX . '/claim/context')['id']
             );
-            $deeplinkingsettings = $launchtoken->get_claim('https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings');
-
-            if (!$context || !isset($context->id)) {
-                throw new lti_exception('Missing or invalid context claim in deep linking request');
-            }
-
-            if (!$deeplinkingsettings || !isset($deeplinkingsettings['deep_link_return_url'])) {
-                throw new lti_exception('Missing or invalid deep linking settings claim');
-            }
 
             $servicefacade = new deep_linking_launch_service_facade(
                 toolconfig: $toolconfig,
                 context: $context,
                 userid: $ltiuser->id,
-                returnurl: $deeplinkingsettings['deep_link_return_url']
             );
 
             return new custom_param_parser(

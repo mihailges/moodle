@@ -52,13 +52,8 @@ if ($context instanceof context_course) {
 $placementinstance = placements_manager::get_instance()->get_deeplinking_placement_instance($placementtype);
 $placementinstance->content_item_selection_capabilities($context);
 
-// TODO: Expand the expected context beyond just course.
-// Currently, the expected context is always course due to the lack flexibility of the methods that are used for constructing
-// the login or the content item selection request. This should be improved once these calls are replaced by the builder API.
-
+$messagetype = 'ContentItemSelectionRequest';
 $config = \core_ltix\helper::get_type_type_config($id);
-$messagetype = $config->lti_ltiversion === \core_ltix\constants::LTI_VERSION_1P3 ?
-    'LtiDeepLinkingRequest' : 'ContentItemSelectionRequest';
 
 // Set the return URL. We send the launch container along to help us avoid frames-within-frames when the user returns.
 $returnurlparams = [

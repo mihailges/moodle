@@ -16,7 +16,6 @@
 
 namespace core_ltix\local\lticore\message\payload;
 
-use core_ltix\constants;
 use core_ltix\helper;
 use core_ltix\local\lticore\facades\service\deep_linking_launch_service_facade;
 use core_ltix\local\lticore\message\payload\custom\custom_param_parser;
@@ -63,14 +62,14 @@ class v1p3_deep_linking_launch_payload_builder implements v1p3_message_payload_b
         $unformattedpayloaddata = array_merge(...array_values($unformattedpayloaddata));
 
         // Add custom param data configured by the tool - do NOT substitute yet.
-        $toolunformattedpayloaddata = $this->get_unformatted_custom_data($this->toolconfig);
+        $toolunformattedpayloaddata = $this->get_unformatted_custom_data();
         $unformattedpayloaddata = array_merge($toolunformattedpayloaddata, $unformattedpayloaddata);
 
-        $serviceunformattedpayloaddata = $this->get_unformatted_service_custom_data($this->servicefacade);
+        $serviceunformattedpayloaddata = $this->get_unformatted_service_custom_data();
         $unformattedpayloaddata = array_merge($unformattedpayloaddata, $serviceunformattedpayloaddata);
 
         // Perform substitution for custom params.
-        $unformattedpayloaddata = $this->resolve_substitution($unformattedpayloaddata, $this->customparamparser);
+        $unformattedpayloaddata = $this->resolve_substitution($unformattedpayloaddata);
 
         // Now convert to 1p3 claims format.
         return $this->claimconverter->params_to_claims($unformattedpayloaddata);
@@ -80,17 +79,13 @@ class v1p3_deep_linking_launch_payload_builder implements v1p3_message_payload_b
      * Resolve substitution for custom parameters.
      *
      * @param array $payloaddata the payload data.
-     * @param custom_param_parser $customparamparser the custom parameter parser.
      * @return array the resolved payload data.
      */
-    protected function resolve_substitution(
-        array $payloaddata,
-        custom_param_parser $customparamparser
-    ): array {
+    protected function resolve_substitution(array $payloaddata): array {
         foreach ($payloaddata as $key => $value) {
             // Substitution is only performed for custom params.
             if (str_starts_with($key, 'custom_')) {
-                $payloaddata[$key] = $customparamparser->parse($value, $payloaddata);
+                $payloaddata[$key] = $this->customparamparser->parse($value, $payloaddata);
             }
         }
 
@@ -100,14 +95,13 @@ class v1p3_deep_linking_launch_payload_builder implements v1p3_message_payload_b
     /**
      * Get the unformatted custom data from tool configuration.
      *
-     * @param \stdClass $toolconfig the tool configuration.
      * @return array the custom data.
      */
-    protected function get_unformatted_custom_data(\stdClass $toolconfig): array {
+    protected function get_unformatted_custom_data(): array {
         $customdata = [];
 
         if (!empty($toolconfig->lti_customparameters)) {
-            $toolcustom = helper::split_parameters($toolconfig->lti_customparameters);
+            $toolcustom = helper::split_parameters($this->toolconfig->lti_customparameters);
             foreach ($toolcustom as $key => $val) {
                 $key2 = helper::map_keyname($key);
                 $customdata['custom_' . $key2] = $val;
@@ -168,13 +162,13 @@ class v1p3_deep_linking_launch_payload_builder implements v1p3_message_payload_b
     }
 
     /**
-     * Get unformatted user data.
+     * Get unformatted service custom data.
      *
-     * @return array the user data.
+     * @return array the service custom data.
      */
-    protected function get_unformatted_service_custom_data(deep_linking_launch_service_facade $servicefacade): array {
+    protected function get_unformatted_service_custom_data(): array {
         $servicecustomdata = [];
-        foreach ($servicefacade->get_launch_parameters() as $param => $val) {
+        foreach ($this->servicefacade->get_launch_parameters() as $param => $val) {
             $servicecustomdata['custom_' . $param] = $val;
         }
         return $servicecustomdata;

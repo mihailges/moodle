@@ -99,13 +99,12 @@ class builder_factory {
                     roles: \core_ltix\helper::get_lti_message_roles($launchconfig->user->id, $coursecontext),
                     extraclaims: $extraclaims
                 );
-            } else if (!empty($launchconfig->messagetype) && $launchconfig->messagetype === 'LtiDeepLinkingRequest') {
-                // Deep Linking launches.
+            } else if (!empty($launchconfig->messagetype) && $launchconfig->messagetype === 'ContentItemSelectionRequest') {
+                // Deep Linking launches (Content Item Selection in LTI 1.3).
                 $servicefacade = new deep_linking_launch_service_facade(
                     toolconfig: $launchconfig->toolconfig,
                     context: $launchconfig->context,
                     userid: $launchconfig->user->id,
-                    returnurl: $launchconfig->returnurl
                 );
                 $customparamparser = new custom_param_parser(
                     sourcedatamap: helper::get_capabilities(),
@@ -181,9 +180,7 @@ class builder_factory {
                 $servicefacade = new deep_linking_launch_service_facade(
                     toolconfig: $launchconfig->toolconfig,
                     context: $launchconfig->context,
-                    userid: $launchconfig->user->id,
-                    returnurl: $launchconfig->returnurl,
-                    messagetype: $launchconfig->messagetype,
+                    userid: $launchconfig->user->id
                 );
                 $customparamparser = new custom_param_parser(
                     sourcedatamap: helper::get_capabilities(),

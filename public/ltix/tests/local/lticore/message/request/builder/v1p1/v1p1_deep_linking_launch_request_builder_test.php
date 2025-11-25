@@ -17,7 +17,6 @@
 namespace core_ltix\local\lticore\message\request\builder\v1p1;
 
 use core_ltix\constants;
-use core_ltix\local\lticore\message\request\builder\v1p1\v1p1_deep_linking_launch_request_builder;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 

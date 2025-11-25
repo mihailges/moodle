@@ -97,11 +97,10 @@ if (empty($errormsg) && !empty($contentitemsjson)) {
         if (!$tool) {
             throw new \moodle_exception('errortooltypenotfound', 'core_ltix');
         }
-        // Check lti_message_type. Show debugging if it's not set to ContentItemSelection or LtiDeepLinkingResponse.
+        // Check lti_message_type. Show debugging if it's not set to ContentItemSelection.
         // No need to throw exceptions for now since lti_message_type does not seem to be used in this processing at the moment.
-        if (!in_array($messagetype, ['ContentItemSelection', 'LtiDeepLinkingResponse'])) {
-            debugging(
-                "lti_message_type is invalid: {$messagetype}. It should be set to 'ContentItemSelection' (LTI 1.1) or 'LtiDeepLinkingResponse' (LTI 1.3).",
+        if ($messagetype !== 'ContentItemSelection') {
+            debugging("lti_message_type is invalid: {$messagetype}. It should be set to 'ContentItemSelection'.",
                 DEBUG_DEVELOPER);
         }
         // Check LTI versions from our side and the response's side. Show debugging if they don't match.

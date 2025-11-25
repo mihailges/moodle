@@ -14,10 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace core_ltix\lticore\message\request\builder\v1p3;
+namespace core_ltix\local\lticore\message\request\builder\v1p3;
 
 use core_ltix\constants;
-use core_ltix\local\lticore\message\request\builder\v1p3\v1p3_deep_linking_launch_request_builder;
 use core_ltix\local\ltiopenid\jwks_helper;
 use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;

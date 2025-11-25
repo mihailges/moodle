@@ -27,22 +27,23 @@ namespace core_ltix\local\lticore\facades\service;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class deep_linking_launch_service_facade implements launch_service_facade_interface {
+
+    /** @var string The message type */
+    protected string $messagetype;
+
     /**
      * Constructor.
      *
      * @param \stdClass $toolconfig the tool configuration.
      * @param \core\context $context the launch context.
      * @param int $userid the user ID performing the launch.
-     * @param string $returnurl the return URL for deep linking.
-     * @param string $messagetype the message type.
      */
     public function __construct(
         protected \stdClass $toolconfig,
         protected \core\context $context,
         protected int $userid,
-        protected string $returnurl,
-        protected string $messagetype = 'LtiDeepLinkingRequest',
     ) {
+        $this->messagetype = 'ContentItemSelectionRequest';
     }
 
     /**

@@ -34,7 +34,7 @@ namespace mod_lti\local\ltiopenid;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 #[\core\attribute\deprecated(
-    reason: 'Use \core_ltix\local\ltiopenid\jwks_helper instead.',
+    reason: 'Use \core_ltix\local\ltiopenid\jwks_helper instead',
     since: '5.1',
     mdl: 'MDL-79113',
 )]
@@ -47,7 +47,7 @@ class jwks_helper {
      * @return array keys are kid and key in PEM format.
      */
     #[\core\attribute\deprecated(
-        reason: 'Use \core_ltix\local\ltiopenid\jwks_helper::get_private_key() instead.',
+        reason: 'Use \core_ltix\local\ltiopenid\jwks_helper::get_private_key() instead',
         since: '5.1',
         mdl: 'MDL-79113',
     )]
@@ -63,7 +63,7 @@ class jwks_helper {
      * @return array keyset exposting the site public key.
      */
     #[\core\attribute\deprecated(
-        reason: 'Use \core_ltix\local\ltiopenid\jwks_helper::get_jwks() instead.',
+        reason: 'Use \core_ltix\local\ltiopenid\jwks_helper::get_jwks() instead',
         since: '5.1',
         mdl: 'MDL-79113',
     )]
@@ -89,7 +89,7 @@ class jwks_helper {
      * @return array the fixed keyset array.
      */
     #[\core\attribute\deprecated(
-        reason: 'Use \core_ltix\local\ltiopenid\jwks_helper::fix_jwks_alg() instead.',
+        reason: 'Use \core_ltix\local\ltiopenid\jwks_helper::fix_jwks_alg() instead',
         since: '5.1',
         mdl: 'MDL-79113',
     )]

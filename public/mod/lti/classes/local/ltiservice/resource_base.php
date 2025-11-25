@@ -31,7 +31,7 @@ require_once($CFG->dirroot . '/mod/lti/locallib.php');
 /**
  * The mod_lti\local\ltiservice\resource_base class.
  *
- * @deprecated since Moodle 5.1 use \core_ltix\local\ltiservice\resource_base instead.
+ * @deprecated since Moodle 5.1 use \core_ltix\local\ltiservice\resource_base instead
  * @package    mod_lti
  * @since      Moodle 2.8
  * @copyright  2014 Vital Source Technologies http://vitalsource.com
@@ -39,7 +39,7 @@ require_once($CFG->dirroot . '/mod/lti/locallib.php');
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \core_ltix\local\ltiservice\resource_base instead.',
+    reason: 'Use \core_ltix\local\ltiservice\resource_base instead',
     mdl: 'MDL-80231',
 )]
 abstract class resource_base {
@@ -77,11 +77,11 @@ abstract class resource_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\resource_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\resource_base instead',
         mdl: 'MDL-80231',
     )]
     public function __construct($service) {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
 
         $this->service = $service;
         $this->type = 'RestService';
@@ -102,11 +102,11 @@ abstract class resource_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\resource_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\resource_base instead',
         mdl: 'MDL-80231',
     )]
     public function get_id() {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
         return $this->id;
 
     }
@@ -119,11 +119,11 @@ abstract class resource_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\resource_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\resource_base instead',
         mdl: 'MDL-80231',
     )]
     public function get_template() {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
         return $this->template;
 
     }
@@ -136,11 +136,11 @@ abstract class resource_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\resource_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\resource_base instead',
         mdl: 'MDL-80231',
     )]
     public function get_path() {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
         return $this->get_template();
 
     }
@@ -153,11 +153,11 @@ abstract class resource_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\resource_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\resource_base instead',
         mdl: 'MDL-80231',
     )]
     public function get_type() {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
         return $this->type;
 
     }
@@ -170,11 +170,11 @@ abstract class resource_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\resource_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\resource_base instead',
         mdl: 'MDL-80231',
     )]
     public function get_service() {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
         return $this->service;
 
     }
@@ -187,11 +187,11 @@ abstract class resource_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\resource_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\resource_base instead',
         mdl: 'MDL-80231',
     )]
     public function get_methods() {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
         return $this->methods;
 
     }
@@ -204,11 +204,11 @@ abstract class resource_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\resource_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\resource_base instead',
         mdl: 'MDL-80231',
     )]
     public function get_formats() {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
         return $this->formats;
 
     }
@@ -221,11 +221,11 @@ abstract class resource_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\resource_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\resource_base instead',
         mdl: 'MDL-80231',
     )]
     public function get_variables() {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
         return $this->variables;
 
     }
@@ -238,11 +238,11 @@ abstract class resource_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\resource_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\resource_base instead',
         mdl: 'MDL-80231',
     )]
     public function get_endpoint() {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
 
         $this->parse_template();
         $template = preg_replace('/[\(\)]/', '', $this->get_template());
@@ -271,7 +271,7 @@ abstract class resource_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\resource_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\resource_base instead',
         mdl: 'MDL-80231',
     )]
     abstract public function execute($response);
@@ -288,11 +288,11 @@ abstract class resource_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\resource_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\resource_base instead',
         mdl: 'MDL-80231',
     )]
     public function check_tool($typeid, $body = null, $scopes = null) {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
 
         $ok = $this->get_service()->check_tool($typeid, $body, $scopes);
         if ($ok) {
@@ -428,11 +428,11 @@ abstract class resource_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\resource_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\resource_base instead',
         mdl: 'MDL-80231',
     )]
     public function parse_value($value) {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
         return $value;
     }
 

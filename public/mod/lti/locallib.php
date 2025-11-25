@@ -66,12 +66,12 @@ require_once($CFG->dirroot . '/ltix/TrivialStore.php');
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\oauth_helper::get_jwt_message_type_mapping() instead.',
+    reason: 'Use \\core_ltix\\oauth_helper::get_jwt_message_type_mapping() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_jwt_message_type_mapping() {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\oauth_helper::get_jwt_message_type_mapping();
+    return \core_ltix\oauth_helper::get_jwt_message_type_mapping();
 }
 
 /**
@@ -82,12 +82,12 @@ function lti_get_jwt_message_type_mapping() {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\oauth_helper::get_jwt_claim_mapping() instead.',
+    reason: 'Use \\core_ltix\\oauth_helper::get_jwt_claim_mapping() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_jwt_claim_mapping() {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\oauth_helper::get_jwt_claim_mapping();
+    return \core_ltix\oauth_helper::get_jwt_claim_mapping();
 }
 
 /**
@@ -100,12 +100,12 @@ function lti_get_jwt_claim_mapping() {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Deprecated API.',
+    reason: 'Use \\core_ltix\\helper::get_instance_type() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_instance_type(object $instance): ?object {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_instance_type($instance);
+    return \core_ltix\helper::get_instance_type($instance);
 }
 
 /**
@@ -119,12 +119,12 @@ function lti_get_instance_type(object $instance): ?object {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_launch_data() instead.',
+    reason: 'Use \\core_ltix\\helper::get_launch_data() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_launch_data($instance, $nonce = '', $messagetype = 'basic-lti-launch-request', $foruserid = 0) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_launch_data($instance, $nonce, $messagetype, $foruserid);
+    return \core_ltix\helper::get_launch_data($instance, $nonce, $messagetype, $foruserid);
 }
 
 /**
@@ -137,12 +137,12 @@ function lti_get_launch_data($instance, $nonce = '', $messagetype = 'basic-lti-l
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::launch_tool() instead.',
+    reason: 'Use \\core_ltix\\helper::launch_tool() instead',
     mdl: 'MDL-79113',
 )]
 function lti_launch_tool($instance, $foruserid=0) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::launch_tool($instance, $foruserid);
+    return \core_ltix\helper::launch_tool($instance, $foruserid);
 }
 
 /**
@@ -153,12 +153,12 @@ function lti_launch_tool($instance, $foruserid=0) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::register() instead.',
+    reason: 'Use \\core_ltix\\helper::register() instead',
     mdl: 'MDL-79113',
 )]
 function lti_register($toolproxy) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::register($toolproxy);
+    return \core_ltix\helper::register($toolproxy);
 }
 
 
@@ -171,12 +171,12 @@ function lti_register($toolproxy) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::build_registration_request() instead.',
+    reason: 'Use \\core_ltix\\helper::build_registration_request() instead',
     mdl: 'MDL-79113',
 )]
 function lti_build_registration_request($toolproxy) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::build_registration_request($toolproxy);
+    return \core_ltix\helper::build_registration_request($toolproxy);
 }
 
 
@@ -188,12 +188,12 @@ function lti_build_registration_request($toolproxy) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_organizationid() instead.',
+    reason: 'Use \\core_ltix\\helper::get_organizationid() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_organizationid($typeconfig) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_organizationid($typeconfig);
+    return \core_ltix\helper::get_organizationid($typeconfig);
 }
 
 /**
@@ -209,12 +209,12 @@ function lti_get_organizationid($typeconfig) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::build_sourcedid() instead.',
+    reason: 'Use \\core_ltix\\helper::build_sourcedid() instead',
     mdl: 'MDL-79113',
 )]
 function lti_build_sourcedid($instanceid, $userid, $servicesalt, $typeid = null, $launchid = null) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::build_sourcedid($instanceid, $userid, $servicesalt, $typeid, $launchid);
+    return \core_ltix\helper::build_sourcedid($instanceid, $userid, $servicesalt, $typeid, $launchid);
 }
 
 /**
@@ -233,13 +233,13 @@ function lti_build_sourcedid($instanceid, $userid, $servicesalt, $typeid = null,
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::build_request() instead.',
+    reason: 'Use \\core_ltix\\helper::build_request() instead',
     mdl: 'MDL-79113',
 )]
 function lti_build_request($instance, $typeconfig, $course, $typeid = null, $islti2 = false,
     $messagetype = 'basic-lti-launch-request', $foruserid = 0) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::build_request($instance, $typeconfig, $course, $typeid, $islti2,
+    return \core_ltix\helper::build_request($instance, $typeconfig, $course, $typeid, $islti2,
         $messagetype, $foruserid);
 }
 
@@ -254,12 +254,12 @@ function lti_build_request($instance, $typeconfig, $course, $typeid = null, $isl
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::build_request_lti2() instead.',
+    reason: 'Use \\core_ltix\\helper::build_request_lti2() instead',
     mdl: 'MDL-79113',
 )]
 function lti_build_request_lti2($tool, $params) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::build_request_lti2($tool, $params);
+    return \core_ltix\helper::build_request_lti2($tool, $params);
 }
 
 /**
@@ -296,12 +296,12 @@ function lti_build_standard_request($instance, $orgid, $islti2, $messagetype = '
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Deprecated API.',
+    reason: 'Use \\core_ltix\\helper::build_standard_message() instead',
     mdl: 'MDL-79113',
 )]
 function lti_build_standard_message($instance, $orgid, $ltiversion, $messagetype = 'basic-lti-launch-request') {
-     	\core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::build_standard_message($instance, $orgid, $ltiversion, $messagetype);
+        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+    return \core_ltix\helper::build_standard_message($instance, $orgid, $ltiversion, $messagetype);
 }
 
 /**
@@ -320,12 +320,12 @@ function lti_build_standard_message($instance, $orgid, $ltiversion, $messagetype
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::build_custom_parameters() instead.',
+    reason: 'Use \\core_ltix\\helper::build_custom_parameters() instead',
     mdl: 'MDL-79113',
 )]
 function lti_build_custom_parameters($toolproxy, $tool, $instance, $params, $customstr, $instructorcustomstr, $islti2) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::build_custom_parameters($toolproxy, $tool, $instance, $params, $customstr,
+    return \core_ltix\helper::build_custom_parameters($toolproxy, $tool, $instance, $params, $customstr,
         $instructorcustomstr, $islti2);
 
 }
@@ -360,14 +360,14 @@ function lti_build_custom_parameters($toolproxy, $tool, $instance, $params, $cus
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::build_content_item_selection_request() instead.',
+    reason: 'Use \\core_ltix\\helper::build_content_item_selection_request() instead',
     mdl: 'MDL-79113',
 )]
 function lti_build_content_item_selection_request($id, $course, moodle_url $returnurl, $title = '', $text = '', $mediatypes = [],
         $presentationtargets = [], $autocreate = false, $multiple = true, $unsigned = false, $canconfirm = false,
         $copyadvice = false, $nonce = '', $launchid = '') {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::build_content_item_selection_request($id, $course, $returnurl, $launchid, $title, $text,
+    return \core_ltix\helper::build_content_item_selection_request($id, $course, $returnurl, $launchid, $title, $text,
         $mediatypes, $presentationtargets, $autocreate, $multiple, $unsigned, $canconfirm, $copyadvice, $nonce);
 }
 
@@ -383,12 +383,12 @@ function lti_build_content_item_selection_request($id, $course, moodle_url $retu
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::verify_oauth_signature() instead.',
+    reason: 'Use \\core_ltix\\helper::verify_oauth_signature() instead',
     mdl: 'MDL-79113',
 )]
 function lti_verify_oauth_signature($typeid, $consumerkey) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\oauth_helper::verify_oauth_signature($typeid, $consumerkey);
+    return \core_ltix\oauth_helper::verify_oauth_signature($typeid, $consumerkey);
 }
 
 /**
@@ -409,12 +409,12 @@ function lti_verify_oauth_signature($typeid, $consumerkey) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\oauth_helper::verify_with_keyset() instead.',
+    reason: 'Use \\core_ltix\\oauth_helper::verify_with_keyset() instead',
     mdl: 'MDL-79113',
 )]
 function lti_verify_with_keyset($jwtparam, $keyseturl, $clientid) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\oauth_helper::verify_with_keyset($jwtparam, $keyseturl, $clientid);
+    return \core_ltix\oauth_helper::verify_with_keyset($jwtparam, $keyseturl, $clientid);
 }
 
 /**
@@ -435,12 +435,12 @@ function lti_verify_with_keyset($jwtparam, $keyseturl, $clientid) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\oauth_helper::verify_jwt_signature() instead.',
+    reason: 'Use \\core_ltix\\oauth_helper::verify_jwt_signature() instead',
     mdl: 'MDL-79113',
 )]
 function lti_verify_jwt_signature($typeid, $consumerkey, $jwtparam) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\oauth_helper::verify_jwt_signature($typeid, $consumerkey, $jwtparam);
+    return \core_ltix\oauth_helper::verify_jwt_signature($typeid, $consumerkey, $jwtparam);
 }
 
 /**
@@ -452,12 +452,12 @@ function lti_verify_jwt_signature($typeid, $consumerkey, $jwtparam) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::params_to_string() instead.',
+    reason: 'Use \\core_ltix\\helper::params_to_string() instead',
     mdl: 'MDL-79113',
 )]
 function params_to_string(object $params) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::params_to_string($params);
+    return \core_ltix\helper::params_to_string($params);
 }
 
 /**
@@ -479,7 +479,7 @@ function content_item_to_form(object $tool, object $typeconfig, object $item): s
     global $OUTPUT;
 
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	$config = new stdClass();
+    $config = new stdClass();
     $config->name = '';
     if (isset($item->title)) {
         $config->name = $item->title;
@@ -592,12 +592,12 @@ function content_item_to_form(object $tool, object $typeconfig, object $item): s
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::convert_content_items() instead.',
+    reason: 'Use \\core_ltix\\helper::convert_content_items() instead',
     mdl: 'MDL-83958',
 )]
 function lti_tool_configuration_from_content_item($typeid, $messagetype, $ltiversion, $consumerkey, $contentitemsjson) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	$tool = \core_ltix\helper::get_type($typeid);
+    $tool = \core_ltix\helper::get_type($typeid);
     // Validate parameters.
     if (!$tool) {
         throw new moodle_exception('errortooltypenotfound', 'core_ltix');
@@ -643,12 +643,12 @@ function lti_tool_configuration_from_content_item($typeid, $messagetype, $ltiver
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Deprecated API.',
+    reason: 'Use \\core_ltix\\helper::convert_content_items() instead',
     mdl: 'MDL-79113',
 )]
 function lti_convert_content_items($param) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::convert_content_items($param);
+    return \core_ltix\helper::convert_content_items($param);
 }
 
 /**
@@ -659,12 +659,12 @@ function lti_convert_content_items($param) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_tool_table() instead.',
+    reason: 'Use \\core_ltix\\helper::get_tool_table() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_tool_table($tools, $id) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_tool_table($tools, $id);
+    return \core_ltix\helper::get_tool_table($tools, $id);
 }
 
 /**
@@ -677,12 +677,12 @@ function lti_get_tool_table($tools, $id) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_tool_proxy_table() instead.',
+    reason: 'Use \\core_ltix\\helper::get_tool_proxy_table() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_tool_proxy_table($toolproxies, $id) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_tool_proxy_table($toolproxies, $id);
+    return \core_ltix\helper::get_tool_proxy_table($toolproxies, $id);
 }
 
 /**
@@ -695,12 +695,12 @@ function lti_get_tool_proxy_table($toolproxies, $id) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_enabled_capabilities() instead.',
+    reason: 'Use \\core_ltix\\helper::get_enabled_capabilities() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_enabled_capabilities($tool) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_enabled_capabilities($tool);
+    return \core_ltix\helper::get_enabled_capabilities($tool);
 }
 
 /**
@@ -713,12 +713,12 @@ function lti_get_enabled_capabilities($tool) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::split_parameters() instead.',
+    reason: 'Use \\core_ltix\\helper::split_parameters() instead',
     mdl: 'MDL-79113',
 )]
 function lti_split_parameters($customstr) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::split_parameters($customstr);
+    return \core_ltix\helper::split_parameters($customstr);
 }
 
 /**
@@ -735,12 +735,12 @@ function lti_split_parameters($customstr) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::split_custom_parameters() instead.',
+    reason: 'Use \\core_ltix\\helper::split_custom_parameters() instead',
     mdl: 'MDL-79113',
 )]
 function lti_split_custom_parameters($toolproxy, $tool, $params, $customstr, $islti2 = false) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::split_custom_parameters($toolproxy, $tool, $params, $customstr, $islti2);
+    return \core_ltix\helper::split_custom_parameters($toolproxy, $tool, $params, $customstr, $islti2);
 }
 
 /**
@@ -756,12 +756,12 @@ function lti_split_custom_parameters($toolproxy, $tool, $params, $customstr, $is
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_custom_parameters() instead.',
+    reason: 'Use \\core_ltix\\helper::get_custom_parameters() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_custom_parameters($toolproxy, $tool, $params, $parameters) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_custom_parameters($toolproxy, $tool, $params, $parameters);
+    return \core_ltix\helper::get_custom_parameters($toolproxy, $tool, $params, $parameters);
 }
 
 /**
@@ -778,12 +778,12 @@ function lti_get_custom_parameters($toolproxy, $tool, $params, $parameters) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::parse_custom_parameter() instead.',
+    reason: 'Use \\core_ltix\\helper::parse_custom_parameter() instead',
     mdl: 'MDL-79113',
 )]
 function lti_parse_custom_parameter($toolproxy, $tool, $params, $value, $islti2) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::parse_custom_parameter($toolproxy, $tool, $params, $value, $islti2);
+    return \core_ltix\helper::parse_custom_parameter($toolproxy, $tool, $params, $value, $islti2);
 }
 
 /**
@@ -796,12 +796,12 @@ function lti_parse_custom_parameter($toolproxy, $tool, $params, $value, $islti2)
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::calculate_custom_parameter() instead.',
+    reason: 'Use \\core_ltix\\helper::calculate_custom_parameter() instead',
     mdl: 'MDL-79113',
 )]
 function lti_calculate_custom_parameter($value) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::calculate_custom_parameter($value);
+    return \core_ltix\helper::calculate_custom_parameter($value);
 }
 
 /**
@@ -814,12 +814,12 @@ function lti_calculate_custom_parameter($value) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_course_history() instead.',
+    reason: 'Use \\core_ltix\\helper::get_course_history() instead',
     mdl: 'MDL-79113',
 )]
 function get_course_history($course) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_course_history($course);
+    return \core_ltix\helper::get_course_history($course);
 }
 
 /**
@@ -832,12 +832,12 @@ function get_course_history($course) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::map_keyname() instead.',
+    reason: 'Use \\core_ltix\\helper::map_keyname() instead',
     mdl: 'MDL-79113',
 )]
 function lti_map_keyname($key, $tolower = true) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::map_keyname($key, $tolower);
+    return \core_ltix\helper::map_keyname($key, $tolower);
 }
 
 /**
@@ -853,12 +853,12 @@ function lti_map_keyname($key, $tolower = true) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_ims_role() instead.',
+    reason: 'Use \\core_ltix\\helper::get_ims_role() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_ims_role($user, $cmid, $courseid, $islti2) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_ims_role($user, $cmid, $courseid, $islti2);
+    return \core_ltix\helper::get_ims_role($user, $cmid, $courseid, $islti2);
 }
 
 /**
@@ -871,12 +871,12 @@ function lti_get_ims_role($user, $cmid, $courseid, $islti2) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_type_config() instead.',
+    reason: 'Use \\core_ltix\\helper::get_type_config() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_type_config($typeid) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_type_config($typeid);
+    return \core_ltix\helper::get_type_config($typeid);
 }
 
 /**
@@ -890,12 +890,12 @@ function lti_get_type_config($typeid) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_tools_by_url() instead.',
+    reason: 'Use \\core_ltix\\helper::get_tools_by_url() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_tools_by_url($url, $state, $courseid = null) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_tools_by_url($url, $state, $courseid);
+    return \core_ltix\helper::get_tools_by_url($url, $state, $courseid);
 }
 
 /**
@@ -909,12 +909,12 @@ function lti_get_tools_by_url($url, $state, $courseid = null) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_tools_by_domain() instead.',
+    reason: 'Use \\core_ltix\\helper::get_tools_by_domain() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_tools_by_domain($domain, $state = null, $courseid = null) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_tools_by_domain($domain, $state, $courseid);
+    return \core_ltix\helper::get_tools_by_domain($domain, $state, $courseid);
 }
 
 /**
@@ -927,12 +927,12 @@ function lti_get_tools_by_domain($domain, $state = null, $courseid = null) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::filter_get_types() instead.',
+    reason: 'Use \\core_ltix\\helper::filter_get_types() instead',
     mdl: 'MDL-79113',
 )]
 function lti_filter_get_types($course) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::filter_get_types($course);
+    return \core_ltix\helper::filter_get_types($course);
 }
 
 /**
@@ -945,12 +945,12 @@ function lti_filter_get_types($course) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::filter_tool_types() instead.',
+    reason: 'Use \\core_ltix\\helper::filter_tool_types() instead',
     mdl: 'MDL-79113',
 )]
 function lti_filter_tool_types(array $tools, $state) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::filter_tool_types($tools, $state);
+    return \core_ltix\helper::filter_tool_types($tools, $state);
 }
 
 /**
@@ -1064,12 +1064,12 @@ function lti_get_configured_types($courseid, $sectionreturn = 0) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Deprecated API.',
+    reason: 'Use \\core_ltix\\helper::get_domain_from_url() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_domain_from_url($url) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_domain_from_url($url);
+    return \core_ltix\helper::get_domain_from_url($url);
 }
 
 /**
@@ -1083,12 +1083,12 @@ function lti_get_domain_from_url($url) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_tool_by_url_match() instead.',
+    reason: 'Use \\core_ltix\\helper::get_tool_by_url_match() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_tool_by_url_match($url, $courseid = null, $state = \core_ltix\constants::LTI_TOOL_STATE_CONFIGURED) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_tool_by_url_match($url, $courseid, $state);
+    return \core_ltix\helper::get_tool_by_url_match($url, $courseid, $state);
 }
 
 /**
@@ -1100,12 +1100,12 @@ function lti_get_tool_by_url_match($url, $courseid = null, $state = \core_ltix\c
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_url_thumbprint() instead.',
+    reason: 'Use \\core_ltix\\helper::get_url_thumbprint() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_url_thumbprint($url) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_url_thumbprint($url);
+    return \core_ltix\helper::get_url_thumbprint($url);
 }
 
 /**
@@ -1119,12 +1119,12 @@ function lti_get_url_thumbprint($url) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_best_tool_by_url() instead.',
+    reason: 'Use \\core_ltix\\helper::get_best_tool_by_url() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_best_tool_by_url($url, $tools, $courseid = null) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_best_tool_by_url($url, $tools, $courseid);
+    return \core_ltix\helper::get_best_tool_by_url($url, $tools, $courseid);
 }
 
 /**
@@ -1136,12 +1136,12 @@ function lti_get_best_tool_by_url($url, $tools, $courseid = null) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_shared_secrets_by_key() instead.',
+    reason: 'Use \\core_ltix\\helper::get_shared_secrets_by_key() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_shared_secrets_by_key($key) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_shared_secrets_by_key($key);
+    return \core_ltix\helper::get_shared_secrets_by_key($key);
 }
 
 /**
@@ -1152,12 +1152,12 @@ function lti_get_shared_secrets_by_key($key) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::delete_type() instead.',
+    reason: 'Use \\core_ltix\\helper::delete_type() instead',
     mdl: 'MDL-79113',
 )]
 function lti_delete_type($id) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	\core_ltix\helper::delete_type($id);
+    \core_ltix\helper::delete_type($id);
 }
 
 /**
@@ -1169,12 +1169,12 @@ function lti_delete_type($id) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::set_state_for_type() instead.',
+    reason: 'Use \\core_ltix\\helper::set_state_for_type() instead',
     mdl: 'MDL-79113',
 )]
 function lti_set_state_for_type($id, $state) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	\core_ltix\helper::set_state_for_type($id, $state);
+    \core_ltix\helper::set_state_for_type($id, $state);
 }
 
 /**
@@ -1187,12 +1187,12 @@ function lti_set_state_for_type($id, $state) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_config() instead.',
+    reason: 'Use \\core_ltix\\helper::get_config() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_config($ltiobject) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_config($ltiobject);
+    return \core_ltix\helper::get_config($ltiobject);
 }
 
 /**
@@ -1207,12 +1207,12 @@ function lti_get_config($ltiobject) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_type_config_from_instance() instead.',
+    reason: 'Use \\core_ltix\\helper::get_type_config_from_instance() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_type_config_from_instance($id) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_type_config_from_instance($id);
+    return \core_ltix\helper::get_type_config_from_instance($id);
 }
 
 /**
@@ -1225,12 +1225,12 @@ function lti_get_type_config_from_instance($id) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_type_type_config() instead.',
+    reason: 'Use \\core_ltix\\helper::get_type_type_config() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_type_type_config($id) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_type_type_config($id);
+    return \core_ltix\helper::get_type_type_config($id);
 }
 
 /**
@@ -1242,12 +1242,12 @@ function lti_get_type_type_config($id) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::prepare_type_for_save() instead.',
+    reason: 'Use \\core_ltix\\helper::prepare_type_for_save() instead',
     mdl: 'MDL-79113',
 )]
 function lti_prepare_type_for_save($type, $config) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	\core_ltix\helper::prepare_type_for_save($type, $config);
+    \core_ltix\helper::prepare_type_for_save($type, $config);
 }
 
 /**
@@ -1259,12 +1259,12 @@ function lti_prepare_type_for_save($type, $config) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::update_type() instead.',
+    reason: 'Use \\core_ltix\\helper::update_type() instead',
     mdl: 'MDL-79113',
 )]
 function lti_update_type($type, $config) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	\core_ltix\helper::update_type($type, $config);
+    \core_ltix\helper::update_type($type, $config);
 }
 
 /**
@@ -1277,12 +1277,12 @@ function lti_update_type($type, $config) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Deprecated API.',
+    reason: 'Use \\core_ltix\\helper::type_add_categories() instead',
     mdl: 'MDL-79113',
 )]
 function lti_type_add_categories(int $typeid, string $lticoursecategories = ''): void {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	\core_ltix\helper::type_add_categories($typeid, $lticoursecategories);
+    \core_ltix\helper::type_add_categories($typeid, $lticoursecategories);
 }
 
 /**
@@ -1295,12 +1295,12 @@ function lti_type_add_categories(int $typeid, string $lticoursecategories = ''):
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::add_type() instead.',
+    reason: 'Use \\core_ltix\\helper::add_type() instead',
     mdl: 'MDL-79113',
 )]
 function lti_add_type($type, $config) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::add_type($type, $config);
+    return \core_ltix\helper::add_type($type, $config);
 }
 
 /**
@@ -1314,12 +1314,12 @@ function lti_add_type($type, $config) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::filter_tool_proxy_types() instead.',
+    reason: 'Use \\core_ltix\\helper::filter_tool_proxy_types() instead',
     mdl: 'MDL-79113',
 )]
 function lti_filter_tool_proxy_types(array $toolproxies, $state) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::filter_tool_proxy_types($toolproxies, $state);
+    return \core_ltix\helper::filter_tool_proxy_types($toolproxies, $state);
 }
 
 /**
@@ -1332,12 +1332,12 @@ function lti_filter_tool_proxy_types(array $toolproxies, $state) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_tool_proxy_from_guid() instead.',
+    reason: 'Use \\core_ltix\\helper::get_tool_proxy_from_guid() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_tool_proxy_from_guid($toolproxyguid) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_tool_proxy_from_guid($toolproxyguid);
+    return \core_ltix\helper::get_tool_proxy_from_guid($toolproxyguid);
 }
 
 /**
@@ -1350,12 +1350,12 @@ function lti_get_tool_proxy_from_guid($toolproxyguid) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_tool_proxy() instead.',
+    reason: 'Use \\core_ltix\\helper::get_tool_proxy() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_tool_proxies_from_registration_url($regurl) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_tool_proxies_from_registration_url($regurl);
+    return \core_ltix\helper::get_tool_proxies_from_registration_url($regurl);
 }
 
 /**
@@ -1368,12 +1368,12 @@ function lti_get_tool_proxies_from_registration_url($regurl) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Deprecated API.',
+    reason: 'Use \\core_ltix\\helper::get_tool_proxy() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_tool_proxy($id) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_tool_proxy($id);
+    return \core_ltix\helper::get_tool_proxy($id);
 }
 
 /**
@@ -1385,12 +1385,12 @@ function lti_get_tool_proxy($id) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_tool_proxies() instead.',
+    reason: 'Use \\core_ltix\\helper::get_tool_proxies() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_tool_proxies($orphanedonly) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_tool_proxies($orphanedonly);
+    return \core_ltix\helper::get_tool_proxies($orphanedonly);
 }
 
 /**
@@ -1403,12 +1403,12 @@ function lti_get_tool_proxies($orphanedonly) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_tool_proxy_config() instead.',
+    reason: 'Use \\core_ltix\\helper::get_tool_proxy_config() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_tool_proxy_config($id) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_tool_proxy_config($id);
+    return \core_ltix\helper::get_tool_proxy_config($id);
 }
 
 /**
@@ -1421,12 +1421,12 @@ function lti_get_tool_proxy_config($id) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::add_tool_proxy() instead.',
+    reason: 'Use \\core_ltix\\helper::add_tool_proxy() instead',
     mdl: 'MDL-79113',
 )]
 function lti_add_tool_proxy($config) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::add_tool_proxy($config);
+    return \core_ltix\helper::add_tool_proxy($config);
 }
 
 /**
@@ -1439,12 +1439,12 @@ function lti_add_tool_proxy($config) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::update_tool_proxy() instead.',
+    reason: 'Use \\core_ltix\\helper::update_tool_proxy() instead',
     mdl: 'MDL-79113',
 )]
 function lti_update_tool_proxy($toolproxy) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::update_tool_proxy($toolproxy);
+    return \core_ltix\helper::update_tool_proxy($toolproxy);
 }
 
 /**
@@ -1455,12 +1455,12 @@ function lti_update_tool_proxy($toolproxy) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::delete_tool_proxy() instead.',
+    reason: 'Use \\core_ltix\\helper::delete_tool_proxy() instead',
     mdl: 'MDL-79113',
 )]
 function lti_delete_tool_proxy($id) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	\core_ltix\helper::delete_tool_proxy($id);
+    \core_ltix\helper::delete_tool_proxy($id);
 }
 
 /**
@@ -1480,12 +1480,12 @@ function lti_delete_tool_proxy($id) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Deprecated API.',
+    reason: 'Use \\core_ltix\\helper::get_lti_types_and_proxies() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_lti_types_and_proxies(int $limit = 0, int $offset = 0, bool $orphanedonly = false, int $toolproxyid = 0): array {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_lti_types_and_proxies($limit, $offset, $orphanedonly, $toolproxyid);
+    return \core_ltix\helper::get_lti_types_and_proxies($limit, $offset, $orphanedonly, $toolproxyid);
 }
 
 /**
@@ -1498,12 +1498,12 @@ function lti_get_lti_types_and_proxies(int $limit = 0, int $offset = 0, bool $or
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Deprecated API.',
+    reason: 'Use \\core_ltix\\helper::get_lti_types_and_proxies_count() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_lti_types_and_proxies_count(bool $orphanedonly = false, int $toolproxyid = 0): int {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_lti_types_and_proxies_count($orphanedonly, $toolproxyid);
+    return \core_ltix\helper::get_lti_types_and_proxies_count($orphanedonly, $toolproxyid);
 }
 
 /**
@@ -1516,12 +1516,12 @@ function lti_get_lti_types_and_proxies_count(bool $orphanedonly = false, int $to
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::add_config() instead.',
+    reason: 'Use \\core_ltix\\helper::add_config() instead',
     mdl: 'MDL-79113',
 )]
 function lti_add_config($config) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::add_config($config);
+    return \core_ltix\helper::add_config($config);
 }
 
 /**
@@ -1534,12 +1534,12 @@ function lti_add_config($config) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::update_config() instead.',
+    reason: 'Use \\core_ltix\\helper::update_config() instead',
     mdl: 'MDL-79113',
 )]
 function lti_update_config($config) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::update_config($config);
+    return \core_ltix\helper::update_config($config);
 }
 
 /**
@@ -1554,12 +1554,12 @@ function lti_update_config($config) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_tool_settings() instead.',
+    reason: 'Use \\core_ltix\\helper::get_tool_settings() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_tool_settings($toolproxyid, $courseid = null, $instanceid = null) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_tool_settings($toolproxyid, $courseid, $instanceid);
+    return \core_ltix\helper::get_tool_settings($toolproxyid, $courseid, $instanceid);
 }
 
 /**
@@ -1573,12 +1573,12 @@ function lti_get_tool_settings($toolproxyid, $courseid = null, $instanceid = nul
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::set_tool_settings() instead.',
+    reason: 'Use \\core_ltix\\helper::set_tool_settings() instead',
     mdl: 'MDL-79113',
 )]
 function lti_set_tool_settings($settings, $toolproxyid, $courseid = null, $instanceid = null) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	\core_ltix\helper::set_tool_settings($settings, $toolproxyid, $courseid, $instanceid);
+    \core_ltix\helper::set_tool_settings($settings, $toolproxyid, $courseid, $instanceid);
 }
 
 /**
@@ -1594,12 +1594,12 @@ function lti_set_tool_settings($settings, $toolproxyid, $courseid = null, $insta
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\oauth_helper::sign_parameters() instead.',
+    reason: 'Use \\core_ltix\\oauth_helper::sign_parameters() instead',
     mdl: 'MDL-79113',
 )]
 function lti_sign_parameters($oldparms, $endpoint, $method, $oauthconsumerkey, $oauthconsumersecret) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\oauth_helper::sign_parameters($oldparms, $endpoint, $method, $oauthconsumerkey, $oauthconsumersecret);
+    return \core_ltix\oauth_helper::sign_parameters($oldparms, $endpoint, $method, $oauthconsumerkey, $oauthconsumersecret);
 }
 
 /**
@@ -1615,12 +1615,12 @@ function lti_sign_parameters($oldparms, $endpoint, $method, $oauthconsumerkey, $
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\oauth_helper::sign_jwt() instead.',
+    reason: 'Use \\core_ltix\\oauth_helper::sign_jwt() instead',
     mdl: 'MDL-79113',
 )]
 function lti_sign_jwt($parms, $endpoint, $oauthconsumerkey, $typeid = 0, $nonce = '') {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\oauth_helper::sign_jwt($parms, $endpoint, $oauthconsumerkey, $typeid, $nonce);
+    return \core_ltix\oauth_helper::sign_jwt($parms, $endpoint, $oauthconsumerkey, $typeid, $nonce);
 }
 
 /**
@@ -1635,12 +1635,12 @@ function lti_sign_jwt($parms, $endpoint, $oauthconsumerkey, $typeid = 0, $nonce 
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\oauth_helper::convert_from_jwt() instead.',
+    reason: 'Use \\core_ltix\\oauth_helper::convert_from_jwt() instead',
     mdl: 'MDL-79113',
 )]
 function lti_convert_from_jwt($typeid, $jwtparam) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\oauth_helper::convert_from_jwt($typeid, $jwtparam);
+    return \core_ltix\oauth_helper::convert_from_jwt($typeid, $jwtparam);
 }
 
 /**
@@ -1654,12 +1654,12 @@ function lti_convert_from_jwt($typeid, $jwtparam) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::post_launch_html() instead.',
+    reason: 'Use \\core_ltix\\helper::post_launch_html() instead',
     mdl: 'MDL-79113',
 )]
 function lti_post_launch_html($newparms, $endpoint, $debug=false) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	\core_ltix\helper::post_launch_html($newparms, $endpoint, $debug);
+    \core_ltix\helper::post_launch_html($newparms, $endpoint, $debug);
 }
 
 /**
@@ -1679,13 +1679,13 @@ function lti_post_launch_html($newparms, $endpoint, $debug=false) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::initiate_login() instead.',
+    reason: 'Use \\core_ltix\\helper::initiate_login() instead',
     mdl: 'MDL-79113',
 )]
 function lti_initiate_login($courseid, $cmid, $instance, $config, $messagetype = 'basic-lti-launch-request',
         $title = '', $text = '', $foruserid = 0, $placementtype = '') {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::initiate_login($courseid, $cmid, $instance, $config, $messagetype, $placementtype, $title,
+    return \core_ltix\helper::initiate_login($courseid, $cmid, $instance, $config, $messagetype, $placementtype, $title,
         $text, $foruserid);
 }
 
@@ -1707,13 +1707,13 @@ function lti_initiate_login($courseid, $cmid, $instance, $config, $messagetype =
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::build_login_request() instead.',
+    reason: 'Use \\core_ltix\\helper::build_login_request() instead',
     mdl: 'MDL-79113',
 )]
 function lti_build_login_request($courseid, $cmid, $instance, $config, $messagetype, $foruserid = 0, $title = '', $text = '',
         $placementtype = '') {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::build_login_request($courseid, $cmid, $instance, $config, $messagetype, $placementtype,
+    return \core_ltix\helper::build_login_request($courseid, $cmid, $instance, $config, $messagetype, $placementtype,
         $foruserid, $title, $text);
 }
 
@@ -1726,12 +1726,12 @@ function lti_build_login_request($courseid, $cmid, $instance, $config, $messaget
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_type() instead.',
+    reason: 'Use \\core_ltix\\helper::get_type() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_type($typeid) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_type($typeid);
+    return \core_ltix\helper::get_type($typeid);
 }
 
 /**
@@ -1740,12 +1740,12 @@ function lti_get_type($typeid) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_launch_container() instead.',
+    reason: 'Use \\core_ltix\\helper::get_launch_container() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_launch_container($lti, $toolconfig) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_launch_container($lti, $toolconfig);
+    return \core_ltix\helper::get_launch_container($lti, $toolconfig);
 }
 
 /**
@@ -1754,12 +1754,12 @@ function lti_get_launch_container($lti, $toolconfig) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::request_is_using_ssl() instead.',
+    reason: 'Use \\core_ltix\\helper::request_is_using_ssl() instead',
     mdl: 'MDL-79113',
 )]
 function lti_request_is_using_ssl() {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::request_is_using_ssl();
+    return \core_ltix\helper::request_is_using_ssl();
 }
 
 /**
@@ -1771,12 +1771,12 @@ function lti_request_is_using_ssl() {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::ensure_url_is_https() instead.',
+    reason: 'Use \\core_ltix\\helper::ensure_url_is_https() instead',
     mdl: 'MDL-79113',
 )]
 function lti_ensure_url_is_https($url) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::ensure_url_is_https($url);
+    return \core_ltix\helper::ensure_url_is_https($url);
 }
 
 /**
@@ -1788,12 +1788,12 @@ function lti_ensure_url_is_https($url) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::should_log_request() instead.',
+    reason: 'Use \\core_ltix\\helper::should_log_request() instead',
     mdl: 'MDL-79113',
 )]
 function lti_should_log_request($rawbody) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::should_log_request($rawbody);
+    return \core_ltix\helper::should_log_request($rawbody);
 }
 
 /**
@@ -1804,12 +1804,12 @@ function lti_should_log_request($rawbody) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::log_request() instead.',
+    reason: 'Use \\core_ltix\\helper::log_request() instead',
     mdl: 'MDL-79113',
 )]
 function lti_log_request($rawbody) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::log_request($rawbody);
+    return \core_ltix\helper::log_request($rawbody);
 }
 
 /**
@@ -1821,12 +1821,12 @@ function lti_log_request($rawbody) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::log_response() instead.',
+    reason: 'Use \\core_ltix\\helper::log_response() instead',
     mdl: 'MDL-79113',
 )]
 function lti_log_response($responsexml, $e = null) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::log_response($responsexml, $e);
+    return \core_ltix\helper::log_response($responsexml, $e);
 }
 
 /**
@@ -1838,12 +1838,12 @@ function lti_log_response($responsexml, $e = null) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_type_config_by_instance() instead.',
+    reason: 'Use \\core_ltix\\helper::get_type_config_by_instance() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_type_config_by_instance($instance) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_type_config_by_instance($instance);
+    return \core_ltix\helper::get_type_config_by_instance($instance);
 }
 
 /**
@@ -1855,12 +1855,12 @@ function lti_get_type_config_by_instance($instance) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::force_type_config_settings() instead.',
+    reason: 'Use \\core_ltix\\helper::force_type_config_settings() instead',
     mdl: 'MDL-79113',
 )]
 function lti_force_type_config_settings($instance, array $typeconfig) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::force_type_config_settings($instance, $typeconfig);
+    return \core_ltix\helper::force_type_config_settings($instance, $typeconfig);
 }
 
 /**
@@ -1871,12 +1871,12 @@ function lti_force_type_config_settings($instance, array $typeconfig) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_capabilities() instead.',
+    reason: 'Use \\core_ltix\\helper::get_capabilities() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_capabilities() {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_capabilities();
+    return \core_ltix\helper::get_capabilities();
 }
 
 /**
@@ -1887,12 +1887,12 @@ function lti_get_capabilities() {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_services() instead.',
+    reason: 'Use \\core_ltix\\helper::get_services() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_services() {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_services();
+    return \core_ltix\helper::get_services();
 }
 
 /**
@@ -1905,12 +1905,12 @@ function lti_get_services() {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\local\\ltiservice\\service_helper::get_service_by_name() instead.',
+    reason: 'Use \\core_ltix\\local\\ltiservice\\service_helper::get_service_by_name() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_service_by_name($servicename) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\local\ltiservice\service_helper::get_service_by_name($servicename);
+    return \core_ltix\local\ltiservice\service_helper::get_service_by_name($servicename);
 }
 
 /**
@@ -1924,12 +1924,12 @@ function lti_get_service_by_name($servicename) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_service_by_resource_id() instead.',
+    reason: 'Use \\core_ltix\\helper::get_service_by_resource_id() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_service_by_resource_id($services, $resourceid) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_service_by_resource_id($services, $resourceid);
+    return \core_ltix\helper::get_service_by_resource_id($services, $resourceid);
 }
 
 /**
@@ -1944,12 +1944,12 @@ function lti_get_service_by_resource_id($services, $resourceid) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_permitted_service_scopes() instead.',
+    reason: 'Use \\core_ltix\\helper::get_permitted_service_scopes() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_permitted_service_scopes($type, $typeconfig) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_permitted_service_scopes($type, $typeconfig);
+    return \core_ltix\helper::get_permitted_service_scopes($type, $typeconfig);
 }
 
 /**
@@ -1962,12 +1962,12 @@ function lti_get_permitted_service_scopes($type, $typeconfig) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_contexts() instead.',
+    reason: 'Use \\core_ltix\\helper::get_contexts() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_contexts($json) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_contexts($json);
+    return \core_ltix\helper::get_contexts($json);
 }
 
 /**
@@ -1981,12 +1981,12 @@ function lti_get_contexts($json) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_fqid() instead.',
+    reason: 'Use \\core_ltix\\helper::get_fqid() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_fqid($contexts, $id) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_fqid($contexts, $id);
+    return \core_ltix\helper::get_fqid($contexts, $id);
 }
 
 /**
@@ -1998,7 +1998,7 @@ function lti_get_fqid($contexts, $id) {
  */
 function get_tool_type_icon_url(stdClass $type) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_tool_type_icon_url($type);
+    return \core_ltix\helper::get_tool_type_icon_url($type);
 }
 
 /**
@@ -2011,12 +2011,12 @@ function get_tool_type_icon_url(stdClass $type) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_tool_type_edit_url() instead.',
+    reason: 'Use \\core_ltix\\helper::get_tool_type_edit_url() instead',
     mdl: 'MDL-79113',
 )]
 function get_tool_type_edit_url(stdClass $type) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_tool_type_edit_url($type);
+    return \core_ltix\helper::get_tool_type_edit_url($type);
 }
 
 /**
@@ -2029,12 +2029,12 @@ function get_tool_type_edit_url(stdClass $type) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_tool_proxy_edit_url() instead.',
+    reason: 'Use \\core_ltix\\helper::get_tool_proxy_edit_url() instead',
     mdl: 'MDL-79113',
 )]
 function get_tool_proxy_edit_url(stdClass $proxy) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_tool_proxy_edit_url($proxy);
+    return \core_ltix\helper::get_tool_proxy_edit_url($proxy);
 }
 
 /**
@@ -2047,12 +2047,12 @@ function get_tool_proxy_edit_url(stdClass $proxy) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_tool_type_course_url() instead.',
+    reason: 'Use \\core_ltix\\helper::get_tool_type_course_url() instead',
     mdl: 'MDL-79113',
 )]
 function get_tool_type_course_url(stdClass $type) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_tool_type_course_url($type);
+    return \core_ltix\helper::get_tool_type_course_url($type);
 }
 
 /**
@@ -2065,12 +2065,12 @@ function get_tool_type_course_url(stdClass $type) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_tool_type_urls() instead.',
+    reason: 'Use \\core_ltix\\helper::get_tool_type_urls() instead',
     mdl: 'MDL-79113',
 )]
 function get_tool_type_urls(stdClass $type) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_tool_type_urls($type);
+    return \core_ltix\helper::get_tool_type_urls($type);
 }
 
 /**
@@ -2083,12 +2083,12 @@ function get_tool_type_urls(stdClass $type) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_tool_proxy_urls() instead.',
+    reason: 'Use \\core_ltix\\helper::get_tool_proxy_urls() instead',
     mdl: 'MDL-79113',
 )]
 function get_tool_proxy_urls(stdClass $proxy) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_tool_proxy_urls($proxy);
+    return \core_ltix\helper::get_tool_proxy_urls($proxy);
 }
 
 /**
@@ -2102,12 +2102,12 @@ function get_tool_proxy_urls(stdClass $proxy) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_tool_type_state_info() instead.',
+    reason: 'Use \\core_ltix\\helper::get_tool_type_state_info() instead',
     mdl: 'MDL-79113',
 )]
 function get_tool_type_state_info(stdClass $type) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_tool_type_state_info($type);
+    return \core_ltix\helper::get_tool_type_state_info($type);
 }
 
 /**
@@ -2120,12 +2120,12 @@ function get_tool_type_state_info(stdClass $type) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_tool_type_capability_groups() instead.',
+    reason: 'Use \\core_ltix\\helper::get_tool_type_capability_groups() instead',
     mdl: 'MDL-79113',
 )]
 function get_tool_type_config($type) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	global $CFG;
+    global $CFG;
     $platformid = $CFG->wwwroot;
     $clientid = $type->clientid;
     $deploymentid = $type->id;
@@ -2158,12 +2158,12 @@ function get_tool_type_config($type) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Deprecated API.',
+    reason: 'Use \\core_ltix\\helper::get_tool_type_capability_groups() instead.',
     mdl: 'MDL-79113',
 )]
 function get_tool_type_capability_groups($type) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_tool_type_capability_groups($type);
+    return \core_ltix\helper::get_tool_type_capability_groups($type);
 }
 
 
@@ -2177,12 +2177,12 @@ function get_tool_type_capability_groups($type) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_tool_type_instance_ids() instead.',
+    reason: 'Use \\core_ltix\\helper::get_tool_type_instance_ids() instead',
     mdl: 'MDL-79113',
 )]
 function get_tool_type_instance_ids($type) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_tool_type_instance_ids($type);
+    return \core_ltix\helper::get_tool_type_instance_ids($type);
 }
 
 /**
@@ -2195,12 +2195,12 @@ function get_tool_type_instance_ids($type) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::serialise_tool_type() instead.',
+    reason: 'Use \\core_ltix\\helper::serialise_tool_type() instead',
     mdl: 'MDL-79113',
 )]
 function serialise_tool_type(stdClass $type) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::serialise_tool_type($type);
+    return \core_ltix\helper::serialise_tool_type($type);
 }
 
 /**
@@ -2212,12 +2212,12 @@ function serialise_tool_type(stdClass $type) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::load_type_if_cartridge() instead.',
+    reason: 'Use \\core_ltix\\helper::load_type_if_cartridge() instead',
     mdl: 'MDL-79113',
 )]
 function lti_load_type_if_cartridge($type) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	\core_ltix\helper::load_type_if_cartridge($type);
+    \core_ltix\helper::load_type_if_cartridge($type);
 }
 
 /**
@@ -2229,12 +2229,12 @@ function lti_load_type_if_cartridge($type) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::load_tool_if_cartridge() instead.',
+    reason: 'Use \\core_ltix\\helper::load_tool_if_cartridge() instead',
     mdl: 'MDL-79113',
 )]
 function lti_load_tool_if_cartridge($lti) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::load_tool_if_cartridge($lti);
+    return \core_ltix\helper::load_tool_if_cartridge($lti);
 }
 
 /**
@@ -2247,12 +2247,12 @@ function lti_load_tool_if_cartridge($lti) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::is_cartridge() instead.',
+    reason: 'Use \\core_ltix\\helper::is_cartridge() instead',
     mdl: 'MDL-79113',
 )]
 function lti_is_cartridge($url) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::is_cartridge($url);
+    return \core_ltix\helper::is_cartridge($url);
 }
 
 /**
@@ -2266,12 +2266,12 @@ function lti_is_cartridge($url) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::load_type_from_cartridge() instead.',
+    reason: 'Use \\core_ltix\\helper::load_type_from_cartridge() instead',
     mdl: 'MDL-79113',
 )]
 function lti_load_type_from_cartridge($url, $type) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	\core_ltix\helper::load_type_from_cartridge($url, $type);
+    \core_ltix\helper::load_type_from_cartridge($url, $type);
 }
 
 /**
@@ -2285,12 +2285,12 @@ function lti_load_type_from_cartridge($url, $type) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::load_tool_from_cartridge() instead.',
+    reason: 'Use \\core_ltix\\helper::load_tool_from_cartridge() instead',
     mdl: 'MDL-79113',
 )]
 function lti_load_tool_from_cartridge($url, $lti) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	\core_ltix\helper::load_tool_from_cartridge($url, $lti);
+    \core_ltix\helper::load_tool_from_cartridge($url, $lti);
 }
 
 /**
@@ -2306,12 +2306,12 @@ function lti_load_tool_from_cartridge($url, $lti) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Deprecated API.',
+    reason: 'Use \\core_ltix\\helper::load_cartridge() instead',
     mdl: 'MDL-79113',
 )]
 function lti_load_cartridge($url, $map, $propertiesmap = array()) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::load_cartridge($url, $map, $propertiesmap);
+    return \core_ltix\helper::load_cartridge($url, $map, $propertiesmap);
 }
 
 /**
@@ -2326,12 +2326,12 @@ function lti_load_cartridge($url, $map, $propertiesmap = array()) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::get_tag() instead.',
+    reason: 'Use \\core_ltix\\helper::get_tag() instead',
     mdl: 'MDL-79113',
 )]
 function get_tag($tagname, $xpath, $attribute = null) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::get_tag($tagname, $xpath, $attribute);
+    return \core_ltix\helper::get_tag($tagname, $xpath, $attribute);
 }
 
 /**
@@ -2345,10 +2345,10 @@ function get_tag($tagname, $xpath, $attribute = null) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \\core_ltix\\helper::new_access_token() instead.',
+    reason: 'Use \\core_ltix\\helper::new_access_token() instead',
     mdl: 'MDL-79113',
 )]
 function lti_new_access_token($typeid, $scopes) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
-	return \core_ltix\helper::new_access_token($typeid, $scopes);
+    return \core_ltix\helper::new_access_token($typeid, $scopes);
 }

@@ -42,7 +42,7 @@ use core_ltix\local\ltiservice\service_helper;
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \core_ltix\local\ltiservice\service_helper::get_response_xml() instead.',
+    reason: 'Use \core_ltix\local\ltiservice\service_helper::get_response_xml() instead',
     mdl: 'MDL-79518'
 )]
 function lti_get_response_xml($codemajor, $description, $messageref, $messagetype) {
@@ -55,7 +55,7 @@ function lti_get_response_xml($codemajor, $description, $messageref, $messagetyp
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \core_ltix\local\ltiservice\service_helper::parse_message_id() instead.',
+    reason: 'Use \core_ltix\local\ltiservice\service_helper::parse_message_id() instead',
     mdl: 'MDL-79518'
 )]
 function lti_parse_message_id($xml) {
@@ -68,7 +68,7 @@ function lti_parse_message_id($xml) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \core_ltix\local\ltiservice\service_helper::parse_grade_replace_message() instead.',
+    reason: 'Use \core_ltix\local\ltiservice\service_helper::parse_grade_replace_message() instead',
     mdl: 'MDL-79518'
 )]
 function lti_parse_grade_replace_message($xml) {
@@ -81,7 +81,7 @@ function lti_parse_grade_replace_message($xml) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \core_ltix\local\ltiservice\service_helper::parse_grade_read_message() instead.',
+    reason: 'Use \core_ltix\local\ltiservice\service_helper::parse_grade_read_message() instead',
     mdl: 'MDL-79518'
 )]
 function lti_parse_grade_read_message($xml) {
@@ -94,7 +94,7 @@ function lti_parse_grade_read_message($xml) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \core_ltix\local\ltiservice\service_helper::parse_grade_delete_message() instead.',
+    reason: 'Use \core_ltix\local\ltiservice\service_helper::parse_grade_delete_message() instead',
     mdl: 'MDL-79518'
 )]
 function lti_parse_grade_delete_message($xml) {
@@ -107,7 +107,7 @@ function lti_parse_grade_delete_message($xml) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \core_ltix\local\ltiservice\service_helper::accepts_grades() instead.',
+    reason: 'Use \core_ltix\local\ltiservice\service_helper::accepts_grades() instead',
     mdl: 'MDL-79518'
 )]
 function lti_accepts_grades($ltiinstance) {
@@ -123,7 +123,7 @@ function lti_accepts_grades($ltiinstance) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \core_ltix\local\ltiservice\service_helper::set_session_user() instead.',
+    reason: 'Use \core_ltix\local\ltiservice\service_helper::set_session_user() instead',
     mdl: 'MDL-79518'
 )]
 function lti_set_session_user($userid) {
@@ -136,7 +136,7 @@ function lti_set_session_user($userid) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \core_ltix\local\ltiservice\service_helper::update_grade() instead.',
+    reason: 'Use \core_ltix\local\ltiservice\service_helper::update_grade() instead',
     mdl: 'MDL-79518'
 )]
 function lti_update_grade($ltiinstance, $userid, $launchid, $gradeval) {
@@ -149,7 +149,7 @@ function lti_update_grade($ltiinstance, $userid, $launchid, $gradeval) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \core_ltix\local\ltiservice\service_helper::read_grade() instead.',
+    reason: 'Use \core_ltix\local\ltiservice\service_helper::read_grade() instead',
     mdl: 'MDL-79518'
 )]
 function lti_read_grade($ltiinstance, $userid) {
@@ -162,7 +162,7 @@ function lti_read_grade($ltiinstance, $userid) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \core_ltix\local\ltiservice\service_helper::delete_grade() instead.',
+    reason: 'Use \core_ltix\local\ltiservice\service_helper::delete_grade() instead',
     mdl: 'MDL-79518'
 )]
 function lti_delete_grade($ltiinstance, $userid) {
@@ -175,7 +175,7 @@ function lti_delete_grade($ltiinstance, $userid) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \core_ltix\local\ltiservice\service_helper::verify_message() instead.',
+    reason: 'Use \core_ltix\local\ltiservice\service_helper::verify_message() instead',
     mdl: 'MDL-79518'
 )]
 function lti_verify_message($key, $sharedsecrets, $body, $headers = null) {
@@ -193,7 +193,7 @@ function lti_verify_message($key, $sharedsecrets, $body, $headers = null) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \core_ltix\local\ltiservice\service_helper::verify_sourcedid() instead.',
+    reason: 'Use \core_ltix\local\ltiservice\service_helper::verify_sourcedid() instead',
     mdl: 'MDL-79518'
 )]
 function lti_verify_sourcedid($ltiinstance, $parsed) {
@@ -211,7 +211,7 @@ function lti_verify_sourcedid($ltiinstance, $parsed) {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \core_ltix\local\ltiservice\service_helper::extend_lti_services() instead.',
+    reason: 'Use \core_ltix\local\ltiservice\service_helper::extend_lti_services() instead',
     mdl: 'MDL-79518'
 )]
 function lti_extend_lti_services($data) {

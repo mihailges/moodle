@@ -43,7 +43,7 @@ use stdClass;
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \core_ltix\local\ltiopenid\registration_helper instead.',
+    reason: 'Use \core_ltix\local\ltiopenid\registration_helper instead',
     mdl: 'MDL-79113',
 )]
 class registration_helper {
@@ -85,7 +85,7 @@ class registration_helper {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiopenid\registration_helper::registration_to_config() instead.',
+        reason: 'Use \core_ltix\local\ltiopenid\registration_helper::registration_to_config() instead',
         mdl: 'MDL-79113',
     )]
     public function registration_to_config(array $registrationpayload, string $clientid): object {
@@ -105,7 +105,7 @@ class registration_helper {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiopenid\registration_helper::config_to_registration() instead.',
+        reason: 'Use \core_ltix\local\ltiopenid\registration_helper::config_to_registration() instead',
         mdl: 'MDL-79113',
     )]
     public function config_to_registration(object $config, int $typeid, ?object $type = null): array {
@@ -124,7 +124,7 @@ class registration_helper {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiopenid\registration_helper::validate_registration_token() instead.',
+        reason: 'Use \core_ltix\local\ltiopenid\registration_helper::validate_registration_token() instead',
         mdl: 'MDL-79113',
     )]
     public function validate_registration_token(string $registrationtokenjwt): array {
@@ -141,7 +141,7 @@ class registration_helper {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiopenid\registration_helper::lti_get_service_scopes() instead.',
+        reason: 'Use \core_ltix\local\ltiopenid\registration_helper::lti_get_service_scopes() instead',
         mdl: 'MDL-79113',
     )]
     public function lti_get_service_scopes() {
@@ -158,7 +158,7 @@ class registration_helper {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiopenid\registration_helper::new_clientid() instead.',
+        reason: 'Use \core_ltix\local\ltiopenid\registration_helper::new_clientid() instead',
         mdl: 'MDL-79113',
     )]
     public function new_clientid(): string {
@@ -178,7 +178,7 @@ class registration_helper {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiopenid\registration_helper::sign() instead.',
+        reason: 'Use \core_ltix\local\ltiopenid\registration_helper::sign() instead',
         mdl: 'MDL-79113',
     )]
     public function sign(string $key, string $salt, string $secret): string {
@@ -196,7 +196,7 @@ class registration_helper {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiopenid\registration_helper::get_tool_proxy() instead.',
+        reason: 'Use \core_ltix\local\ltiopenid\registration_helper::get_tool_proxy() instead',
         mdl: 'MDL-79113',
     )]
     public function get_tool_proxy(int $proxyid): array {

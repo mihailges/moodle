@@ -69,7 +69,7 @@ class mod_lti_external extends external_api {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\external\structs::tool_type_return_structure() instead.',
+        reason: 'Use \core_ltix\external\structs::tool_type_return_structure() instead',
         mdl: 'MDL-79518',
     )]
     private static function tool_type_return_structure() {
@@ -85,7 +85,7 @@ class mod_lti_external extends external_api {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\external\structs::tool_proxy_return_structure() instead.',
+        reason: 'Use \core_ltix\external\structs::tool_proxy_return_structure() instead',
         mdl: 'MDL-79518',
     )]
     private static function tool_proxy_return_structure() {
@@ -101,7 +101,7 @@ class mod_lti_external extends external_api {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\external\get_tool_proxies::execute_parameters() instead.',
+        reason: 'Use \core_ltix\external\get_tool_proxies::execute_parameters() instead',
         mdl: 'MDL-79518',
     )]
     public static function get_tool_proxies_parameters() {
@@ -119,7 +119,7 @@ class mod_lti_external extends external_api {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\external\get_tool_proxies::execute() instead.',
+        reason: 'Use \core_ltix\external\get_tool_proxies::execute() instead',
         mdl: 'MDL-79518',
     )]
     public static function get_tool_proxies($orphanedonly) {
@@ -144,7 +144,7 @@ class mod_lti_external extends external_api {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\external\get_tool_proxies::execute_returns() instead.',
+        reason: 'Use \core_ltix\external\get_tool_proxies::execute_returns() instead',
         mdl: 'MDL-79518',
     )]
     public static function get_tool_proxies_returns() {
@@ -437,7 +437,7 @@ class mod_lti_external extends external_api {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\external\create_tool_proxy::execute_parameters() instead.',
+        reason: 'Use \core_ltix\external\create_tool_proxy::execute_parameters() instead',
         mdl: 'MDL-79518',
     )]
     public static function create_tool_proxy_parameters() {
@@ -458,7 +458,7 @@ class mod_lti_external extends external_api {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\external\create_tool_proxy::execute() instead.',
+        reason: 'Use \core_ltix\external\create_tool_proxy::execute() instead',
         mdl: 'MDL-79518',
     )]
     public static function create_tool_proxy($name, $registrationurl, $capabilityoffered, $serviceoffered) {
@@ -483,7 +483,7 @@ class mod_lti_external extends external_api {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\external\create_tool_proxy::execute_returns() instead.',
+        reason: 'Use \core_ltix\external\create_tool_proxy::execute_returns() instead',
         mdl: 'MDL-79518',
     )]
     public static function create_tool_proxy_returns() {
@@ -499,7 +499,7 @@ class mod_lti_external extends external_api {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\external\delete_tool_proxy::execute_parameters() instead.',
+        reason: 'Use \core_ltix\external\delete_tool_proxy::execute_parameters() instead',
         mdl: 'MDL-79518',
     )]
     public static function delete_tool_proxy_parameters() {
@@ -517,7 +517,7 @@ class mod_lti_external extends external_api {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\external\delete_tool_proxy::execute() instead.',
+        reason: 'Use \core_ltix\external\delete_tool_proxy::execute() instead',
         mdl: 'MDL-79518',
     )]
     public static function delete_tool_proxy($id) {
@@ -542,7 +542,7 @@ class mod_lti_external extends external_api {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\external\delete_tool_proxy::execute_returns() instead.',
+        reason: 'Use \core_ltix\external\delete_tool_proxy::execute_returns() instead',
         mdl: 'MDL-79518',
     )]
     public static function delete_tool_proxy_returns() {
@@ -558,7 +558,7 @@ class mod_lti_external extends external_api {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\external\get_tool_proxy_registration_request::execute_parameters() instead.',
+        reason: 'Use \core_ltix\external\get_tool_proxy_registration_request::execute_parameters() instead',
         mdl: 'MDL-79518',
     )]
     public static function get_tool_proxy_registration_request_parameters() {
@@ -576,7 +576,7 @@ class mod_lti_external extends external_api {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\external\get_tool_proxy_registration_request::execute() instead.',
+        reason: 'Use \core_ltix\external\get_tool_proxy_registration_request::execute() instead',
         mdl: 'MDL-79518',
     )]
     public static function get_tool_proxy_registration_request($id) {
@@ -611,7 +611,7 @@ class mod_lti_external extends external_api {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\external\get_tool_types::execute_parameters() instead.',
+        reason: 'Use \core_ltix\external\get_tool_types::execute_parameters() instead',
         mdl: 'MDL-79518',
     )]
     public static function get_tool_types_parameters() {
@@ -629,7 +629,7 @@ class mod_lti_external extends external_api {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\external\get_tool_types::execute() instead.',
+        reason: 'Use \core_ltix\external\get_tool_types::execute() instead',
         mdl: 'MDL-79518',
     )]
     public static function get_tool_types($toolproxyid) {
@@ -654,7 +654,7 @@ class mod_lti_external extends external_api {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\external\get_tool_types::execute_returns() instead.',
+        reason: 'Use \core_ltix\external\get_tool_types::execute_returns() instead',
         mdl: 'MDL-79518',
     )]
     public static function get_tool_types_returns() {
@@ -670,7 +670,7 @@ class mod_lti_external extends external_api {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\external\create_tool_type::execute_parameters() instead.',
+        reason: 'Use \core_ltix\external\create_tool_type::execute_parameters() instead',
         mdl: 'MDL-79518',
     )]
     public static function create_tool_type_parameters() {
@@ -690,7 +690,7 @@ class mod_lti_external extends external_api {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\external::create_tool_type instead.',
+        reason: 'Use \core_ltix\external::create_tool_type instead',
         mdl: 'MDL-79518',
     )]
     public static function create_tool_type($cartridgeurl, $key, $secret) {
@@ -715,7 +715,7 @@ class mod_lti_external extends external_api {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\external\create_tool_type::execute_returns() instead.',
+        reason: 'Use \core_ltix\external\create_tool_type::execute_returns() instead',
         mdl: 'MDL-79518',
     )]
     public static function create_tool_type_returns() {
@@ -731,7 +731,7 @@ class mod_lti_external extends external_api {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\external\update_tool_type::execute_parameters() instead.',
+        reason: 'Use \core_ltix\external\update_tool_type::execute_parameters() instead',
         mdl: 'MDL-79518',
     )]
     public static function update_tool_type_parameters() {
@@ -752,7 +752,7 @@ class mod_lti_external extends external_api {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\external::update_tool_type instead.',
+        reason: 'Use \core_ltix\external::update_tool_type instead',
         mdl: 'MDL-79518',
     )]
     public static function update_tool_type($id, $name, $description, $state) {
@@ -777,7 +777,7 @@ class mod_lti_external extends external_api {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\external\update_tool_type::execute_returns() instead.',
+        reason: 'Use \core_ltix\external\update_tool_type::execute_returns() instead',
         mdl: 'MDL-79518',
     )]
     public static function update_tool_type_returns() {
@@ -793,7 +793,7 @@ class mod_lti_external extends external_api {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\external\delete_tool_type::execute_parameters() instead.',
+        reason: 'Use \core_ltix\external\delete_tool_type::execute_parameters() instead',
         mdl: 'MDL-79518',
     )]
     public static function delete_tool_type_parameters() {
@@ -811,7 +811,7 @@ class mod_lti_external extends external_api {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\external::delete_tool_type instead.',
+        reason: 'Use \core_ltix\external::delete_tool_type instead',
         mdl: 'MDL-79518',
     )]
     public static function delete_tool_type($id) {
@@ -836,7 +836,7 @@ class mod_lti_external extends external_api {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\external\delete_tool_type::execute_returns() instead.',
+        reason: 'Use \core_ltix\external\delete_tool_type::execute_returns() instead',
         mdl: 'MDL-79518',
     )]
     public static function delete_tool_type_returns() {
@@ -852,7 +852,7 @@ class mod_lti_external extends external_api {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\external\is_cartridge::execute_parameters() instead.',
+        reason: 'Use \core_ltix\external\is_cartridge::execute_parameters() instead',
         mdl: 'MDL-79518',
     )]
     public static function is_cartridge_parameters() {
@@ -870,7 +870,7 @@ class mod_lti_external extends external_api {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\external::is_cartridge instead.',
+        reason: 'Use \core_ltix\external::is_cartridge instead',
         mdl: 'MDL-79518',
     )]
     public static function is_cartridge($url) {
@@ -895,7 +895,7 @@ class mod_lti_external extends external_api {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\external\is_cartridge::execute_returns() instead.',
+        reason: 'Use \core_ltix\external\is_cartridge::execute_returns() instead',
         mdl: 'MDL-79518',
     )]
     public static function is_cartridge_returns() {

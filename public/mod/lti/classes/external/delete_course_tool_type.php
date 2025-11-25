@@ -33,7 +33,7 @@ require_once($CFG->dirroot . '/mod/lti/locallib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 #[\core\attribute\deprecated(
-    reason: 'Use \core_ltix\external\delete_course_tool_type instead.',
+    reason: 'Use \core_ltix\external\delete_course_tool_type instead',
     since: '5.1',
     mdl: 'MDL-79518',
 )]
@@ -46,7 +46,7 @@ class delete_course_tool_type extends external_api {
      * @return external_function_parameters
      */
     #[\core\attribute\deprecated(
-        reason: 'Use \core_ltix\external\delete_course_tool_type::execute_parameters() instead.',
+        reason: 'Use \core_ltix\external\delete_course_tool_type::execute_parameters() instead',
         since: '5.1',
         mdl: 'MDL-79518',
     )]
@@ -65,7 +65,7 @@ class delete_course_tool_type extends external_api {
      * @throws \invalid_parameter_exception if the provided id refers to a site level tool which cannot be deleted.
      */
     #[\core\attribute\deprecated(
-        reason: 'Use \core_ltix\external\delete_course_tool_type::execute() instead.',
+        reason: 'Use \core_ltix\external\delete_course_tool_type::execute() instead',
         since: '5.1',
         mdl: 'MDL-79518',
     )]
@@ -81,7 +81,7 @@ class delete_course_tool_type extends external_api {
      * @return external_value
      */
     #[\core\attribute\deprecated(
-        reason: 'Use \core_ltix\external\delete_course_tool_type::execute_returns() instead.',
+        reason: 'Use \core_ltix\external\delete_course_tool_type::execute_returns() instead',
         since: '5.1',
         mdl: 'MDL-79518',
     )]

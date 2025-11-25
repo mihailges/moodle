@@ -31,7 +31,7 @@ defined('MOODLE_INTERNAL') || die;
 /**
  * The mod_lti\local\ltiservice\response class.
  *
- * @deprecated since Moodle 5.1 use \core_ltix\local\ltiservice\response instead.
+ * @deprecated since Moodle 5.1 use \core_ltix\local\ltiservice\response instead
  * @package    mod_lti
  * @since      Moodle 2.8
  * @copyright  2014 Vital Source Technologies http://vitalsource.com
@@ -39,7 +39,7 @@ defined('MOODLE_INTERNAL') || die;
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \core_ltix\local\ltiservice\response instead.',
+    reason: 'Use \core_ltix\local\ltiservice\response instead',
     mdl: 'MDL-80231',
 )]
 class response {
@@ -69,7 +69,7 @@ class response {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Class \mod_lti\local\ltiservice\response is deprecated, please use \core_ltix\local\ltiservice\response instead.',
+        reason: 'Class \mod_lti\local\ltiservice\response is deprecated, please use \core_ltix\local\ltiservice\response instead',
         mdl: 'MDL-80231',
     )]
     public function __construct() {
@@ -111,7 +111,7 @@ class response {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Class \mod_lti\local\ltiservice\response is deprecated, please use \core_ltix\local\ltiservice\response instead.',
+        reason: 'Class \mod_lti\local\ltiservice\response is deprecated, please use \core_ltix\local\ltiservice\response instead',
         mdl: 'MDL-80231',
     )]
     public function get_code() {
@@ -127,7 +127,7 @@ class response {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Class \mod_lti\local\ltiservice\response is deprecated, please use \core_ltix\local\ltiservice\response instead.',
+        reason: 'Class \mod_lti\local\ltiservice\response is deprecated, please use \core_ltix\local\ltiservice\response instead',
         mdl: 'MDL-80231',
     )]
     public function set_code($code) {
@@ -144,7 +144,7 @@ class response {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Class \mod_lti\local\ltiservice\response is deprecated, please use \core_ltix\local\ltiservice\response instead.',
+        reason: 'Class \mod_lti\local\ltiservice\response is deprecated, please use \core_ltix\local\ltiservice\response instead',
         mdl: 'MDL-80231',
     )]
     public function get_reason() {
@@ -171,7 +171,7 @@ class response {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Class \mod_lti\local\ltiservice\response is deprecated, please use \core_ltix\local\ltiservice\response instead.',
+        reason: 'Class \mod_lti\local\ltiservice\response is deprecated, please use \core_ltix\local\ltiservice\response instead',
         mdl: 'MDL-80231',
     )]
     public function set_reason($reason) {
@@ -187,7 +187,7 @@ class response {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Class \mod_lti\local\ltiservice\response is deprecated, please use \core_ltix\local\ltiservice\response instead.',
+        reason: 'Class \mod_lti\local\ltiservice\response is deprecated, please use \core_ltix\local\ltiservice\response instead',
         mdl: 'MDL-80231',
     )]
     public function get_request_method() {
@@ -203,7 +203,7 @@ class response {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Class \mod_lti\local\ltiservice\response is deprecated, please use \core_ltix\local\ltiservice\response instead.',
+        reason: 'Class \mod_lti\local\ltiservice\response is deprecated, please use \core_ltix\local\ltiservice\response instead',
         mdl: 'MDL-80231',
     )]
     public function get_accept() {
@@ -219,7 +219,7 @@ class response {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Class \mod_lti\local\ltiservice\response is deprecated, please use \core_ltix\local\ltiservice\response instead.',
+        reason: 'Class \mod_lti\local\ltiservice\response is deprecated, please use \core_ltix\local\ltiservice\response instead',
         mdl: 'MDL-80231',
     )]
     public function set_accept($accept) {
@@ -235,7 +235,7 @@ class response {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Class \mod_lti\local\ltiservice\response is deprecated, please use \core_ltix\local\ltiservice\response instead.',
+        reason: 'Class \mod_lti\local\ltiservice\response is deprecated, please use \core_ltix\local\ltiservice\response instead',
         mdl: 'MDL-80231',
     )]
     public function get_content_type() {
@@ -251,7 +251,7 @@ class response {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Class \mod_lti\local\ltiservice\response is deprecated, please use \core_ltix\local\ltiservice\response instead.',
+        reason: 'Class \mod_lti\local\ltiservice\response is deprecated, please use \core_ltix\local\ltiservice\response instead',
         mdl: 'MDL-80231',
     )]
     public function set_content_type($contenttype) {
@@ -267,7 +267,7 @@ class response {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Class \mod_lti\local\ltiservice\response is deprecated, please use \core_ltix\local\ltiservice\response instead.',
+        reason: 'Class \mod_lti\local\ltiservice\response is deprecated, please use \core_ltix\local\ltiservice\response instead',
         mdl: 'MDL-80231',
     )]
     public function get_request_data() {
@@ -283,7 +283,7 @@ class response {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Class \mod_lti\local\ltiservice\response is deprecated, please use \core_ltix\local\ltiservice\response instead.',
+        reason: 'Class \mod_lti\local\ltiservice\response is deprecated, please use \core_ltix\local\ltiservice\response instead',
         mdl: 'MDL-80231',
     )]
     public function set_request_data($data) {
@@ -299,7 +299,7 @@ class response {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Class \mod_lti\local\ltiservice\response is deprecated, please use \core_ltix\local\ltiservice\response instead.',
+        reason: 'Class \mod_lti\local\ltiservice\response is deprecated, please use \core_ltix\local\ltiservice\response instead',
         mdl: 'MDL-80231',
     )]
     public function get_body() {
@@ -315,7 +315,7 @@ class response {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Class \mod_lti\local\ltiservice\response is deprecated, please use \core_ltix\local\ltiservice\response instead.',
+        reason: 'Class \mod_lti\local\ltiservice\response is deprecated, please use \core_ltix\local\ltiservice\response instead',
         mdl: 'MDL-80231',
     )]
     public function set_body($body) {
@@ -331,7 +331,7 @@ class response {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Class \mod_lti\local\ltiservice\response is deprecated, please use \core_ltix\local\ltiservice\response instead.',
+        reason: 'Class \mod_lti\local\ltiservice\response is deprecated, please use \core_ltix\local\ltiservice\response instead',
         mdl: 'MDL-80231',
     )]
     public function add_additional_header($header) {
@@ -345,7 +345,7 @@ class response {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Class \mod_lti\local\ltiservice\response is deprecated, please use \core_ltix\local\ltiservice\response instead.',
+        reason: 'Class \mod_lti\local\ltiservice\response is deprecated, please use \core_ltix\local\ltiservice\response instead',
         mdl: 'MDL-80231',
     )]
     public function send() {

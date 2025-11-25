@@ -38,7 +38,7 @@ use core_ltix\oauth_helper;
 /**
  * The mod_lti\local\ltiservice\service_base class.
  *
- * @deprecated since Moodle 5.1 use \core_ltix\local\ltiservice\service_base instead.
+ * @deprecated since Moodle 5.1 use \core_ltix\local\ltiservice\service_base instead
  * @package    mod_lti
  * @since      Moodle 2.8
  * @copyright  2014 Vital Source Technologies http://vitalsource.com
@@ -46,7 +46,7 @@ use core_ltix\oauth_helper;
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \core_ltix\local\ltiservice\service_base instead.',
+    reason: 'Use \core_ltix\local\ltiservice\service_base instead',
     mdl: 'MDL-80231',
 )]
 abstract class service_base {
@@ -78,11 +78,11 @@ abstract class service_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\service_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\service_base instead',
         mdl: 'MDL-80231',
     )]
     public function __construct() {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
 
         $this->id = null;
         $this->name = null;
@@ -102,11 +102,11 @@ abstract class service_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\service_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\service_base instead',
         mdl: 'MDL-80231',
     )]
     public function get_id() {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
         return $this->id;
 
     }
@@ -119,11 +119,11 @@ abstract class service_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\service_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\service_base instead',
         mdl: 'MDL-80231',
     )]
     public function get_component_id() {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
         return 'ltixservice_' . $this->id;
 
     }
@@ -136,11 +136,11 @@ abstract class service_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\service_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\service_base instead',
         mdl: 'MDL-80231',
     )]
     public function get_name() {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
         return $this->name;
 
     }
@@ -153,11 +153,11 @@ abstract class service_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\service_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\service_base instead',
         mdl: 'MDL-80231',
     )]
     public function is_unsigned() {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
         return $this->unsigned;
 
     }
@@ -170,11 +170,11 @@ abstract class service_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\service_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\service_base instead',
         mdl: 'MDL-80231',
     )]
     public function get_tool_proxy() {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
         return $this->toolproxy;
 
     }
@@ -189,11 +189,11 @@ abstract class service_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\service_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\service_base instead',
         mdl: 'MDL-80231',
     )]
     public function set_tool_proxy($toolproxy) {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
         $this->toolproxy = $toolproxy;
 
     }
@@ -206,11 +206,11 @@ abstract class service_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\service_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\service_base instead',
         mdl: 'MDL-80231',
     )]
     public function get_type() {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
         return $this->type;
 
     }
@@ -225,11 +225,11 @@ abstract class service_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\service_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\service_base instead',
         mdl: 'MDL-80231',
     )]
     public function set_type($type) {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
         $this->type = $type;
 
     }
@@ -242,11 +242,11 @@ abstract class service_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\service_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\service_base instead',
         mdl: 'MDL-80231',
     )]
     public function get_typeconfig() {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
         return $this->typeconfig;
 
     }
@@ -261,11 +261,11 @@ abstract class service_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\service_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\service_base instead',
         mdl: 'MDL-80231',
     )]
     public function set_typeconfig($typeconfig) {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
         $this->typeconfig = $typeconfig;
 
     }
@@ -278,7 +278,7 @@ abstract class service_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\service_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\service_base instead',
         mdl: 'MDL-80231',
     )]
     abstract public function get_resources();
@@ -293,11 +293,11 @@ abstract class service_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\service_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\service_base instead',
         mdl: 'MDL-80231',
     )]
     public function get_permitted_scopes() {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
         return null;
     }
 
@@ -311,11 +311,11 @@ abstract class service_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\service_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\service_base instead',
         mdl: 'MDL-80231',
     )]
     public function get_scopes() {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
         return null;
     }
 
@@ -327,11 +327,11 @@ abstract class service_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\service_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\service_base instead',
         mdl: 'MDL-80231',
     )]
     public function get_configuration_options(&$mform) {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
     }
 
     /**
@@ -342,11 +342,11 @@ abstract class service_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\service_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\service_base instead',
         mdl: 'MDL-80231',
     )]
     public function instance_added(object $lti): void {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
     }
 
     /**
@@ -357,11 +357,11 @@ abstract class service_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\service_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\service_base instead',
         mdl: 'MDL-80231',
     )]
     public function instance_updated(object $lti): void {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
     }
 
     /**
@@ -379,12 +379,12 @@ abstract class service_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\service_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\service_base instead',
         mdl: 'MDL-80231',
     )]
     public function override_endpoint(string $messagetype, string $targetlinkuri,
             ?string $customstr, int $courseid, ?object $lti = null): array {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
         return [$targetlinkuri, $customstr];
     }
 
@@ -396,11 +396,11 @@ abstract class service_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\service_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\service_base instead',
         mdl: 'MDL-80231',
     )]
     public function instance_deleted(int $id): void {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
     }
 
     /**
@@ -411,11 +411,11 @@ abstract class service_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\service_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\service_base instead',
         mdl: 'MDL-80231',
     )]
     public function set_instance_form_values(object $defaultvalues): void {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
     }
 
     /**
@@ -445,11 +445,11 @@ abstract class service_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\service_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\service_base instead',
         mdl: 'MDL-80231',
     )]
     public function is_used_in_context($typeid, $courseid) {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
         global $DB;
         $ok = $DB->record_exists('lti', array('course' => $courseid, 'typeid' => $typeid));
         return $ok || $DB->record_exists('lti_types', array('course' => $courseid, 'id' => $typeid));
@@ -465,11 +465,11 @@ abstract class service_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\service_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\service_base instead',
         mdl: 'MDL-80231',
     )]
     public function is_allowed_in_context($typeid, $courseid) {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
         global $DB;
         // Check if it is a Course tool for this course or a Site tool.
         $type = $DB->get_record('lti_types', array('id' => $typeid));
@@ -492,11 +492,11 @@ abstract class service_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\service_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\service_base instead',
         mdl: 'MDL-80231',
     )]
     public function get_launch_parameters($messagetype, $courseid, $userid, $typeid, $modlti = null) {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
         return array();
     }
 
@@ -509,11 +509,11 @@ abstract class service_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\service_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\service_base instead',
         mdl: 'MDL-80231',
     )]
     public function get_jwt_claim_mappings(): array {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
         return [];
     }
 
@@ -527,11 +527,11 @@ abstract class service_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\service_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\service_base instead',
         mdl: 'MDL-80231',
     )]
     public static function get_service_path() {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
         $url = new \moodle_url('/mod/lti/services.php');
         return $url->out(false);
     }
@@ -546,11 +546,11 @@ abstract class service_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\service_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\service_base instead',
         mdl: 'MDL-80231',
     )]
     public function parse_value($value) {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
         if (empty($this->resources)) {
             $this->resources = $this->get_resources();
         }
@@ -576,11 +576,11 @@ abstract class service_base {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\local\ltiservice\service_base instead.',
+        reason: 'Use \core_ltix\local\ltiservice\service_base instead',
         mdl: 'MDL-80231',
     )]
     public function check_tool($typeid, $body = null, $scopes = null) {
-        \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+        \core\deprecation::emit_deprecation_if_present([self::class, __FUNCTION__]);
         $ok = true;
         $toolproxy = null;
         $consumerkey = \core_ltix\oauth_helper::get_oauth_key_from_headers($typeid, $scopes);

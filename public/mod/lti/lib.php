@@ -570,7 +570,7 @@ function lti_uninstall() {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Please use \core_ltix\helper::get_config() instead.',
+    reason: 'Please use \core_ltix\helper::get_lti_types() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_lti_types() {
@@ -589,7 +589,7 @@ function lti_get_lti_types() {
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Please use \core_ltix\helper::get_config() instead.',
+    reason: 'Please use \core_ltix\helper::get_lti_types_from_proxy_id() instead',
     mdl: 'MDL-79113',
 )]
 function lti_get_lti_types_from_proxy_id($toolproxyid) {

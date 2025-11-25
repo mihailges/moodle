@@ -36,7 +36,7 @@ require_once($CFG->dirroot . '/mod/lti/locallib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 #[\core\attribute\deprecated(
-    reason: 'Use \core_ltix\external\get_tool_types_and_proxies_count instead.',
+    reason: 'Use \core_ltix\external\get_tool_types_and_proxies_count instead',
     since: '5.1',
     mdl: 'MDL-79518',
 )]
@@ -49,7 +49,7 @@ class get_tool_types_and_proxies_count extends external_api {
      * @return external_function_parameters
      */
     #[\core\attribute\deprecated(
-        reason: 'Use \core_ltix\external\get_tool_types_and_proxies_count::execute_parameters() instead.',
+        reason: 'Use \core_ltix\external\get_tool_types_and_proxies_count::execute_parameters() instead',
         since: '5.1',
         mdl: 'MDL-79518',
     )]
@@ -71,7 +71,7 @@ class get_tool_types_and_proxies_count extends external_api {
      * @return array
      */
     #[\core\attribute\deprecated(
-        reason: 'Use \core_ltix\external\get_tool_types_and_proxies_count::execute() instead.',
+        reason: 'Use \core_ltix\external\get_tool_types_and_proxies_count::execute() instead',
         since: '5.1',
         mdl: 'MDL-79518',
     )]
@@ -87,7 +87,7 @@ class get_tool_types_and_proxies_count extends external_api {
      * @return external_single_structure
      */
     #[\core\attribute\deprecated(
-        reason: 'Use \core_ltix\external\get_tool_types_and_proxies_count::execute_returns() instead.',
+        reason: 'Use \core_ltix\external\get_tool_types_and_proxies_count::execute_returns() instead',
         since: '5.1',
         mdl: 'MDL-79518',
     )]

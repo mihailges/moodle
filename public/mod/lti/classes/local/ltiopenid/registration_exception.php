@@ -33,7 +33,7 @@ namespace mod_lti\local\ltiopenid;
  */
 #[\core\attribute\deprecated(
     since: '5.1',
-    reason: 'Use \core_ltix\local\ltiopenid\registration_exception instead.',
+    reason: 'Use \core_ltix\local\ltiopenid\registration_exception instead',
     mdl: 'MDL-79113',
 )]
 class registration_exception extends \Exception {

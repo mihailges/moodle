@@ -38,7 +38,7 @@ class helper {
      */
     #[\core\attribute\deprecated(
         since: '5.1',
-        reason: 'Use \core_ltix\helper::get_tool_proxy_sql() instead.',
+        reason: 'Use \core_ltix\helper::get_tool_proxy_sql() instead',
         mdl: 'MDL-79113',
     )]
     public static function get_tool_proxy_sql(bool $orphanedonly = false, bool $count = false): string {

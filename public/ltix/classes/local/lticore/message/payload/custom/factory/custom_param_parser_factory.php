@@ -30,7 +30,7 @@ class custom_param_parser_factory {
         $messagetype = $launchtoken->get_claim(\core_ltix\constants::LTI_JWT_CLAIM_PREFIX . '/claim/message_type');
 
         // TODO: below 'LtiResourceLinkRequest' should be replaced with a const.
-        if ($messagetype === 'LtiResourceLinkRequest') { // Should we use \Packback\Lti1p3\LtiConstants::MESSAGE_TYPE_RESOURCE ???
+        if ($messagetype === 'LtiResourceLinkRequest') {
             $user = $USER->id == $ltiuser->id ? $USER : \core_user::get_user($ltiuser->id);
 
             $context = \core\context\course::instance(
@@ -50,13 +50,13 @@ class custom_param_parser_factory {
                 context: $context,
                 user: $user
             );
-        } else if ($messagetype === 'LtiSubmissionReviewRequest') { // Should we use \Packback\Lti1p3\LtiConstants::MESSAGE_TYPE_SUBMISSIONREVIEW ???
+        } else if ($messagetype === 'LtiSubmissionReviewRequest') {
             $user = $USER->id == $ltiuser->id ? $USER : \core_user::get_user($ltiuser->id);
 
             $context = \core\context\course::instance(
                 $launchtoken->get_claim(\core_ltix\constants::LTI_JWT_CLAIM_PREFIX.'/claim/context')['id']
             );
-            // If the auth request is for a ResourceLink Launch, create the custom parameter parser using the resource link.
+            // If the auth request is for a Submission Review Launch, create the custom parameter parser.
             return new custom_param_parser(
                 \core_ltix\helper::get_capabilities(),
                 new submission_review_launch_service_facade(

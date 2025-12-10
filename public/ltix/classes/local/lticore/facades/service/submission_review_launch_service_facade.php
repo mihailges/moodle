@@ -47,7 +47,8 @@ class submission_review_launch_service_facade implements launch_service_facade_i
         protected int $userid,
         protected resource_link $resourcelink,
     ) {
-        $this->messagetype = 'LtiSubmissionReviewRequest'; // TODO: make const, but also, don't services expect the 1p1 message type?
+        // This is the only supported message type (LTI 1.3), since no LTI 1.1 message type exists.
+        $this->messagetype = 'LtiSubmissionReviewRequest';
     }
 
     /**

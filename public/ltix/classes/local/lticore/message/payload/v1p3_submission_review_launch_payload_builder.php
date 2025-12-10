@@ -80,25 +80,23 @@ class v1p3_submission_review_launch_payload_builder implements v1p3_message_payl
     public function get_claims(): array {
         // Create the payload data common to any RLL.
         $unformattedpayloaddata = [
-            //'messagetype' => $this->get_unformatted_message_type_data(),
             // Really, context payload depends on context, but it's fetched via link.
-            'context' => $this->get_unformatted_context_data($this->resourcelink),
-            //'resourcelink' => $this->get_unformatted_resource_link_data($resourcelink),
+            'context' => $this->get_unformatted_context_data(),
             'toolplatform' => $this->get_unformatted_tool_platform_data(),
-            'launchpresentation' => $this->get_unformatted_launch_presentation_data($this->resourcelink, $this->toolconfig),
-            'lis' => $this->get_unformatted_lis_data($this->resourcelink, $this->user, $this->toolconfig),
+            'launchpresentation' => $this->get_unformatted_launch_presentation_data(),
+            'lis' => $this->get_unformatted_lis_data(),
         ];
         $unformattedpayloaddata = array_merge(...array_values($unformattedpayloaddata)); // Flatten the above.
 
         // Add custom param data configured by the tool and link - do NOT substitute yet.
-        $linkunformattedpayloaddata = $this->get_unformatted_custom_data($this->resourcelink, $this->toolconfig);
+        $linkunformattedpayloaddata = $this->get_unformatted_custom_data();
         $unformattedpayloaddata = array_merge($linkunformattedpayloaddata, $unformattedpayloaddata);
 
         // Allow services to add claims, again using unformatted payload data because, historically, that's what services speak.
         // Note the ordering. Services add their custom claims to the unformatted data as 'custom_%SERVICECLAIM%', so care
         // must be taken to ensure that tool-level or link-level custom params, which are represented as 'custom_%CUSTOMPARAMNAME%',
         // can't override the service claims.
-        $serviceunformattedpayloaddata = $this->get_unformatted_service_custom_data($this->servicefacade);
+        $serviceunformattedpayloaddata = $this->get_unformatted_service_custom_data();
         $unformattedpayloaddata = array_merge($unformattedpayloaddata, $serviceunformattedpayloaddata);
 
         // TODO: we need to allow the ltixsource plugins' 'before_launch' plugin callback to be called here?
@@ -109,86 +107,26 @@ class v1p3_submission_review_launch_payload_builder implements v1p3_message_payl
         // Perform substitution for custom params.
         // Note: this won't perform substitution for variables referencing any of the user claims, since user claims aren't
         // yet present in the payload. Substitution needs to be re-run against the unformatted user data at auth time.
-        $unformattedpayloaddata = $this->resolve_substitution($unformattedpayloaddata, $this->customparamparser);
+        $unformattedpayloaddata = $this->resolve_substitution($unformattedpayloaddata);
 
         return $this->claimconverter->params_to_claims($unformattedpayloaddata);
     }
 
-//    /**
-//     * Build the unformatted link launch payload.
-//     *
-//     * @param \stdClass $toolconfig
-//     * @param resource_link $resourcelink
-//     * @param \stdClass $user
-//     * @param resource_link_launch_service_facade $servicefacade
-//     * @return array
-//     */
-//    public function build_unformatted_link_launch_payload(
-//        \stdClass $toolconfig,
-//        resource_link $resourcelink,
-//        \stdClass $user,
-//        resource_link_launch_service_facade $servicefacade,
-//        custom_param_parser $customparamparser,
-//    ): array {
-//
-//        // Create the payload data common to any RLL.
-//        $unformattedpayloaddata = [
-//            //'messagetype' => $this->get_unformatted_message_type_data(),
-//             // Really, context payload depends on context, but it's fetched via link.
-//            'context' => $this->get_unformatted_context_data($resourcelink),
-//            //'resourcelink' => $this->get_unformatted_resource_link_data($resourcelink),
-//            'toolplatform' => $this->get_unformatted_tool_platform_data($toolconfig),
-//            'launchpresentation' => $this->get_unformatted_launch_presentation_data($resourcelink, $toolconfig),
-//            'lis' => $this->get_unformatted_lis_data($resourcelink, $user, $toolconfig),
-//        ];
-//        $unformattedpayloaddata = array_merge(...array_values($unformattedpayloaddata)); // Flatten the above.
-//
-//        // Add custom param data configured by the tool and link - do NOT substitute yet.
-//        $linkunformattedpayloaddata = $this->get_unformatted_custom_data($resourcelink, $toolconfig);
-//        $unformattedpayloaddata = array_merge($linkunformattedpayloaddata, $unformattedpayloaddata);
-//
-//        // Allow services to add claims, again using unformatted payload data because, historically, that's what services speak.
-//        // Note the ordering. Services add their custom claims to the unformatted data as 'custom_%SERVICECLAIM%', so care
-//        // must be taken to ensure that tool-level or link-level custom params, which are represented as 'custom_%CUSTOMPARAMNAME%',
-//        // can't override the service claims.
-//        $serviceunformattedpayloaddata = $this->get_unformatted_service_custom_data($servicefacade);
-//        $unformattedpayloaddata = array_merge($unformattedpayloaddata, $serviceunformattedpayloaddata);
-//
-//        // TODO: we need to allow the ltixsource plugins' 'before_launch' plugin callback to be called here?
-//        //  That would permit augmenting any launch params prior to signing.
-//
-//
-//        // Perform substitution for custom params.
-//        // Note: this won't perform substitution for variables referencing any of the user claims, since user claims aren't
-//        // yet present in the payload. Substitution needs to be re-run against the unformatted user data at auth time.
-//        $unformattedpayloaddata = $this->resolve_substitution($unformattedpayloaddata, $customparamparser);
-//
-//        return $unformattedpayloaddata;
-//    }
-
-    // TODO: LTI 1p3 specific message type.
-    protected function get_unformatted_message_type_data(): array {
-        return ['lti_message_type' => 'LtiSubmissionReviewRequest'];  // Should we use \Packback\Lti1p3\LtiConstants::MESSAGE_TYPE_SUBMISSIONREVIEW ?
-    }
-
     // TODO: Only LTI 1p1 and 1p3.
-    protected function get_unformatted_service_custom_data(submission_review_launch_service_facade $servicefacade): array {
+    protected function get_unformatted_service_custom_data(): array {
 
         $servicecustomdata = [];
-        foreach ($servicefacade->get_launch_parameters() as $param => $val) {
+        foreach ($this->servicefacade->get_launch_parameters() as $param => $val) {
             $servicecustomdata['custom_' . $param] = $val;
         }
         return $servicecustomdata;
     }
 
     // TODO: lti1p3 specific logic in the inclusion of the non-normalised custom keys. LTI1p3 and LTI 2.0 do this, but 1p1 doesn't.
-    protected function get_unformatted_custom_data(
-        resource_link $resourcelink,
-        \stdClass $toolconfig,
-    ): array {
+    protected function get_unformatted_custom_data(): array {
 
-        $toolcustomstr = !empty($toolconfig->lti_customparameters) ? $toolconfig->lti_customparameters : '';
-        $linkcustomstr = !empty($resourcelink->get('customparams')) ? $resourcelink->get('customparams') : '';
+        $toolcustomstr = !empty($this->toolconfig->lti_customparameters) ? $this->toolconfig->lti_customparameters : '';
+        $linkcustomstr = !empty($this->resourcelink->get('customparams')) ? $this->resourcelink->get('customparams') : '';
         $parsedtoolcustom = [];
         $parsedlinkcustom = [];
         if ($toolcustomstr) {
@@ -223,10 +161,10 @@ class v1p3_submission_review_launch_payload_builder implements v1p3_message_payl
     }
 
     // TODO: Note 1p1 and 1p3 difference: the conditional inclusion of the legacy lis_payload. LTI 2.0 always includes this.
-    protected function get_unformatted_lis_data(resource_link $resourcelink, \stdClass $user, \stdClass $toolconfig): array {
+    protected function get_unformatted_lis_data(): array {
 
         // Some lis properties only apply when in course-related contexts.
-        $contextid = $resourcelink->get('contextid');
+        $contextid = $this->resourcelink->get('contextid');
         $context = \core\context::instance_by_id($contextid);
         if (($coursecontext = $context->get_course_context(false)) !== false) {
             $course = get_course($coursecontext->instanceid);
@@ -238,7 +176,7 @@ class v1p3_submission_review_launch_payload_builder implements v1p3_message_payl
         ];
 
         // LTI 1p3/1p1 specific logic:
-        $legacylisclaims = $this->get_legacy_lis_payload($toolconfig, $resourcelink, $user);
+        $legacylisclaims = $this->get_legacy_lis_payload();
 
         return array_merge($lisdata, $legacylisclaims);
     }
@@ -255,7 +193,7 @@ class v1p3_submission_review_launch_payload_builder implements v1p3_message_payl
      * @param \stdClass $user the user record
      * @return array the array of payload data.
      */
-    protected function get_legacy_lis_payload(\stdClass $toolconfig, resource_link $link, \stdClass $user): array {
+    protected function get_legacy_lis_payload(): array {
         global $CFG;
         $legacypayloaddata = [];
 
@@ -263,13 +201,14 @@ class v1p3_submission_review_launch_payload_builder implements v1p3_message_payl
         //  In such cases, I suspect we'll want to shim the toolconfig coming in to make it appear as if the config says "enabled/disabled".
 
         // Basic Outcomes claim support.
-        if ($link->get('gradable') && !empty($link->get('servicesalt')) &&
-            ($toolconfig->lti_acceptgrades == constants::LTI_SETTING_ALWAYS ||
-                ($toolconfig->lti_acceptgrades == constants::LTI_SETTING_DELEGATE))) {
+        if ($this->resourcelink->get('gradable') && !empty($this->resourcelink->get('servicesalt')) &&
+            ($this->toolconfig->lti_acceptgrades == constants::LTI_SETTING_ALWAYS ||
+                ($this->toolconfig->lti_acceptgrades == constants::LTI_SETTING_DELEGATE))) {
 
             // TODO: since lis_result_sourceid includes user data, should it be generated at auth time too?
             $sourcedid = json_encode(
-                helper::build_sourcedid($link->get('id'), $user->id, $link->get('servicesalt'), $toolconfig->typeid)
+                helper::build_sourcedid($this->resourcelink->get('id'), $this->user->id, $this->resourcelink->get('servicesalt'),
+                    $this->toolconfig->typeid)
             );
             $legacypayloaddata['lis_result_sourcedid'] = $sourcedid;
 
@@ -285,7 +224,7 @@ class v1p3_submission_review_launch_payload_builder implements v1p3_message_payl
                 $forcessl = true;
             }
 
-            if ((isset($toolconfig->lti_forcessl) && ($toolconfig->lti_forcessl == '1')) || $forcessl) {
+            if ((isset($this->toolconfig->lti_forcessl) && ($this->toolconfig->lti_forcessl == '1')) || $forcessl) {
                 $serviceurl = helper::ensure_url_is_https($serviceurl);
             }
             $legacypayloaddata['lis_outcome_service_url'] = $serviceurl;
@@ -296,42 +235,24 @@ class v1p3_submission_review_launch_payload_builder implements v1p3_message_payl
 
     // Common payload (common to RLL launches for all versions) herafter:
 
-    protected function resolve_substitution(
-        array $payloaddata,
-        custom_param_parser $customparamparser
-    ): array {
+    protected function resolve_substitution(array $payloaddata): array {
         foreach ($payloaddata as $key => $value) {
             // Substitution is only performed for custom params.
             if (str_starts_with($key, 'custom_')) {
-                $payloaddata[$key] = $customparamparser->parse($value, $payloaddata);
+                $payloaddata[$key] = $this->customparamparser->parse($value, $payloaddata);
             }
         }
 
         return $payloaddata;
     }
 
-    protected function get_unformatted_resource_link_data(resource_link $resourcelink): array {
-        // Description is optional and may be null, in which case it'll be omitted.
-        $description = $resourcelink->get('text');
-        if (!is_null($description)) {
-            $descriptionformat = $resourcelink->get('textformat');
-            $description = format_text($description, $descriptionformat);
-        }
-
-        return [
-            'resource_link_id' => $resourcelink->get('id'),
-            'resource_link_title' => $resourcelink->get('title'),
-            ...(!is_null($description) ? ['resource_link_description' => $description] : []),
-        ];
-    }
-
-    protected function get_unformatted_launch_presentation_data(resource_link $resourcelink, \stdClass $toolconfig): array {
-        $contextid = $resourcelink->get('contextid');
+    protected function get_unformatted_launch_presentation_data(): array {
+        $contextid = $this->resourcelink->get('contextid');
         $context = \core\context::instance_by_id($contextid);
 
         $launchcontainer = helper::get_launch_container(
-            (object) ['launchcontainer' => $resourcelink->get('launchcontainer')],
-            ['launchcontainer' => $toolconfig->lti_launchcontainer] // Coerce into expected get_type_config() format object.
+            (object) ['launchcontainer' => $this->resourcelink->get('launchcontainer')],
+            ['launchcontainer' => $this->toolconfig->lti_launchcontainer] // Coerce into expected get_type_config() format object.
         );
         $target = '';
         switch($launchcontainer) {
@@ -364,7 +285,7 @@ class v1p3_submission_review_launch_payload_builder implements v1p3_message_payl
             $url = new \moodle_url('/ltix/return.php', $returnurlparams);
             $returnurl = $url->out(false);
 
-            if (isset($toolconfig->forcessl) && ($toolconfig->forcessl == '1')) {
+            if (isset($this->toolconfig->forcessl) && ($this->toolconfig->forcessl == '1')) {
                 $returnurl = helper::ensure_url_is_https($returnurl);
             }
         }
@@ -397,8 +318,8 @@ class v1p3_submission_review_launch_payload_builder implements v1p3_message_payl
         ];
     }
 
-    protected function get_unformatted_context_data(resource_link $resourcelink): ?array {
-        $contextid = $resourcelink->get('contextid');
+    protected function get_unformatted_context_data(): ?array {
+        $contextid = $this->resourcelink->get('contextid');
         $context = \core\context::instance_by_id($contextid);
 
         if (($coursecontext = $context->get_course_context(false)) === false) {

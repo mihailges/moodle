@@ -16,6 +16,8 @@
 
 namespace core_ltix\local\ltiservice;
 
+use core\exception\moodle_exception;
+use core_ltix\local\lticore\models\resource_link;
 use stdclass;
 use SimpleXMLElement;
 use Exception;
@@ -184,23 +186,44 @@ class service_helper {
         }
     }
 
-    public static function update_grade($ltiinstance, $userid, $launchid, $gradeval) {
+    /**
+     * Set the passed user ID to the session user.
+     *
+     * @param resource_link $resourcelink The resource link persistent
+     * @param int $userid The user ID
+     * @param string $launchid The launch ID
+     * @param float $gradeval The numeric grade value
+     * @return bool Returns true if the grade update completed successfully and false otherwise
+     * @throws Exception If the provided resource link is either non-gradable or associated to an invalid context
+     */
+    public static function update_grade(resource_link $resourcelink, int $userid, string $launchid, float $gradeval): bool {
         global $CFG, $DB;
         require_once($CFG->libdir . '/gradelib.php');
 
-        $params = array();
-        $params['itemname'] = $ltiinstance->name;
+        $context = \context::instance_by_id($resourcelink->get('contextid'));
 
-        $gradeval = $gradeval * floatval($ltiinstance->grade);
+        if (!$resourcelink->get('gradable') || !$context instanceof \context_module) {
+            throw new Exception('Invalid resource link');
+        }
+
+        $cm = get_coursemodule_from_id(null, $context->instanceid, 0, false, MUST_EXIST);
+        $modulename = $DB->get_field('modules', 'name', ['id' => $cm->module]);
+        $activityrecord = $DB->get_record($modulename, ['id' => $cm->instance], '*', MUST_EXIST);
+
+        $params = array();
+        $params['itemname'] = $activityrecord->name;
+
+        $gradeval = $gradeval * floatval($activityrecord->grade);
 
         $grade = new stdClass();
         $grade->userid   = $userid;
         $grade->rawgrade = $gradeval;
 
-        $status = grade_update(\core_ltix\constants::LTI_SOURCE, $ltiinstance->course, \core_ltix\constants::LTI_ITEM_TYPE, \core_ltix\constants::LTI_ITEM_MODULE, $ltiinstance->id, 0, $grade, $params);
+        $status = grade_update(\core_ltix\constants::LTI_SOURCE, $activityrecord->course, \core_ltix\constants::LTI_ITEM_TYPE,
+            \core_ltix\constants::LTI_ITEM_MODULE, $activityrecord->id, 0, $grade, $params);
 
-        $record = $DB->get_record('lti_submission', array('ltiid' => $ltiinstance->id, 'userid' => $userid,
-            'launchid' => $launchid), 'id');
+        $record = $DB->get_record('lti_submission', ['ltiresourcelinkid' => $resourcelink->get('itemid'), 'userid' => $userid,
+            'launchid' => $launchid], 'id');
         if ($record) {
             $id = $record->id;
         } else {
@@ -215,8 +238,8 @@ class service_helper {
                 'state' => 2
             ));
         } else {
-            $DB->insert_record('lti_submission', array(
-                'ltiid' => $ltiinstance->id,
+            $DB->insert_record('lti_submission', [
+                'ltiresourcelinkid' => $resourcelink->get('itemid'),
                 'userid' => $userid,
                 'datesubmitted' => time(),
                 'dateupdated' => time(),
@@ -224,7 +247,7 @@ class service_helper {
                 'originalgrade' => $gradeval,
                 'launchid' => $launchid,
                 'state' => 1
-            ));
+            ]);
         }
 
         return $status == GRADE_UPDATE_OK;

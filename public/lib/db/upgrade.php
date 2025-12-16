@@ -2471,5 +2471,36 @@ function xmldb_main_upgrade($oldversion) {
         upgrade_main_savepoint(true, 2025103000.04);
     }
 
+    if ($oldversion < 2025103000.05) {
+
+        // Define index ltiid (not unique) to be dropped form lti_submission.
+        $table = new xmldb_table('lti_submission');
+        $index = new xmldb_index('ltiid', XMLDB_INDEX_NOTUNIQUE, ['ltiid']);
+
+        // Conditionally launch drop index ltiid.
+        if ($dbman->index_exists($table, $index)) {
+            $dbman->drop_index($table, $index);
+        }
+
+        // Rename field ltiid on table lti_submission to ltiresourcelinkid.
+        $table = new xmldb_table('lti_submission');
+        $field = new xmldb_field('ltiid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'id');
+
+        // Launch rename field ltiresourcelinkid.
+        $dbman->rename_field($table, $field, 'ltiresourcelinkid');
+
+        // Define index ltiresourcelinkid (not unique) to be added to lti_submission.
+        $table = new xmldb_table('lti_submission');
+        $index = new xmldb_index('ltiresourcelinkid', XMLDB_INDEX_NOTUNIQUE, ['ltiresourcelinkid']);
+
+        // Conditionally launch add index ltiresourcelinkid.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2025103000.05);
+    }
+
     return true;
 }

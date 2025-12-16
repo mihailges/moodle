@@ -111,7 +111,7 @@ class provider implements
         // TODO MDL-85891: In the following code, I assumed that ltiid is repurposed to refer to `lti_resourcelink.id`.
         $sql = "SELECT s.userid
                   FROM {lti_submission} s
-                  JOIN {lti_resource_link} rl ON rl.id = s.ltiid
+                  JOIN {lti_resource_link} rl ON rl.id = s.ltiresourcelinkid
                  WHERE rl.contextid = :contextid";
         $params = ['contextid' => $context->id];
         $userlist->add_from_sql('userid', $sql, $params);
@@ -148,7 +148,7 @@ class provider implements
         // TODO MDL-85891: In the following code, I assumed that ltiid is repurposed to refer to `lti_resourcelink.id`.
         $sql = "SELECT rl.contextid
                   FROM {lti_submission} s
-                  JOIN {lti_resource_link} rl ON rl.id = s.ltiid
+                  JOIN {lti_resource_link} rl ON rl.id = s.ltiresourcelinkid
                  WHERE s.userid = :userid";
         $params = ['userid' => $userid];
         $contextlist->add_from_sql($sql, $params);
@@ -284,16 +284,16 @@ class provider implements
             $inparams
         );
         $recordset = $DB->get_recordset_sql(
-            "SELECT s.ltiid, s.datesubmitted, s.dateupdated, s.gradepercent, s.originalgrade, rl.contextid
+            "SELECT s.ltiresourcelinkid, s.datesubmitted, s.dateupdated, s.gradepercent, s.originalgrade, rl.contextid
                FROM {lti_submission} s
-               JOIN {lti_resource_link} rl ON rl.id = s.ltiid
+               JOIN {lti_resource_link} rl ON rl.id = s.ltiresourcelinkid
               WHERE rl.contextid $insql AND s.userid = :userid",
             array_merge($inparams, ['userid' => $user->id]),
-            'dateupdated, ltiid'
+            'dateupdated, ltiresourcelinkid'
         );
         self::recordset_loop_and_export(
             $recordset,
-            'ltiid',
+            'ltiresourcelinkid',
             [],
             function ($carry, $record) {
                 $carry[] = [
@@ -304,8 +304,8 @@ class provider implements
                 ];
                 return $carry;
             },
-            function ($ltiid, $data) use ($user, $linkidstocontextids) {
-                $context = \context::instance_by_id($linkidstocontextids[$ltiid]);
+            function ($ltiresourcelinkid, $data) use ($user, $linkidstocontextids) {
+                $context = \context::instance_by_id($linkidstocontextids[$ltiresourcelinkid]);
                 $contextdata = helper::get_context_data($context, $user);
                 $finaldata = (object) array_merge((array) $contextdata, ['submissions' => $data]);
                 helper::export_context_files($context, $user);
@@ -321,7 +321,7 @@ class provider implements
         // TODO MDL-85891: In the following code, I assumed that ltiid is repurposed to refer to `lti_resourcelink.id`.
         $DB->delete_records_subquery(
             'lti_submission',
-            'ltiid',
+            'ltiresourcelinkid',
             'id',
             'SELECT id FROM {lti_resource_link} WHERE contextid = :contextid',
             ['contextid' => $context->id]
@@ -350,7 +350,7 @@ class provider implements
             [$insql, $inparams] = $DB->get_in_or_equal($linkids, SQL_PARAMS_NAMED);
             $DB->delete_records_select(
                 'lti_submission',
-                "ltiid $insql AND userid = :userid",
+                "ltiresourcelinkid $insql AND userid = :userid",
                 array_merge($inparams, ['userid' => $userid]),
             );
 
@@ -369,12 +369,14 @@ class provider implements
 
         $context = $userlist->get_context();
         // TODO MDL-85891: In the following code, I assumed that ltiid is repurposed to refer to `lti_resourcelink.id`.
-        $linkids = $DB->get_fieldset('lti_resource_link', 'id', ['contextid' => $context->id]);
+
+
+        $linkids = $DB->get_fieldset('lti_resource_link', 'itemid', ['contextid' => $context->id]);
         [$linksinsql, $linksinparams] = $DB->get_in_or_equal($linkids, SQL_PARAMS_NAMED);
         [$usersinsql, $usersinparams] = $DB->get_in_or_equal($userlist->get_userids(), SQL_PARAMS_NAMED);
         $DB->delete_records_select(
             'lti_submission',
-            "ltiid $linksinsql AND userid $usersinsql",
+            "ltiresourcelinkid $linksinsql AND userid $usersinsql",
             array_merge($linksinparams, $usersinparams),
         );
 

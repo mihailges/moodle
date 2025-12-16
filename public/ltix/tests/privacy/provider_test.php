@@ -325,30 +325,78 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
 
         $this->resetAfterTest();
 
-        $course = $this->getDataGenerator()->create_course();
         $ltigenerator = $this->getDataGenerator()->get_plugin_generator('core_ltix');
 
-        // Create users that will make submissions.
-        $user1 = $this->getDataGenerator()->create_user();
-        $this->setUser($user1);
-        $ltigenerator->create_tool_types(['baseurl' => 'https://www.moodle.org', 'course' => $course->id]);
-        $ltigenerator->create_tool_proxies([]);
+        // Create a course.
+        $course = $this->getDataGenerator()->create_course();
+        $coursecontext = \context_course::instance($course->id);
 
-        $user2 = $this->getDataGenerator()->create_user();
-        $this->setUser($user2);
-        $ltigenerator->create_tool_types(['baseurl' => 'https://www.moodle.org', 'course' => $course->id]);
+        // Create and enrol teachers and students in the course.
+        $teacher1 = $this->getDataGenerator()->create_and_enrol($course, 'editingteacher');
+        $teacher2 = $this->getDataGenerator()->create_and_enrol($course, 'editingteacher');
+        $teacher3 = $this->getDataGenerator()->create_and_enrol($course, 'editingteacher');
+        $student1 = $this->getDataGenerator()->create_and_enrol($course, 'student');
+        $student2 = $this->getDataGenerator()->create_and_enrol($course, 'student');
 
-        $user3 = $this->getDataGenerator()->create_user();
-        $this->setUser($user3);
-        $ltigenerator->create_tool_types(['baseurl' => 'https://www.moodle.org', 'course' => $course->id]);
+        $placementtypeid = $DB->get_field('lti_placement_type', 'id', ['type' => 'mod_lti:activityplacement']);
 
-        // Before deletion we should have 3 responses.
-        $count = $DB->count_records('lti_types', ['course' => $course->id]);
-        $this->assertEquals(3, $count);
+        // Each teacher creates a course tool.
+        $this->setUser($teacher1);
+        $coursetool1id = $ltigenerator->create_tool_types([
+            'baseurl' => 'https://www.moodle.org',
+            'course' => $course->id,
+            'coursevisible' => \core_ltix\constants::LTI_COURSEVISIBLE_PRECONFIGURED,
+            'state' => \core_ltix\constants::LTI_TOOL_STATE_CONFIGURED
+        ]);
 
+        $this->setUser($teacher2);
+        $coursetool2id = $ltigenerator->create_tool_types([
+            'baseurl' => 'https://www.moodle.org',
+            'course' => $course->id,
+            'coursevisible' => \core_ltix\constants::LTI_COURSEVISIBLE_PRECONFIGURED,
+            'state' => \core_ltix\constants::LTI_TOOL_STATE_CONFIGURED
+        ]);
+
+        $this->setUser($teacher3);
+        $coursetool3id = $ltigenerator->create_tool_types([
+            'baseurl' => 'https://www.moodle.org',
+            'course' => $course->id,
+            'coursevisible' => \core_ltix\constants::LTI_COURSEVISIBLE_PRECONFIGURED,
+            'state' => \core_ltix\constants::LTI_TOOL_STATE_CONFIGURED
+        ]);
+        // Create and enable 'mod_lti:activityplacement' placement in course tool 3.
+        $ltigenerator->create_tool_placements([
+            'toolid' => $coursetool3id,
+            'placementtypeid' => $placementtypeid,
+            'config_default_usage' => 'enabled',
+            'config_supports_deep_linking' => 0,
+        ]);
+
+        $ltiactivity = $this->getDataGenerator()->create_module('lti', ['course' => $course->id]);
+        $ltiactivitycontext = \context_module::instance($ltiactivity->cmid);
+
+        // Create a resource link associated lti activity.
+        $resourcelink = \core_ltix\local\placement\service\resource_link_manager::create_resource_link(
+            'mod_lti:activityplacement', 'mod_lti', $ltiactivitycontext, $coursetool3id, 1,
+            'http://example.com/tool/1/resource/1', 'Resource title', gradable: true);
+
+
+
+//        $ltigenerator->create_tool_proxies([]);
+
+        // Create LTI submissions for each student.
+        \core_ltix\local\ltiservice\service_helper::update_grade($resourcelink, $student1->id, 123, 0.5);
+        \core_ltix\local\ltiservice\service_helper::update_grade($resourcelink, $student2->id, 456, 0.8);
+
+        // Before deletion we should have 3 course tools and 2 LTI submissions.
+        $this->assertEquals(3, $DB->count_records('lti_types', ['course' => $course->id]));
+        $this->assertEquals(2, $DB->count_records('lti_submission',
+            ['ltiresourcelinkid' => $resourcelink->get('itemid')]));
+
+        // Delete data for teacher1, teacher2 and student1.
         $context = \context_course::instance($course->id);
-        $approveduserids = [$user1->id, $user2->id];
-        $approvedlist = new approved_userlist($context, $component, $approveduserids);
+        $approveduserids = [$teacher1->id, $teacher2->id, $student1->id];
+        $approvedlist = new approved_userlist($coursecontext, $component, $approveduserids);
         provider::delete_data_for_users($approvedlist);
 
         // After deletion the lti submission for the first two users should have been deleted.
@@ -358,8 +406,8 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
         $count = $DB->count_records_select('lti_types', $sql, $params);
         $this->assertEquals(0, $count);
 
-        // Check the submission for the third user is still there.
-        $count = $DB->count_records('lti_types', ['course' => $course->id, 'createdby' => $user3->id]);
+        // Check the course tool created by teacher3 is still there.
+        $count = $DB->count_records('lti_types', ['course' => $course->id, 'createdby' => $teacher3->id]);
         $this->assertEquals(1, $count);
     }
 }

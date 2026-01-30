@@ -590,7 +590,10 @@ function lti_grade_item_update($basiclti, $grades = null) {
     require_once($CFG->libdir.'/gradelib.php');
     require_once($CFG->dirroot.'/mod/lti/servicelib.php');
 
-    if (!core_ltix\local\ltiservice\service_helper::accepts_grades($basiclti)) {
+    $cm = get_coursemodule_from_instance('lti', $basiclti->id);
+    $resourcelink = resource_link_manager::get_resource_link($cm->id);
+
+    if (!core_ltix\local\ltiservice\service_helper::accepts_grades($resourcelink)) {
         return 0;
     }
 

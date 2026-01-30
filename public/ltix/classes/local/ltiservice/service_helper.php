@@ -20,8 +20,10 @@ use stdclass;
 use SimpleXMLElement;
 use Exception;
 use coding_exception;
+use core_ltix\constants;
 use core_ltix\helper;
 use core_ltix\oauth_helper;
+use core_ltix\local\lticore\models\resource_link;
 
 /**
  * This class exposes functions for LTI 1.3 Service Plugin Management.
@@ -148,24 +150,25 @@ class service_helper {
         return $parsed;
     }
 
-    public static function accepts_grades($ltiinstance) {
+    /**
+     * Check whether the tool accept grades.
+     *
+     * @param resource_link $resourcelink The resource link instance associated to the tool
+     * @return bool Whether the tool accepts grades or not
+     */
+    public static function accepts_grades(resource_link $resourcelink): bool {
         global $DB;
 
-        $acceptsgrades = true;
-        $ltitype = $DB->get_record('lti_types', array('id' => $ltiinstance->typeid));
+        $ltitype = $DB->get_record('lti_types', ['id' => $resourcelink->get('typeid')]);
 
         if (empty($ltitype->toolproxyid)) {
-            $typeconfig = helper::get_config($ltiinstance);
-
-            $typeacceptgrades = isset($typeconfig['acceptgrades']) ? $typeconfig['acceptgrades'] : \core_ltix\constants::LTI_SETTING_DELEGATE;
-
-            if (!($typeacceptgrades == \core_ltix\constants::LTI_SETTING_ALWAYS ||
-                ($typeacceptgrades == \core_ltix\constants::LTI_SETTING_DELEGATE && $ltiinstance->instructorchoiceacceptgrades == \core_ltix\constants::LTI_SETTING_ALWAYS))) {
-                $acceptsgrades = false;
-            }
+            $typeconfig = helper::get_type_config($ltitype->id);
+            $acceptsgrades = $resourcelink->get('gradable') && ($typeconfig['acceptgrades'] == constants::LTI_SETTING_ALWAYS ||
+                $typeconfig['acceptgrades'] == constants::LTI_SETTING_DELEGATE);
         } else {
             $enabledcapabilities = explode("\n", $ltitype->enabledcapability);
-            $acceptsgrades = in_array('Result.autocreate', $enabledcapabilities) || in_array('BasicOutcome.url', $enabledcapabilities);
+            $acceptsgrades = in_array('Result.autocreate', $enabledcapabilities) ||
+                in_array('BasicOutcome.url', $enabledcapabilities);
         }
 
         return $acceptsgrades;
@@ -184,23 +187,69 @@ class service_helper {
         }
     }
 
-    public static function update_grade($ltiinstance, $userid, $launchid, $gradeval) {
+    /**
+     * Update grade.
+     *
+     * @param resource_link $resourcelink The resource link instance
+     * @param int $userid The user ID
+     * @param string $launchid The unique launchid identifier that is stored as a session variable
+     * @param float $gradeval The grade value
+     * @return bool Whether the grade was successfully updated or not
+     */
+    public static function update_grade(resource_link $resourcelink, int $userid, string $launchid, float $gradeval): bool {
         global $CFG, $DB;
         require_once($CFG->libdir . '/gradelib.php');
 
-        $params = array();
-        $params['itemname'] = $ltiinstance->name;
+        // Check whether the provided resource link is gradable. If not, we cannot proceed with updating the grade.
+        if (!$resourcelink->get('gradable')) {
+            throw new Exception('The provided resource link is not gradable.');
+        }
 
-        $gradeval = $gradeval * floatval($ltiinstance->grade);
+        $context = \context::instance_by_id($resourcelink->get('contextid'));
+        // Verify the context level of the provided resource link.
+        // At present, only resource links placed within course modules are gradable, though this may change in the future.
+        // If the link is not in a module context, do not proceed with updating the grade.
+        if ($context->contextlevel !== CONTEXT_MODULE) {
+            throw new Exception('The provided resource link is not associated to a course module.');
+        }
+
+        // Obtain the course module.
+        $cm = get_coursemodule_from_id('', $context->instanceid, 0, false, MUST_EXIST);
+
+        // Obtain the module instance.
+        $moduleinstance = $DB->get_record($cm->modname, ['id' => $cm->instance]);
+
+        $params = [
+            'itemname' => $moduleinstance->name
+        ];
+
+        $gradeval = $gradeval * floatval($moduleinstance->grade);
 
         $grade = new stdClass();
         $grade->userid   = $userid;
         $grade->rawgrade = $gradeval;
 
-        $status = grade_update(\core_ltix\constants::LTI_SOURCE, $ltiinstance->course, \core_ltix\constants::LTI_ITEM_TYPE, \core_ltix\constants::LTI_ITEM_MODULE, $ltiinstance->id, 0, $grade, $params);
+        $status = grade_update(
+            \core_ltix\constants::LTI_SOURCE,
+            $moduleinstance->course,
+            \core_ltix\constants::LTI_ITEM_TYPE,
+            \core_ltix\constants::LTI_ITEM_MODULE,
+            $moduleinstance->id,
+            0,
+            $grade,
+            $params
+        );
 
-        $record = $DB->get_record('lti_submission', array('ltiid' => $ltiinstance->id, 'userid' => $userid,
-            'launchid' => $launchid), 'id');
+        $record = $DB->get_record(
+            'lti_submission',
+            [
+                'ltiresourcelinkid' => $resourcelink->get('itemid'),
+                'userid' => $userid,
+                'launchid' => $launchid
+            ],
+            'id'
+        );
+
         if ($record) {
             $id = $record->id;
         } else {
@@ -208,35 +257,68 @@ class service_helper {
         }
 
         if (!empty($id)) {
-            $DB->update_record('lti_submission', array(
-                'id' => $id,
-                'dateupdated' => time(),
-                'gradepercent' => $gradeval,
-                'state' => 2
-            ));
+            $DB->update_record(
+                'lti_submission',
+                [
+                    'id' => $id,
+                    'dateupdated' => time(),
+                    'gradepercent' => $gradeval,
+                    'state' => 2
+                ]
+            );
         } else {
-            $DB->insert_record('lti_submission', array(
-                'ltiid' => $ltiinstance->id,
-                'userid' => $userid,
-                'datesubmitted' => time(),
-                'dateupdated' => time(),
-                'gradepercent' => $gradeval,
-                'originalgrade' => $gradeval,
-                'launchid' => $launchid,
-                'state' => 1
-            ));
+            $DB->insert_record(
+                'lti_submission',
+                [
+                    'ltiresourcelinkid' => $resourcelink->get('itemid'),
+                    'userid' => $userid,
+                    'datesubmitted' => time(),
+                    'dateupdated' => time(),
+                    'gradepercent' => $gradeval,
+                    'originalgrade' => $gradeval,
+                    'launchid' => $launchid,
+                    'state' => 1
+                ]
+            );
         }
 
         return $status == GRADE_UPDATE_OK;
     }
 
-    public static function read_grade($ltiinstance, $userid) {
-        global $CFG;
+    /**
+     * Read grade.
+     *
+     * @param resource_link $resourcelink The resource link instance
+     * @param int $userid The user ID
+     * @return float|null The grade if set, otherwise null
+     */
+    public static function read_grade(resource_link $resourcelink, int $userid): ?float {
+        global $CFG, $DB;
         require_once($CFG->libdir . '/gradelib.php');
 
-        $grades = grade_get_grades($ltiinstance->course, \core_ltix\constants::LTI_ITEM_TYPE, \core_ltix\constants::LTI_ITEM_MODULE, $ltiinstance->id, $userid);
+        $context = \context::instance_by_id($resourcelink->get('contextid'));
+        // Verify the context level of the provided resource link.
+        // At present, only resource links placed within course modules are gradable, though this may change in the future.
+        // If the link is not in a module context, do not proceed.
+        if ($context->contextlevel !== CONTEXT_MODULE) {
+            throw new Exception('The provided resource link is not associated to a course module.');
+        }
 
-        $ltigrade = floatval($ltiinstance->grade);
+        // Obtain the course module.
+        $cm = get_coursemodule_from_id('', $context->instanceid, 0, false, MUST_EXIST);
+
+        // Obtain the module instance.
+        $moduleinstance = $DB->get_record($cm->modname, ['id' => $cm->instance]);
+
+        $grades = grade_get_grades(
+            $moduleinstance->course,
+            \core_ltix\constants::LTI_ITEM_TYPE,
+            \core_ltix\constants::LTI_ITEM_MODULE,
+            $moduleinstance->id,
+            $userid
+        );
+
+        $ltigrade = floatval($moduleinstance->grade);
 
         if (!empty($ltigrade) && isset($grades) && isset($grades->items[0]) && is_array($grades->items[0]->grades)) {
             foreach ($grades->items[0]->grades as $agrade) {
@@ -246,17 +328,47 @@ class service_helper {
                 }
             }
         }
+        return null;
     }
 
-    public static function delete_grade($ltiinstance, $userid) {
-        global $CFG;
+    /**
+     * Delete grade.
+     *
+     * @param resource_link $resourcelink The resource link instance
+     * @param int $userid The user ID
+     * @return bool Whether the grade was successfully deleted or not
+     */
+    public static function delete_grade($resourcelink, $userid): bool {
+        global $CFG, $DB;
         require_once($CFG->libdir . '/gradelib.php');
+
+        $context = \context::instance_by_id($resourcelink->get('contextid'));
+        // Verify the context level of the provided resource link.
+        // At present, only resource links placed within course modules are gradable, though this may change in the future.
+        // If the link is not in a module context, do not proceed.
+        if ($context->contextlevel !== CONTEXT_MODULE) {
+            throw new Exception('The provided resource link is not associated to a course module.');
+        }
+
+        // Obtain the course module.
+        $cm = get_coursemodule_from_id('', $context->instanceid, 0, false, MUST_EXIST);
+
+        // Obtain the module instance.
+        $moduleinstance = $DB->get_record($cm->modname, ['id' => $cm->instance]);
 
         $grade = new stdClass();
         $grade->userid   = $userid;
         $grade->rawgrade = null;
 
-        $status = grade_update(\core_ltix\constants::LTI_SOURCE, $ltiinstance->course, \core_ltix\constants::LTI_ITEM_TYPE, \core_ltix\constants::LTI_ITEM_MODULE, $ltiinstance->id, 0, $grade);
+        $status = grade_update(
+            \core_ltix\constants::LTI_SOURCE,
+            $moduleinstance->course,
+            \core_ltix\constants::LTI_ITEM_TYPE,
+            \core_ltix\constants::LTI_ITEM_MODULE,
+            $moduleinstance->id,
+            0,
+            $grade
+        );
 
         return $status == GRADE_UPDATE_OK;
     }
@@ -284,13 +396,18 @@ class service_helper {
     /**
      * Validate source ID from external request
      *
-     * @param object $ltiinstance
+     * @param resource_link $resourcelink The resource link instance
      * @param object $parsed
      * @throws Exception
      */
-    public static function verify_sourcedid($ltiinstance, $parsed) {
-        $sourceid = \core_ltix\helper::build_sourcedid($parsed->instanceid, $parsed->userid,
-            $ltiinstance->servicesalt, $parsed->typeid, $parsed->launchid);
+    public static function verify_sourcedid(resource_link $resourcelink, object $parsed) {
+        $sourceid = \core_ltix\helper::build_sourcedid(
+            $parsed->instanceid,
+            $parsed->userid,
+            $resourcelink->get('servicesalt'),
+            $parsed->typeid,
+            $parsed->launchid
+        );
 
         if ($sourceid->hash != $parsed->sourcedidhash) {
             throw new Exception('SourcedId hash not valid');

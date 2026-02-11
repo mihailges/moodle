@@ -3372,7 +3372,7 @@ class backup_ltixtypes_structure_step extends backup_structure_step {
         $ltiplacement->set_source_sql(
             "SELECT lp.id, lpt.type AS placementtype, lpt.component AS placementcomponent
                FROM {lti_placement} lp
-               JOIN {lti_placement_types} lpt ON lpt.id = lp.placementtypeid
+               JOIN {lti_placement_type} lpt ON lpt.id = lp.placementtypeid
               WHERE lp.toolid = ?",
             [backup::VAR_PARENTID]
         );

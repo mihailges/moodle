@@ -341,6 +341,11 @@ abstract class backup_activity_task extends backup_task {
         $activities = $this->plan->get_setting('activities');
         $activities->add_dependency($activityincluded);
 
+        if (\core_ltix\helper::module_uses_ltix($this->modulename)) {
+            $ltix = $this->plan->get_setting('ltix');
+            $ltix->add_dependency($activityincluded);
+        }
+
         // Look for "sectionincluded" section setting (if exists).
         $settingname = 'section_' . $this->sectionid . '_included';
         if ($this->plan->setting_exists($settingname)) {

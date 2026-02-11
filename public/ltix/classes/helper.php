@@ -4035,7 +4035,15 @@ class helper {
             }
         }
         $response->send();
-
     }
 
+    /**
+     * Checks if an activity module supports LTI services.
+     *
+     * @param string $modname The name of the module (without the 'mod_' prefix) to check.
+     * @return bool True if the module supports LTI services, false otherwise.
+     */
+    public static function module_uses_ltix(string $modname): bool {
+        return plugin_supports('mod', $modname, FEATURE_USES_LTIX, false);
+    }
 }

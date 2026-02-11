@@ -468,6 +468,9 @@ define('FEATURE_SHOW_DESCRIPTION', 'showdescription');
 /** True if module uses the question bank */
 define('FEATURE_USES_QUESTIONS', 'usesquestions');
 
+/** True if module uses the ltix */
+define('FEATURE_USES_LTIX', 'usesltix');
+
 /**
  * Maximum filename char size
  */

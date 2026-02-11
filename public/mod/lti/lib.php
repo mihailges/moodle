@@ -67,6 +67,7 @@ function lti_supports($feature) {
         FEATURE_GRADE_OUTCOMES => true,
         FEATURE_BACKUP_MOODLE2 => true,
         FEATURE_SHOW_DESCRIPTION => true,
+        FEATURE_USES_LTIX => true,
         FEATURE_MOD_PURPOSE => MOD_PURPOSE_OTHER,
         default => null,
     };

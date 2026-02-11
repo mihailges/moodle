@@ -1,0 +1,10 @@
+issueNumber: MDL-81864
+notes:
+  core_ltix:
+    - message: >
+        Modules using the ltix subsystem MUST now declare their use of it with
+        the xxx_supports() flag FEATURE_USES_LTIX.
+
+        \core_ltix\helper::module_uses_ltix() should be used to determine if a
+        module uses ltix.
+      type: changed

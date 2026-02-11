@@ -3510,8 +3510,7 @@ class backup_ltixs_structure_step extends backup_structure_step {
 
         // All the rest of elements only happen if we are including user info.
         if ($userinfo) {
-            // TODO: The following need to be updated to not use `ltiid`. I assumed it refers to the lti_resource_link.
-            $ltisubmission->set_source_table('lti_submission', ['ltiid' => backup::VAR_PARENTID]);
+            $ltisubmission->set_source_table('lti_submission', ['ltiresourcelinkid' => backup::VAR_PARENTID]);
         }
 
         // Define id annotations.

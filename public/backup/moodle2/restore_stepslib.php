@@ -7061,7 +7061,7 @@ class restore_ltixtypes_structure_step extends restore_structure_step {
         }
 
         $data->course = $this->get_courseid();
-        // TODO: The `coursemoduleid` field in the `lti_tool_settings` table should change. I'm not sure what to set it to.
+        // TODO MDL-85891 The `coursemoduleid` field in the `lti_tool_settings` table should change. I'm not sure what to set it to.
         $data->coursemoduleid = null;
         $DB->insert_record('lti_tool_settings', $data);
     }
@@ -7202,8 +7202,7 @@ class restore_ltixs_structure_step extends restore_structure_step {
 
         $data = (object) $data;
 
-        // TODO: The following need to be updated to not use `ltiid`. I assumed it refers to the lti_resource_link table.
-        $data->ltiid = $this->get_new_parentid('ltiresourcelink');
+        $data->ltiresourcelinkid = $this->get_new_parentid('ltiresourcelink');
 
         if ($data->userid > 0) {
             $data->userid = $this->get_mappingid('user', $data->userid);

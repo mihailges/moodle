@@ -154,17 +154,23 @@ class service_helper {
      * Check whether the tool accept grades.
      *
      * @param resource_link $resourcelink The resource link instance associated to the tool
+     * @param array $additionaltypeconfig Optional additional type config
      * @return bool Whether the tool accepts grades or not
      */
-    public static function accepts_grades(resource_link $resourcelink): bool {
+    public static function accepts_grades(resource_link $resourcelink, array $additionaltypeconfig = []): bool {
         global $DB;
 
         $ltitype = $DB->get_record('lti_types', ['id' => $resourcelink->get('typeid')]);
 
         if (empty($ltitype->toolproxyid)) {
-            $typeconfig = helper::get_type_config($ltitype->id);
-            $acceptsgrades = $resourcelink->get('gradable') && ($typeconfig['acceptgrades'] == constants::LTI_SETTING_ALWAYS ||
-                $typeconfig['acceptgrades'] == constants::LTI_SETTING_DELEGATE);
+            $ltitypeid = $ltitype ? $ltitype->id : 0;
+            $typeconfig = array_merge(helper::get_type_config($ltitypeid), $additionaltypeconfig) ;
+
+            $typeacceptgrades = isset($typeconfig['acceptgrades']) ?
+                $typeconfig['acceptgrades'] : \core_ltix\constants::LTI_SETTING_DELEGATE;
+
+            $acceptsgrades = $resourcelink->get('gradable') && ($typeacceptgrades == constants::LTI_SETTING_ALWAYS ||
+                $typeacceptgrades == constants::LTI_SETTING_DELEGATE);
         } else {
             $enabledcapabilities = explode("\n", $ltitype->enabledcapability);
             $acceptsgrades = in_array('Result.autocreate', $enabledcapabilities) ||

@@ -603,7 +603,7 @@ function lti_grade_item_update($basiclti, $grades = null) {
 
     $resourcelink = resource_link_manager::get_resource_link_by_item($cmid, 'mod_lti:activityplacement');
 
-    if (!core_ltix\local\ltiservice\service_helper::accepts_grades($resourcelink)) {
+    if (!core_ltix\local\ltiservice\service_helper::accepts_grades($resourcelink, (array) $basiclti)) {
         return 0;
     }
 
@@ -645,7 +645,7 @@ function lti_update_grades($basiclti, $userid=0, $nullifnone=true) {
     $resourcelink = resource_link_manager::get_resource_link_by_item($cm->id, 'mod_lti:activityplacement');
 
     // LTI doesn't have its own grade table so the only thing to do is update the grade item.
-    if (core_ltix\local\ltiservice\service_helper::accepts_grades($resourcelink)) {
+    if (core_ltix\local\ltiservice\service_helper::accepts_grades($resourcelink, (array) $basiclti)) {
         lti_grade_item_update($basiclti);
     }
 }

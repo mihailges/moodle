@@ -374,77 +374,16 @@ class provider implements
         });
     }
 
-    /**
-     * Deletes LTI data for all users in a given context.
-     *
-     * @param \context $context The context to delete all data for.
-     * @return void
-     */
-    public static function delete_data_for_all_users_in_context(\context $context): void {
-        global $DB;
-
-        if ($context->contextlevel == CONTEXT_SYSTEM) {
-            $DB->delete_records('lti_tool_proxies');
-        } else if ($context->contextlevel == CONTEXT_COURSE) {
-            // Apart from course tools, this also handles site tools, as they are currently created in the
-            // Front Page (course ID = 1), which belongs to the course context.
-            $DB->delete_records('lti_types', ['course' => $context->instanceid]);
-        }
+    #[\Override]
+    public static function delete_data_for_all_users_in_context(\context $context) {
     }
 
-    /**
-     * Deletes LTI data for a given user in all provided contexts.
-     *
-     * This function just updates the User ID to 0 instead of deleting the LTI instances
-     * because the instances may be used by other people.
-     *
-     * @param approved_contextlist $contextlist List of contexts to delete the user from.
-     * @return void
-     */
-    public static function delete_data_for_user(approved_contextlist $contextlist): void {
-        global $DB;
-
-        $userid = $contextlist->get_user()->id;
-
-        foreach ($contextlist->get_contexts() as $context) {
-            if ($context->contextlevel == CONTEXT_SYSTEM) {
-                $DB->set_field('lti_tool_proxies', 'createdby', 0, ['createdby' => $userid]);
-            } else if ($context->contextlevel == CONTEXT_COURSE) {
-                // Apart from course tools, this also handles site tools, as they are currently created in the
-                // Front Page (course ID = 1), which belongs to the course context.
-                $DB->set_field('lti_types', 'createdby', 0, ['course' => $context->instanceid, 'createdby' => $userid]);
-            }
-        }
+    #[\Override]
+    public static function delete_data_for_users(approved_userlist $userlist) {
     }
 
-    /**
-     * Deletes LTI data for a given list of users and their contexts.
-     *
-     * This function just updates the User ID to 0 instead of the deleting the LTI instances
-     * because the instances may be used by other people.
-     *
-     * @param approved_userlist $userlist The list of contexts and users to delete the user from.
-     * @return void
-     */
-    public static function delete_data_for_users(approved_userlist $userlist): void {
-        global $DB;
-
-        $context = $userlist->get_context();
-        [$usersinsql, $usersinparams] = $DB->get_in_or_equal($userlist->get_userids(), SQL_PARAMS_NAMED);
-
-        if ($context->contextlevel == CONTEXT_SYSTEM) {
-            $DB->set_field_select('lti_tool_proxies', 'createdby', 0, "createdby $usersinsql", $usersinparams);
-        } else if ($context->contextlevel == CONTEXT_COURSE) {
-            // Apart from course tools, this also handles site tools, as they are currently created in the
-            // Front Page (course ID = 1), which belongs to the course context.
-            $DB->set_field_select(
-                'lti_types',
-                'createdby',
-                0,
-                "course = :courseid AND createdby $usersinsql",
-                array_merge($usersinparams, ['courseid' => $context->instanceid])
-            );
-        }
+    #[\Override]
+    public static function delete_data_for_user(approved_contextlist $contextlist) {
     }
 
     /**

@@ -114,7 +114,7 @@ function lti_parse_grade_delete_message($xml) {
 function lti_accepts_grades($ltiinstance) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
 
-    $cm = get_coursemodule_from_instance('lti', $ltiinstance->id);
+    $cm = get_fast_modinfo($ltiinstance->course)->instances['lti'][$ltiinstance->id];
     $resourcelink = resource_link_manager::get_resource_link_by_item($cm->id, 'mod_lti:activityplacement');
 
     return service_helper::accepts_grades($resourcelink);
@@ -147,8 +147,8 @@ function lti_set_session_user($userid) {
 function lti_update_grade($ltiinstance, $userid, $launchid, $gradeval) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
 
-    $cm = get_coursemodule_from_instance('lti', $ltiinstance->id);
-    $resourcelink = resource_link_manager::get_resource_link_by_item($cm->id, 'mod_lti:activityplacement');;
+    $cm = get_fast_modinfo($ltiinstance->course)->instances['lti'][$ltiinstance->id];
+    $resourcelink = resource_link_manager::get_resource_link_by_item($cm->id, 'mod_lti:activityplacement');
 
     return service_helper::update_grade($resourcelink, $userid, $launchid, $gradeval);
 }
@@ -164,7 +164,7 @@ function lti_update_grade($ltiinstance, $userid, $launchid, $gradeval) {
 function lti_read_grade($ltiinstance, $userid) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
 
-    $cm = get_coursemodule_from_instance('lti', $ltiinstance->id);
+    $cm = get_fast_modinfo($ltiinstance->course)->instances['lti'][$ltiinstance->id];
     $resourcelink = resource_link_manager::get_resource_link_by_item($cm->id, 'mod_lti:activityplacement');
 
     return service_helper::read_grade($resourcelink, $userid);
@@ -181,7 +181,7 @@ function lti_read_grade($ltiinstance, $userid) {
 function lti_delete_grade($ltiinstance, $userid) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
 
-    $cm = get_coursemodule_from_instance('lti', $ltiinstance->id);
+    $cm = get_fast_modinfo($ltiinstance->course)->instances['lti'][$ltiinstance->id];
     $resourcelink = resource_link_manager::get_resource_link_by_item($cm->id, 'mod_lti:activityplacement');
 
     return service_helper::delete_grade($resourcelink, $userid);
@@ -216,7 +216,7 @@ function lti_verify_message($key, $sharedsecrets, $body, $headers = null) {
 function lti_verify_sourcedid($ltiinstance, $parsed) {
     \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
 
-    $cm = get_coursemodule_from_instance('lti', $ltiinstance->id);
+    $cm = get_fast_modinfo($ltiinstance->course)->instances['lti'][$ltiinstance->id];
     $resourcelink = resource_link_manager::get_resource_link_by_item($cm->id, 'mod_lti:activityplacement');
 
     service_helper::verify_sourcedid($resourcelink, $parsed);

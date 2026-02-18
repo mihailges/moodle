@@ -179,15 +179,36 @@ function lti_update_instance($lti, $mform) {
         $lti->showdescriptionlaunch = 0;
     }
 
-    \core_ltix\helper::force_type_config_settings($lti, \core_ltix\helper::get_type_config_by_instance($lti));
+    $isgradable = isset($lti->instructorchoiceacceptgrades) &&
+        $lti->instructorchoiceacceptgrades == \core_ltix\constants::LTI_SETTING_ALWAYS;
 
-    if (isset($lti->instructorchoiceacceptgrades) && $lti->instructorchoiceacceptgrades == \core_ltix\constants::LTI_SETTING_ALWAYS) {
-        lti_grade_item_update($lti);
-    } else {
+    if (!$isgradable) {
         // Instance is no longer accepting grades from Provider, set grade to "No grade" value 0.
         $lti->grade = 0;
         $lti->instructorchoiceacceptgrades = 0;
+    }
 
+    $resourcelink = resource_link_manager::get_resource_link_by_item($lti->coursemodule, 'mod_lti:activityplacement');
+
+    $ltiresourcelinkformvalues = [
+        'url' => $lti->toolurl,
+        'title' => $lti->name,
+        'text' => $lti->intro,
+        'textformat' => $lti->introformat,
+        'gradable' => $lti->instructorchoiceacceptgrades,
+        ...(!isset($lti->launchcontainer) ? ['launchcontainer' => $lti->launchcontainer] : []),
+        ...(!empty($lti->icon) ? ['icon' => $lti->icon] : []),
+        ...(!empty($lti->instructorcustomparameters) ? ['customparams' => $lti->instructorcustomparameters] : []),
+    ];
+    // Update the resource link early.
+    // Subsequent operations (e.g., grade item update and related checks) depend on the resource link being updated.
+    resource_link_manager::update_resource_link($resourcelink, $ltiresourcelinkformvalues);
+
+    \core_ltix\helper::force_type_config_settings($lti, \core_ltix\helper::get_type_config_by_instance($lti));
+
+    if ($isgradable) {
+        lti_grade_item_update($lti);
+    } else {
         lti_grade_item_delete($lti);
     }
 
@@ -202,21 +223,6 @@ function lti_update_instance($lti, $mform) {
 
     $completiontimeexpected = !empty($lti->completionexpected) ? $lti->completionexpected : null;
     \core_completion\api::update_completion_date_event($lti->coursemodule, 'lti', $lti->id, $completiontimeexpected);
-
-    $resourcelink = resource_link_manager::get_resource_link_by_item($lti->coursemodule, 'mod_lti:activityplacement');
-
-    $ltiresourcelinkformvalues = [
-        'url' => $lti->toolurl,
-        'title' => $lti->name,
-        'text' => $lti->intro,
-        'textformat' => $lti->introformat,
-        'gradable' => $lti->instructorchoiceacceptgrades,
-        ...(!isset($lti->launchcontainer) ? ['launchcontainer' => $lti->launchcontainer] : []),
-        ...(!empty($lti->icon) ? ['icon' => $lti->icon] : []),
-        ...(!empty($lti->instructorcustomparameters) ? ['customparams' => $lti->instructorcustomparameters] : []),
-    ];
-    // Update the resource link.
-    resource_link_manager::update_resource_link($resourcelink, $ltiresourcelinkformvalues);
 
     return $DB->update_record('lti', $lti);
 }

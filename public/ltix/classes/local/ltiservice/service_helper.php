@@ -159,14 +159,21 @@ class service_helper {
     public static function accepts_grades(resource_link $resourcelink): bool {
         global $DB;
 
+        $context = \context::instance_by_id($resourcelink->get('contextid'));
+        // Verify the context level of the provided resource link.
+        // At present, only resource links placed within course modules are gradable, though this may change in the future.
+        // If the link is not in a module context, do not proceed with updating the grade.
+        if ($context->contextlevel !== CONTEXT_MODULE) {
+            throw new Exception('The provided resource link is not associated to a course module.');
+        }
+
         $ltitype = $DB->get_record('lti_types', ['id' => $resourcelink->get('typeid')]);
 
         if (empty($ltitype->toolproxyid)) {
             $ltitypeid = $ltitype ? $ltitype->id : 0;
             $typeconfig = helper::get_type_config($ltitypeid);
 
-            $typeacceptgrades = isset($typeconfig['acceptgrades']) ?
-                $typeconfig['acceptgrades'] : \core_ltix\constants::LTI_SETTING_DELEGATE;
+            $typeacceptgrades = $typeconfig['acceptgrades'] ?? \core_ltix\constants::LTI_SETTING_DELEGATE;
 
             $acceptsgrades = $resourcelink->get('gradable') && ($typeacceptgrades == constants::LTI_SETTING_ALWAYS ||
                 $typeacceptgrades == constants::LTI_SETTING_DELEGATE);
@@ -205,21 +212,9 @@ class service_helper {
         global $CFG, $DB;
         require_once($CFG->libdir . '/gradelib.php');
 
-        // Check whether the provided resource link is gradable. If not, we cannot proceed with updating the grade.
-        if (!$resourcelink->get('gradable')) {
-            throw new Exception('The provided resource link is not gradable.');
-        }
-
         $context = \context::instance_by_id($resourcelink->get('contextid'));
-        // Verify the context level of the provided resource link.
-        // At present, only resource links placed within course modules are gradable, though this may change in the future.
-        // If the link is not in a module context, do not proceed with updating the grade.
-        if ($context->contextlevel !== CONTEXT_MODULE) {
-            throw new Exception('The provided resource link is not associated to a course module.');
-        }
-
         // Obtain the course module.
-        $cm = get_coursemodule_from_id('', $context->instanceid, 0, false, MUST_EXIST);
+        $cm = get_fast_modinfo($context->get_course_context()->instanceid)->get_cm($context->instanceid);
 
         // Obtain the module instance.
         $moduleinstance = $DB->get_record($cm->modname, ['id' => $cm->instance]);
@@ -248,7 +243,7 @@ class service_helper {
         $record = $DB->get_record(
             'lti_submission',
             [
-                'ltiresourcelinkid' => $resourcelink->get('itemid'),
+                'ltiresourcelinkid' => $resourcelink->get('id'),
                 'userid' => $userid,
                 'launchid' => $launchid
             ],
@@ -275,7 +270,7 @@ class service_helper {
             $DB->insert_record(
                 'lti_submission',
                 [
-                    'ltiresourcelinkid' => $resourcelink->get('itemid'),
+                    'ltiresourcelinkid' => $resourcelink->get('id'),
                     'userid' => $userid,
                     'datesubmitted' => time(),
                     'dateupdated' => time(),
@@ -302,15 +297,8 @@ class service_helper {
         require_once($CFG->libdir . '/gradelib.php');
 
         $context = \context::instance_by_id($resourcelink->get('contextid'));
-        // Verify the context level of the provided resource link.
-        // At present, only resource links placed within course modules are gradable, though this may change in the future.
-        // If the link is not in a module context, do not proceed.
-        if ($context->contextlevel !== CONTEXT_MODULE) {
-            throw new Exception('The provided resource link is not associated to a course module.');
-        }
-
         // Obtain the course module.
-        $cm = get_coursemodule_from_id('', $context->instanceid, 0, false, MUST_EXIST);
+        $cm = get_fast_modinfo($context->get_course_context()->instanceid)->get_cm($context->instanceid);
 
         // Obtain the module instance.
         $moduleinstance = $DB->get_record($cm->modname, ['id' => $cm->instance]);
@@ -343,20 +331,13 @@ class service_helper {
      * @param int $userid The user ID
      * @return bool Whether the grade was successfully deleted or not
      */
-    public static function delete_grade($resourcelink, $userid): bool {
+    public static function delete_grade(resource_link $resourcelink, int $userid): bool {
         global $CFG, $DB;
         require_once($CFG->libdir . '/gradelib.php');
 
         $context = \context::instance_by_id($resourcelink->get('contextid'));
-        // Verify the context level of the provided resource link.
-        // At present, only resource links placed within course modules are gradable, though this may change in the future.
-        // If the link is not in a module context, do not proceed.
-        if ($context->contextlevel !== CONTEXT_MODULE) {
-            throw new Exception('The provided resource link is not associated to a course module.');
-        }
-
         // Obtain the course module.
-        $cm = get_coursemodule_from_id('', $context->instanceid, 0, false, MUST_EXIST);
+        $cm = get_fast_modinfo($context->get_course_context()->instanceid)->get_cm($context->instanceid);
 
         // Obtain the module instance.
         $moduleinstance = $DB->get_record($cm->modname, ['id' => $cm->instance]);

@@ -3845,6 +3845,13 @@ class helper {
 
                 $resourcelink = resource_link_manager::get_resource_link_by_id($parsed->instanceid);
 
+                // Throw an exception if the requested resource link (by ID) does not exist.
+                // This can occur if the tool holds a resultSourcedId and attempts to post for a resource link that
+                // has been deleted and no longer exists.
+                if (!$resourcelink) {
+                    throw new \Exception('The requested resource link does not exist');
+                }
+
                 if (!\core_ltix\local\ltiservice\service_helper::accepts_grades($resourcelink)) {
                     throw new \Exception('Tool does not accept grades');
                 }
@@ -3855,7 +3862,8 @@ class helper {
                 $gradestatus = \core_ltix\local\ltiservice\service_helper::update_grade(
                     $resourcelink,
                     $parsed->userid,
-                    $parsed->launchid, $parsed->gradeval
+                    $parsed->launchid,
+                    $parsed->gradeval
                 );
 
                 if (!$gradestatus) {
@@ -3877,6 +3885,13 @@ class helper {
                 $parsed = \core_ltix\local\ltiservice\service_helper::parse_grade_read_message($xml);
 
                 $resourcelink = resource_link_manager::get_resource_link_by_id($parsed->instanceid);
+
+                // Throw an exception if the requested resource link (by ID) does not exist.
+                // This can occur if the tool holds a resultSourcedId and attempts to post for a resource link that
+                // has been deleted and no longer exists.
+                if (!$resourcelink) {
+                    throw new \Exception('The requested resource link does not exist');
+                }
 
                 if (!\core_ltix\local\ltiservice\service_helper::accepts_grades($resourcelink)) {
                     throw new \Exception('Tool does not accept grades');
@@ -3910,6 +3925,13 @@ class helper {
                 $parsed = \core_ltix\local\ltiservice\service_helper::parse_grade_delete_message($xml);
 
                 $resourcelink = resource_link_manager::get_resource_link_by_id($parsed->instanceid);
+
+                // Throw an exception if the requested resource link (by ID) does not exist.
+                // This can occur if the tool holds a resultSourcedId and attempts to post for a resource link that
+                // has been deleted and no longer exists.
+                if (!$resourcelink) {
+                    throw new \Exception('The requested resource link does not exist');
+                }
 
                 if (!\core_ltix\local\ltiservice\service_helper::accepts_grades($resourcelink)) {
                     throw new \Exception('Tool does not accept grades');

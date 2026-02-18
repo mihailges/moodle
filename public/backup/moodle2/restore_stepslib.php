@@ -6953,10 +6953,6 @@ class restore_ltixtypes_structure_step extends restore_structure_step {
             'ltiplacementconfig',
             '/ltitypes/ltitype/ltiplacements/ltiplacement/ltiplacementconfigs/ltiplacementconfig'
         );
-        $paths[] = new restore_path_element(
-            'ltiplacementstatus',
-            '/ltitypes/ltitype/ltiplacements/ltiplacement/ltiplacementstatus'
-        );
 
         // Add support for ltix plugin structures.
         $this->add_plugin_structure('ltixsource', $ltitype);
@@ -7094,14 +7090,20 @@ class restore_ltixtypes_structure_step extends restore_structure_step {
         $data = (object) $data;
         $oldid = $data->id;
 
-        // TODO: Make a decision on how to handle unavailable placement types.
-        $data->placementtypeid = $DB->get_field('lti_placement_types', 'id', [
-            'type' => $data->placementtype,
-            'component' => $data->placementcomponent,
-        ]);
-        if ($data->placementtypeid) {
-            $ltiplacementid = $DB->insert_record('lti_placements', $data);
-            $this->set_mapping('ltiplacement', $oldid, $ltiplacementid);
+        $data->toolid = $this->get_new_parentid('ltitype');
+
+        // Only add placement if the new lti_type was created.
+        // We also need to have a valid placement type to be able to restore placement.
+        // TODO: Check logic: Do we want to restore placements if the LTI type already exists? I followed the same logic as for configs.
+        if ($data->toolid && $this->newltitype) {
+            $data->placementtypeid = $DB->get_field('lti_placement_type', 'id', [
+                'type' => $data->placementtype,
+                'component' => $data->placementcomponent,
+            ]);
+            if ($data->placementtypeid) {
+                $ltiplacementid = $DB->insert_record('lti_placement', $data);
+                $this->set_mapping('ltiplacement', $oldid, $ltiplacementid);
+            }
         }
     }
 
@@ -7118,22 +7120,6 @@ class restore_ltixtypes_structure_step extends restore_structure_step {
 
         if ($data->placementid) {
             $DB->insert_record('lti_placement_config', $data);
-        }
-    }
-
-    /**
-     * Processes an LTI ltiplacementstatus restore
-     *
-     * @param array $data The data from the backup XML file
-     */
-    protected function process_ltiplacementstatus(array $data): void {
-        global $DB;
-
-        $data = (object) $data;
-        $data->placementid = $this->get_new_parentid('ltiplacement');
-
-        if ($data->placementid) {
-            $DB->insert_record('lti_placement_status', $data);
         }
     }
 }
@@ -7160,9 +7146,10 @@ class restore_ltixs_structure_step extends restore_structure_step {
             $userinfo = true;
         }
 
-        $resourcelink = new restore_path_element('ltiresourcelink', '/ltiresourcelinks/ltiresourcelink');
+        $resourcelink = new restore_path_element('ltiresourcelink', '/ltix/ltiresourcelinks/ltiresourcelink');
         $paths[] = $resourcelink;
-        $paths[] = new restore_path_element('ltisubmission', '/ltiresourcelinks/ltiresourcelink/ltisubmissions/ltisubmission');
+        $paths[] = new restore_path_element('ltisubmission', '/ltix/ltiresourcelinks/ltiresourcelink/ltisubmissions/ltisubmission');
+        $paths[] = new restore_path_element('ltiplacementstatus', '/ltix/ltiplacementstatuses/ltiplacementstatus');
 
         // Add support for ltix plugin structures.
         $this->add_plugin_structure('ltixsource', $resourcelink);
@@ -7212,5 +7199,22 @@ class restore_ltixs_structure_step extends restore_structure_step {
         $data->dateupdated = $this->apply_date_offset($data->dateupdated);
 
         $DB->insert_record('lti_submission', $data);
+    }
+
+    /**
+     * Processes an LTI ltiplacementstatus restore
+     *
+     * @param array $data The data from the backup XML file
+     */
+    protected function process_ltiplacementstatus(array $data): void {
+        global $DB;
+
+        $data = (object) $data;
+        $data->placementid = $this->get_mappingid('ltiplacement', $data->placementid);
+        $data->contextid = $this->get_mappingid('context', $data->contextid);
+
+        if ($data->placementid) {
+            $DB->insert_record('lti_placement_status', $data);
+        }
     }
 }

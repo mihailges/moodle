@@ -3320,10 +3320,6 @@ class backup_ltixtypes_structure_step extends backup_structure_step {
             'name',
             'value',
         ]);
-        $ltiplacementstatus = new backup_nested_element('ltiplacementstatus', ['id'], [
-            'contextid',
-            'status',
-        ]);
 
         // Build the tree.
         $ltitypes->add_child($ltitype);
@@ -3338,7 +3334,6 @@ class backup_ltixtypes_structure_step extends backup_structure_step {
         $ltiplacements->add_child($ltiplacement);
         $ltiplacement->add_child($ltiplacementconfigs);
         $ltiplacementconfigs->add_child($ltiplacementconfig);
-        $ltiplacement->add_child($ltiplacementstatus);
 
         // Define sources.
         $ltitypearray = $this->retrieve_lti_types();
@@ -3377,7 +3372,6 @@ class backup_ltixtypes_structure_step extends backup_structure_step {
             [backup::VAR_PARENTID]
         );
         $ltiplacementconfig->set_source_table('lti_placement_config', ['placementid' => backup::VAR_PARENTID]);
-        $ltiplacementstatus->set_source_table('lti_placement_status', ['placementid' => backup::VAR_PARENTID]);
 
         // If this is LTI 2 tool add settings for the current activity.
         $ltitoolproxy->set_source_sql(
@@ -3472,6 +3466,8 @@ class backup_ltixs_structure_step extends backup_structure_step {
         }
 
         // Define each element separated.
+        $wrapper = new backup_nested_element('ltix');
+
         $resourcelinks = new backup_nested_element('ltiresourcelinks');
         $resourcelink = new backup_nested_element('ltiresourcelink', ['id'], [
             'typeid',
@@ -3500,13 +3496,23 @@ class backup_ltixs_structure_step extends backup_structure_step {
             'state',
         ]);
 
+        $ltiplacementstatuses = new backup_nested_element('ltiplacementstatuses');
+        $ltiplacementstatus = new backup_nested_element('ltiplacementstatus', null, [
+            'placementid',
+            'status',
+        ]);
+
         // Build the tree.
+        $wrapper->add_child($resourcelinks);
         $resourcelinks->add_child($resourcelink);
         $resourcelink->add_child($ltisubmissions);
         $ltisubmissions->add_child($ltisubmission);
+        $wrapper->add_child($ltiplacementstatuses);
+        $ltiplacementstatuses->add_child($ltiplacementstatus);
 
         // Define sources.
         $resourcelink->set_source_table('lti_resource_link', ['contextid' => backup::VAR_CONTEXTID]);
+        $ltiplacementstatus->set_source_table('lti_placement_status', ['contextid' => backup::VAR_CONTEXTID]);
 
         // All the rest of elements only happen if we are including user info.
         if ($userinfo) {
@@ -3522,6 +3528,6 @@ class backup_ltixs_structure_step extends backup_structure_step {
         $this->add_plugin_structure('ltixsource', $resourcelink, false);
         $this->add_plugin_structure('ltixservice', $resourcelink, true);
 
-        return $resourcelinks;
+        return $wrapper;
     }
 }

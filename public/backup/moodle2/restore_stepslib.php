@@ -7094,7 +7094,7 @@ class restore_ltixtypes_structure_step extends restore_structure_step {
 
         // Only add placement if the new lti_type was created.
         // We also need to have a valid placement type to be able to restore placement.
-        // TODO: Check logic: Do we want to restore placements if the LTI type already exists? I followed the same logic as for configs.
+        // Placements are only restored if the LTI type already exists following the same logic as for configs.
         if ($data->toolid && $this->newltitype) {
             $data->placementtypeid = $DB->get_field('lti_placement_type', 'id', [
                 'type' => $data->placementtype,

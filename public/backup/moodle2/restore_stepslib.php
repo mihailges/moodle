@@ -7057,7 +7057,7 @@ class restore_ltixtypes_structure_step extends restore_structure_step {
         }
 
         $data->course = $this->get_courseid();
-        // TODO MDL-85891 The `coursemoduleid` field in the `lti_tool_settings` table should change. I'm not sure what to set it to.
+        // TODO: MDL-85891 - Change 'coursemoduleid` field in 'lti_tool_settings' table should and link to resource link ID.
         $data->coursemoduleid = null;
         $DB->insert_record('lti_tool_settings', $data);
     }

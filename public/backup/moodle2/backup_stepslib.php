@@ -3402,7 +3402,7 @@ class backup_ltixtypes_structure_step extends backup_structure_step {
     }
 
     /**
-     * Retrieve records from {lti_type} table associated with the course.
+     * Retrieve records from {lti_types} table associated with the course.
      *
      * Information about site tools is not returned because it is insecure to back it up,
      * only fields necessary for same-site tool matching are left in the record

@@ -90,11 +90,36 @@ class backup_lti_activity_structure_step extends backup_activity_structure_step 
             'secureicon',
         ]);
 
+        $ltitype = new backup_nested_element('ltitype', array('id'), array(
+                'name',
+                'baseurl',
+                'tooldomain',
+                'state',
+                'course',
+                'coursevisible',
+                'ltiversion',
+                'clientid',
+                'toolproxyid',
+                'enabledcapability',
+                'parameter',
+                'icon',
+                'secureicon',
+                'createdby',
+                'timecreated',
+                'timemodified',
+                'description'
+            )
+        );
+
         // Build the tree.
-        // (No tree).
+        $lti->add_child($ltitype);
 
         // Define sources.
-        $lti->set_source_table('lti', ['id' => backup::VAR_ACTIVITYID]);
+        $ltirecord = $DB->get_record('lti', ['id' => $this->task->get_activityid()]);
+        $lti->set_source_array([$ltirecord]);
+
+        $ltitypedata = $this->retrieve_lti_type($ltirecord);
+        $ltitype->set_source_array($ltitypedata ? [$ltitypedata] : []);
 
         // Define id annotations.
         // (none).
@@ -104,5 +129,35 @@ class backup_lti_activity_structure_step extends backup_activity_structure_step 
 
         // Return the root element (lti), wrapped into standard activity structure.
         return $this->prepare_activity_structure($lti);
+    }
+
+    /**
+     * Retrieves a record from {lti_type} table associated with the current activity
+     *
+     * Information about site tools is not returned because it is insecure to back it up,
+     * only fields necessary for same-site tool matching are left in the record
+     *
+     * @param stdClass $ltirecord record from {lti} table
+     * @return stdClass|null
+     */
+    protected function retrieve_lti_type($ltirecord) {
+        global $DB;
+        if (!$ltirecord->typeid) {
+            return null;
+        }
+
+        $record = $DB->get_record('lti_types', ['id' => $ltirecord->typeid]);
+        if ($record && $record->course == SITEID) {
+            // Site LTI types or registrations are not backed up except for their name (which is visible).
+            // Predefined course types can be backed up.
+            $allowedkeys = ['id', 'course', 'name', 'toolproxyid'];
+            foreach ($record as $key => $value) {
+                if (!in_array($key, $allowedkeys)) {
+                    $record->$key = null;
+                }
+            }
+        }
+
+        return $record;
     }
 }

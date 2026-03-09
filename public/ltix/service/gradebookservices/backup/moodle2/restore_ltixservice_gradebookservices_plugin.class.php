@@ -74,7 +74,6 @@ class restore_ltixservice_gradebookservices_plugin extends restore_plugin {
         } else {
             $newtoolproxyid = null;
         }
-        // TODO: In the following code, I assumed that ltilinkid is repurposed to refer to `lti_resourcelink.id`.
         if ($data->ltilinkid != null) {
             if ($data->ltilinkid != $this->get_old_parentid('ltiresourcelink')) {
                 // This is a linked item, but not for the current lti link, so skip it.

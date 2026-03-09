@@ -77,7 +77,6 @@ class backup_ltixservice_gradebookservices_plugin extends backup_plugin {
                 $toolproxyid = $ltitype->toolproxyid;
             } else if ($resourcelink->typeid == self::NONVALIDTYPEID) { // This activity comes from an old backup.
                 // 1. Let's check if the activity is coupled. If so, find the values in the GBS element.
-                // TODO MDL-86034 In the following code, I assumed that ltilinkid is repurposed to refer to `lti_resourcelink.id`.
                 $gbsrecord = $DB->get_record(
                     'ltixservice_gradebookservices',
                     ['ltilinkid' => $resourcelink->id],

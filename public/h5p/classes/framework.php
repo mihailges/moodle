@@ -394,7 +394,7 @@ class framework implements H5PFrameworkInterface {
             'Help me choose a license' => 'helpChoosingLicense',
             'Share failed.' => 'shareFailed',
             'Editing failed.' => 'editingFailed',
-            'Something went wrong, please try to share again.' => 'shareTryAgain',
+            'Couldn\'t communicate with the H5P Hub. Please try again later.' => 'shareTryAgain',
             'Please wait...' => 'pleaseWait',
             'Language' => 'language',
             'Level' => 'level',
@@ -1867,5 +1867,14 @@ class framework implements H5PFrameworkInterface {
     public function setContentHubMetadataChecked($time, $lang = 'en') {
         debugging('The setContentHubMetadataChecked() method is not implemented.', DEBUG_DEVELOPER);
         return false;
+    }
+
+    /**
+     * Callback for reset hub data
+     *
+     * @return void
+     */
+    public function resetHubOrganizationData() {
+        debugging('The resetHubOrganizationData() method is not implemented.', DEBUG_DEVELOPER);
     }
 }

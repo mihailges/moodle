@@ -459,6 +459,8 @@ class framework implements H5PFrameworkInterface {
             'Cancel Crop' => 'cancelCrop',
         ];
 
+        $translationsmap = $this->update_changed_strings_in_version($translationsmap);
+
         if (isset($translationsmap[$message])) {
             return get_string($translationsmap[$message], 'core_h5p', $replacements);
         }
@@ -467,6 +469,48 @@ class framework implements H5PFrameworkInterface {
             $message . "' in the core_h5p component.", DEBUG_DEVELOPER);
 
         return $message;
+    }
+
+    /**
+     * Provides a mapping of string changes between different h5p versions to maintain backwards compatibility.
+     *
+     * @return array An associative array where version numbers map to arrays of string changes.
+     *               Each inner array maps old strings to their updated versions.
+     */
+    private function string_changes_in_versions_map(): array {
+        return [
+            128 => [
+                'Something went wrong, please try to share again.' =>
+                    'Couldn\'t communicate with the H5P Hub. Please try again later.',
+            ],
+            // Future versions can go here.
+        ];
+    }
+
+    /**
+     * Updates translation strings in the provided map based on changes in string mappings for a specific version.
+     *
+     * @param array $translationsmap A mapping of translation strings where keys are the original strings and values are
+     *                               their translations.
+     * @return array The updated translation map with strings changed according to version-specific mappings.
+     */
+    private function update_changed_strings_in_version(array $translationsmap): array {
+
+        $h5pversion = \local\library\autoloader::get_h5p_version();
+        $stringchanges = $this->string_changes_in_versions_map();
+
+        foreach ($stringchanges as $sinceversion => $mappings) {
+            if ($h5pversion >= $sinceversion) {
+                foreach ($mappings as $old => $new) {
+                    if (isset($translationsmap[$old])) {
+                        $translationsmap[$new] = $translationsmap[$old];
+                        unset($translationsmap[$old]);
+                    }
+                }
+            }
+        }
+
+        return $translationsmap;
     }
 
     /**

@@ -27,6 +27,7 @@ final class lti_message {
 
     /**
      * Constructor.
+     *
      * @param string $url
      * @param array $parameters
      */
@@ -35,6 +36,7 @@ final class lti_message {
 
     /**
      * Get the URL to post to.
+     *
      * @return string
      */
     public function get_url(): string {
@@ -43,6 +45,7 @@ final class lti_message {
 
     /**
      * Get the parameters to post.
+     *
      * @return array
      */
     public function get_parameters(): array {

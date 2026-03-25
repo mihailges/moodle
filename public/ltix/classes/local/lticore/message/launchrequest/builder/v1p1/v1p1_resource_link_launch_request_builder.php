@@ -16,6 +16,7 @@
 
 namespace core_ltix\local\lticore\message\launchrequest\builder\v1p1;
 
+use core_ltix\local\lticore\message\lti_message;
 use core_ltix\local\lticore\models\resource_link;
 
 /**
@@ -28,18 +29,20 @@ use core_ltix\local\lticore\models\resource_link;
 class v1p1_resource_link_launch_request_builder extends v1p1_launch_request_builder {
 
     /**
-     * Constructor.
+     * Build the message.
      *
      * @param \stdClass $toolconfig
      * @param resource_link $resourcelink
+     * @param array $roles
      * @param array $extraparams
+     * @return lti_message
      */
     public function build_message(
         \stdClass $toolconfig,
         resource_link $resourcelink,
         array $roles = [],
         array $extraparams = []
-    ) {
+    ): lti_message {
         return $this->build(
             toolconfig: $toolconfig,
             messagetype: 'basic-lti-launch-request',

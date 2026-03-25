@@ -132,6 +132,18 @@ class lti_token_test extends \basic_testcase {
     }
 
     /**
+     * Test that get_claim() returns an integer claim value.
+     *
+     * @return void
+     */
+    public function test_get_claim_returns_int_value(): void {
+        $now = time();
+        $token = new lti_token(['iat' => time()]);
+
+        $this->assertSame($now, $token->get_claim('iat'));
+    }
+
+    /**
      * Test that get_claim() returns an array claim value.
      *
      * @return void
@@ -218,6 +230,19 @@ class lti_token_test extends \basic_testcase {
         $token->add_claim('context', $context);
 
         $this->assertEquals($context, $token->get_claim('context'));
+    }
+
+    /**
+     * Test that add_claim() disallows adding an empty name for a claim.
+     *
+     * @return void
+     */
+    public function test_add_claim_disallows_empty_name(): void {
+        $this->expectException(\coding_exception::class);
+        $this->expectExceptionMessage('Claim name must not be empty.');
+
+        $token = new lti_token([]);
+        $token->add_claim('', 'client-id-abc');
     }
 
     /**

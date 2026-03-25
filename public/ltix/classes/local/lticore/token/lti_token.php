@@ -59,11 +59,15 @@ final class lti_token {
      *
      * Returns the same instance to allow method chaining.
      *
-     * @param string $name the claim name.
-     * @param string|object|array $value the claim value.
+     * @param string $name the claim name. Must be a non-empty string.
+     * @param string|int|object|array $value the claim value.
      * @return self this instance.
+     * @throws \coding_exception if the claim name is empty.
      */
-    public function add_claim(string $name, string|object|array $value): self {
+    public function add_claim(string $name, string|int|object|array $value): self {
+        if ($name === '') {
+            throw new \coding_exception('Claim name must not be empty.');
+        }
         $this->claims[$name] = $value;
         return $this;
     }
@@ -72,9 +76,9 @@ final class lti_token {
      * Return the value of a claim by name, or null if it is not present.
      *
      * @param string $name the claim name.
-     * @return string|object|array|null the claim value, or null if not set.
+     * @return string|int|object|array|null the claim value, or null if not set.
      */
-    public function get_claim(string $name): string|object|array|null {
+    public function get_claim(string $name): string|int|object|array|null {
         return $this->claims[$name] ?? null;
     }
 

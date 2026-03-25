@@ -159,7 +159,7 @@ final class lis_vocab_converter {
      *  Note:
      *  - Supports v1 FQ roles, v2 FQ roles, and v1 simple names/context role handles in the input array.
      *  - Does not remove duplicates from the output array. Output will match input in size.
-     *  - Returns null for any roles not mappable to v2 roles.
+     *  - Returns null for any roles not mappable to v1 roles.
      *
      * @param array $roles the array of roles to convert.
      * @return array the array of converted roles.

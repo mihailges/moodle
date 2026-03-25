@@ -37,6 +37,7 @@ class v1p3_resource_link_launch_request_builder extends v1p3_launch_request_buil
      * @param int $userid the id of the user performing the launch.
      * @param array $roles the LIS or extension roles the launching user has for this launch.
      * @param array $extraclaims any optional extra claims.
+     * @return lti_message
      */
     public function build_message(
         \stdClass $toolconfig,
@@ -64,6 +65,8 @@ class v1p3_resource_link_launch_request_builder extends v1p3_launch_request_buil
     /**
      * Adds required claims for this message type.
      *
+     * @param \stdClass $toolconfig the tool configuration.
+     * @param resource_link $resourcelink the resource link.
      * @return array the array of claims.
      */
     protected function create_required_request_claims(\stdClass $toolconfig, resource_link $resourcelink): array {
@@ -91,6 +94,8 @@ class v1p3_resource_link_launch_request_builder extends v1p3_launch_request_buil
     /**
      * Resolve the target link URI via either the link, or the tool, in that order.
      *
+     * @param \stdClass $toolconfig the tool configuration.
+     * @param resource_link $resourcelink the resource link.
      * @return string the target link URI.
      */
     protected function resolve_target_link_uri(\stdClass $toolconfig, resource_link $resourcelink): string {

@@ -48,6 +48,7 @@ abstract class v1p3_launch_request_builder {
      * @param string $loginhint
      * @param array $roles any LTI roles the user should have
      * @param array $extraclaims any optional parameters, which will vary depending on the message type being implemented.
+     * @return lti_message
      */
     final protected function build(
         \stdClass $toolconfig,
@@ -90,6 +91,9 @@ abstract class v1p3_launch_request_builder {
      * Must be claims that are generic and used in all lti messages. Note: this includes things like version, deployment_id and
      * others which, despite not being listed as applicable to all message types in the core spec, in practice, behave as such.
      *
+     * @param \stdClass $toolconfig the tool configuration.
+     * @param string $messagetype the string message type.
+     * @param string $issuer the issuer.
      * @return array the array of standard claims.
      */
     final protected function generate_standard_claims(

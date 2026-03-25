@@ -17,6 +17,7 @@
 namespace core_ltix\local\lticore\message\launchrequest\builder\v2p0;
 
 use core_ltix\local\lticore\exception\lti_exception;
+use core_ltix\local\lticore\message\lti_message;
 use core_ltix\local\lticore\models\resource_link;
 
 /**
@@ -36,6 +37,7 @@ class v2p0_resource_link_launch_request_builder extends v2p0_launch_request_buil
      * @param string $userid the id of the user performing the launch.
      * @param array $roles the LIS or extension roles the launching user has for this launch.
      * @param array $extraparams any extra params which should be included in the launch.
+     * @return lti_message the built launch message.
      */
     public function build_message(
         \stdClass $toolconfig,
@@ -43,7 +45,7 @@ class v2p0_resource_link_launch_request_builder extends v2p0_launch_request_buil
         string $userid = '',
         array $roles = [],
         array $extraparams = []
-    ) {
+    ): lti_message {
         // Tool capabilities control parameter inclusion, including the required resource_link_id (which is controlled by the
         // capability 'ResourceLink.id'). Should the capability prevent it's inclusion, the launch message cannot be built.
         $allparams = array_merge($extraparams, $this->create_required_request_params($resourcelink));
@@ -59,7 +61,7 @@ class v2p0_resource_link_launch_request_builder extends v2p0_launch_request_buil
             userid: $userid,
             roles: $roles,
             // Required params take precedence over extra params.
-            extraparams: array_merge($extraparams, $this->create_required_request_params($resourcelink))
+            extraparams: $allparams
         );
     }
 

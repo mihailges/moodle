@@ -36,11 +36,12 @@ abstract class v2p0_launch_request_builder {
      * Build the message.
      *
      * @param \stdClass $toolconfig the tool configuration.
-     * @param string $messagetype the string message type, in 1p1 terms.
+     * @param string $messagetype the string message type, in 2p0 terms.
      * @param string $launchurl the URL to launch
      * @param string $userid the user id
      * @param array $roles any LTI roles the user should have
      * @param array $extraparams any optional parameters, which will vary depending on the message type being implemented.
+     * @return lti_message the built message.
      */
     final protected function build(
         \stdClass $toolconfig,
@@ -95,14 +96,14 @@ abstract class v2p0_launch_request_builder {
         // E.g. of $enabledcaps: ['Context.title', 'Context.id'].
         return array_filter($params, function ($paramval, $paramkey) use ($allcapabilities, $enabledcapabilities) {
             // Note: the same value may appear for MULTIPLE keys in the array.
-            // Enabled capabilities is checked for all of them.
+            // Enabled capabilities are checked for all of them.
             $matchedcapabilitykeys = array_keys($allcapabilities, $paramkey);
             return empty($matchedcapabilitykeys) || array_intersect($matchedcapabilitykeys, $enabledcapabilities);
         }, ARRAY_FILTER_USE_BOTH);
     }
 
     /**
-     * Get those launch params which are required for any LTI 1p1 message.
+     * Get those launch params which are required for any LTI 2p0 message.
      *
      * @param string $messagetype
      * @return array the array of required params.

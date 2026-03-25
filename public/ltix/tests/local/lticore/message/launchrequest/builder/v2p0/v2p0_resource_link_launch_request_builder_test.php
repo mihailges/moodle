@@ -18,7 +18,6 @@ namespace core_ltix\local\lticore\message\launchrequest\builder\v2p0;
 
 use core_ltix\constants;
 use core_ltix\local\lticore\exception\lti_exception;
-use core_ltix\local\lticore\message\launchrequest\builder\v2p0\v2p0_resource_link_launch_request_builder;
 use core_ltix\local\lticore\models\resource_link;
 use core_ltix\OAuthRequest;
 use core_ltix\OAuthServer;

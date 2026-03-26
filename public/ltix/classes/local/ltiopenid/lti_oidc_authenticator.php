@@ -54,6 +54,7 @@ final class lti_oidc_authenticator {
     /**
      * Validate the OIDC login and return the lti_message instance to post to the tool.
      *
+     * @param array $authrequestdata the auth request data.
      * @return lti_message the lti message instance which can then be posted to the tool's launch redirect endpoint.
      */
     public function authenticate(array $authrequestdata): lti_message {
@@ -93,13 +94,16 @@ final class lti_oidc_authenticator {
         // Nonce is opaque to the platform and must be returned as it was sent in the auth request.
         $launchtoken->add_claim('nonce', $authrequestdata['nonce']);
 
+        // Obtain the private key for signing the JWT.
+        $privatekey = jwks_helper::get_private_key();
+
         return new lti_message(
             $authrequestdata['redirect_uri'],
             [
                 ...(isset($authrequestdata['state']) ? ['state' => $authrequestdata['state']] : []),
                 'id_token' => $launchtoken->to_jwt(
-                    privatekey: jwks_helper::get_private_key()['key'], // TODO once passed in, use the key object to sign.
-                    kid: jwks_helper::get_private_key()['kid']
+                    privatekey: $privatekey['key'], // TODO once passed in, use the key object to sign.
+                    kid: $privatekey['kid']
                 )
             ]
         );

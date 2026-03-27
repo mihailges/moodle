@@ -87,12 +87,17 @@ class variable_substitutor_factory {
                     ],
                 );
             default:
-                throw new lti_exception("Unable to resolve variable_substitutor instance for LTI version: $ltiversion. There is no"
-                    . " composition mapped to the version.");
+                throw new lti_exception("Unable to resolve variable_substitutor instance for LTI version: {$ltiversion->value}."
+                    . " There is no composition mapped to the version.");
         }
     }
 
-    public function get_for_oidc_auth() {
+    /**
+     * Get a variable_substitutor instance for OIDC authentication.
+     *
+     * @return variable_substitutor
+     */
+    public function get_for_oidc_auth(): variable_substitutor {
         $map = \core_ltix\helper::get_capabilities();
         return new variable_substitutor(
             new substitute_all_policy(),

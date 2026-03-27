@@ -318,7 +318,7 @@ class lineitem extends resource_base {
      * Parse a value for custom parameter substitution variables.
      *
      * @param string $value String to be parsed
-     *
+     * @param launch_context $launchcontext Launch context for the current launch
      * @return string
      */
     public function parse_val(string $value, launch_context $launchcontext): string {

@@ -27,8 +27,6 @@
 namespace core_ltix\local\ltiservice;
 
 use core_ltix\local\lticore\message\context\collection\launch_context;
-use core_ltix\local\lticore\models\resource_link;
-use JetBrains\PhpStorm\Deprecated;
 use stdClass;
 
 
@@ -412,6 +410,15 @@ abstract class service_base {
 
     }
 
+    /**
+     * Parse a string for custom substitution parameter variables supported by this service's resources,
+     * using the provided launch context.
+     *
+     * @param string $value Value to be parsed
+     * @param launch_context $launchcontext Launch context for the request
+     *
+     * @return string
+     */
     final public function parse_val(string $value, launch_context $launchcontext): string {
         if (empty($this->resources)) {
             $this->resources = $this->get_resources();

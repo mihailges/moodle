@@ -40,6 +40,7 @@ final class plugin_substitution_service implements plugin_substitution_service_i
     /**
      * Perform custom parameter substitution for all service plugins.
      *
+     * @param launch_context $launchcontext the launch context.
      * @param string $paramstr the string containing the variable to substitute.
      * @return string the substituted value
      */

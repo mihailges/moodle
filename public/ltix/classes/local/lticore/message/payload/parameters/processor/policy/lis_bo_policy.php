@@ -52,13 +52,12 @@ final readonly class lis_bo_policy implements parameters_processor {
 
         if (in_array($toolconfig->tool->ltiversion, [lti_version::LTI_VERSION_1->value, lti_version::LTI_VERSION_1P3->value])) {
             // v1px only sets if gradepost is enabled.
-            if (!empty($link->get('servicesalt')) && (
+            $gradingallowed = !empty($link->get('servicesalt')) && (
                     $toolconfig->config->acceptgrades == constants::LTI_SETTING_ALWAYS ||
                     ($toolconfig->config->acceptgrades == constants::LTI_SETTING_DELEGATE && $link->is_gradable())
-                )
-            ) {
-                // Do nothing. It's valid.
-            } else {
+                );
+
+            if (!$gradingallowed) {
                 foreach (self::LIS_BO_KEYS as $key) {
                     unset($parameters[$key]);
                 }

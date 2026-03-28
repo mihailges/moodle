@@ -8,6 +8,14 @@ use core_ltix\local\lticore\message\context\item\resource_link_context;
 use core_ltix\local\lticore\message\payload\parameters\pipeline\core\parameters_processor;
 use core_ltix\local\lticore\message\payload\parameters\processor\resolver\common\tool_custom_resolver;
 
+/**
+ * Resolves resource link launch custom parameters.
+ *
+ * @internal
+ * @package    core_ltix
+ * @copyright  2026 Jake Dallimore <jrhdallimore@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class resource_link_launch_custom_resolver extends tool_custom_resolver implements parameters_processor {
 
     public function process(array $parameters, launch_context $data): array {

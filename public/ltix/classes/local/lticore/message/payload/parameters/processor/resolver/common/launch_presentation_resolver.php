@@ -10,6 +10,14 @@ use core_ltix\local\lticore\message\context\item\resource_link_context;
 use core_ltix\local\lticore\message\context\item\tool_context;
 use core_ltix\local\lticore\message\payload\parameters\pipeline\core\parameters_processor;
 
+/**
+ * Resolves launch presentation parameters.
+ *
+ * @internal
+ * @package    core_ltix
+ * @copyright  2026 Jake Dallimore <jrhdallimore@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class launch_presentation_resolver implements parameters_processor {
 
     public function process(array $parameters, launch_context $data): array {
@@ -60,7 +68,7 @@ class launch_presentation_resolver implements parameters_processor {
             [
                 'launch_presentation_locale' => current_language(),
                 'launch_presentation_document_target' => $target,
-                ...(isset($returnurl) ? ['launch_presentation_return_url' => $returnurl] : [])
+                'launch_presentation_return_url' => $returnurl
             ]
         );
     }

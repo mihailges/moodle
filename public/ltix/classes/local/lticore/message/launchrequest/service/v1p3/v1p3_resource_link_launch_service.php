@@ -48,6 +48,11 @@ final class v1p3_resource_link_launch_service {
      *
      * @param parameters_builder_factory $pipelinefactory
      * @param v1p3_resource_link_launch_request_builder $requestbuilder
+     * @param tool_registration_repository $registrationrepository
+     * @param launch_data_repository $datarepository
+     * @param role_mapper $ltirolemapper
+     * @param lis_vocab_converter $lisvocabconverter
+     * @param message_type_factory $messagetypefactory
      */
     public function __construct(
         private parameters_builder_factory $pipelinefactory,

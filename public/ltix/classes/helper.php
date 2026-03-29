@@ -2815,7 +2815,7 @@ class helper {
             // Here, an additional check is required in course-specific contexts to support the 'loginas' feature.
             // If not in a course-related context, the IMS roles is always added.
             $coursecontext = $context->get_course_context(false); // Note: returns false if course context not applicable.
-            if (!$coursecontext || ($coursecontext && !is_role_switched($coursecontext->instanceid))) {
+            if (!$coursecontext || !is_role_switched($coursecontext->instanceid)) {
                 $roles = array_diff($roles, array('Learner'));
                 array_push($roles, 'urn:lti:sysrole:ims/lis/Administrator', 'urn:lti:instrole:ims/lis/Administrator');
             }

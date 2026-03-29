@@ -35,7 +35,6 @@
 namespace core_ltix;
 
 use context_course;
-use context_module;
 use core_ltix\local\placement\placement_status;
 
 defined('MOODLE_INTERNAL') || die();

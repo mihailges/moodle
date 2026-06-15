@@ -139,4 +139,8 @@ $callbacks = [
         'callback' => [\core_courseformat\hook_listener::class, 'before_course_viewed'],
         'priority' => 999,
     ],
+    [
+        'hook' => \core\hook\di_configuration::class,
+        'callback' => [\core\hook\composer\composer_di::class, 'configure'],
+    ],
 ];

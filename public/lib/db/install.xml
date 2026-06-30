@@ -3641,7 +3641,7 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="courseidlink" TYPE="foreign-unique" FIELDS="courseid" REFTABLE="course" REFFIELDS="id" COMMENT="Course foreign key."/>
+        <KEY NAME="courseidlink" TYPE="unique" FIELDS="courseid" COMMENT="Course foreign key."/>
         <KEY NAME="usermodified" TYPE="foreign" FIELDS="usermodified" REFTABLE="user" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
@@ -4017,7 +4017,7 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="issueridkey" TYPE="foreign-unique" FIELDS="issuerid" REFTABLE="oauth2_issuer" REFFIELDS="id"/>
+        <KEY NAME="issueridkey" TYPE="unique" FIELDS="issuerid"/>
         <KEY NAME="usermodified" TYPE="foreign" FIELDS="usermodified" REFTABLE="user" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
@@ -4230,7 +4230,7 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="issueridkey" TYPE="foreign-unique" FIELDS="issuerid" REFTABLE="oauth2_issuer" REFFIELDS="id"/>
+        <KEY NAME="issueridkey" TYPE="unique" FIELDS="issuerid"/>
         <KEY NAME="usermodified" TYPE="foreign" FIELDS="usermodified" REFTABLE="user" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
@@ -4926,7 +4926,7 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="userid" TYPE="foreign-unique" FIELDS="userid" REFTABLE="user" REFFIELDS="id" COMMENT="Foreign key to user table"/>
+        <KEY NAME="userid" TYPE="unique" FIELDS="userid" COMMENT="Foreign key to user table"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="ai_action_generate_image" COMMENT="Stores specific data about generate image actions">

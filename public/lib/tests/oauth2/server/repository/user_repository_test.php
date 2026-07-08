@@ -30,18 +30,14 @@ use core\oauth2\server\entity\user_entity;
 #[CoversClass(user_repository::class)]
 final class user_repository_test extends \advanced_testcase {
     /**
-     * Reset the state after each test.
-     */
-    #[\PHPUnit\Framework\Attributes\Before]
-    protected function reset_after_test(): void {
-        $this->resetAfterTest();
-    }
-
-    /**
      * Test getting a user entity by user credentials.
+     *
+     * @todo MDL-84281: Update this test to use the WithoutErrorHandler attribute when PHPUnit 12+ is available.
      */
     public function test_get_user_entity_by_user_credentials(): void {
         global $CFG;
+
+        $this->resetAfterTest();
 
         $repository = new user_repository();
         $client = new client_entity();

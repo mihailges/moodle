@@ -42,6 +42,7 @@ class refresh_token_repository implements RefreshTokenRepositoryInterface {
         $record->accesstokenidentifier = $refreshtokenentity->getAccessToken()->getIdentifier();
         $record->expirytime = $refreshtokenentity->getExpiryDateTime()->getTimestamp();
         $record->revoked = refresh_token_entity::REVOKED_NO;
+        $record->timecreated = time();
 
         $DB->insert_record('oauth2_server_client_refresh_tokens', $record);
     }

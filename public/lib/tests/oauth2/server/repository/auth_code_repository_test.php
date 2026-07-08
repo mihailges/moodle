@@ -32,14 +32,6 @@ use core\oauth2\server\entity\auth_code_entity;
 #[CoversClass(auth_code_repository::class)]
 final class auth_code_repository_test extends \advanced_testcase {
     /**
-     * Reset the state after each test.
-     */
-    #[\PHPUnit\Framework\Attributes\Before]
-    protected function reset_after_test(): void {
-        $this->resetAfterTest();
-    }
-
-    /**
      * Test getting a new auth code.
      */
     public function test_get_new_auth_code(): void {
@@ -54,6 +46,8 @@ final class auth_code_repository_test extends \advanced_testcase {
      */
     public function test_persist_new_auth_code(): void {
         global $DB;
+
+        $this->resetAfterTest();
 
         $repository = new auth_code_repository();
 
@@ -102,6 +96,8 @@ final class auth_code_repository_test extends \advanced_testcase {
     public function test_revoke_auth_code(): void {
         global $DB;
 
+        $this->resetAfterTest();
+
         $repository = new auth_code_repository();
 
         $clientid = $DB->insert_record('oauth2_server_clients', [
@@ -121,6 +117,7 @@ final class auth_code_repository_test extends \advanced_testcase {
             'scopes' => 'profile',
             'expirytime' => time() + 600,
             'revoked' => auth_code_entity::REVOKED_NO,
+            'timecreated' => time(),
         ]);
 
         $this->assertFalse($repository->isAuthCodeRevoked('code-id-to-revoke'));

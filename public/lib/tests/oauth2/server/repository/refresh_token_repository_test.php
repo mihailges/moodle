@@ -32,14 +32,6 @@ use core\oauth2\server\entity\refresh_token_entity;
 #[CoversClass(refresh_token_repository::class)]
 final class refresh_token_repository_test extends \advanced_testcase {
     /**
-     * Reset the state after each test.
-     */
-    #[\PHPUnit\Framework\Attributes\Before]
-    protected function reset_after_test(): void {
-        $this->resetAfterTest();
-    }
-
-    /**
      * Test getting a new refresh token.
      */
     public function test_get_new_refresh_token(): void {
@@ -54,6 +46,8 @@ final class refresh_token_repository_test extends \advanced_testcase {
      */
     public function test_persist_new_refresh_token(): void {
         global $DB;
+
+        $this->resetAfterTest();
 
         $repository = new refresh_token_repository();
 
@@ -73,6 +67,7 @@ final class refresh_token_repository_test extends \advanced_testcase {
             'scopes' => 'profile',
             'expirytime' => time() + 3600,
             'revoked' => access_token_entity::REVOKED_NO,
+            'timecreated' => time(),
         ]);
 
         $accesstoken = new access_token_entity();
@@ -102,6 +97,8 @@ final class refresh_token_repository_test extends \advanced_testcase {
     public function test_revoke_refresh_token(): void {
         global $DB;
 
+        $this->resetAfterTest();
+
         $repository = new refresh_token_repository();
 
         $DB->insert_record('oauth2_server_clients', [
@@ -120,6 +117,7 @@ final class refresh_token_repository_test extends \advanced_testcase {
             'scopes' => 'profile',
             'expirytime' => time() + 3600,
             'revoked' => access_token_entity::REVOKED_NO,
+            'timecreated' => time(),
         ]);
 
         $DB->insert_record('oauth2_server_client_refresh_tokens', [
@@ -127,6 +125,7 @@ final class refresh_token_repository_test extends \advanced_testcase {
             'accesstokenid' => 'access-token-id',
             'expirytime' => time() + 86400,
             'revoked' => refresh_token_entity::REVOKED_NO,
+            'timecreated' => time(),
         ]);
 
         $this->assertFalse($repository->isRefreshTokenRevoked('refresh-token-1'));

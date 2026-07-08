@@ -49,6 +49,7 @@ class auth_code_repository implements AuthCodeRepositoryInterface {
         $record->scopes = implode(' ', $scopes);
         $record->expirytime = $authcodeentity->getExpiryDateTime()->getTimestamp();
         $record->revoked = auth_code_entity::REVOKED_NO;
+        $record->timecreated = time();
 
         $DB->insert_record('oauth2_server_client_auth_codes', $record);
     }

@@ -30,14 +30,6 @@ use core\oauth2\server\entity\client_entity;
 #[CoversClass(client_repository::class)]
 final class client_repository_test extends \advanced_testcase {
     /**
-     * Reset the state after each test.
-     */
-    #[\PHPUnit\Framework\Attributes\Before]
-    protected function reset_after_test(): void {
-        $this->resetAfterTest();
-    }
-
-    /**
      * Test getClientEntity under different database record scenarios.
      *
      * @param array $clientdata The data to insert into the clients table.
@@ -54,6 +46,8 @@ final class client_repository_test extends \advanced_testcase {
         ?array $expectedproperties
     ): void {
         global $DB;
+
+        $this->resetAfterTest();
 
         $repository = new client_repository();
 
@@ -117,7 +111,7 @@ final class client_repository_test extends \advanced_testcase {
                     'status' => client_entity::STATUS_ACTIVE,
                     'isconfidential' => true,
                     'redirecturi' => ['https://example.test/callback'],
-                ]
+                ],
             ],
             'revoked public client with multiple redirect uris' => [
                 [
@@ -138,8 +132,8 @@ final class client_repository_test extends \advanced_testcase {
                     'status' => client_entity::STATUS_REVOKED,
                     'isconfidential' => false,
                     'redirecturi' => ['https://example.test/uri1', 'https://example.test/uri2'],
-                ]
-            ]
+                ],
+            ],
         ];
     }
 
@@ -149,6 +143,7 @@ final class client_repository_test extends \advanced_testcase {
      * @param array $clientdata The data to insert into the clients table.
      * @param string|null $plaintextsecret The plain secret to insert (hashed) into secrets table.
      * @param int $secretrevoked Whether the secret is marked revoked in db.
+     * @param int $secretexpirytime The timestamp when the secret expires.
      * @param string $checkidentifier The client identifier passed to validateClient.
      * @param string|null $checksecret The secret passed to validateClient.
      * @param string|null $checkgranttype The grant type passed to validateClient.
@@ -160,12 +155,15 @@ final class client_repository_test extends \advanced_testcase {
         array $clientdata,
         ?string $plaintextsecret,
         int $secretrevoked,
+        int $secretexpirytime,
         string $checkidentifier,
         ?string $checksecret,
         ?string $checkgranttype,
         bool $expectedresult
     ): void {
         global $DB;
+
+        $this->resetAfterTest();
 
         $repository = new client_repository();
 
@@ -178,6 +176,7 @@ final class client_repository_test extends \advanced_testcase {
                     'clientidentifier' => $clientdata['clientidentifier'],
                     'secret' => password_hash($plaintextsecret, PASSWORD_DEFAULT),
                     'revoked' => $secretrevoked,
+                    'expirytime' => $secretexpirytime,
                     'timecreated' => time(),
                 ]);
             }
@@ -197,7 +196,14 @@ final class client_repository_test extends \advanced_testcase {
     public static function validate_client_provider(): array {
         return [
             'non-existent client' => [
-                [], null, 0, 'non-existent', 'secret', 'authorization_code', false
+                [],
+                null,
+                client_entity::SECRET_REVOKED_NO,
+                time() + 3600,
+                'non-existent',
+                'secret',
+                'authorization_code',
+                false,
             ],
             'public client matches anything without secret check' => [
                 [
@@ -208,13 +214,14 @@ final class client_repository_test extends \advanced_testcase {
                     'timecreated' => time(),
                 ],
                 null,
-                0,
+                client_entity::SECRET_REVOKED_NO,
+                time() + 3600,
                 'client-pub',
                 null,
                 'authorization_code',
                 true,
             ],
-            'confidential client with correct secret and matching status' => [
+            'confidential client with correct secret in active state' => [
                 [
                     'name' => 'Confidential Client',
                     'clientidentifier' => 'client-conf',
@@ -223,7 +230,8 @@ final class client_repository_test extends \advanced_testcase {
                     'timecreated' => time(),
                 ],
                 'supersecret',
-                client_entity::STATUS_ACTIVE,
+                client_entity::SECRET_REVOKED_NO,
+                time() + 3600,
                 'client-conf',
                 'supersecret',
                 'authorization_code',
@@ -238,13 +246,14 @@ final class client_repository_test extends \advanced_testcase {
                     'timecreated' => time(),
                 ],
                 'supersecret',
-                client_entity::STATUS_ACTIVE,
+                client_entity::SECRET_REVOKED_NO,
+                time() + 3600,
                 'client-conf',
                 'wrongsecret',
                 'authorization_code',
                 false,
             ],
-            'confidential client with unmatching revoked status' => [
+            'confidential client with revoked secret' => [
                 [
                     'name' => 'Confidential Client',
                     'clientidentifier' => 'client-conf',
@@ -253,7 +262,8 @@ final class client_repository_test extends \advanced_testcase {
                     'timecreated' => time(),
                 ],
                 'supersecret',
-                0,
+                client_entity::SECRET_REVOKED_YES,
+                time() + 3600,
                 'client-conf',
                 'supersecret',
                 'authorization_code',
@@ -268,9 +278,26 @@ final class client_repository_test extends \advanced_testcase {
                     'timecreated' => time(),
                 ],
                 'supersecret',
-                client_entity::STATUS_ACTIVE,
+                client_entity::SECRET_REVOKED_NO,
+                time() + 3600,
                 'client-conf',
                 null,
+                'authorization_code',
+                false,
+            ],
+            'confidential client with expired secret' => [
+                [
+                    'name' => 'Confidential Client',
+                    'clientidentifier' => 'client-conf',
+                    'status' => client_entity::STATUS_ACTIVE,
+                    'isconfidential' => 1,
+                    'timecreated' => time() - 7200,
+                ],
+                'supersecret',
+                client_entity::SECRET_REVOKED_NO,
+                time() - 3600,
+                'client-conf',
+                'supersecret',
                 'authorization_code',
                 false,
             ],

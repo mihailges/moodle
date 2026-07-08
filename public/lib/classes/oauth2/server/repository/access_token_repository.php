@@ -61,11 +61,16 @@ class access_token_repository implements AccessTokenRepositoryInterface {
 
         $record = new \stdClass();
         $record->identifier = $accesstokenentity->getIdentifier();
-        $record->userid = $accesstokenentity->getUserIdentifier() ?? 0;
+
+        if ($userid = $accesstokenentity->getUserIdentifier()) {
+            $record->userid = $userid;
+        }
+
         $record->clientidentifier = $accesstokenentity->getClient()->getIdentifier();
         $record->scopes = implode(' ', $scopes);
         $record->expirytime = $accesstokenentity->getExpiryDateTime()->getTimestamp();
         $record->revoked = access_token_entity::REVOKED_NO;
+        $record->timecreated = time();
 
         $DB->insert_record('oauth2_server_client_access_tokens', $record);
     }

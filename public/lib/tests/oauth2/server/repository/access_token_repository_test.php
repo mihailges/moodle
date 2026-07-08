@@ -32,14 +32,6 @@ use core\oauth2\server\entity\access_token_entity;
 #[CoversClass(access_token_repository::class)]
 final class access_token_repository_test extends \advanced_testcase {
     /**
-     * Reset the state after each test.
-     */
-    #[\PHPUnit\Framework\Attributes\Before]
-    protected function reset_after_test(): void {
-        $this->resetAfterTest();
-    }
-
-    /**
      * Test getting a new token under different scenarios.
      *
      * @param string $clientidentifier Client identifier.
@@ -115,6 +107,8 @@ final class access_token_repository_test extends \advanced_testcase {
     ): void {
         global $DB;
 
+        $this->resetAfterTest();
+
         $repository = new access_token_repository();
 
         $client = new client_entity();
@@ -146,7 +140,7 @@ final class access_token_repository_test extends \advanced_testcase {
 
         $this->assertNotEmpty($record);
         $this->assertSame($tokenid, $record->identifier);
-        $this->assertEquals($userid ?? 0, $record->userid);
+        $this->assertEquals($userid, $record->userid);
         $this->assertSame($clientid, $record->clientidentifier);
         $this->assertSame(implode(' ', $scopeidentifiers), $record->scopes);
         $this->assertEquals(access_token_entity::REVOKED_NO, (int) $record->revoked);
@@ -182,6 +176,8 @@ final class access_token_repository_test extends \advanced_testcase {
     public function test_access_token_revocation(): void {
         global $DB;
 
+        $this->resetAfterTest();
+
         $repository = new access_token_repository();
 
         $DB->insert_record('oauth2_server_client_access_tokens', [
@@ -191,6 +187,7 @@ final class access_token_repository_test extends \advanced_testcase {
             'scopes' => 'profile',
             'expirytime' => time() + 3600,
             'revoked' => 0,
+            'timecreated' => time(),
         ]);
 
         $this->assertFalse($repository->isAccessTokenRevoked('token-1'));

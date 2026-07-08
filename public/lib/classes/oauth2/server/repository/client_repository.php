@@ -79,11 +79,18 @@ class client_repository implements ClientRepositoryInterface {
             return false;
         }
 
-        // Fetch all active, non-revoked secrets for this client.
-        $secrets = $DB->get_records('oauth2_server_client_secrets', [
+        // Fetch all active, non-revoked, non-expired secrets for this client.
+        $select = 'clientidentifier = :clientidentifier
+           AND revoked = :revoked
+           AND expirytime > :now';
+
+        $params = [
             'clientidentifier' => $clientidentifier,
-            'revoked' => client_entity::STATUS_ACTIVE,
-        ]);
+            'revoked' => client_entity::SECRET_REVOKED_NO,
+            'now' => time(),
+        ];
+
+        $secrets = $DB->get_records_select('oauth2_server_client_secrets', $select, $params);
 
         foreach ($secrets as $secret) {
             if (password_verify($clientsecret, $secret->secret)) {

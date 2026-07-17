@@ -134,7 +134,7 @@ class scope_repository implements ScopeRepositoryInterface {
                     is_subclass_of($classname, abstract_scope::class) &&
                     !$this->is_abstract_class($classname)
                 ) {
-                    $scopemap[$classname::get_qualified_name()] = $classname;
+                    $scopemap[$classname::get_identifier()] = $classname;
                 }
             }
         }

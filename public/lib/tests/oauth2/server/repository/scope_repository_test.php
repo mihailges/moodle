@@ -58,8 +58,8 @@ final class scope_repository_test extends \advanced_testcase {
 
         if ($expectedfound) {
             $this->assertInstanceOf(ScopeEntityInterface::class, $scope);
-            $this->assertSame($identifier, $scope::get_qualified_name());
-            $this->assertSame($scope::get_human_name(), 'Test scope');
+            $this->assertSame($identifier, $scope::get_identifier());
+            $this->assertSame($scope::get_summary(), 'Test scope');
             $this->assertSame(
                 $scope::get_description(),
                 'This is a test scope used for testing OAuth2 scopes in Moodle.',

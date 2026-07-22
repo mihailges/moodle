@@ -17,12 +17,12 @@
 namespace core_admin\route\scope;
 
 /**
- * The base abstract class for admin scopes.
+ * The base abstract class for system course scopes.
  *
  * @package    core_admin
  * @copyright  2026 Mihail Geshoski <mihailgesoski@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[\core\router\scope\identifier_attribute('admin')]
+#[\core\router\scope\identifier_attribute('course')]
 abstract class abstract_scope extends \core\router\scope\abstract_system_scope {
 }

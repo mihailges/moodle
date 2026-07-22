@@ -41,6 +41,13 @@ abstract class abstract_scope implements \League\OAuth2\Server\Entities\ScopeEnt
     }
 
     /**
+     * Get the context level of the scope.
+     *
+     * @return int
+     */
+    abstract public function get_context_level(): int;
+
+    /**
      * Static method to get the identifier of the scope.
      *
      * Concrete scope classes and their parent classes must have an identifier attribute.

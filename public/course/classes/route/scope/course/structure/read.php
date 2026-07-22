@@ -14,19 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace core_admin\route\scope\user;
+namespace core_course\route\scope\structure;
 
 /**
- * The admin:user:read scope.
+ * The course:structure:read scope.
  *
- * This scope is used to handle admin user read-related routes.
+ * This scope is used to handle course structure read-related routes.
  *
- * @package    core_admin
+ * @package    core_course
  * @copyright  2026 Mihail Geshoski <mihailgesoski@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[\core\router\scope\name_attribute('read')]
-#[\core\router\scope\human_name_attribute('scope_name_admin_user_read', 'core_admin')]
-#[\core\router\scope\description_attribute('scope_desc_admin_user_read', 'core_admin')]
+#[\core\router\scope\identifier_attribute('read')]
+#[\core\router\scope\summary_attribute('scope_course_structure_read_summary', 'core_course')]
+#[\core\router\scope\description_attribute('scope_course_structure_read_desc', 'core_course')]
 class read extends abstract_scope {
 }

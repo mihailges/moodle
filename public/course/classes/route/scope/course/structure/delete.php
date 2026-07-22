@@ -14,18 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace core_admin\route\scope\user;
-
-use core_admin\route\scope\abstract_scope as abstract_admin_scope;
+namespace core_course\route\scope\structure;
 
 /**
- * The base abstract class for admin user scopes.
+ * The course:structure:delete scope.
  *
- * @package    core_admin
+ * This scope is used to handle course structure delete-related routes.
+ *
+ * @package    core_course
  * @copyright  2026 Mihail Geshoski <mihailgesoski@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[\core\router\scope\name_attribute('user')]
-#[\core\router\scope\description_attribute('scope:admin:user', 'core_admin')]
-abstract class abstract_scope extends abstract_admin_scope {
+#[\core\router\scope\identifier_attribute('delete')]
+#[\core\router\scope\summary_attribute('scope_course_structure_delete_summary', 'core_course')]
+#[\core\router\scope\description_attribute('scope_course_structure_delete_desc', 'core_course')]
+class delete extends abstract_scope {
 }

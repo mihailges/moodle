@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -14,19 +15,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace core_admin\route\scope\user;
+namespace core_course\route\scope\content;
 
 /**
- * The admin:user:write scope.
+ * The course:content:read scope.
  *
- * This scope is used to handle admin user write-related routes.
+ * This scope is used to handle course content read-related routes.
  *
- * @package    core_admin
+ * @package    core_course
  * @copyright  2026 Mihail Geshoski <mihailgesoski@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[\core\router\scope\name_attribute('write')]
-#[\core\router\scope\human_name_attribute('scope_name_admin_user_write', 'core_admin')]
-#[\core\router\scope\description_attribute('scope_desc_admin_user_write', 'core_admin')]
-class write extends abstract_scope {
+#[\core\router\scope\identifier_attribute('read')]
+#[\core\router\scope\summary_attribute('scope_name_course_content_read', 'core_course')]
+#[\core\router\scope\description_attribute('scope_desc_course_content_read', 'core_course')]
+class read extends abstract_scope {
 }

@@ -14,19 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace core_admin\route\scope\course;
+namespace core_admin\route\scope\logs;
+
+use core_admin\route\scope\abstract_scope as abstract_admin_scope;
 
 /**
- * The admin:course:write scope.
- *
- * This scope is used to handle admin course write-related routes.
+ * The base abstract class for admin logs scopes.
  *
  * @package    core_admin
  * @copyright  2026 Mihail Geshoski <mihailgesoski@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[\core\router\scope\name_attribute('write')]
-#[\core\router\scope\human_name_attribute('scope_name_admin_course_write', 'core_admin')]
-#[\core\router\scope\description_attribute('scope_desc_admin_course_write', 'core_admin')]
-class write extends abstract_scope {
+#[\core\router\scope\identifier_attribute('logs')]
+abstract class abstract_scope extends abstract_admin_scope {
 }

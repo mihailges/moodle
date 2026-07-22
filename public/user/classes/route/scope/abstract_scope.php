@@ -14,15 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace core_admin\route\scope;
+namespace core_user\route\scope;
 
 /**
- * The base abstract class for admin scopes.
+ * The base abstract class for user scopes.
  *
- * @package    core_admin
+ * @package    core_user
  * @copyright  2026 Mihail Geshoski <mihailgesoski@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[\core\router\scope\identifier_attribute('admin')]
-abstract class abstract_scope extends \core\router\scope\abstract_system_scope {
+#[\core\router\scope\identifier_attribute('user')]
+abstract class abstract_scope extends \core\router\scope\abstract_scope {
 }

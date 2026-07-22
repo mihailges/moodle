@@ -14,15 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace core_admin\route\scope;
+namespace core_admin\route\scope\config;
 
 /**
- * The base abstract class for admin scopes.
+ * The admin:config:read scope.
+ *
+ * This scope is used to handle admin config read-related routes.
  *
  * @package    core_admin
  * @copyright  2026 Mihail Geshoski <mihailgesoski@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[\core\router\scope\identifier_attribute('admin')]
-abstract class abstract_scope extends \core\router\scope\abstract_system_scope {
+#[\core\router\scope\identifier_attribute('read')]
+#[\core\router\scope\summary_attribute('scope_admin_config_read_summary', 'core_admin')]
+#[\core\router\scope\description_attribute('scope_admin_config_read_desc', 'core_admin')]
+class read extends abstract_scope {
 }

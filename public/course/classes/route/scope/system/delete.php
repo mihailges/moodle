@@ -14,19 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace core_admin\route\scope\course;
+namespace core_course\route\scope\system;
 
 /**
- * The admin:course:read scope.
+ * The system:course:delete scope.
  *
- * This scope is used to handle admin course read-related routes.
+ * This scope is used to handle course content delete-related routes.
  *
- * @package    core_admin
+ * @package    core_course
  * @copyright  2026 Mihail Geshoski <mihailgesoski@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[\core\router\scope\name_attribute('read')]
-#[\core\router\scope\human_name_attribute('scope_name_admin_course_read', 'core_admin')]
-#[\core\router\scope\description_attribute('scope_desc_admin_course_read', 'core_admin')]
-class read extends abstract_scope {
+#[\core\router\scope\identifier_attribute('delete')]
+#[\core\router\scope\summary_attribute('scope_name_course_content_delete', 'core_course')]
+#[\core\router\scope\description_attribute('scope_desc_course_content_delete', 'core_course')]
+class delete extends abstract_scope {
 }

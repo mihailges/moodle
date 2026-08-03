@@ -127,14 +127,18 @@ class scope_repository implements ScopeRepositoryInterface {
         foreach (\core\component::get_component_names(true) as $componentname) {
             $scopes = \core\component::get_component_classes_in_namespace(
                 $componentname,
-                \route\scope::class,
+                'route\scope',
             );
             foreach (array_keys($scopes) as $classname) {
                 if (
                     is_subclass_of($classname, abstract_scope::class) &&
                     !$this->is_abstract_class($classname)
                 ) {
-                    $scopemap[$classname::get_identifier()] = $classname;
+                    try {
+                        $scopemap[$classname::get_identifier()] = $classname;
+                    } catch (\Throwable $e) {
+                        debugging("Skipping scope class '{$classname}' due to error: {$e->getMessage()}", DEBUG_DEVELOPER);
+                    }
                 }
             }
         }

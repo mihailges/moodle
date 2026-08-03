@@ -46,8 +46,7 @@ final class scope_repository_test extends \advanced_testcase {
     public function test_get_scope_entity_by_identifier(string $identifier, bool $expectedfound): void {
         $this->resetAfterTest();
 
-        // Inject the 'fake' plugin type that contains the 'oauth2scope' test plugin that registers the
-        // 'test_scope' scope.
+        // Inject the 'fake' plugin type that contains the test 'oauth2scope' plugin that registers test scopes.
         $this->add_full_mocked_plugintype(
             plugintype: 'fake',
             path: 'public/lib/tests/fixtures/fakeplugins/fake',
@@ -55,6 +54,11 @@ final class scope_repository_test extends \advanced_testcase {
 
         $repository = new scope_repository();
         $scope = $repository->getScopeEntityByIdentifier($identifier);
+
+        // The 'fake' plugin 'oauth2scope' contains with some invalid scopes that are expected to trigger debugging notices
+        // when generating the scope map in getScopeEntityByIdentifier().
+        // Reset debugging to ignore these notices as they are irrelevant in this test.
+        $this->resetDebugging();
 
         if ($expectedfound) {
             $this->assertInstanceOf(ScopeEntityInterface::class, $scope);
@@ -92,7 +96,10 @@ final class scope_repository_test extends \advanced_testcase {
      *
      * @param bool $hasuseridentifier Whether the user identifier is provided.
      * @param array $requestedscopes The identifiers of requested scopes.
-     * @param string|null $grantedscopestring The space-separated scopes granted in DB, or null if no record.
+     * @param string $granttype The grant type being used.
+     * @param string|null $authcodeid The authorization code identifier, if applicable.
+     * @param string|null $sessiongrantedscopestring The space-separated string of session granted scopes, if applicable.
+     * @param string|null $globalgrantedscopestring The space-separated string of global granted scopes, if applicable.
      * @param array $expectedscopeidentifiers The identifiers of finalized scopes expected.
      */
     #[DataProvider('finalize_scopes_provider')]
@@ -272,7 +279,7 @@ final class scope_repository_test extends \advanced_testcase {
     public function test_get_all_scopes(): void {
         $this->resetAfterTest();
 
-        // Inject a 'fake' plugin type that contains the 'oauth2scope' test plugin that registers the 'test_scope' scope.
+        // Inject the 'fake' plugin type that contains the test 'oauth2scope' plugin that registers test scopes.
         $this->add_full_mocked_plugintype(
             plugintype: 'fake',
             path: 'public/lib/tests/fixtures/fakeplugins/fake',
@@ -281,8 +288,16 @@ final class scope_repository_test extends \advanced_testcase {
         $repository = new scope_repository();
         $scopes = $repository->get_all_scopes();
 
+        $this->assertDebuggingCalled(
+            "Skipping scope class 'fake_oauth2scope\\route\\scope\\invalidresource\\invalid_scope' due to error: " .
+            "Coding error detected, it must be fixed by a programmer: The class " .
+            "fake_oauth2scope\\route\\scope\\invalidresource\\invalid_scope must have an #[identifier_attribute] attribute."
+        );
+
         $this->assertNotEmpty($scopes);
         // Verify that the 'test_scope' scope is present in the list.
         $this->assertArrayHasKey('fake_oauth2scope:resource:read', $scopes);
+        // Verify that the 'invalid_scope' scope is not in the list.
+        $this->assertArrayNotHasKey('fake_oauth2scope:invalid:invalid_scope', $scopes);
     }
 }

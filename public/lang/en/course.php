@@ -188,17 +188,17 @@ $string['searchactivitiesbyname'] = 'Search for activities by name';
 $string['searchresults'] = 'Search results: {$a}';
 $string['sectionlink'] = 'Permalink';
 $string['showstartedcoursestask'] = 'Show courses on start date';
-$string['submitsearch'] = 'Submit search';
-$string['supports'] = 'This activity supports';
-$string['studentsatriskincourse'] = 'Students at risk in {$a} course';
-$string['studentsatriskinfomessage'] = 'Hi {$a->userfirstname},
-<p>Students in the {$a->coursename} course have been identified as being at risk.</p>';
 $string['structure_delete_scope_desc'] = 'Allows access to delete course structure entities like course sections, activities, and resources.';
 $string['structure_delete_scope_summary'] = 'Delete course sections, activities, and resources';
 $string['structure_read_scope_desc'] = 'Allows read-only access to course structure (sections, activities, and resources)';
 $string['structure_read_scope_summary'] = 'View course sections, activities, and resources';
 $string['structure_write_scope_desc'] = 'Allows access to create and modify course structure entities like sections, activities, and resources.';
 $string['structure_write_scope_summary'] = 'Manage course sections, activities, and resources';
+$string['submitsearch'] = 'Submit search';
+$string['supports'] = 'This activity supports';
+$string['studentsatriskincourse'] = 'Students at risk in {$a} course';
+$string['studentsatriskinfomessage'] = 'Hi {$a->userfirstname},
+<p>Students in the {$a->coursename} course have been identified as being at risk.</p>';
 $string['target:coursecompletion'] = 'Students at risk of not meeting the course completion conditions';
 $string['target:coursecompletion_help'] = 'This target describes whether the student is considered at risk of not meeting the course completion conditions.';
 $string['target:coursecompetencies'] = 'Students at risk of not achieving the competencies assigned to a course';

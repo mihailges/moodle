@@ -97,7 +97,7 @@ class granted_scopes_repository {
      *
      * @param ClientEntityInterface $client The client.
      * @param UserEntityInterface $user The user.
-     * @param array $scopes The scopes to grant.
+     * @param string[] $scopes The scopes to grant.
      * @return void
      */
     public function store_granted_scopes_for_user(

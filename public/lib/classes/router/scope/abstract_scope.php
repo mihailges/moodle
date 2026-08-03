@@ -123,6 +123,6 @@ abstract class abstract_scope implements \League\OAuth2\Server\Entities\ScopeEnt
      * @return bool
      */
     final public function is_satisfied_by(array $providedscopes): bool {
-        return in_array(static::get_identifier(), $providedscopes);
+        return in_array(static::get_identifier(), $providedscopes, true);
     }
 }

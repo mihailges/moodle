@@ -24,6 +24,6 @@ namespace core\router\scope;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 #[\Attribute(\Attribute::TARGET_CLASS)]
-class description_attribute extends \lang_string {
+class description_attribute extends \core\lang_string {
     // Natively inherits all constructor and string behaviors from lang_string.
 }

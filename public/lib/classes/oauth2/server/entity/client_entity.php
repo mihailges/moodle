@@ -51,6 +51,9 @@ class client_entity implements ClientEntityInterface {
     /** @var int Confindential client type */
     public const int TYPE_CONFIDENTIAL = 1;
 
+    /** @var int|null The ID of the client */
+    protected ?int $id = null;
+
     /** @var \core\context The owner context */
     protected \core\context $ownercontext;
 
@@ -59,6 +62,15 @@ class client_entity implements ClientEntityInterface {
 
     /** @var string|null The description of the client */
     protected ?string $description = null;
+
+    /**
+     * Get the ID of the client.
+     *
+     * @return int
+     */
+    public function get_id(): int {
+        return $this->id;
+    }
 
     /**
      * Get the context of the client owner.
@@ -115,6 +127,7 @@ class client_entity implements ClientEntityInterface {
      */
     public static function create_from_record(\stdClass $clientrecord, array $redirecturis): self {
         $client = new self();
+        $client->id = (int) $clientrecord->id;
         $client->setIdentifier($clientrecord->clientidentifier);
         $client->name = $clientrecord->name;
         $client->description = $clientrecord->description;

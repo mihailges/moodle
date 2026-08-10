@@ -59,13 +59,14 @@ class client_management
     )]
     public function list_clients(
         ResponseInterface $response,
-    ): ResponseInterface
-    {
-        global $OUTPUT;
+    ): ResponseInterface {
+        global $OUTPUT, $PAGE;
 
         $this->setup_admin_page();
 
         has_capability('moodle/site:manageoauth2clients', \context_system::instance());
+
+        $PAGE->requires->js_call_amd('core_admin/oauth2/server/client/actions/client_revoke', 'init');
 
         $response->getBody()->write($OUTPUT->header());
         $response->getBody()->write($OUTPUT->heading(get_string('oauth2server_clients', 'admin'), 2));

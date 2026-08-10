@@ -173,6 +173,23 @@ class oauth2_server_clients extends system_report {
                 return $value ? userdate($value, '%d %b %Y') : '-';
             })
         );
+
+        // Custom Actions Column
+        $this->add_column((new column(
+            'actions',
+            new lang_string('actions', 'core'),
+            'client'
+        ))
+            ->set_type(column::TYPE_TEXT)
+            // Add all fields needed to build the action URLs.
+            ->add_fields('client.id, client.name, client.status')
+            ->set_is_sortable(false)
+            ->add_callback(function($value, \stdClass $row): string {
+                $actions = [];
+
+                return implode(' | ', $actions);
+            })
+        );
     }
 
     /**

@@ -187,6 +187,21 @@ class oauth2_server_clients extends system_report {
             ->add_callback(function($value, \stdClass $row): string {
                 $actions = [];
 
+                // Display the relevant actions when the client status is active.
+                if ((int) $row->status === client_entity::STATUS_ACTIVE) {
+                    // Revoke link.
+                    $actions[] = \html_writer::link(
+                        '#',
+                        get_string('oauth2server_clientrevoke', 'admin'),
+                        [
+                            'class' => 'text-danger',
+                            'data-action' => 'client-revoke',
+                            'data-id' => $row->id,
+                            'data-name' => $row->name,
+                        ],
+                    );
+                }
+
                 return implode(' | ', $actions);
             })
         );

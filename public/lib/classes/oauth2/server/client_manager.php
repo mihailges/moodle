@@ -328,7 +328,7 @@ class client_manager {
             throw new moodle_exception('oauth2clientrevoked', 'error', '', $client->clientidentifier);
         }
 
-        if (count($this->get_secrets_for_client($client->clientidentifier)) >= self::MAX_ACTIVE_SECRETS) {
+        if (count($this->get_secrets_by_identifier($client->clientidentifier)) >= self::MAX_ACTIVE_SECRETS) {
             throw new moodle_exception('oauth2clientsecretlimitreached', 'error', '', self::MAX_ACTIVE_SECRETS);
         }
 
@@ -357,7 +357,7 @@ class client_manager {
     public function get_secrets(int $clientid, bool $includeinactive = false): array {
         $client = $this->get_client_record($clientid);
 
-        return $this->get_secrets_for_client($client->clientidentifier, $includeinactive);
+        return $this->get_secrets_by_identifier($client->clientidentifier, $includeinactive);
     }
 
     /**
@@ -367,7 +367,7 @@ class client_manager {
      * @param bool $includeinactive Whether to include revoked and expired secrets.
      * @return \stdClass[] The secret records, newest first, keyed by secret ID.
      */
-    protected function get_secrets_for_client(string $clientidentifier, bool $includeinactive = false): array {
+    protected function get_secrets_by_identifier(string $clientidentifier, bool $includeinactive = false): array {
         $select = 'clientidentifier = :clientidentifier';
         $params = ['clientidentifier' => $clientidentifier];
 

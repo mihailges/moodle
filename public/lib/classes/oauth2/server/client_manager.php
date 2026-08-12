@@ -150,13 +150,18 @@ class client_manager {
      * @return client_entity|null The client, or null if no such client exists.
      */
     public function get_client_by_id(int $clientid): ?client_entity {
-        $clientidentifier = $this->db->get_field('oauth2_server_clients', 'clientidentifier', ['id' => $clientid]);
+        $record = $this->db->get_record('oauth2_server_clients', ['id' => $clientid]);
 
-        if ($clientidentifier === false) {
+        if (!$record) {
             return null;
         }
 
-        return $this->get_client($clientidentifier);
+        $urirecords = $this->db->get_records(
+            'oauth2_server_client_redirect_uris',
+            ['clientidentifier' => $record->clientidentifier],
+        );
+
+        return client_entity::create_from_record($record, $urirecords);
     }
 
     /**

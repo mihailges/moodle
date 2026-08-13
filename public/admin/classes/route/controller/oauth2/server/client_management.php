@@ -16,6 +16,7 @@
 
 namespace core_admin\route\controller\oauth2\server;
 
+use core\oauth2\server\entity\client_entity;
 use core\oauth2\server\form\client as client_form;
 use core_admin\reportbuilder\local\systemreports\oauth2_server_clients;
 use Psr\Http\Message\ResponseInterface;
@@ -53,7 +54,14 @@ class client_management {
         $PAGE->requires->js_call_amd('core_admin/oauth2/server/client/actions/client_revoke', 'init');
 
         $response->getBody()->write($OUTPUT->header());
-        $response->getBody()->write($OUTPUT->heading(get_string('oauth2server_clients', 'admin'), 2));
+
+        // Render the action bar.
+        $actionbar = $OUTPUT->render_from_template(
+            'admin/oauth2/server/client_management_actionbar',
+            ['createclientlink' => \core\router\util::get_path_for_callable([self::class, 'create_client'])],
+        );
+
+        $response->getBody()->write($actionbar);
 
         // Render the OAuth2 server clients table.
         $report = \core_reportbuilder\system_report_factory::create(
@@ -62,6 +70,94 @@ class client_management {
         );
 
         $response->getBody()->write($report->output());
+        $response->getBody()->write($OUTPUT->footer());
+
+        return $response;
+    }
+
+    /**
+     * Create client route.
+     *
+     * @param ResponseInterface $response The response object
+     * @returns ResponseInterface The response object
+     */
+    #[\core\router\route(
+        path: '/create',
+        method: ['GET', 'POST'],
+    )]
+    public function create_client(
+        ResponseInterface $response,
+    ): ResponseInterface {
+        global $OUTPUT, $PAGE;
+
+        require_capability('moodle/site:manageoauth2clients', \core\context\system::instance());
+
+        $this->setup_admin_page(get_string('oauth2server_clientcreate', 'admin'));
+        $PAGE->set_pagetype('admin-oauth2server-client-create');
+
+        $mform = new \core_admin\form\oauth2\server\create_client_form();
+
+        // Handle form cancellation.
+        if ($mform->is_cancelled()) {
+            redirect(\core\router\util::get_path_for_callable([self::class, 'list_clients']));
+        }
+
+        // Process the form data.
+        if ($data = $mform->get_data()) {
+            // Sanitize the redirect URIs by trimming whitespace and removing empty entries.
+            $redirecturis = array_values(array_filter(array_map('trim', $data->redirecturi ?? [])));
+
+            $ispublicclient = (int) $data->clienttype === client_entity::TYPE_PUBLIC;
+
+            // Set the grant types based on the selected Primary flows.
+            $granttypes = [];
+            // If Authorization Code flow is selected or the client type is Public, add both Authorization Code and
+            // Refresh Token grant types.
+            if ($ispublicclient || !empty($data->flow_auth_code)) {
+                $granttypes = ['authorization_code', 'refresh_token'];
+            }
+            // If Client Credentials flow is selected, add the Client Credentials grant type.
+            if (!empty($data->flow_client_credentials)) {
+                $granttypes[] = 'client_credentials';
+            }
+
+            $clientmanager = \core\di::get(\core\oauth2\server\client_manager::class);
+            $cliententity = $clientmanager->create_client(
+                $data->name,
+                \core\context\system::instance(),
+                $granttypes,
+                $redirecturis,
+                $data->description,
+                (int) $data->clienttype === client_entity::TYPE_CONFIDENTIAL,
+                $ispublicclient || !empty($data->enablepkce),
+            );
+
+            $editclienthtml = $OUTPUT->render_from_template(
+                'core_admin/oauth2/server/client_created_alert',
+                [
+                    'name' => $cliententity->getName(),
+                    'isconfidential' => $cliententity->isConfidential(),
+                    'editclientlink' => \core\router\util::get_path_for_callable(
+                        [self::class, 'edit_client'],
+                        ['client' => $cliententity->get_id()],
+                    ),
+                ],
+            );
+
+            \core\notification::success($editclienthtml);
+
+            redirect(\core\router\util::get_path_for_callable([self::class, 'list_clients']));
+        }
+
+        $response->getBody()->write($OUTPUT->header());
+        $response->getBody()->write(
+            $OUTPUT->heading(
+                get_string('oauth2server_clientcreate', 'admin'),
+                2,
+                'fw-bold fs-3 mb-5',
+            ),
+        );
+        $response->getBody()->write($mform->render());
         $response->getBody()->write($OUTPUT->footer());
 
         return $response;

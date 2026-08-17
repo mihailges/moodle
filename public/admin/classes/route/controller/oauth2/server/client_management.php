@@ -19,6 +19,7 @@ namespace core_admin\route\controller\oauth2\server;
 use core\oauth2\server\entity\client_entity;
 use core\oauth2\server\form\client as client_form;
 use core_admin\reportbuilder\local\systemreports\oauth2_server_clients;
+use core_admin\reportbuilder\local\systemreports\oauth2_server_client_secrets;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -218,6 +219,77 @@ class client_management
         $response->getBody()->write($OUTPUT->header());
         $response->getBody()->write($actionbarhtml);
         $response->getBody()->write($mform->render());
+
+        $response->getBody()->write($OUTPUT->footer());
+
+        return $response;
+    }
+
+    #[\core\router\route(
+        path: '/{client}/secrets',
+        pathtypes: [
+            new \core_admin\route\parameters\oauth2\server\path_client(),
+        ],
+        method: ['GET'],
+    )]
+    public function client_secrets(
+        ResponseInterface $response,
+        \core\oauth2\server\entity\client_entity $cliententity,
+    ): ResponseInterface {
+        global $OUTPUT, $PAGE;
+
+        require_capability('moodle/site:manageoauth2clients', \core\context\system::instance());
+
+        $this->setup_admin_page(get_string('oauth2server_clientcreate', 'admin'));
+        $PAGE->set_pagetype('admin-oauth2server-client-edit');
+
+        $response->getBody()->write($OUTPUT->header());
+
+        $clientmanager = \core\di::get(\core\oauth2\server\client_manager::class);
+        $clientsecrets = $clientmanager->get_secrets($cliententity->get_id());
+        $cancreatesecret = count($clientsecrets) < $clientmanager::MAX_ACTIVE_SECRETS;
+
+        $actionbar = new \core_admin\output\oauth2\server\client_secrets_action_bar(
+            $cliententity,
+            \core\router\util::get_path_for_callable([self::class, __FUNCTION__], ['client' => $cliententity->get_id()]),
+            $cancreatesecret,
+        );
+        $actionbarhtml = $OUTPUT->render_from_template(
+            $actionbar->get_template(),
+            $actionbar->export_for_template($OUTPUT),
+        );
+
+        $response->getBody()->write($actionbarhtml);
+
+        $PAGE->requires->js_call_amd(
+            'core_admin/oauth2/server/client/client_secrets',
+            'init',
+            [$clientmanager::MAX_ACTIVE_SECRETS]
+        );
+
+        // Render the OAuth2 client secrets table.
+        $report = \core_reportbuilder\system_report_factory::create(
+            oauth2_server_client_secrets::class,
+            \core\context\system::instance(),
+            parameters: [
+                'clientidentifier' => $cliententity->getIdentifier(),
+            ]
+        );
+        $response->getBody()->write($report->output());
+
+        $secreatlimitreachedalert = $OUTPUT->render_from_template(
+            'core_admin/oauth2/server/client_secrets_limit_reached_alert',
+            ['maxsecretsnumber' => $clientmanager::MAX_ACTIVE_SECRETS],
+        );
+
+        $alertcontainer = \html_writer::div(
+            !$cancreatesecret ? $secreatlimitreachedalert : '',
+            'mt-5',
+            ['id' => 'client-secrets-alert-container'],
+        );
+
+        // Render the alert container.
+        $response->getBody()->write($alertcontainer);
 
         $response->getBody()->write($OUTPUT->footer());
 

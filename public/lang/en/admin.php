@@ -1007,6 +1007,24 @@ $string['notloggedinroleid'] = 'Role for visitors';
 $string['numberofmissingstrings'] = 'Number of missing strings: {$a}';
 $string['numberofstrings'] = 'Total number of strings: {$a->strings}<br />Missing: {$a->missing} ({$a->missingpercent}&nbsp;%)';
 $string['oauth2server_client'] = 'OAuth 2 client';
+
+$string['oauth2server_clientsecretexpires'] = 'Expires';
+$string['oauth2server_clientsecretid'] = 'ID';
+
+$string['oauth2server_clientsecretsnotfound'] = 'No secrets found';
+$string['oauth2server_clientsecretgenerate'] = 'Generate secret';
+
+$string['oauth2server_clientbacktoclients'] = 'Go back to OAuth 2 clients';
+
+$string['oauth2server_clientnavmenu'] = 'OAuth 2 client navigation menu';
+
+$string['oauth2server_clientsecretgenerated'] = 'Secret generated';
+$string['oauth2server_clientsecretvalue'] = 'Secret value';
+$string['oauth2server_clientsecretcopied'] = 'Client secret copied to clipboard.';
+$string['oauth2server_clientsecretshownoncewarning'] = 'This secret is shown only once. Copy it now - it can\'t be retrieved again after you close this dialog.';
+$string['oauth2server_clientsecretslimitreached'] = 'Maximum of {$a} active secrets reached. Revoke one before generating another.';
+
+
 $string['oauth2server_clientaddcallbackuri'] = 'Add another callback URI';
 $string['oauth2server_clientcallbackuris'] = 'Callback URIs';
 $string['oauth2server_clientcallbackurisdesc'] = 'At least one is required. HTTPS only (localhost exceptions apply).';
@@ -1031,6 +1049,7 @@ $string['oauth2server_clientrevokeactiondesc'] = 'This immediately revokes all a
 $string['oauth2server_clientrevokeactiontitle'] = 'Revoke "{$a}"?';
 $string['oauth2server_clientrevoked'] = 'Client "{$a}" has been revoked.';
 $string['oauth2server_clients'] = 'OAuth 2 clients';
+$string['oauth2server_clientsecrets'] = 'Secrets';
 $string['oauth2server_clientstatusactive'] = 'Active';
 $string['oauth2server_clientstatusrevoked'] = 'Revoked';
 $string['oauth2server_clienttype'] = 'Type';

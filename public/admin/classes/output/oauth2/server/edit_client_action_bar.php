@@ -55,7 +55,7 @@ class edit_client_action_bar implements \templatable, \renderable {
      * @return array
      */
     public function export_for_template(\renderer_base $output): array {
-        return [
+        $data = [
             'name' => $this->cliententity->getName(),
             'clientidentifier' => $this->cliententity->getIdentifier(),
             'isactive' => $this->cliententity->get_status() === client_entity::STATUS_ACTIVE,
@@ -64,5 +64,41 @@ class edit_client_action_bar implements \templatable, \renderable {
             'isclientcredentialssupported' => in_array('client_credentials', $this->cliententity->get_grant_types(), true),
             'backurl' => \core\router\util::get_path_for_callable([client_management::class, 'list_clients'])->out()
         ];
+
+        $clientdetailsurl = \core\router\util::get_path_for_callable(
+            [client_management::class, 'edit_client'],
+            ['client' => $this->cliententity->get_id()]
+        );
+
+        $clientsecretsurl = \core\router\util::get_path_for_callable(
+            [client_management::class, 'client_secrets'],
+            ['client' => $this->cliententity->get_id()]
+        );
+
+        $supportsclientcredentialsgrant = in_array('client_credentials', $this->cliententity->get_grant_types(), true);
+
+        // If the client is confidential and supports the client_credential grant, display the tertiary navigation
+        // selector that includes the option to view and generate clents secrets.
+        if ($this->cliententity->isConfidential() && $supportsclientcredentialsgrant) {
+            $tertiarynavoptions = [
+                $clientdetailsurl->out(false) => get_string('details', 'core'),
+                $clientsecretsurl->out(false) => get_string('oauth2server_clientsecrets', 'admin'),
+            ];
+
+            $tertiarynavselector = new \core\output\select_menu(
+                'oauth2clientnavselector',
+                $tertiarynavoptions,
+                $this->activeurl->out(false),
+                true
+            );
+            $tertiarynavselector->set_label(
+                get_string('oauth2server_clientnavmenu', 'admin'),
+                ['class' => 'visually-hidden']
+            );
+
+            $data['tertiarynavselector'] = $tertiarynavselector->export_for_template($output);
+        }
+
+        return $data;
     }
 }

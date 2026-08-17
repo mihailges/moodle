@@ -19,6 +19,7 @@ namespace core_admin\route\controller\oauth2\server;
 use core\oauth2\server\entity\client_entity;
 use core\oauth2\server\form\client as client_form;
 use core_admin\reportbuilder\local\systemreports\oauth2_server_clients;
+use core_admin\reportbuilder\local\systemreports\oauth2_server_client_secrets;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -162,6 +163,117 @@ class client_management {
             ),
         );
         $response->getBody()->write($mform->render());
+        $response->getBody()->write($OUTPUT->footer());
+
+        return $response;
+    }
+
+    /**
+     * Edit client route.
+     *
+     * @param ResponseInterface $response The response object
+     * @param \core\oauth2\server\entity\client_entity $cliententity The client entity
+     * @returns ResponseInterface The response object
+     */
+    #[\core\router\route(
+        path: '/{client}/edit',
+        pathtypes: [
+            new \core_admin\route\parameters\oauth2\server\path_client(),
+        ],
+        method: ['GET', 'POST'],
+    )]
+    public function edit_client(
+        ResponseInterface $response,
+        \core\oauth2\server\entity\client_entity $cliententity,
+    ): ResponseInterface {
+        global $OUTPUT, $PAGE;
+
+        require_capability('moodle/site:manageoauth2clients', \core\context\system::instance());
+
+        $this->setup_admin_page(get_string('oauth2server_clientedit', 'admin'));
+        $PAGE->set_pagetype('admin-oauth2server-client-edit');
+
+        $clientmanager = \core\di::get(\core\oauth2\server\client_manager::class);
+
+        $mform = new \core_admin\form\oauth2\server\edit_client_form(null, ['cliententity' => $cliententity]);
+
+        // Process the form data.
+        if ($data = $mform->get_data()) {
+            $clientmanager->update_client(
+                $cliententity->get_id(),
+                [
+                    'name' => $data->name,
+                    'description' => $data->description,
+                ],
+            );
+
+            // Sanitize the redirect URIs by trimming whitespace and removing empty entries.
+            $redirecturis = array_values(array_filter(array_map('trim', $data->redirecturi ?? [])));
+            // Fetch the current records from the database.
+            $existingredirecturis = $clientmanager->get_redirect_uris($cliententity->get_id());
+
+            // Find URIs that are in db, but missing from form and delete them.
+            $redirecturistodelete = array_diff($existingredirecturis, $redirecturis);
+            foreach ($redirecturistodelete as $redirecturi) {
+                $clientmanager->remove_redirect_uri($cliententity->get_id(), $redirecturi);
+            }
+
+            // Find URIs that are in the form, but missing from the database and add them.
+            $redirecturistoadd = array_diff($redirecturis, $existingredirecturis);
+            foreach ($redirecturistoadd as $redirecturi) {
+                $clientmanager->add_redirect_uri($cliententity->get_id(), $redirecturi);
+            }
+        }
+
+        $response->getBody()->write($OUTPUT->header());
+
+        $isclientactive = $cliententity->get_status() === client_entity::STATUS_ACTIVE;
+        $clientsecrets = $clientmanager->get_secrets($cliententity->get_id());
+        // Secrets can be created if the client is active and the total number of currently active secrets is not
+        // exceeding the defined limit.
+        $cancreatesecret = $isclientactive && (count($clientsecrets) < $clientmanager::MAX_ACTIVE_SECRETS);
+
+        // Generate the OAuth2 client secrets table.
+        $report = \core_reportbuilder\system_report_factory::create(
+            oauth2_server_client_secrets::class,
+            \core\context\system::instance(),
+            parameters: [
+                'clientidentifier' => $cliententity->getIdentifier(),
+            ]
+        );
+
+        $editclienthtml = $OUTPUT->render_from_template(
+            'core_admin/oauth2/server/edit_client',
+            [
+                'id' => $cliententity->get_id(),
+                'name' => $cliententity->getName(),
+                'clientidentifier' => $cliententity->getIdentifier(),
+                'isactive' => $isclientactive,
+                'isconfidential' => $cliententity->isConfidential(),
+                'isauthcodesupported' => in_array('authorization_code', $cliententity->get_grant_types(), true),
+                'isclientcredentialssupported' => in_array('client_credentials', $cliententity->get_grant_types(), true),
+                'backurl' => \core\router\util::get_path_for_callable([client_management::class, 'list_clients'])->out(),
+                'editclientform' => $mform->render(),
+                'supportssecrets' => $cliententity->isConfidential(),
+                'clientsecrtetstable' => $report->output(),
+                'cancreatesecret' => $cancreatesecret,
+                'maxsecretsnumber' => $clientmanager::MAX_ACTIVE_SECRETS,
+            ],
+        );
+
+        // Render the alert container.
+        $response->getBody()->write($editclienthtml);
+
+        if ($cliententity->isConfidential()) {
+            $PAGE->requires->js_call_amd(
+                'core_admin/oauth2/server/client/client_secrets',
+                'init',
+                [$clientmanager::MAX_ACTIVE_SECRETS],
+            );
+
+            $PAGE->requires->js_call_amd('core_admin/oauth2/server/client/actions/client_secret_revoke', 'init');
+        }
+
         $response->getBody()->write($OUTPUT->footer());
 
         return $response;

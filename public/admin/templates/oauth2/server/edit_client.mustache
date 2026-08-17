@@ -1,0 +1,78 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    @template core_admin/oauth2/server/edit_client
+    @summary Renders the content of the OAuth2 client edit page.
+
+    Context variables required for this template:
+    * name - The name of the client.
+    * clientidentifier - The public client identifier.
+    * isactive - Whether the client is active.
+    * isconfidential - Whether the client is confidential.
+    * isauthcodesupported - Whether the client supports the authorization code flow.
+    * isclientcredentialssupported - Whether the client supports the client credentials flow.
+    * backurl - The URL to return to the clients list.
+    * editclientform - The rendered form for editing the client.
+    * supportssecrets - Whether the client supports secrets.
+    * clientsecrtetstable - The rendered table of client secrets.
+    * cancreatesecret - Whether a new client secret can be created.
+    * id - The ID of the client.
+    * maxsecretsnumber - The maximum number of client secrets allowed.
+
+    Example context (json):
+    {
+        "name": "Community mobile app",
+        "clientidentifier": "4c7a2e9f1d6b0835",
+        "isactive": true,
+        "isconfidential": true,
+        "isauthcodesupported": true,
+        "isclientcredentialssupported": true,
+        "backurl": "/admin/oauth2/clients.php",
+        "editclientform": "<form>...</form>",
+        "supportssecrets": true,
+        "clientsecrtetstable": "<table>...</table>",
+        "cancreatesecret": true,
+        "id": 1,
+        "maxsecretsnumber": 2
+    }
+}}
+<div class="oauth2-client-header mb-4">
+    {{>core_admin/oauth2/server/edit_client_heading}}
+    <div data-region="client-details" class="mt-5">
+        <h3 class="fs-4 fw-bold mb-2"> {{#str}} details, core {{/str}}</h3>
+        {{{editclientform}}}
+    </div>
+    {{#supportssecrets}}
+        <hr class="border border-dark-subtle border-1 my-4"/>
+        <div data-region="client-secrets" class="mt-5">
+            <h3 class="fs-4 fw-bold">{{#str}} oauth2server_clientsecrets, admin {{/str}}</h3>
+            {{{clientsecrtetstable}}}
+            <button class="btn btn-primary mt-5 {{^cancreatesecret}} d-none {{/cancreatesecret}}"
+                    data-clientid="{{id}}"
+                    data-clientidentifier="{{clientidentifier}}"
+                    data-action="generate-secret"
+                    {{^cancreatesecret}}disabled{{/cancreatesecret}}
+            >
+                <i class="fa fa-plus me-1" aria-hidden="true"></i>
+                {{#str}} oauth2server_clientsecretgenerate, admin {{/str}}
+            </button>
+            <div id="client-secrets-alert-container" class="mt-5">
+                {{^cancreatesecret}}
+                    {{#isactive}}
+                        <div id="client-secrets-limit-reached-alert" class="alert alert-info">
+                            <i class="fa fa-circle-info me-2"></i>
+                            <span class="alert-text">
+                                {{#str}} oauth2server_clientsecretslimitreached, admin, {{maxsecretsnumber}} {{/str}}
+                            </span>
+                        </div>
+                    {{/isactive}}
+                {{/cancreatesecret}}
+            </div>
+        </div>
+    {{/supportssecrets}}
+</div>

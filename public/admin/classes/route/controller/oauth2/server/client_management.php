@@ -157,6 +157,73 @@ class client_management
         return $response;
     }
 
+    #[\core\router\route(
+        path: '/{client}/edit',
+        pathtypes: [
+            new \core_admin\route\parameters\oauth2\server\path_client(),
+        ],
+        method: ['GET', 'POST'],
+    )]
+    public function edit_client(
+        ResponseInterface $response,
+        \core\oauth2\server\entity\client_entity $cliententity,
+    ): ResponseInterface {
+        global $OUTPUT, $PAGE;
+
+        require_capability('moodle/site:manageoauth2clients', \core\context\system::instance());
+
+        $this->setup_admin_page(get_string('oauth2server_clientcreate', 'admin'));
+        $PAGE->set_pagetype('admin-oauth2server-client-edit');
+
+        $mform = new \core_admin\form\oauth2\server\edit_client_form(null, ['cliententity' => $cliententity]);
+
+        // Process the form data.
+        if ($data = $mform->get_data()) {
+            $clientmanager = \core\di::get(\core\oauth2\server\client_manager::class);
+            $clientmanager->update_client(
+                $cliententity->get_id(),
+                [
+                    'name' => $data->name,
+                    'description' => $data->description,
+                ],
+            );
+
+            // Sanitize the redirect URIs by trimming whitespace and removing empty entries.
+            $redirecturis = array_values(array_filter(array_map('trim', $data->redirecturi ?? [])));
+            // Fetch the current records from the database.
+            $existingredirecturis = $clientmanager->get_redirect_uris($cliententity->get_id());
+
+            // Find URIs that are in db, but missing from form and delete them.
+            $redirecturistodelete = array_diff($existingredirecturis, $redirecturis);
+            foreach ($redirecturistodelete as $redirecturi) {
+                $clientmanager->remove_redirect_uri($cliententity->get_id(), $redirecturi);
+            }
+
+            // Find URIs that are in the form, but missing from the database and add them.
+            $redirecturistoadd = array_diff($redirecturis, $existingredirecturis);
+            foreach ($redirecturistoadd as $redirecturi) {
+                $clientmanager->add_redirect_uri($cliententity->get_id(), $redirecturi);
+            }
+        }
+
+        $actionbar = new \core_admin\output\oauth2\server\edit_client_action_bar(
+            $cliententity,
+            \core\router\util::get_path_for_callable([self::class, __FUNCTION__], ['client' => $cliententity->get_id()]),
+        );
+        $actionbarhtml = $OUTPUT->render_from_template(
+            $actionbar->get_template(),
+            $actionbar->export_for_template($OUTPUT),
+        );
+
+        $response->getBody()->write($OUTPUT->header());
+        $response->getBody()->write($actionbarhtml);
+        $response->getBody()->write($mform->render());
+
+        $response->getBody()->write($OUTPUT->footer());
+
+        return $response;
+    }
+
     /**
      * Helper method to set up the admin page.
      *

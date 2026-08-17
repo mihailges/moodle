@@ -161,7 +161,7 @@ class create_client_form extends base_client_form {
     public function validation($data, $files): array {
         $errors = parent::validation($data, $files);
 
-        $clienttype = (int) ($data['clienttype'] ?? 0);
+        $clienttype = (int) $data['clienttype'];
 
         $hasauthcode = !empty($data['flow_auth_code']);
         $hasclientcreds = !empty($data['flow_client_credentials']);
@@ -172,16 +172,6 @@ class create_client_form extends base_client_form {
                 'oauth2server_clientmustselectprimaryflow',
                 'admin'
             );
-        }
-
-        // Public clients must use Authorization Code.
-        if ($clienttype === client_entity::TYPE_PUBLIC && !$hasauthcode) {
-            $errors['primaryflowsgroup'] = get_string('oauth2server_clientmustselectprimaryflow', 'admin');
-        }
-
-        // Client Credentials is not valid for Public clients.
-        if ($clienttype === client_entity::TYPE_PUBLIC && $hasclientcreds) {
-            $errors['primaryflowsgroup'] = get_string('oauth2server_clientmustselectprimaryflow', 'admin');
         }
 
         // Redirect URI is required for Public clients or Authorization Code.

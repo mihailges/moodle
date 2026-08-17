@@ -1,0 +1,109 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    @template core_admin/oauth2/server/edit_client_heading
+    @summary Renders the custom heading on the edit OAuth2 client page.
+
+    Context variables required for this template:
+    * name - The name of the client.
+    * clientidentifier - The public client identifier.
+    * isactive - Whether the client is active.
+    * isconfidential - Whether the client is confidential.
+    * isauthcodesupported - Whether the client supports the authorization code flow.
+    * isclientcredentialssupported - Whether the client supports the client credentials flow.
+    * backurl - The URL to return to the clients list.
+
+    Example context (json):
+    {
+        "name": "Community mobile app",
+        "clientidentifier": "4c7a2e9f1d6b0835",
+        "isactive": true,
+        "isconfidential": true,
+        "isauthcodesupported": true,
+        "isclientcredentialssupported": true,
+        "backurl": "/admin/oauth2/clients.php",
+    }
+}}
+<div class="mb-5">
+    <a href="{{backurl}}" class="small">
+        <i class="fa fa-chevron-left me-1 small" aria-hidden="true"></i>
+        {{#str}} oauth2server_clientbacktoclients, admin {{/str}}
+    </a>
+</div>
+<h2 class="fs-3 mb-3 fw-bold">{{name}}</h2>
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-3 w-100 mb-4">
+    <!-- Status card -->
+    <div class="col">
+        <div class="p-3 border rounded bg-light h-100" role="group" aria-labelledby="client-status-label">
+            <span id="client-status-label" class="text-body-secondary small d-block mb-1">
+                {{#str}} status, core {{/str}}
+            </span>
+            <div>
+                {{#isactive}}
+                    <span class="badge bg-success-subtle text-success-emphasis rounded-pill px-2 py-1">
+                        {{#str}} oauth2server_clientstatusactive, admin {{/str}}
+                    </span>
+                {{/isactive}}
+                {{^isactive}}
+                    <span class="badge bg-danger-subtle text-danger-emphasis rounded-pill px-2 py-1">
+                        {{#str}} oauth2server_clientstatusrevoked, admin {{/str}}
+                    </span>
+                {{/isactive}}
+            </div>
+        </div>
+    </div>
+    <!-- Type card -->
+    <div class="col">
+        <div class="p-3 border rounded bg-light h-100" role="group" aria-labelledby="client-type-label">
+            <span id="client-type-label" class="text-body-secondary small d-block mb-1">
+                {{#str}} oauth2server_clienttype, admin {{/str}}
+            </span>
+            <div>
+                <span class="badge bg-info-subtle text-info-emphasis rounded-pill px-2 py-1">
+                    {{#isconfidential}}
+                        {{#str}} oauth2server_clienttypeconfidential, admin {{/str}}
+                    {{/isconfidential}}
+                    {{^isconfidential}}
+                        {{#str}} oauth2server_clienttypepublic, admin {{/str}}
+                    {{/isconfidential}}
+                </span>
+            </div>
+        </div>
+    </div>
+    <!-- Primary Flow card -->
+    <div class="col">
+        <div class="p-3 border rounded bg-light h-100" role="group" aria-labelledby="client-flow-label">
+            <span id="client-flow-label" class="text-body-secondary small d-block mb-1">
+                {{#str}} oauth2server_clientprimaryflows, admin {{/str}}
+            </span>
+            <div>
+                {{#isauthcodesupported}}
+                    <span class="badge bg-warning-subtle text-warning-emphasis rounded-pill px-2 py-1 fw-bold">
+                        {{#str}} oauth2server_clientgranttypeauthcode, admin {{/str}}
+                    </span>
+                {{/isauthcodesupported}}
+                {{#isclientcredentialssupported}}
+                    <span class="badge bg-warning-subtle text-warning-emphasis rounded-pill px-2 py-1 fw-bold">
+                        {{#str}} oauth2server_clientgranttypeclientcreds, admin {{/str}}
+                    </span>
+                {{/isclientcredentialssupported}}
+            </div>
+        </div>
+    </div>
+    <!-- Client ID card -->
+    <div class="col">
+        <div class="p-3 border rounded bg-light h-100" role="group" aria-labelledby="client-id-label">
+            <span id="client-id-label" class="text-body-secondary small d-block mb-1">
+                {{#str}} oauth2server_clientsecretid, admin {{/str}}
+            </span>
+            <div>
+                <code class="user-select-all text-break">{{clientidentifier}}</code>
+            </div>
+        </div>
+    </div>
+</div>

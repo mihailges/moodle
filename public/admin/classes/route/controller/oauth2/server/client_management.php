@@ -67,6 +67,7 @@ class client_management {
         $this->setup_admin_page();
 
         $PAGE->requires->js_call_amd('core_admin/oauth2/server/client/actions/client_revoke', 'init');
+        $PAGE->requires->js_call_amd('core_admin/oauth2/server/client/actions/client_reactivate', 'init');
 
         $response->getBody()->write($OUTPUT->header());
 

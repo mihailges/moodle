@@ -299,6 +299,8 @@ class client_management {
             );
         }
 
+        $PAGE->requires->js_call_amd('core_admin/oauth2/server/client/actions/client_secret_revoke', 'init');
+
         $response->getBody()->write($OUTPUT->footer());
 
         return $response;

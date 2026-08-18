@@ -136,5 +136,34 @@ class oauth2_server_client_secrets extends system_report {
             ->add_callback(function ($value) {
                 return $value ? userdate($value, '%d %b %Y') : '-';
             }));
+
+        // Custom Actions.
+        $this->add_column((new column(
+            'actions',
+            new lang_string('actions', 'core'),
+            'client_secret'
+        ))
+            ->set_type(column::TYPE_TEXT)
+            // Add all fields needed to build the action URLs.
+            ->add_fields('client_secret.id, client_secret.revoked')
+            ->set_is_sortable(false)
+            ->add_callback(function ($value, \stdClass $row): string {
+                $isrevoked = (bool) $row->revoked;
+
+                if (!$isrevoked) {
+                    // Revoke link.
+                    return \html_writer::link(
+                        '#',
+                        get_string('oauth2server_clientrevoke', 'admin'),
+                        [
+                            'class' => 'text-danger',
+                            'data-action' => 'client-secret-revoke',
+                            'data-id' => $row->id,
+                        ],
+                    );
+                }
+
+                return '';
+            }));
     }
 }

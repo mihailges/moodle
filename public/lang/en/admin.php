@@ -1019,6 +1019,8 @@ $string['oauth2server_clientcreated'] = 'The client "{$a}" has been successfully
 $string['oauth2server_clientcreatedsecretwarning'] = 'This confidential client does not have a client secret yet, which is required to authenticate with the OAuth 2 server.<br />
 <a href="{$a}" class="fw-bold text-decoration-underline">Generate a client secret now</a>, or you can configure it later from the client\'s edit page.';
 $string['oauth2server_clientcreationwarning'] = 'Client type and primary flow can\'t be changed after creation.';
+$string['oauth2server_clientdeleteactiondesc'] = 'This permanently removes the client, its secrets, and its redirect URIs. Unlike revoking, this can\'t be undone. Any integration using this client will stop working immediately.';
+$string['oauth2server_clientdeleteactiontitle'] = 'Delete "{$a}"?';
 $string['oauth2server_clientedit'] = 'Edit client';
 $string['oauth2server_clientenablepkce'] = 'Enable PKCE';
 $string['oauth2server_clientenablepkcedesc'] = 'Enable Proof Key for Code Exchange (PKCE) for this client. <br />PKCE is enabled and cannot be disabled for public clients. For confidential clients using the Authorization Code flow, PKCE can be enabled or disabled.';

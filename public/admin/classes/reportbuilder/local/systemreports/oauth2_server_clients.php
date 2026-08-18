@@ -251,6 +251,18 @@ class oauth2_server_clients extends system_report {
                             'data-name' => $row->name,
                         ],
                     );
+
+                    // Delete link.
+                    $actions[] = \html_writer::link(
+                        '#',
+                        get_string('delete', 'core'),
+                        [
+                            'class' => 'text-danger',
+                            'data-action' => 'client-delete',
+                            'data-id' => $row->id,
+                            'data-name' => $row->name,
+                        ],
+                    );
                 }
 
                 // Display the relevant actions when the client status is active.

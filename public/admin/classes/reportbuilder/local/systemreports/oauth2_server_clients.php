@@ -239,6 +239,20 @@ class oauth2_server_clients extends system_report {
 
                 $actions[] = \html_writer::link($editurl, get_string('edit', 'moodle'));
 
+                // Display the relevant actions when the client status is revoked.
+                if ((int) $row->status === client_entity::STATUS_REVOKED) {
+                    // Enable link.
+                    $actions[] = \html_writer::link(
+                        '#',
+                        get_string('enable', 'core'),
+                        [
+                            'data-action' => 'client-enable',
+                            'data-id' => $row->id,
+                            'data-name' => $row->name,
+                        ],
+                    );
+                }
+
                 // Display the relevant actions when the client status is active.
                 if ((int) $row->status === client_entity::STATUS_ACTIVE) {
                     if ($row->isconfidential) {

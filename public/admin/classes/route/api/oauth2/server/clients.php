@@ -16,12 +16,7 @@ class clients {
      * Executes automatically prior to invoking any API endpoint in this class.
      */
     public function __construct() {
-        $composer = \core\di::get(\core\composer::class);
-        // The 'league/oauth2-server' composer package needs to be installed to manage OAuth 2 clients.
-        if (!$composer->get_package_status('league/oauth2-server')->installed) {
-            throw new \coding_exception("Required Composer package 'league/oauth2-server' is missing. " .
-                "Please run 'composer install' in the Moodle root directory to install the required dependencies.");
-        }
+
     }
 
     /**

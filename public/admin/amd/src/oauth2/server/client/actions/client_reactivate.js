@@ -35,7 +35,7 @@ class ReactivateClientAction extends baseClientAction {
      * @returns {string} The CSS selector used for triggering the action modal.
      */
     getActionSelector() {
-        return 'a[data-action="client-enable"]';
+        return '[data-action="client-enable"]';
     }
 
     /**

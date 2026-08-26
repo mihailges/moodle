@@ -35,7 +35,7 @@ class RevokeClientAction extends baseClientAction {
      * @returns {string} The CSS selector used for triggering the action modal.
      */
     getActionSelector() {
-        return 'a[data-action="client-revoke"]';
+        return '[data-action="client-revoke"]';
     }
 
     /**

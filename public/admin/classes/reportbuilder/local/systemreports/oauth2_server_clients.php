@@ -283,11 +283,11 @@ class oauth2_server_clients extends system_report {
                     }
 
                     // Revoke link.
-                    $actions[] = \html_writer::link(
-                        '#',
+                    $actions[] = \html_writer::tag(
+                        'button',
                         get_string('oauth2server_clientrevoke', 'admin'),
                         [
-                            'class' => 'text-danger',
+                            'class' => 'btn btn-link text-danger p-0',
                             'data-action' => 'client-revoke',
                             'data-id' => $row->id,
                             'data-name' => $row->name,

@@ -32,7 +32,7 @@ class path_client extends \core\router\schema\parameters\path_parameter implemen
     \core\router\schema\referenced_object
 {
     /**
-     * Create a new course parameter.
+     * Create a new client parameter.
      *
      * @param string $name The name of the parameter to use for the course ID
      * @param mixed ...$extra Additional arguments

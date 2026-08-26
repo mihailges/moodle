@@ -22,7 +22,7 @@ use core_reportbuilder\system_report;
 use lang_string;
 
 /**
- * OAuth2 server clients system report class.
+ * OAuth2 client secrets system report class.
  *
  * @package    core_admin
  * @copyright  2026 Mihail Gehoski <mihailgesoski@gmail.com>
@@ -47,7 +47,7 @@ class oauth2_server_client_secrets extends system_report {
     /**
      * Validates capability to view report.
      */
-    public function can_view(): bool {
+    protected function can_view(): bool {
         $composer = \core\di::get(\core\composer::class);
         // The 'league/oauth2-server' composer package needs to be installed and the user has to have a capability to
         // manage OAuth 2 clients.
@@ -73,7 +73,7 @@ class oauth2_server_client_secrets extends system_report {
             ->set_is_sortable(true)
             ->set_help_icon(new help_icon('oauth2server_createdcolumn', 'admin', \core_date::get_user_timezone()))
             ->add_callback(function ($value) {
-                return $value ? userdate($value, '%d %b %Y, %H:%M') : '-';
+                return $value ? userdate($value, get_string('strftimedatemonthtimeshort24', 'langconfig')) : '-';
             }));
 
         // Expiry time.
@@ -88,7 +88,7 @@ class oauth2_server_client_secrets extends system_report {
             ->set_is_sortable(true)
             ->set_help_icon(new help_icon('oauth2server_expirycolumn', 'admin', \core_date::get_user_timezone()))
             ->add_callback(function ($value) {
-                return $value ? userdate($value, '%d %b %Y, %H:%M') : '-';
+                return $value ? userdate($value, get_string('strftimedatemonthtimeshort24', 'langconfig')) : '-';
             }));
 
         // Status.
@@ -99,16 +99,12 @@ class oauth2_server_client_secrets extends system_report {
         ))
             ->add_joins($this->get_joins())
             ->set_type(column::TYPE_TEXT)
-            ->add_fields('client_secret.expirytime, client_secret.revoked')
+            ->add_fields('client_secret.expirytime')
             ->set_is_sortable(true)
-            ->add_callback(function ($value, \stdClass $row) {
-                $isrevoked = (bool) $row->revoked;
-                $isexpired = !$isrevoked && ($row->expirytime <= time());
+            ->add_callback(function ($value) {
+                $isexpired = $value <= time();
 
-                if ($isrevoked) {
-                    $statusstring = get_string('oauth2server_statusrevoked', 'admin');
-                    $badgetype = 'danger';
-                } else if ($isexpired) {
+                if ($isexpired) {
                     $statusstring = get_string('oauth2server_statusexpired', 'admin');
                     $badgetype = 'danger';
                 } else {
@@ -134,7 +130,7 @@ class oauth2_server_client_secrets extends system_report {
             ->add_fields('client_secret.lastaccessed')
             ->set_is_sortable(true)
             ->add_callback(function ($value) {
-                return $value ? userdate($value, '%d %b %Y') : '-';
+                return $value ? userdate($value, get_string('strftimedatemonthtimeshort24', 'langconfig')) : '-';
             }));
 
         // Custom Actions.

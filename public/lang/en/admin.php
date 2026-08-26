@@ -1052,6 +1052,7 @@ $string['oauth2server_clienttypeconfidential'] = 'Confidential';
 $string['oauth2server_clienttypeconfidentialdesc'] = 'Runs on a server you control. Can safely hold a secret.';
 $string['oauth2server_clienttypepublic'] = 'Public';
 $string['oauth2server_clienttypepublicdesc'] = 'Runs on a device you don\'t control, like a mobile app. Can\'t hold a secret.';
+$string['oauth2server_copyclientsecret'] = 'Copy';
 $string['oauth2server_createdcolumn'] = 'Created';
 $string['oauth2server_createdcolumn_help'] = 'Creation dates and times are displayed in your preferred time zone ({$a}).';
 $string['oauth2server_expirycolumn'] = 'Expires';

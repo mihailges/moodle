@@ -49,8 +49,9 @@ const handleGenerateClick = async(button, maxActiveSecrets) => {
         );
 
         const createSecretData = await createSecretResponse.json();
-        handlePostSecretCreation(button, createSecretData.secret, maxActiveSecrets);
+        await handlePostSecretCreation(button, createSecretData.secret, maxActiveSecrets);
     } catch (error) {
+        button.disabled = false;
         Notification.exception(error);
     }
 };
@@ -101,10 +102,7 @@ const handlePostSecretCreation = async(generateSecretButton, secret, maxActiveSe
 
     // Listen for when the modal becomes visible.
     modal.getRoot().on(ModalEvents.shown, () => {
-        // Workaround to properly display toast notifications.
-        // The modal sets its z-index dynamically, which causes the toast notification to be hidden behind it.
-        // We need to ensure that the toast notification has higher z-index than the modal so that it is visible above
-        // the modal once the 'copy to clipboard' button is clicked.
+        // TODO: MDL-89622 Remove this temporary workaround once the core toast layering is fixed.
         const zIndexModal = window.getComputedStyle(modal.getRoot()[0]).zIndex;
         const toastElement = document.querySelector('.toast-wrapper');
         if (toastElement) {
@@ -126,11 +124,14 @@ const handlePostSecretCreation = async(generateSecretButton, secret, maxActiveSe
         // Hide the 'generate secret' button.
         generateSecretButton.classList.add('d-none');
         // Fetch and display an alert that the maximum number of secrets has been reached.
-        const alertHTML = await Templates.render(
+        const {html, js} = await Templates.renderForPromise(
             'core_admin/oauth2/server/client_secrets_limit_reached_alert',
             {maxsecretsnumber: maxActiveSecrets}
         );
-        document.getElementById('client-secrets-alert-container').innerHTML = alertHTML;
+        const secretsAlertContainer = document.getElementById('client-secrets-alert-container');
+        if (secretsAlertContainer) {
+            Templates.replaceNodeContents(secretsAlertContainer, html, js);
+        }
     } else {
         generateSecretButton.disabled = false;
     }
@@ -142,11 +143,11 @@ const handlePostSecretCreation = async(generateSecretButton, secret, maxActiveSe
  * @param {number} maxActiveSecrets The maximum number of active secrets allowed.
  */
 export const init = (maxActiveSecrets) => {
-    document.addEventListener('click', (e) => {
+    document.addEventListener('click', async(e) => {
         const btn = e.target.closest('[data-action="generate-secret"]');
         if (btn) {
             e.preventDefault();
-            handleGenerateClick(btn, maxActiveSecrets);
+            await handleGenerateClick(btn, maxActiveSecrets);
         }
     });
 };

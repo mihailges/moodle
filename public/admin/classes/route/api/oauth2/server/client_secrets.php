@@ -17,6 +17,7 @@
 namespace core_admin\route\api\oauth2\server;
 
 use core\oauth2\server\entity\client_entity;
+use core\router\require_login;
 use core\router\route;
 use core\router\schema\objects\schema_object;
 use core\router\schema\response\payload_response;
@@ -45,6 +46,10 @@ class client_secrets {
         pathtypes: [
             new \core_admin\route\parameters\oauth2\server\path_client(),
         ],
+        requirelogin: new require_login(
+            requirelogin: true,
+            autologinguest: false,
+        ),
     )]
     public function create_secret(
         ServerRequestInterface $request,
@@ -86,7 +91,11 @@ class client_secrets {
                 description: 'Whether to include inactive secrets',
                 default: false,
             ),
-        ]
+        ],
+        requirelogin: new require_login(
+            requirelogin: true,
+            autologinguest: false,
+        ),
     )]
     public function get_client_secrets(
         ServerRequestInterface $request,

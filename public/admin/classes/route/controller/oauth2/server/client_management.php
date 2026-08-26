@@ -280,12 +280,18 @@ class client_management {
             new \core_admin\route\parameters\oauth2\server\path_client(),
         ],
         method: ['GET'],
+        requirelogin: new require_login(
+            requirelogin: true,
+            autologinguest: false,
+        ),
     )]
     public function manage_client_secrets(
         ResponseInterface $response,
         \core\oauth2\server\entity\client_entity $cliententity,
     ): ResponseInterface {
         global $OUTPUT, $PAGE;
+
+        require_capability('moodle/site:manageoauth2clients', \core\context\system::instance());
 
         if (!$cliententity->isConfidential()) {
             throw new \moodle_exception('oauth2server_secretsnotavailablepublicclient', 'admin');
@@ -295,9 +301,13 @@ class client_management {
             throw new \moodle_exception('oauth2server_secretsnotavailablerevokedclient', 'admin');
         }
 
-        require_capability('moodle/site:manageoauth2clients', \core\context\system::instance());
-
-        $this->setup_admin_page(get_string('oauth2server_managesecrets', 'admin'));
+        $this->setup_admin_page(
+            get_string('oauth2server_managesecrets', 'admin'),
+            \core\router\util::get_path_for_callable(
+                [self::class, 'manage_client_secrets'],
+                ['client' => $cliententity->get_id()],
+            ),
+        );
 
         $response->getBody()->write($OUTPUT->header());
 

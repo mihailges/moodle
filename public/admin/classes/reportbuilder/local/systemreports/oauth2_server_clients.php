@@ -62,25 +62,29 @@ class oauth2_server_clients extends system_report {
      */
     protected function add_columns(): void {
         // Client Name.
-        $now = time();
+        $now = \core\di::get(\core\clock::class)->time();
+        $paramnow = \core_reportbuilder\local\helpers\database::generate_param_name();
+
         $this->add_column((new column(
             'name',
             new lang_string('name', 'core'),
             'client'
         ))
             ->add_joins($this->get_joins())
-            ->add_join(
-                "LEFT JOIN {oauth2_server_client_secrets} client_secret
-                             ON client_secret.clientidentifier = client.clientidentifier
-                             AND client_secret.revoked = 0
-                             AND client_secret.expirytime > {$now}"
-            )
             ->set_type(column::TYPE_TEXT)
             ->add_fields(
                 'client.name,
                 client.status,
-                client.isconfidential,
-                client_secret.id as activesecretid'
+                client.isconfidential'
+            )
+            ->add_field(
+                "(SELECT COUNT(*)
+                        FROM {oauth2_server_client_secrets} client_secret
+                       WHERE client_secret.clientidentifier = client.clientidentifier
+                         AND client_secret.revoked = 0
+                         AND client_secret.expirytime > :{$paramnow})",
+                'activesecretcount',
+                [$paramnow => $now],
             )
             ->set_is_sortable(true)
             ->add_callback(function ($value, \stdClass $row): string {
@@ -88,7 +92,7 @@ class oauth2_server_clients extends system_report {
 
                 // For active confidential clients, show a warning next to the name if there is no active secret
                 // associated with the client.
-                if ($row->isconfidential && $row->status == client_entity::STATUS_ACTIVE && empty($row->activesecretid)) {
+                if ($row->isconfidential && $row->status == client_entity::STATUS_ACTIVE && (int) $row->activesecretcount == 0) {
                     $icon = \html_writer::tag(
                         'i',
                         '',
@@ -103,6 +107,7 @@ class oauth2_server_clients extends system_report {
                         [
                             'class' => 'text-decoration-none ms-2',
                             'role' => 'button',
+                            'aria-label' => get_string('oauth2server_viewwarningdetails', 'admin'),
                             'tabindex' => '0',
                             'data-bs-toggle' => 'popover',
                             'data-bs-trigger' => 'focus',
@@ -188,7 +193,7 @@ class oauth2_server_clients extends system_report {
             ->set_is_sortable(true)
             ->set_help_icon(new help_icon('oauth2server_createdcolumn', 'admin', \core_date::get_user_timezone()))
             ->add_callback(function ($value) {
-                return $value ? userdate($value, '%d %b %Y, %H:%M') : '-';
+                return $value ? userdate($value, get_string('strftimedatemonthtimeshort24', 'langconfig')) : '-';
             }));
 
         // Last Accessed.
@@ -202,7 +207,7 @@ class oauth2_server_clients extends system_report {
             ->add_fields('client.lastaccessed')
             ->set_is_sortable(true)
             ->add_callback(function ($value) {
-                return $value ? userdate($value, '%d %b %Y') : '-';
+                return $value ? userdate($value, get_string('strftimedatemonthtimeshort24', 'langconfig')) : '-';
             }));
 
         // Custom Actions.

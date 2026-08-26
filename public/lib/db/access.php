@@ -2841,6 +2841,7 @@ $capabilities = array(
     // Allow managers to manage OAuth 2 clients.
     'moodle/site:manageoauth2clients' => [
         'captype' => 'write',
+        'riskbitmask' => RISK_CONFIG,
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => [
             'manager' => CAP_ALLOW,

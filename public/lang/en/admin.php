@@ -1064,6 +1064,7 @@ $string['oauth2server_secretsnotavailablerevokedclient'] = 'This OAuth 2 client 
 $string['oauth2server_statusactive'] = 'Active';
 $string['oauth2server_statusexpired'] = 'Expired';
 $string['oauth2server_statusrevoked'] = 'Revoked';
+$string['oauth2server_viewwarningdetails'] = 'View warning details';
 $string['oauthrefreshtokenexpired'] = 'The refresh token for an OAuth 2 service {$a->issuer} on your site {$a->siteurl} has expired. This will limit the functionality of any plugins that use this service. To fix it, go to the OAuth 2 Services configuration page and click the "Connect system account" icon in the table row for this service. Be sure to log in using the same service account for the OAuth 2 system each time.';
 $string['oauthrefreshtokenexpiredshort'] = 'OAuth refresh token expired for {$a->issuer} on your site {$a->siteurl}.';
 $string['onlynoreply'] = 'Only when from a no-reply address';

@@ -17,7 +17,7 @@
 namespace core_admin\route\controller\oauth2\server;
 
 use core\oauth2\server\entity\client_entity;
-use core\oauth2\server\form\client as client_form;
+use core\router\require_login;
 use core_admin\reportbuilder\local\systemreports\oauth2_server_client_secrets;
 use core_admin\reportbuilder\local\systemreports\oauth2_server_clients;
 use Psr\Http\Message\ResponseInterface;
@@ -42,6 +42,10 @@ class client_management {
      */
     #[\core\router\route(
         path: '',
+        requirelogin: new require_login(
+            requirelogin: true,
+            autologinguest: false,
+        ),
     )]
     public function list_clients(
         ResponseInterface $response,
@@ -50,7 +54,7 @@ class client_management {
 
         require_capability('moodle/site:manageoauth2clients', \core\context\system::instance());
 
-        $this->setup_admin_page();
+        $this->setup_admin_page(null, \core\router\util::get_path_for_callable([self::class, 'list_clients']));
 
         $PAGE->requires->js_call_amd('core_admin/oauth2/server/client/actions/client_revoke', 'init');
         $PAGE->requires->js_call_amd('core_admin/oauth2/server/client/actions/client_reactivate', 'init');
@@ -341,14 +345,14 @@ class client_management {
      *
      * @param string|null $title The title of the page. If not set, defaults to 'OAuth 2 clients'
      *                           ('oauth2server_clients', 'admin').
+     * @param \moodle_url|null $url The URL of the page.
      */
-    private function setup_admin_page(?string $title = null): void {
+    private function setup_admin_page(?string $title = null, ?\moodle_url $url = null): void {
         global $CFG, $PAGE;
 
         require_once("{$CFG->libdir}/adminlib.php");
 
-        admin_externalpage_setup('oauth2serverclients');
-        $PAGE->set_url(new \moodle_url('/admin/oauth2server/clients'));
+        admin_externalpage_setup('oauth2serverclients', '', null, $url ?? '');
         $PAGE->set_context(\core\context\system::instance());
         $PAGE->set_pagelayout('admin');
         if ($title !== null) {

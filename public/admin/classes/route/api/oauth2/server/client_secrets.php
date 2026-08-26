@@ -19,7 +19,6 @@ namespace core_admin\route\api\oauth2\server;
 use core\oauth2\server\entity\client_entity;
 use core\router\require_login;
 use core\router\route;
-use core\router\schema\objects\schema_object;
 use core\router\schema\response\payload_response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -141,6 +140,10 @@ class client_secrets {
             ],
             description: 'Revocation parameters payload',
             required: true,
+        ),
+        requirelogin: new require_login(
+            requirelogin: true,
+            autologinguest: false,
         ),
     )]
     public function revoke_client_secret(

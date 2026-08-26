@@ -141,25 +141,19 @@ class oauth2_server_client_secrets extends system_report {
         ))
             ->set_type(column::TYPE_TEXT)
             // Add all fields needed to build the action URLs.
-            ->add_fields('client_secret.id, client_secret.revoked')
+            ->add_fields('client_secret.id')
             ->set_is_sortable(false)
-            ->add_callback(function ($value, \stdClass $row): string {
-                $isrevoked = (bool) $row->revoked;
-
-                if (!$isrevoked) {
-                    // Revoke link.
-                    return \html_writer::link(
-                        '#',
-                        get_string('oauth2server_clientrevoke', 'admin'),
-                        [
-                            'class' => 'text-danger',
-                            'data-action' => 'client-secret-revoke',
-                            'data-id' => $row->id,
-                        ],
-                    );
-                }
-
-                return '';
+            ->add_callback(function ($value): string {
+                // Revoke link.
+                return \html_writer::tag(
+                    'button',
+                    get_string('oauth2server_clientrevoke', 'admin'),
+                    [
+                        'class' => 'btn btn-link text-danger p-0',
+                        'data-action' => 'client-secret-revoke',
+                        'data-id' => $value,
+                    ],
+                );
             }));
     }
 }

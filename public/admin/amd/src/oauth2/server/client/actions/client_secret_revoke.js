@@ -35,7 +35,7 @@ class RevokeClientSecretAction extends baseClientAction {
      * @returns {string} The CSS selector used for triggering the action modal.
      */
     getActionSelector() {
-        return 'a[data-action="client-secret-revoke"]';
+        return '[data-action="client-secret-revoke"]';
     }
 
     /**

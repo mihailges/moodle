@@ -120,6 +120,10 @@ class clients {
         pathtypes: [
             new \core_admin\route\parameters\oauth2\server\path_client(),
         ],
+        requirelogin: new require_login(
+            requirelogin: true,
+            autologinguest: false,
+        ),
     )]
     public function delete_client(
         ServerRequestInterface $request,

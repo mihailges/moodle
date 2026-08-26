@@ -35,7 +35,7 @@ class DeleteClientAction extends baseClientAction {
      * @returns {string} The CSS selector used for triggering the action modal.
      */
     getActionSelector() {
-        return 'a[data-action="client-delete"]';
+        return '[data-action="client-delete"]';
     }
 
     /**

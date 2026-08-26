@@ -182,16 +182,24 @@ class client_management {
             new \core_admin\route\parameters\oauth2\server\path_client(),
         ],
         method: ['GET', 'POST'],
+        requirelogin: new require_login(
+            requirelogin: true,
+            autologinguest: false,
+        ),
     )]
     public function edit_client(
         ResponseInterface $response,
         \core\oauth2\server\entity\client_entity $cliententity,
     ): ResponseInterface {
-        global $OUTPUT, $PAGE;
+        global $OUTPUT, $PAGE, $DB;
 
         require_capability('moodle/site:manageoauth2clients', \core\context\system::instance());
 
-        $this->setup_admin_page(get_string('oauth2server_clientedit', 'admin'));
+        $this->setup_admin_page(
+            get_string('oauth2server_clientedit', 'admin'),
+            \core\router\util::get_path_for_callable([self::class, 'edit_client'], ['client' => $cliententity->get_id()]),
+        );
+
         $PAGE->set_pagetype('admin-oauth2server-client-edit');
 
         $clientmanager = \core\di::get(\core\oauth2\server\client_manager::class);
@@ -205,6 +213,8 @@ class client_management {
 
         // Process the form data.
         if ($data = $mform->get_data()) {
+            $transaction = $DB->start_delegated_transaction();
+
             $clientmanager->update_client(
                 $cliententity->get_id(),
                 [
@@ -229,6 +239,10 @@ class client_management {
             foreach ($redirecturistoadd as $redirecturi) {
                 $clientmanager->add_redirect_uri($cliententity->get_id(), $redirecturi);
             }
+
+            $transaction->allow_commit();
+
+            redirect(\core\router\util::get_path_for_callable([self::class, 'list_clients']));
         }
 
         $response->getBody()->write($OUTPUT->header());

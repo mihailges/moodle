@@ -97,7 +97,7 @@ class client_entity implements ClientEntityInterface {
     }
 
     /**
-     * Get the grant types supported by the client (comma-separated).
+     * Get the grant types supported by the client.
      *
      * @return array
      */
@@ -166,7 +166,7 @@ class client_entity implements ClientEntityInterface {
         }, $redirecturis);
         $client->status = (int) $clientrecord->status;
         $client->isConfidential = (bool) $clientrecord->isconfidential;
-        $client->granttypes = explode(',', $clientrecord->granttypes);
+        $client->granttypes = !empty($clientrecord->granttypes) ? explode(',', $clientrecord->granttypes) : [];
         $client->ispkceenabled = (bool) $clientrecord->ispkceenabled;
 
         return $client;

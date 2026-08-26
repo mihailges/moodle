@@ -2181,7 +2181,7 @@ function xmldb_main_upgrade($oldversion) {
     if ($oldversion < 2026081800.02) {
         // Define field granttypes to be added to oauth2_server_clients.
         $table = new xmldb_table('oauth2_server_clients');
-        $field = new xmldb_field('granttypes', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'isconfidential');
+        $field = new xmldb_field('granttypes', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'isconfidential');
 
         // Conditionally launch add field granttypes.
         if (!$dbman->field_exists($table, $field)) {

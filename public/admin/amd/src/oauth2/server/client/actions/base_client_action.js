@@ -59,8 +59,12 @@ export default class BaseClientAction {
             const body = await this.getBody();
             const buttonText = await this.getConfirmationButtonText();
 
-            const onConfirm = () => {
-                this.executeConfirmAction();
+            const onConfirm = async () => {
+                try {
+                    await this.executeConfirmAction();
+                } catch (error) {
+                    Notification.exception(error);
+                }
             };
 
             if (isDestructive) {

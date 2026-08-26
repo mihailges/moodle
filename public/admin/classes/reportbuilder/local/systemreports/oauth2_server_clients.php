@@ -296,7 +296,8 @@ class oauth2_server_clients extends system_report {
                     );
                 }
 
-                return \html_writer::div(implode(' | ', $actions), 'text-nowrap');
+                $separator = \html_writer::span('', 'vr mx-2');
+                return \html_writer::div(implode($separator, $actions), 'd-flex text-nowrap align-items-center');
             }));
     }
 

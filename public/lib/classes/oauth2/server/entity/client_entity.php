@@ -63,8 +63,8 @@ class client_entity implements ClientEntityInterface {
     /** @var string Password grant type */
     public const string GRANT_TYPE_PASSWORD = 'password';
 
-    /** @var int|null The ID of the client */
-    protected ?int $id = null;
+    /** @var int The ID of the client */
+    protected int $id;
 
     /** @var \core\context The owner context */
     protected \core\context $ownercontext;

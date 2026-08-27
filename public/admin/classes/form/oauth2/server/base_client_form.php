@@ -167,21 +167,13 @@ abstract class base_client_form extends moodleform {
             // URI has been set. Next, let's validate it.
             $hasuriset = true;
 
-            // Validate URL syntax.
-            if (!filter_var($uri, FILTER_VALIDATE_URL)) {
-                $errors["redirecturigroup[{$index}]"] = get_string('oauth2server_clientcallbackurimustbevalid', 'admin');
+            $clientmanager = \core\di::get(\core\oauth2\server\client_manager::class);
+
+            try {
+                $clientmanager->validate_redirect_uri_format($uri);
+            } catch (\moodle_exception $e) {
+                $errors["redirecturigroup[{$index}]"] = get_string('oauth2server_clientcallbackurisinvalid', 'admin');
                 continue;
-            }
-
-            $parsedurl = parse_url($uri);
-            $scheme = strtolower($parsedurl['scheme'] ?? '');
-            $host = strtolower($parsedurl['host'] ?? '');
-
-            // HTTPS is required except for localhost.
-            $islocal = in_array($host, ['localhost', '127.0.0.1', '::1'], true);
-
-            if ($scheme !== 'https' && !$islocal) {
-                $errors["redirecturigroup[{$index}]"] = get_string('oauth2server_clientcallbackurimustbehttps', 'admin');
             }
         }
 

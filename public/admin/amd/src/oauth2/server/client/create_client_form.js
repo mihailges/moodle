@@ -71,7 +71,7 @@ const syncPrimaryFlowsSeparatorVisibility = () => {
     const divider = document.querySelector(Selectors.primaryFlowsSeparator);
 
     if (divider) {
-        divider.style.display = isPublicClient() ? 'none' : '';
+        divider.classList.toggle('d-none', isPublicClient());
     }
 };
 

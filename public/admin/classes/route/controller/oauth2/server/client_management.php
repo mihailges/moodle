@@ -61,14 +61,13 @@ class client_management {
         $PAGE->requires->js_call_amd('core_admin/oauth2/server/client/actions/client_delete', 'init');
 
         $response->getBody()->write($OUTPUT->header());
-
-        // Render the action bar.
-        $actionbar = $OUTPUT->render_from_template(
-            'admin/oauth2/server/client_management_actionbar',
-            ['createclientlink' => \core\router\util::get_path_for_callable([self::class, 'create_client'])],
+        $response->getBody()->write(
+            $OUTPUT->heading(
+                get_string('oauth2server_clients', 'admin'),
+                2,
+                'fw-bold fs-3',
+            ),
         );
-
-        $response->getBody()->write($actionbar);
 
         // Render the OAuth2 server clients table.
         $report = \core_reportbuilder\system_report_factory::create(
@@ -91,6 +90,10 @@ class client_management {
     #[\core\router\route(
         path: '/create',
         method: ['GET', 'POST'],
+        requirelogin: new require_login(
+            requirelogin: true,
+            autologinguest: false,
+        ),
     )]
     public function create_client(
         ResponseInterface $response,
@@ -99,7 +102,11 @@ class client_management {
 
         require_capability('moodle/site:manageoauth2clients', \core\context\system::instance());
 
-        $this->setup_admin_page(get_string('oauth2server_clientcreate', 'admin'));
+        $this->setup_admin_page(
+            get_string('oauth2server_clientcreate', 'admin'),
+            \core\router\util::get_path_for_callable([self::class, 'create_client']),
+        );
+
         $PAGE->set_pagetype('admin-oauth2server-client-create');
 
         $mform = new \core_admin\form\oauth2\server\create_client_form();

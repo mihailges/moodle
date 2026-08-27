@@ -42,12 +42,10 @@ class create_client_form extends base_client_form {
             client_entity::TYPE_CONFIDENTIAL => [
                 'name' => get_string('oauth2server_clienttypeconfidential', 'admin'),
                 'desc' => get_string('oauth2server_clienttypeconfidentialdesc', 'admin'),
-                'icon' => 'fa fa-lock',
             ],
             client_entity::TYPE_PUBLIC => [
                 'name' => get_string('oauth2server_clienttypepublic', 'admin'),
                 'desc' => get_string('oauth2server_clienttypepublicdesc', 'admin'),
-                'icon' => 'fa fa-mobile',
             ],
         ];
 
@@ -73,12 +71,10 @@ class create_client_form extends base_client_form {
             'auth_code' => [
                 'name' => get_string('oauth2server_clientgranttypeauthcode', 'admin'),
                 'desc' => get_string('oauth2server_clientgranttypeauthcodedesc', 'admin'),
-                'icon' => 'fa fa-key',
             ],
             'client_credentials' => [
                 'name' => get_string('oauth2server_clientgranttypeclientcreds', 'admin'),
                 'desc' => get_string('oauth2server_clientgranttypeclientcredsdesc', 'admin'),
-                'icon' => 'fa fa-server',
             ],
         ];
 

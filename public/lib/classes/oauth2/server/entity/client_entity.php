@@ -48,7 +48,7 @@ class client_entity implements ClientEntityInterface {
     /** @var int Public client type */
     public const int TYPE_PUBLIC = 0;
 
-    /** @var int Confindential client type */
+    /** @var int Confidential client type */
     public const int TYPE_CONFIDENTIAL = 1;
 
     /** @var string Authorization code grant type */

@@ -169,7 +169,7 @@ Feature: Create OAuth2 clients
     And "reportbuilder-table" "table" should not exist
     And I should see "No active client secrets are currently configured."
 
-  Scenario: More then 2 secrets cannot be generated for a confidential OAuth2 client
+  Scenario: More than 2 secrets cannot be generated for a confidential OAuth2 client
     Given I click on "Create client" "link"
     And I set the field "Name" to "Test Confidential Client"
     And I set the field "Description" to "A test confidential OAuth2 client"

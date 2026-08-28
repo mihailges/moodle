@@ -268,7 +268,7 @@ export default class Form {
      * Finally: We get rid of any empty entries within the display map to prevent running pointless display updates.
      *
      * @param {Map<String, Array>} displayMap Map of elements and their associated rules to prune.
-     * @returns {Map<String, Array>|Map<>} The pruned map or map even a fully pruned map if noting has to change.
+     * @returns {Map<String, Array>} The pruned map or map even a fully pruned map if noting has to change.
      */
     displayMapPrune(displayMap) {
         // Filter any unlocked items that pegged to be hidden as they must be locked if they are hidden.
@@ -311,7 +311,7 @@ export default class Form {
      *
      * @param {String} elementName The name of the element to get the dependants for.
      * @param {String} ruleName The rule type to get the dependants for.
-     * @returns {Map<String, Array>|[]} Either the rule comparison value with associated node names to update or an empty array.
+     * @returns {Map<String, Array>|Array} Either the rule comparison value with associated node names to update or an empty array.
      */
     getDependantsOfType(elementName, ruleName) {
         return this.dependencies.get(elementName)?.get(ruleName) ?? [];
@@ -466,7 +466,7 @@ export default class Form {
         /**
          * Convert the object into a first level map. i.e. elementName => ruleType.
          *
-         * @type {Map<string, Map>} The map of rules associated to the given element.
+         * @type {Map<string, Map>}
          * @example "grade[modgrade_type]" => Map<"eq", "neq">
          */
         const elementMap = new Map(Object.entries(dependencies));
@@ -474,7 +474,7 @@ export default class Form {
             /**
              * Convert the element rules object into a map.
              *
-             * @type {Map<string, Map>} The map of rules associated to the given element.
+             * @type {Map<string, Map>}
              * @example "eq" => Map<"none" => Object<Number, Array>>
              * @example "neq" => Map<"point" => Object<Number, Array>, "scale" => Object<Number, Array>>
              */
@@ -483,7 +483,7 @@ export default class Form {
                 /**
                  * Convert any disabledIf rules into objects, so we can manage them the same as hideIf items.
                  *
-                 * @type {Map<string, Map>} The map of comparison values.
+                 * @type {Map<string, Map>}
                  * @example "none" => "none" => Object<Number, Array>
                  * @example "neq" => "point" => Object<Number, Array>
                  */

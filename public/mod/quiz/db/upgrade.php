@@ -132,5 +132,35 @@ function xmldb_quiz_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2026083100, 'quiz');
     }
 
+    if ($oldversion < 2026083101) {
+        $table = new xmldb_table('quiz_attempts');
+        $field = new xmldb_field('gradehighest', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 0);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_mod_savepoint(true, 2026083101, 'quiz');
+    }
+
+    if ($oldversion < 2026083102) {
+        $field = new xmldb_field('attemptfirst', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 0);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_mod_savepoint(true, 2026083102, 'quiz');
+    }
+
+    if ($oldversion < 2026083103) {
+        $field = new xmldb_field('attemptlast', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 0);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_mod_savepoint(true, 2026083103, 'quiz');
+    }
+
+    if ($oldversion < 2026083104) {
+        \mod_quiz\grade_attempt_tracker::calculate_all_queued();
+        upgrade_mod_savepoint(true, 2026083104, 'quiz');
+    }
+
     return true;
 }

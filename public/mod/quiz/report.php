@@ -22,6 +22,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use mod_quiz\grade_attempt_tracker;
 use mod_quiz\quiz_settings;
 
 define('NO_OUTPUT_BUFFERING', true);
@@ -73,6 +74,13 @@ if ($mode == '') {
 }
 if (!is_readable("report/$mode/report.php")) {
     throw new \moodle_exception('reportnotfound', 'quiz', '', $mode);
+}
+
+if (grade_attempt_tracker::quiz_has_pending_calculation($quiz->id)) {
+    \core\notification::add(
+        get_string('quizhaspendingbestattemptcalculation', 'quiz'),
+        \core\output\notification::NOTIFY_WARNING
+    );
 }
 
 // Load the class definition for the requested report.

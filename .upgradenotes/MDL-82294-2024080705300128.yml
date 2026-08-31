@@ -1,0 +1,10 @@
+issueNumber: MDL-82294
+notes:
+  core_form:
+    - message: >-
+        The form dependency rules (hideIf, disabledIf) and related form
+        change tracking, previously implemented in YUI, have been migrated to
+        an ECMAScript module (core_form/form). This is the first step in
+        migrating forms away from YUI and reduces the amount of YUI code
+        Moodle ships with.
+      type: improved

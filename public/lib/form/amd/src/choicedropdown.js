@@ -110,8 +110,9 @@ class FieldController {
         }
         this.mainSelect.value = this.dropdown.getSelectedValue();
         markFormAsDirty(this.mainSelect.closest('form'));
-        // Change the select element via JS does not trigger the standard change event.
-        this.mainSelect.dispatchEvent(new Event('change'));
+        // Change the select element via JS does not trigger the standard change event. The event must bubble
+        // so a form-level change listener (e.g. core_form/form dependency rules) can react to it.
+        this.mainSelect.dispatchEvent(new Event('change', {bubbles: true}));
     }
 
     /**

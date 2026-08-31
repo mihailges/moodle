@@ -1,0 +1,8 @@
+issueNumber: MDL-82294
+notes:
+  core_form:
+    - message: >-
+        `moodleform::get_js_module()` has been deprecated. The mform JS was
+        migrated from a YUI module to an ECMAScript module, so this method is no
+        longer used.
+      type: deprecated

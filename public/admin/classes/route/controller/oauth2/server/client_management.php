@@ -273,7 +273,7 @@ class client_management {
 
         if ($cliententity->isConfidential()) {
             $clientactivesecrets = $clientmanager->get_secrets($cliententity->get_id());
-            $templatedata['activesecretscount'] = count($clientactivesecrets);
+            $templatedata['activesecretscount'] = $isclientactive ? count($clientactivesecrets) : 0;
             $templatedata['managesecretsurl'] = \core\router\util::get_path_for_callable(
                 [self::class, 'manage_client_secrets'],
                 ['client' => $cliententity->get_id()],
@@ -322,10 +322,6 @@ class client_management {
             throw new \moodle_exception('oauth2server_secretsnotavailablepublicclient', 'admin');
         }
 
-        if ($cliententity->get_status() !== client_entity::STATUS_ACTIVE) {
-            throw new \moodle_exception('oauth2server_secretsnotavailablerevokedclient', 'admin');
-        }
-
         $this->setup_admin_page(
             get_string('oauth2server_managesecrets', 'admin'),
             \core\router\util::get_path_for_callable(
@@ -341,7 +337,7 @@ class client_management {
         // exceeding the defined limit.
         $isclientactive = $cliententity->get_status() === client_entity::STATUS_ACTIVE;
         $clientactivesecrets = $clientmanager->get_secrets($cliententity->get_id());
-        $cancreatesecret = $isclientactive && (count($clientactivesecrets) < $clientmanager::MAX_ACTIVE_SECRETS);
+        $cancreatesecret = count($clientactivesecrets) < $clientmanager::MAX_ACTIVE_SECRETS;
 
         // Generate the OAuth2 client secrets table.
         $report = \core_reportbuilder\system_report_factory::create(
@@ -358,7 +354,7 @@ class client_management {
                 'id' => $cliententity->get_id(),
                 'title' => $cliententity->getName(),
                 'clientidentifier' => $cliententity->getIdentifier(),
-                'isactive' => $isclientactive,
+                'isclientactive' => $isclientactive,
                 'backurl' => \core\router\util::get_path_for_callable([self::class, 'list_clients'])->out(),
                 'clientsecretstable' => $report->output(),
                 'cancreatesecret' => $cancreatesecret,
@@ -372,7 +368,10 @@ class client_management {
         $PAGE->requires->js_call_amd(
             'core_admin/oauth2/server/client/client_secrets',
             'init',
-            [$clientmanager::MAX_ACTIVE_SECRETS],
+            [
+                $clientmanager::MAX_ACTIVE_SECRETS,
+                $isclientactive,
+            ],
         );
 
         $PAGE->requires->js_call_amd('core_admin/oauth2/server/client/actions/client_secret_revoke', 'init');

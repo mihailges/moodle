@@ -75,8 +75,23 @@ class oauth2_server_clients extends system_report {
      */
     protected function add_columns(): void {
         // Client Name.
-        $now = \core\di::get(\core\clock::class)->time();
-        $paramnow = \core_reportbuilder\local\helpers\database::generate_param_name();
+
+        // Get the current time and calculate the end of the 30-day warning period using calendar days in the
+        // server timezone.
+        $clock = \core\di::get(\core\clock::class);
+        $now = $clock->time();
+
+        $today = $clock->now()
+            ->setTimezone(new \DateTimeZone(\core_date::get_server_timezone()))
+            ->setTime(0, 0, 0);
+
+        // Set threshold to midnight of day 31 (+31 days) so the less-than-or-equal check inclusively covers all
+        // secrets expiring through 23:59:59 on the 30th calendar day.
+        $expirythreshold = $today->modify('+31 days')->getTimestamp();
+
+        $paramnow1 = \core_reportbuilder\local\helpers\database::generate_param_name();
+        $paramnow2 = \core_reportbuilder\local\helpers\database::generate_param_name();
+        $paramexpirythreshold = \core_reportbuilder\local\helpers\database::generate_param_name();
 
         $this->add_column((new column(
             'name',
@@ -95,41 +110,84 @@ class oauth2_server_clients extends system_report {
                         FROM {oauth2_server_client_secrets} client_secret
                        WHERE client_secret.clientidentifier = client.clientidentifier
                          AND client_secret.revoked = 0
-                         AND client_secret.expirytime > :{$paramnow})",
+                         AND client_secret.expirytime > :{$paramnow1})",
                 'activesecretcount',
-                [$paramnow => $now],
+                [$paramnow1 => $now],
+            )
+            ->add_field(
+                "(SELECT COUNT(*)
+                        FROM {oauth2_server_client_secrets} client_secret
+                       WHERE client_secret.clientidentifier = client.clientidentifier
+                         AND client_secret.revoked = 0
+                         AND client_secret.expirytime > :{$paramnow2}
+                         AND client_secret.expirytime <= :{$paramexpirythreshold})",
+                'secretsexpiringsooncount',
+                [
+                    $paramnow2 => $now,
+                    $paramexpirythreshold => $expirythreshold,
+                ],
             )
             ->set_is_sortable(true)
             ->add_callback(function ($value, \stdClass $row): string {
                 $name = s($value);
 
-                // For active confidential clients, show a warning next to the name if there is no active secret
-                // associated with the client.
-                if ($row->isconfidential && $row->status == client_entity::STATUS_ACTIVE && (int) $row->activesecretcount == 0) {
-                    $icon = \html_writer::tag(
-                        'i',
-                        '',
-                        [
-                            'class' => 'fa fa-exclamation-triangle text-warning',
-                            'aria-hidden' => 'true',
-                        ]
-                    );
-                    $warning = \html_writer::tag(
-                        'a',
-                        $icon,
-                        [
-                            'class' => 'text-decoration-none ms-2',
-                            'role' => 'button',
-                            'aria-label' => get_string('oauth2server_viewwarningdetails', 'admin'),
-                            'tabindex' => '0',
-                            'data-bs-toggle' => 'popover',
-                            'data-bs-trigger' => 'focus',
-                            'data-bs-placement' => 'right',
-                            'data-bs-content' => get_string('oauth2server_clientnoactivesecretwarning', 'admin'),
-                        ]
-                    );
+                if ($row->isconfidential && $row->status == client_entity::STATUS_ACTIVE) {
+                    // For active confidential clients, show a warning next to the name if there is no active secret
+                    // associated with the client.
+                    if ((int) $row->activesecretcount == 0) {
+                        $icon = \html_writer::tag(
+                            'i',
+                            '',
+                            [
+                                'class' => 'fa fa-exclamation-circle text-danger',
+                                'aria-hidden' => 'true',
+                            ]
+                        );
+                        $warning = \html_writer::tag(
+                            'a',
+                            $icon,
+                            [
+                                'class' => 'text-decoration-none ms-2',
+                                'role' => 'button',
+                                'aria-label' => get_string('oauth2server_viewwarningdetails', 'admin'),
+                                'tabindex' => '0',
+                                'data-bs-toggle' => 'popover',
+                                'data-bs-trigger' => 'focus',
+                                'data-bs-placement' => 'right',
+                                'data-bs-content' => get_string('oauth2server_clientnoactivesecretwarning', 'admin'),
+                            ]
+                        );
 
-                    $name .= $warning;
+                        $name .= $warning;
+                    }
+
+                    // If there are secrets expiring soon (within 30 days), show a warning next to the name.
+                    if ((int) $row->secretsexpiringsooncount > 0) {
+                        $icon = \html_writer::tag(
+                            'i',
+                            '',
+                            [
+                                'class' => 'fa fa-exclamation-triangle text-warning',
+                                'aria-hidden' => 'true',
+                            ]
+                        );
+                        $warning = \html_writer::tag(
+                            'a',
+                            $icon,
+                            [
+                                'class' => 'text-decoration-none ms-2',
+                                'role' => 'button',
+                                'aria-label' => get_string('oauth2server_viewwarningdetails', 'admin'),
+                                'tabindex' => '0',
+                                'data-bs-toggle' => 'popover',
+                                'data-bs-trigger' => 'focus',
+                                'data-bs-placement' => 'right',
+                                'data-bs-content' => get_string('oauth2server_clientsecretsexpirywarning', 'admin'),
+                            ]
+                        );
+
+                        $name .= $warning;
+                    }
                 }
 
                 return $name;

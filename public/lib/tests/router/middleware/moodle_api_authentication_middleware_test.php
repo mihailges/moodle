@@ -192,6 +192,35 @@ final class moodle_api_authentication_middleware_test extends route_testcase {
     }
 
     /**
+     * An OAuth2 bearer token with no associated Moodle user (for example, a client_credentials
+     * grant) logs in as the system user, rather than a real Moodle account.
+     */
+    public function test_oauth2_login_with_no_user_authenticates_as_system_user(): void {
+        global $USER;
+
+        $this->resetAfterTest();
+
+        $server = $this->createMock(ResourceServer::class);
+        $server->method('validateAuthenticatedRequest')
+            ->willReturnCallback(
+                fn (ServerRequestInterface $request) => $request->withAttribute('oauth_user_id', '0')
+            );
+
+        $route = new route();
+        $request = (new ServerRequest('GET', '/test'))
+            ->withHeader('Authorization', '******')
+            ->withAttribute(route::class, $route)
+            ->withAttribute(scopeset::class, []);
+
+        $response = $this->get_middleware($server)->process($request, $this->get_recording_handler());
+
+        $this->assertEquals(200, $response->getStatusCode());
+        // The system user is based on the admin account, but is not a specific real Moodle user.
+        $this->assertEquals(\core\user::get_system_user()->id, $USER->id);
+        $this->assertEquals(get_admin()->id, $USER->id);
+    }
+
+    /**
      * A user who is not permitted to log in (for example, a suspended account) is denied with a 401 response,
      * rather than the exception propagating unhandled.
      */

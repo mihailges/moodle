@@ -182,6 +182,55 @@ final class scope_repository_test extends \advanced_testcase {
     }
 
     /**
+     * Test that finalizeScopes() restricts scopes to those approved for the client when there is
+     * no user identifier (for example, the client_credentials grant, which has no associated
+     * Moodle user).
+     */
+    public function test_finalize_scopes_without_user_filters_unapproved_client_scopes(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $clientidentifier = 'client_123';
+
+        $DB->insert_record('oauth2_server_clients', (object) [
+            'clientidentifier' => $clientidentifier,
+            'name' => 'Test client',
+            'ownercontext' => \context_system::instance()->id,
+            'status' => client_entity::STATUS_ACTIVE,
+            'isconfidential' => 1,
+            'timecreated' => time(),
+            // The client is only approved for the 'profile' scope, not 'email'.
+            'scopes' => 'profile',
+        ]);
+
+        $client = client_entity::create_from_record(
+            $DB->get_record('oauth2_server_clients', ['clientidentifier' => $clientidentifier]),
+            [],
+        );
+
+        $requestedscopes = [];
+        foreach (['profile', 'email'] as $name) {
+            $scope = $this->createMock(ScopeEntityInterface::class);
+            $scope->method('getIdentifier')->willReturn($name);
+            $requestedscopes[] = $scope;
+        }
+
+        $repository = new scope_repository();
+        $finalized = $repository->finalizeScopes(
+            $requestedscopes,
+            client_entity::GRANT_TYPE_CLIENT_CREDENTIALS,
+            $client,
+            null,
+            null,
+        );
+
+        $finalizedidentifiers = array_map(fn ($s) => $s->getIdentifier(), $finalized);
+
+        $this->assertSame(['profile'], array_values($finalizedidentifiers));
+    }
+
+    /**
      * Data provider for finalizeScopes.
      *
      * @return array

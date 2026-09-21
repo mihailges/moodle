@@ -55,7 +55,17 @@ class scope_repository implements ScopeRepositoryInterface {
         global $DB;
 
         if ($useridentifier === null) {
-            // No user identifier means no user-specific scopes to filter.
+            // No user identifier means this is not a user-specific grant (for example, the
+            // client_credentials grant). There are no user-granted scopes to check against, but
+            // the scopes must still be restricted to those approved for this specific client.
+
+            foreach ($scopes as $key => $scope) {
+                if (!$cliententity->is_scope_approved($scope)) {
+                    unset($scopes[$key]);
+                    continue;
+                }
+            }
+
             return $scopes;
         }
 

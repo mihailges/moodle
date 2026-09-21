@@ -55,9 +55,10 @@ class access_token_repository implements AccessTokenRepositoryInterface {
     public function persistNewAccessToken(AccessTokenEntityInterface $accesstokenentity): void {
         global $DB;
 
-        $scopes = array_map(function ($scope) {
-            return $scope->getIdentifier();
-        }, $accesstokenentity->getScopes());
+        $scopes = array_map(
+            static fn ($scope) => $scope->getIdentifier(),
+            $accesstokenentity->getScopes(),
+        );
 
         $record = new \stdClass();
         $record->identifier = $accesstokenentity->getIdentifier();

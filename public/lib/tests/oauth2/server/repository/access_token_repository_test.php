@@ -56,7 +56,10 @@ final class access_token_repository_test extends \advanced_testcase {
 
         $this->assertInstanceOf(access_token_entity::class, $token);
         $this->assertSame($client, $token->getClient());
-        $this->assertSame($userid, $token->getUserIdentifier());
+        // A null user identifier represents a token issued with no associated Moodle user (for
+        // example, a client_credentials grant), which is represented internally by the system
+        // user identifier '0', not null - see \core\user::get_system_user().
+        $this->assertSame($userid ?? '0', $token->getUserIdentifier());
         $this->assertCount(count($scopeidentifiers), $token->getScopes());
 
         for ($i = 0; $i < count($scopes); $i++) {
@@ -140,7 +143,10 @@ final class access_token_repository_test extends \advanced_testcase {
 
         $this->assertNotEmpty($record);
         $this->assertSame($tokenid, $record->identifier);
-        $this->assertEquals($userid, $record->userid);
+        // A null user identifier represents a token issued with no associated Moodle user (for
+        // example, a client_credentials grant), which is persisted as the system user id '0', not
+        // null - see \core\user::get_system_user().
+        $this->assertEquals($userid ?? '0', $record->userid);
         $this->assertSame($clientid, $record->clientidentifier);
         $this->assertSame(implode(' ', $scopeidentifiers), $record->scopes);
         $this->assertEquals(access_token_entity::REVOKED_NO, (int) $record->revoked);

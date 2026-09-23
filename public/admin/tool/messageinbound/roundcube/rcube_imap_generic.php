@@ -2615,7 +2615,7 @@ class rcube_imap_generic
                                 break;
                             case 'content-type':
                                 $ctype_parts = preg_split('/[; ]+/', $string);
-                                $result[$id]->ctype = strtolower(array_first($ctype_parts));
+                                $result[$id]->ctype = strtolower(array_shift($ctype_parts));
                                 if (preg_match('/charset\s*=\s*"?([a-z0-9\-\.\_]+)"?/i', $string, $regs)) {
                                     $result[$id]->charset = $regs[1];
                                 }
@@ -2715,7 +2715,7 @@ class rcube_imap_generic
         $a = $this->fetchHeaders($mailbox, $id, $is_uid, $bodystr, $add_headers, $query_items);
 
         if (is_array($a)) {
-            return array_first($a);
+            return array_shift($a);
         }
 
         return false;
@@ -3817,7 +3817,7 @@ class rcube_imap_generic
         $result = $this->fetch($mailbox, $id, $is_uid, ['BODYSTRUCTURE']);
 
         if (is_array($result) && !empty($result)) {
-            $result = array_first($result);
+            $result = array_shift($result);
             return $result->bodystructure;
         }
 

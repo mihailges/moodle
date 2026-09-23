@@ -115,7 +115,7 @@ class rcube_result_index
             return;
         }
 
-        $data = array_first($data);
+        $data = array_shift($data);
         $data = trim($data);
         $data = preg_replace('/[\r\n]/', '', $data);
         $data = preg_replace('/\s+/', ' ', $data);

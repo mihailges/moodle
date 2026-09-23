@@ -1,8 +1,5 @@
 <?php
 
-use IPLib\Factory;
-use IPLib\ParseStringFlag;
-
 /*
  +-----------------------------------------------------------------------+
  | This file is part of the Roundcube Webmail client                     |
@@ -415,91 +412,6 @@ class rcube_utils
         }
 
         return asciiwords($str, true, '_');
-    }
-
-    /**
-     * Check if an URL point to a local network location.
-     *
-     * @param string $url
-     *
-     * @return bool
-     */
-    public static function is_local_url($url)
-    {
-        $host = parse_url($url, \PHP_URL_HOST);
-
-        if (is_string($host)) {
-            $options = ParseStringFlag::IPV4_MAYBE_NON_DECIMAL
-                | ParseStringFlag::IPV4SUBNET_MAYBE_COMPACT
-                | ParseStringFlag::IPV4ADDRESS_MAYBE_NON_QUAD_DOTTED
-                | ParseStringFlag::MAY_INCLUDE_ZONEID;
-
-            $host = trim($host, '[].');
-
-            if (preg_match('/([0-9a-f.-]+)\.(nip|sslip)\.io$/i', $host, $matches)) {
-                $host = $matches[1];
-                if (preg_match('/([0-9]{1,3}([.-][0-9]{1,3}){3})$/', $host, $m)) {
-                    $host = str_replace('-', '.', $m[1]); // IPv4
-                } elseif (preg_match('/^([0-9a-f]{8})$/i', $host, $m)) {
-                    $host = long2ip(base_convert($m[1], 16, 10)); // Hexadecimal
-                } else {
-                    $host = str_replace('-', ':', $host); // IPv6
-                }
-            }
-
-            // TODO: This is pretty fast, but a single message can contain multiple links
-            // to the same target, maybe we should do some in-memory caching.
-            if ($address = Factory::parseAddressString($host, $options)) {
-                $nets = [
-                    '0.0.0.0',
-                    '127.0.0.0/8',    // loopback
-                    '10.0.0.0/8',     // RFC1918
-                    '172.16.0.0/12',  // RFC1918
-                    '192.168.0.0/16', // RFC1918
-                    '169.254.0.0/16', // link-local / cloud metadata
-                    '100.64.0.0/10',  // RFC6598: Shared Address Space (carrier-grade NAT)
-                    '::1/128',
-                    'fc00::/7',
-                    'fe80::/10',      // IPv6 link-local
-                    '::ffff:0:0/96',  // RFC5156
-                ];
-
-                return self::is_ip_in_range($address, $nets);
-            }
-
-            // FIXME: Should we accept any non-fqdn hostnames?
-            $host = strtolower($host);
-            return $host == 'metadata.google.internal' || preg_match('/^localhost(\.localdomain)?\.?$/', $host);
-        }
-
-        return false;
-    }
-
-    /**
-     * Check if an IP address matches an entry in the given whitelist.
-     * Entries may be exact IP addresses or CIDR ranges (e.g. '10.0.0.0/8', 'fc00::/7').
-     *
-     * @param string $ip        IP address to check
-     * @param array  $whitelist List of IPs or CIDR ranges
-     */
-    private static function is_ip_in_range(string $ip, array $whitelist): bool
-    {
-        if (empty($whitelist)) {
-            return false;
-        }
-
-        $address = Factory::parseAddressString($ip);
-
-        foreach ($whitelist as $entry) {
-            if ($entry === $ip) {
-                return true;
-            }
-            if ($address && ($range = Factory::parseRangeString($entry)) && $range->contains($address)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**

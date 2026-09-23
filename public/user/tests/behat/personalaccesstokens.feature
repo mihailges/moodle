@@ -9,22 +9,16 @@ Feature: Manage personal access tokens
       | username | firstname | lastname | email             |
       | user1    | User      | One      | user1@example.com |
       | user2    | User      | Two      | user2@example.com |
-    And the following "roles" exist:
-      | shortname    | name               | archetype |
-      | tokencreator | Token creator role | user      |
-    And the following "role capabilities" exist:
-      | role         | moodle/api:createtoken |
-      | tokencreator | allow                  |
-    And the following "role assigns" exist:
-      | user  | role         | contextlevel | reference |
-      | user1 | tokencreator | System       |           |
 
   Scenario: A user without the capability is not offered the page
-    Given I log in as "user2"
+    Given the following "role capabilities" exist:
+      | role | moodle/api:createtoken |
+      | user | prevent                |
+    And I log in as "user1"
     When I follow "Preferences" in the user menu
     Then I should not see "Personal access tokens"
 
-  Scenario: A user with the capability is offered the page in their preferences
+  Scenario: Every authenticated user is offered the page by default
     Given I log in as "user1"
     When I follow "Preferences" in the user menu
     Then I should see "Personal access tokens"
@@ -78,9 +72,6 @@ Feature: Manage personal access tokens
       | Name                         | User one token |
       | scope_core_grades_grade_read | 1              |
     And I press "Create token"
-    And the following "role assigns" exist:
-      | user  | role         | contextlevel | reference |
-      | user2 | tokencreator | System       |           |
     When I am on the "user > Personal access tokens" page logged in as "user2"
     Then I should see "You have no personal access tokens."
     And I should not see "User one token"

@@ -1348,6 +1348,93 @@ final class adhoc_task_test extends \advanced_testcase {
     }
 
     /**
+     * Test that queueing a task without duplicate detection still succeeds when $CFG->version is
+     * below the upgrade step that adds task_adhoc.identityhash, that no identity hash is recorded
+     * until that savepoint is reached, and that the current $CFG->version does record one
+     * (MDL-89876).
+     *
+     * @covers \core\task\manager::queue_adhoc_task
+     */
+    public function test_queue_adhoc_task_before_identityhash_savepoint(): void {
+        global $CFG, $DB;
+
+        $this->resetAfterTest();
+
+        $originalversion = $CFG->version;
+        $CFG->version = 2026081800.05;
+
+        try {
+            $task = new \core\task\adhoc_test_task();
+            $task->set_component('core_testcomponent');
+
+            $taskid = \core\task\manager::queue_adhoc_task($task);
+
+            $this->assertNotFalse($taskid);
+            $this->assertEquals(1, $DB->count_records('task_adhoc', ['component' => 'core_testcomponent']));
+            $this->assertNull($DB->get_field('task_adhoc', 'identityhash', ['id' => $taskid]));
+        } finally {
+            $CFG->version = $originalversion;
+        }
+
+        // At the current $CFG->version, the same call records an identity hash.
+        $task = new \core\task\adhoc_test_task();
+        $task->set_component('core_testcomponent');
+        $taskid = \core\task\manager::queue_adhoc_task($task);
+
+        $this->assertNotFalse($taskid);
+        $this->assertNotEmpty($DB->get_field('task_adhoc', 'identityhash', ['id' => $taskid]));
+    }
+
+    /**
+     * Test that queueing a task with duplicate detection enabled ($checkforexisting = true) still
+     * succeeds when $CFG->version is below the upgrade step that adds task_adhoc.identityhash,
+     * degrading to queueing without duplicate detection or an identity hash rather than failing on
+     * the missing column, and that the current $CFG->version restores both (MDL-89876).
+     *
+     * @covers \core\task\manager::queue_adhoc_task
+     */
+    public function test_queue_adhoc_task_checkforexisting_before_identityhash_savepoint(): void {
+        global $CFG, $DB;
+
+        $this->resetAfterTest();
+
+        $originalversion = $CFG->version;
+        $CFG->version = 2026081800.05;
+
+        try {
+            $task = new \core\task\adhoc_test_task();
+            $task->set_component('core_testcomponent');
+            $task->set_custom_data(['alpha' => 1, 'beta' => 2]);
+
+            $firsttaskid = \core\task\manager::queue_adhoc_task($task, true);
+            $secondtaskid = \core\task\manager::queue_adhoc_task($task, true);
+
+            $this->assertNotFalse($firsttaskid);
+            $this->assertNotFalse($secondtaskid);
+            // Before the identityhash savepoint, duplicate detection cannot happen, so both calls
+            // queue their own row rather than deduplicating.
+            $this->assertNotEquals($firsttaskid, $secondtaskid);
+            $this->assertEquals(2, $DB->count_records('task_adhoc', ['component' => 'core_testcomponent']));
+            $this->assertNull($DB->get_field('task_adhoc', 'identityhash', ['id' => $firsttaskid]));
+            $this->assertNull($DB->get_field('task_adhoc', 'identityhash', ['id' => $secondtaskid]));
+        } finally {
+            $CFG->version = $originalversion;
+        }
+
+        // At the current $CFG->version, duplicate detection and identity hashing both work as
+        // normal, so the second call returns the first task instead of creating a new one.
+        $task = new \core\task\adhoc_test_task();
+        $task->set_component('core_testcomponent');
+        $task->set_custom_data(['gamma' => 3, 'delta' => 4]);
+
+        $thirdtaskid = \core\task\manager::queue_adhoc_task($task, true);
+        $fourthtaskid = \core\task\manager::queue_adhoc_task($task, true);
+
+        $this->assertEquals($thirdtaskid, $fourthtaskid);
+        $this->assertNotEmpty($DB->get_field('task_adhoc', 'identityhash', ['id' => $thirdtaskid]));
+    }
+
+    /**
      * Test that an existing task without identityhash is updated when $checkforexisting is true
      *
      * @covers \core\task\manager::queue_adhoc_task

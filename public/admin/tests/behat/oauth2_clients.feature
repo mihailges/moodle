@@ -471,3 +471,43 @@ Feature: Create OAuth2 clients
     And the following should exist in the "reportbuilder-table" table:
       | Name                  |
       | Another Public Client |
+
+  Scenario: A non-admin user with "moodle/site:manageoauth2clients" capability can create OAuth2 clients
+    Given the following "users" exist:
+      | username | firstname | lastname | email             |
+      | user     | Test      | User     | user@example.com |
+    And the following "roles" exist:
+      | name                  | shortname     | description          | archetype |
+      | Oauth2 client manager | oauth2manager | OAuth 2 manager role |           |
+    And the following "permission overrides" exist:
+      | capability                      | permission | role          | contextlevel | reference |
+      | moodle/site:manageoauth2clients | Allow      | oauth2manager | System       |           |
+      | moodle/site:configview          | Allow      | oauth2manager | System       |           |
+    And the following "role assigns" exist:
+      | user    | role          | contextlevel | reference |
+      | user    | oauth2manager | System       |           |
+    And I log in as "user"
+    And I click on "Site administration" "link"
+    And "OAuth 2 clients" "link" should exist
+    And I click on "OAuth 2 clients" "link"
+    And I click on "Create client" "link"
+    And I set the field "Name" to "Test Confidential Client"
+    And I set the field "Description" to "A test confidential OAuth2 client"
+    And I click on "Confidential" "radio"
+    And I set the field "Authorization Code" to "0"
+    And I set the field "Client Credentials" to "1"
+    When I press "Create client"
+    Then "Test Confidential Client" "heading" should exist
+    And "Secrets" "heading" should exist
+    And I click on "Go back to OAuth 2 clients" "link"
+    And "OAuth 2 clients" "heading" should exist
+    And the following should exist in the "reportbuilder-table" table:
+      | Name                     | Type         | Status |
+      | Test Confidential Client | Confidential | Active |
+    # Verify that the user can no longer access OAuth 2 clients page if "moodle/site:manageoauth2clients" is prohibited.
+    And the following "permission overrides" exist:
+      | capability                      | permission | role          | contextlevel | reference |
+      | moodle/site:manageoauth2clients | Prohibit   | oauth2manager | System       |           |
+    And I log in as "user"
+    And I click on "Site administration" "link"
+    And "OAuth 2 clients" "link" should not exist

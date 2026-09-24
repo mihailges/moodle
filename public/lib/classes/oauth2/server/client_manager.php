@@ -208,6 +208,23 @@ class client_manager {
     }
 
     /**
+     * Updates the last accessed timestamp of a client to the current time.
+     *
+     * @param int $clientid The client ID.
+     * @return void
+     * @throws \dml_missing_record_exception If the client does not exist.
+     */
+    public function update_client_lastaccessed(int $clientid): void {
+        $this->get_client_record($clientid);
+        $this->db->set_field(
+            'oauth2_server_clients',
+            'lastaccessed',
+            $this->clock->time(),
+            ['id' => $clientid],
+        );
+    }
+
+    /**
      * Disable a client, cutting off all of its existing access immediately.
      *
      * Disabling marks the client as disabled and cascades to its access tokens, its refresh tokens and its outstanding

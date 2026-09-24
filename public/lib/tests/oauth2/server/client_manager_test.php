@@ -391,6 +391,45 @@ final class client_manager_test extends \advanced_testcase {
     }
 
     /**
+     * Test that update_client_lastaccessed records the current time and leaves other client fields untouched.
+     *
+     * @return void
+     */
+    public function test_update_client_lastaccessed(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $clock = $this->mock_clock_with_frozen(self::NOW);
+        $manager = \core\di::get(client_manager::class);
+        $record = $this->create_fixture_client($manager);
+        $this->assertNull($record->lastaccessed);
+
+        $clock->bump(HOURSECS);
+        $manager->update_client_lastaccessed((int) $record->id);
+
+        $updated = $DB->get_record('oauth2_server_clients', ['id' => $record->id], '*', MUST_EXIST);
+        $this->assertSame(self::NOW + HOURSECS, (int) $updated->lastaccessed);
+        // Only lastaccessed is touched: everything else about the client is unchanged.
+        $this->assertSame($record->name, $updated->name);
+        $this->assertSame($record->timemodified, $updated->timemodified);
+    }
+
+    /**
+     * Test that update_client_lastaccessed throws when the client does not exist.
+     *
+     * @return void
+     */
+    public function test_update_client_lastaccessed_missing_client_throws(): void {
+        $this->resetAfterTest();
+
+        $manager = $this->get_manager();
+
+        $this->expectException(\dml_missing_record_exception::class);
+        $manager->update_client_lastaccessed(-1);
+    }
+
+    /**
      * Test that revoking a client cascades to every credential it holds apart from secrets.
      *
      * @return void
@@ -803,6 +842,98 @@ final class client_manager_test extends \advanced_testcase {
             'revoked',
             ['id' => $secretid],
         ));
+    }
+
+    /**
+     * Test that update_secret_lastaccessed_by_plain_secret locates the correct secret by
+     * plain-text matching against the stored hashes, and updates only that secret's lastaccessed.
+     *
+     * @return void
+     */
+    public function test_update_secret_lastaccessed_by_plain_secret(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $clock = $this->mock_clock_with_frozen(self::NOW);
+        $manager = \core\di::get(client_manager::class);
+        $record = $this->create_fixture_client($manager);
+
+        $firstsecret = $manager->create_secret((int) $record->id);
+        $secondsecret = $manager->create_secret((int) $record->id);
+
+        $secrets = $manager->get_secrets((int) $record->id);
+        foreach ($secrets as $secret) {
+            $this->assertNull($secret->lastaccessed);
+        }
+
+        $clock->bump(HOURSECS);
+        $this->assertTrue(
+            $manager->update_secret_lastaccessed_by_plain_secret($record->clientidentifier, $secondsecret),
+        );
+
+        $secrets = $manager->get_secrets((int) $record->id);
+        foreach ($secrets as $secret) {
+            if (password_verify($secondsecret, $secret->secret)) {
+                $this->assertSame(self::NOW + HOURSECS, (int) $secret->lastaccessed);
+            } else {
+                // The other secret is left untouched.
+                $this->assertNull($secret->lastaccessed);
+            }
+        }
+
+        // A sanity check that both secrets really were considered: one matching, one not.
+        $matched = array_filter($secrets, fn ($secret) => password_verify($firstsecret, $secret->secret));
+        $this->assertNotEmpty($matched);
+    }
+
+    /**
+     * Test that update_secret_lastaccessed_by_plain_secret is a no-op when the plain secret does
+     * not match any of the client's secrets.
+     *
+     * @return void
+     */
+    public function test_update_secret_lastaccessed_by_plain_secret_no_match(): void {
+        $this->resetAfterTest();
+
+        $manager = $this->get_manager();
+        $record = $this->create_fixture_client($manager);
+        $manager->create_secret((int) $record->id);
+
+        $this->assertFalse(
+            $manager->update_secret_lastaccessed_by_plain_secret($record->clientidentifier, 'not-the-right-secret'),
+        );
+
+        $secrets = $manager->get_secrets((int) $record->id);
+        foreach ($secrets as $secret) {
+            $this->assertNull($secret->lastaccessed);
+        }
+    }
+
+    /**
+     * Test that update_secret_lastaccessed_by_plain_secret does not match a revoked secret, since
+     * only active secrets are considered.
+     *
+     * @return void
+     */
+    public function test_update_secret_lastaccessed_by_plain_secret_ignores_revoked_secrets(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $manager = $this->get_manager();
+        $record = $this->create_fixture_client($manager);
+        $plainsecret = $manager->create_secret((int) $record->id);
+
+        $secrets = $manager->get_secrets((int) $record->id);
+        $manager->revoke_secret((int) reset($secrets)->id);
+
+        $this->assertFalse(
+            $manager->update_secret_lastaccessed_by_plain_secret($record->clientidentifier, $plainsecret),
+        );
+
+        $revokedsecret = $DB->get_record('oauth2_server_client_secrets', ['id' => reset($secrets)->id]);
+        $this->assertNull($revokedsecret->lastaccessed);
     }
 
     /**

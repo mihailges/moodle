@@ -16,6 +16,7 @@
 
 namespace core\route;
 
+use core\oauth2\server\client_manager;
 use core\oauth2\server\entity\client_entity;
 use core\oauth2\server\entity\user_entity;
 use core\oauth2\server\repository\granted_scopes_repository;
@@ -197,6 +198,19 @@ final class oauth2_test extends \advanced_testcase {
             ->getMock();
         $grantedscopesrepository->method('has_granted_all_scopes')->willReturn($hasgrantedallscopes);
         return $grantedscopesrepository;
+    }
+
+    /**
+     * Get a stub client_manager, for tests which do not otherwise care about the client
+     * manager's lastaccessed-tracking wiring.
+     *
+     * @return client_manager
+     */
+    protected function make_client_manager_stub(): client_manager {
+        return $this->getMockBuilder(client_manager::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['update_client_lastaccessed', 'update_secret_lastaccessed_by_plain_secret'])
+            ->getMock();
     }
 
     /**
@@ -486,6 +500,10 @@ final class oauth2_test extends \advanced_testcase {
 
     /**
      * authorize() redirects anonymous users to the login page.
+     *
+     * Also verifies that a successfully validated authorization request has the client's
+     * lastaccessed timestamp updated, since that tracking happens unconditionally once the
+     * request is valid, regardless of whether the user goes on to log in immediately.
      */
     public function test_authorize_redirects_to_login_for_anonymous_user(): void {
         $this->resetAfterTest();
@@ -503,6 +521,11 @@ final class oauth2_test extends \advanced_testcase {
 
         $route = $this->get_route($server, $clientrepository);
 
+        $clientmanager = $this->make_client_manager_stub();
+        $clientmanager->expects($this->once())
+            ->method('update_client_lastaccessed')
+            ->with($client->get_id());
+
         $response = $route->authorize(
             (new ServerRequest('GET', '/authorize'))->withQueryParams([
                 'client_id' => $client->getIdentifier(),
@@ -510,6 +533,7 @@ final class oauth2_test extends \advanced_testcase {
             new Response(),
             new user_repository(),
             $this->make_granted_scopes_repository_stub(),
+            $clientmanager,
         );
 
         $this->assertEquals(302, $response->getStatusCode());
@@ -551,6 +575,7 @@ final class oauth2_test extends \advanced_testcase {
             new Response(),
             $userrepository,
             $this->make_granted_scopes_repository_stub(),
+            $this->make_client_manager_stub(),
         );
 
         $requestid = $this->get_requestid_from_response($response);
@@ -590,6 +615,7 @@ final class oauth2_test extends \advanced_testcase {
             new Response(),
             new user_repository(),
             $this->make_granted_scopes_repository_stub(),
+            $this->make_client_manager_stub(),
         );
 
         $this->assertEquals(302, $response->getStatusCode());
@@ -598,6 +624,9 @@ final class oauth2_test extends \advanced_testcase {
     /**
      * authorize() converts an OAuthServerException raised while validating the request into an
      * HTTP response, rather than allowing it to propagate.
+     *
+     * Also verifies that the client's lastaccessed timestamp is not touched in this case, since
+     * the request never reached a validated client to attribute the access to.
      */
     public function test_authorize_handles_oauth_server_exception(): void {
         $this->resetAfterTest();
@@ -608,11 +637,15 @@ final class oauth2_test extends \advanced_testcase {
 
         $route = $this->get_route($server);
 
+        $clientmanager = $this->make_client_manager_stub();
+        $clientmanager->expects($this->never())->method('update_client_lastaccessed');
+
         $response = $route->authorize(
             new ServerRequest('GET', '/authorize'),
             new Response(),
             new user_repository(),
             $this->make_granted_scopes_repository_stub(),
+            $clientmanager,
         );
 
         $this->assertEquals(
@@ -642,6 +675,7 @@ final class oauth2_test extends \advanced_testcase {
             new Response(),
             new user_repository(),
             $this->make_granted_scopes_repository_stub(),
+            $this->make_client_manager_stub(),
         );
 
         $this->assertEquals(400, $response->getStatusCode());
@@ -670,6 +704,7 @@ final class oauth2_test extends \advanced_testcase {
             new Response(),
             new user_repository(),
             $this->make_granted_scopes_repository_stub(),
+            $this->make_client_manager_stub(),
         );
 
         $this->assertEquals(302, $response->getStatusCode());
@@ -696,6 +731,7 @@ final class oauth2_test extends \advanced_testcase {
             new Response(),
             new user_repository(),
             $this->make_granted_scopes_repository_stub(),
+            $this->make_client_manager_stub(),
         );
 
         $this->assertEquals(302, $response->getStatusCode());
@@ -723,6 +759,7 @@ final class oauth2_test extends \advanced_testcase {
             new Response(),
             new user_repository(),
             $this->make_granted_scopes_repository_stub(),
+            $this->make_client_manager_stub(),
         );
 
         $this->assertEquals(400, $response->getStatusCode());
@@ -750,6 +787,7 @@ final class oauth2_test extends \advanced_testcase {
             new Response(),
             new user_repository(),
             $this->make_granted_scopes_repository_stub(),
+            $this->make_client_manager_stub(),
         );
 
         $this->assertEquals(302, $response->getStatusCode());
@@ -818,6 +856,7 @@ final class oauth2_test extends \advanced_testcase {
             new Response(),
             $userrepository,
             $grantedscopesrepository,
+            $this->make_client_manager_stub(),
         );
 
         $this->assertSame($expectedresponse, $response);
@@ -863,6 +902,7 @@ final class oauth2_test extends \advanced_testcase {
             new Response(),
             $userrepository,
             $this->make_granted_scopes_repository_stub(hasgrantedallscopes: false),
+            $this->make_client_manager_stub(),
         );
 
         $this->assertEquals(302, $response->getStatusCode());
@@ -915,6 +955,7 @@ final class oauth2_test extends \advanced_testcase {
             new Response(),
             $userrepository,
             $grantedscopesrepository,
+            $this->make_client_manager_stub(),
         );
 
         $this->assertEquals(302, $response->getStatusCode());
@@ -982,6 +1023,7 @@ final class oauth2_test extends \advanced_testcase {
             new Response(),
             $userrepository,
             $grantedscopesrepository,
+            $this->make_client_manager_stub(),
         );
 
         $this->assertEquals(302, $response->getStatusCode());
@@ -999,10 +1041,60 @@ final class oauth2_test extends \advanced_testcase {
     }
 
     /**
-     * token()/access_token() pass through directly to the OAuth2 server on success.
+     * token()/access_token() pass through directly to the OAuth2 server on success, and track
+     * the calling client's (and, since a client_secret was supplied, its secret's) interaction.
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('token_route_provider')]
     public function test_token_routes_success(string $method): void {
+        $this->resetAfterTest();
+
+        $client = $this->make_client_entity();
+        $expectedresponse = new Response(200, [], 'the-token-response');
+
+        $server = $this->createMock(AuthorizationServer::class);
+        $server->expects($this->once())
+            ->method('respondToAccessTokenRequest')
+            ->willReturn($expectedresponse);
+
+        $clientrepository = $this->createStub(ClientRepositoryInterface::class);
+        $clientrepository->method('getClientEntity')->willReturn($client);
+
+        $clientmanager = $this->make_client_manager_stub();
+        $clientmanager->expects($this->once())
+            ->method('update_client_lastaccessed')
+            ->with($client->get_id());
+        $clientmanager->expects($this->once())
+            ->method('update_secret_lastaccessed_by_plain_secret')
+            ->with($client->getIdentifier(), 'the-plain-secret')
+            ->willReturn(true);
+
+        $route = $this->get_route($server, $clientrepository);
+
+        $response = $route->{$method}(
+            new ServerRequest(
+                'POST',
+                '/' . $method,
+                [],
+                http_build_query([
+                    'client_id' => $client->getIdentifier(),
+                    'client_secret' => 'the-plain-secret',
+                ]),
+            ),
+            new Response(),
+            $clientmanager,
+        );
+
+        $this->assertSame($expectedresponse, $response);
+    }
+
+    /**
+     * token()/access_token() do not track any client/secret interaction on success when the
+     * request carries no client identifier at all (e.g. a public client using the
+     * refresh_token grant with no client_id supplied), since there is nothing to attribute the
+     * access to.
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('token_route_provider')]
+    public function test_token_routes_success_without_client_identifier_does_not_track(string $method): void {
         $this->resetAfterTest();
 
         $expectedresponse = new Response(200, [], 'the-token-response');
@@ -1012,19 +1104,71 @@ final class oauth2_test extends \advanced_testcase {
             ->method('respondToAccessTokenRequest')
             ->willReturn($expectedresponse);
 
+        $clientmanager = $this->make_client_manager_stub();
+        $clientmanager->expects($this->never())->method('update_client_lastaccessed');
+        $clientmanager->expects($this->never())->method('update_secret_lastaccessed_by_plain_secret');
+
         $route = $this->get_route($server);
 
         $response = $route->{$method}(
             new ServerRequest('POST', '/' . $method),
             new Response(),
+            $clientmanager,
         );
 
         $this->assertSame($expectedresponse, $response);
     }
 
     /**
-     * token()/access_token() convert an OAuthServerException into an HTTP response.
+     * token()/access_token() do not credit a confidential client with the interaction when the
+     * supplied client_secret does not actually match one of that client's own stored secrets
+     * (e.g. mismatched Basic-Auth vs body credentials), even though League itself successfully
+     * issued a token for the request using a different, correctly-authenticated credential pair.
+     * This guards against an uninvolved client's lastaccessed metadata being poisoned merely by
+     * a caller who knows its (public) client_id.
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('token_route_provider')]
+    public function test_token_routes_success_with_mismatched_secret_does_not_track(string $method): void {
+        $this->resetAfterTest();
+
+        $client = $this->make_client_entity();
+        $expectedresponse = new Response(200, [], 'the-token-response');
+
+        $server = $this->createMock(AuthorizationServer::class);
+        $server->expects($this->once())
+            ->method('respondToAccessTokenRequest')
+            ->willReturn($expectedresponse);
+
+        $clientrepository = $this->createStub(ClientRepositoryInterface::class);
+        $clientrepository->method('getClientEntity')->willReturn($client);
+
+        $clientmanager = $this->make_client_manager_stub();
+        $clientmanager->expects($this->once())
+            ->method('update_secret_lastaccessed_by_plain_secret')
+            ->with($client->getIdentifier(), 'not-this-clients-secret')
+            ->willReturn(false);
+        $clientmanager->expects($this->never())->method('update_client_lastaccessed');
+
+        $route = $this->get_route($server, $clientrepository);
+
+        $response = $route->{$method}(
+            new ServerRequest(
+                'POST',
+                '/' . $method,
+                [],
+                http_build_query([
+                    'client_id' => $client->getIdentifier(),
+                    'client_secret' => 'not-this-clients-secret',
+                ]),
+            ),
+            new Response(),
+            $clientmanager,
+        );
+
+        $this->assertSame($expectedresponse, $response);
+    }
+
+
     #[\PHPUnit\Framework\Attributes\DataProvider('token_route_provider')]
     public function test_token_routes_oauth_server_exception(string $method): void {
         $this->resetAfterTest();
@@ -1035,9 +1179,22 @@ final class oauth2_test extends \advanced_testcase {
 
         $route = $this->get_route($server);
 
+        $clientmanager = $this->make_client_manager_stub();
+        $clientmanager->expects($this->never())->method('update_client_lastaccessed');
+        $clientmanager->expects($this->never())->method('update_secret_lastaccessed_by_plain_secret');
+
         $response = $route->{$method}(
-            new ServerRequest('POST', '/' . $method),
+            new ServerRequest(
+                'POST',
+                '/' . $method,
+                [],
+                http_build_query([
+                    'client_id' => 'some-client',
+                    'client_secret' => 'some-secret',
+                ]),
+            ),
             new Response(),
+            $clientmanager,
         );
 
         $this->assertEquals(
@@ -1049,7 +1206,8 @@ final class oauth2_test extends \advanced_testcase {
     /**
      * token()/access_token() convert any other exception into a generic HTTP 500 response,
      * without exposing the unexpected exception's own message (which could contain database
-     * errors, paths, class names, or other internal details) to the OAuth client.
+     * errors, paths, class names, or other internal details) to the OAuth client. Client/secret
+     * interaction is never tracked in this case either, since no token was actually issued.
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('token_route_provider')]
     public function test_token_routes_generic_exception(string $method): void {
@@ -1061,9 +1219,22 @@ final class oauth2_test extends \advanced_testcase {
 
         $route = $this->get_route($server);
 
+        $clientmanager = $this->make_client_manager_stub();
+        $clientmanager->expects($this->never())->method('update_client_lastaccessed');
+        $clientmanager->expects($this->never())->method('update_secret_lastaccessed_by_plain_secret');
+
         $response = $route->{$method}(
-            new ServerRequest('POST', '/' . $method),
+            new ServerRequest(
+                'POST',
+                '/' . $method,
+                [],
+                http_build_query([
+                    'client_id' => 'some-client',
+                    'client_secret' => 'some-secret',
+                ]),
+            ),
             new Response(),
+            $clientmanager,
         );
 
         $this->assertEquals(500, $response->getStatusCode());
@@ -1435,6 +1606,7 @@ final class oauth2_test extends \advanced_testcase {
             new Response(),
             $userrepository,
             $grantedscopesrepository,
+            $this->make_client_manager_stub(),
         );
 
         $this->assertSame($expectedresponse, $authorizeresponse);
@@ -1540,7 +1712,13 @@ final class oauth2_test extends \advanced_testcase {
             ->withQueryParams(['authrequestid' => $requestid]);
 
         try {
-            $route->authorize($request, new Response(), $userrepository, $this->make_granted_scopes_repository_stub());
+            $route->authorize(
+                $request,
+                new Response(),
+                $userrepository,
+                $this->make_granted_scopes_repository_stub(),
+                $this->make_client_manager_stub(),
+            );
             $this->fail('Expected require_login() to attempt a redirect for the forced password change.');
         // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
         } catch (\core\exception\moodle_exception $e) {
@@ -1604,7 +1782,12 @@ final class oauth2_test extends \advanced_testcase {
             ->withQueryParams(['authrequestid' => $requestid]);
 
         try {
-            $route->authorize($request, new Response(), $userrepository, $this->make_granted_scopes_repository_stub());
+            $route->authorize(
+                $request, new Response(),
+                $userrepository,
+                $this->make_granted_scopes_repository_stub(),
+                $this->make_client_manager_stub(),
+            );
             $this->fail('Expected require_login() to attempt a redirect for the incomplete profile.');
         // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
         } catch (\core\exception\moodle_exception $e) {
@@ -1660,7 +1843,13 @@ final class oauth2_test extends \advanced_testcase {
             ->withQueryParams(['authrequestid' => $requestid]);
 
         try {
-            $route->authorize($request, new Response(), $userrepository, $this->make_granted_scopes_repository_stub());
+            $route->authorize(
+                $request,
+                new Response(),
+                $userrepository,
+                $this->make_granted_scopes_repository_stub(),
+                $this->make_client_manager_stub(),
+            );
             $this->fail('Expected require_login() to attempt a redirect for the unagreed site policy.');
         // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
         } catch (\core\exception\moodle_exception $e) {
@@ -1718,7 +1907,13 @@ final class oauth2_test extends \advanced_testcase {
             ->withQueryParams(['authrequestid' => $requestid]);
 
         try {
-            $route->authorize($request, new Response(), $userrepository, $this->make_granted_scopes_repository_stub());
+            $route->authorize(
+                $request,
+                new Response(),
+                $userrepository,
+                $this->make_granted_scopes_repository_stub(),
+                $this->make_client_manager_stub(),
+            );
             $this->fail('Expected require_login() to attempt a redirect for the forced password change.');
         // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
         } catch (\core\exception\moodle_exception $e) {
@@ -1744,6 +1939,7 @@ final class oauth2_test extends \advanced_testcase {
             new Response(),
             $userrepository,
             $this->make_granted_scopes_repository_stub(hasgrantedallscopes: true),
+            $this->make_client_manager_stub(),
         );
 
         $this->assertSame($expectedresponse, $response);
@@ -2078,6 +2274,7 @@ final class oauth2_test extends \advanced_testcase {
             new Response(),
             new user_repository(),
             $this->make_granted_scopes_repository_stub(),
+            $this->make_client_manager_stub(),
         );
 
         $this->assertEquals(302, $authorizeresponse->getStatusCode());
@@ -2464,7 +2661,13 @@ final class oauth2_test extends \advanced_testcase {
             ->withQueryParams(['authrequestid' => $requestid]);
 
         try {
-            $route->authorize($authorizerequest, new Response(), $userrepository, $this->make_granted_scopes_repository_stub());
+            $route->authorize(
+                $authorizerequest,
+                new Response(),
+                $userrepository,
+                $this->make_granted_scopes_repository_stub(),
+                $this->make_client_manager_stub(),
+            );
             $this->fail('Expected require_login() to attempt a redirect for the forced password change.');
         // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
         } catch (\core\exception\moodle_exception $e) {
@@ -2494,6 +2697,7 @@ final class oauth2_test extends \advanced_testcase {
             new Response(),
             $userrepository,
             $this->make_granted_scopes_repository_stub(hasgrantedallscopes: true),
+            $this->make_client_manager_stub(),
         );
 
         $this->assertSame($expectedresponse, $resumedresponse);
@@ -3360,6 +3564,7 @@ final class oauth2_test extends \advanced_testcase {
             new Response(),
             $userrepository,
             $this->make_granted_scopes_repository_stub(),
+            $this->make_client_manager_stub(),
         );
 
         $grantedscopesrepository = $this->getMockBuilder(granted_scopes_repository::class)

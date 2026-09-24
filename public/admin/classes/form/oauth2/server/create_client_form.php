@@ -145,6 +145,10 @@ class create_client_form extends base_client_form {
             get_string('oauth2server_clientcreationwarning', 'admin'),
         );
 
+        // Add the scope fields.
+        // This restricts which scopes a token has access to.
+        $this->add_scope_fields();
+
         // Action buttons.
         $this->add_action_buttons(true, get_string('oauth2server_clientcreate', 'admin'));
 

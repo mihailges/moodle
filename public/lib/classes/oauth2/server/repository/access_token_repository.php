@@ -38,7 +38,9 @@ class access_token_repository implements AccessTokenRepositoryInterface {
         $accesstokenentity = new access_token_entity();
         $accesstokenentity->setClient($cliententity);
 
-        if ($useridentifier !== null) {
+        if ($useridentifier === null) {
+            $accesstokenentity->setUserIdentifier(0);
+        } else {
             $accesstokenentity->setUserIdentifier($useridentifier);
         }
 
@@ -53,17 +55,14 @@ class access_token_repository implements AccessTokenRepositoryInterface {
     public function persistNewAccessToken(AccessTokenEntityInterface $accesstokenentity): void {
         global $DB;
 
-        $scopes = array_map(function ($scope) {
-            return $scope->getIdentifier();
-        }, $accesstokenentity->getScopes());
+        $scopes = array_map(
+            static fn ($scope) => $scope->getIdentifier(),
+            $accesstokenentity->getScopes(),
+        );
 
         $record = new \stdClass();
         $record->identifier = $accesstokenentity->getIdentifier();
-
-        if ($userid = $accesstokenentity->getUserIdentifier()) {
-            $record->userid = $userid;
-        }
-
+        $record->userid = $accesstokenentity->getUserIdentifier() ?? 0;
         $record->clientidentifier = $accesstokenentity->getClient()->getIdentifier();
         $record->scopes = implode(' ', $scopes);
         $record->expirytime = $accesstokenentity->getExpiryDateTime()->getTimestamp();

@@ -18,6 +18,7 @@ namespace core\api\form;
 
 use core\api\token_manager;
 use core\output\html_writer;
+use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -44,31 +45,6 @@ class create_token extends \moodleform {
      * @var string
      */
     protected const string SCOPE_LABEL = 'scopeslabel';
-
-    /**
-     * HTML id of the fieldset wrapping the scope checkboxes.
-     *
-     * @var string
-     */
-    protected const string SCOPES_FIELDSET_ID = 'id_scopesfieldset';
-
-    /**
-     * The "Scopes" label text, including its required-field marker.
-     *
-     * Shared by the static label row and the fieldset's legend, so both read the same thing.
-     *
-     * @var string
-     */
-    protected string $scopeslabel = '';
-
-    /**
-     * The element holding the scopes fieldset's opening tag and legend.
-     *
-     * Its text is rewritten in {@see display()} once the scopes error, if any, is known.
-     *
-     * @var \HTML_QuickForm_html|null
-     */
-    protected ?\HTML_QuickForm_html $scopesfieldsetopen = null;
 
     /**
      * Map the available scopes to form element names, keyed by element name.
@@ -113,33 +89,17 @@ class create_token extends \moodleform {
 
         $scopes = $manager->get_available_scopes();
 
-        $this->scopeslabel = get_string('pat_scopes') . ' ' . $OUTPUT->pix_icon('req', get_string('requiredelement', 'form'));
+        $scopestitle = html_writer::span(get_string('pat_scopes'), '', ['id' => 'id_scopes_header_label']) .
+            ' ' . $OUTPUT->pix_icon('req', get_string('requiredelement', 'form'));
 
-        // The hint carries the label, so "Scopes" sits in the label column like every other
-        // field on this form and level with something to read. Not on the first checkbox: an
-        // advcheckbox carrying a label renders its text in a described-by span rather than as
-        // the label itself, which leaves a trailing line box and makes that row taller.
-        // Marked required by hand: the requirement is that any one of the boxes is ticked, which
-        // is not something a rule on a single element expresses.
         $mform->addElement(
             'static',
             self::SCOPE_LABEL,
-            $this->scopeslabel,
-            // What the scopes are for, rather than that one is required: the marker beside the
-            // label says that already, and so does the error when none is ticked.
+            $scopestitle,
             $OUTPUT->notification(get_string('pat_scopesinfo'), 'info', false),
         );
 
-        // A real fieldset around the checkboxes, so their shared "select at least one" error
-        // describes the group as a unit rather than any single checkbox. Built from raw 'html'
-        // elements rather than mform's own grouping: a group renders its members with the
-        // "-inline" template, which would collapse the one-checkbox-per-row layout below onto a
-        // single line. Whether it is invalid is not known until the form has been validated, so
-        // the opening tag starts out plain and is rewritten in display() once that is known.
-        $this->scopesfieldsetopen = $mform->addElement('html', $this->get_scopes_fieldset_open(false));
-
-        // A checkbox per scope, each its own form row: a form group would lay them out inline,
-        // and a description too wide for the rest of the line drops beneath its own checkbox.
+        // A checkbox per scope, each its own form row.
         foreach ($this->get_scope_elements() as $elementname => $identifier) {
             $scope = $scopes[$identifier];
             $mform->addElement(
@@ -148,56 +108,36 @@ class create_token extends \moodleform {
                 '',
                 html_writer::div(
                     $scope::get_summary() . ' - ' .
-                        html_writer::tag('code', $identifier, ['class' => 'fw-normal text-muted']),
+                    html_writer::tag('code', $identifier, ['class' => 'fw-normal text-muted']),
                     'fw-bold',
                 ) .
-                    html_writer::div($scope::get_description(), 'text-muted small'),
+                html_writer::div($scope::get_description(), 'text-muted small'),
             );
             $mform->setType($elementname, PARAM_BOOL);
         }
-
-        $mform->addElement('html', html_writer::end_tag('fieldset'));
 
         $this->add_action_buttons(true, get_string('pat_create'));
     }
 
     /**
-     * Build the scopes fieldset's opening tag and its legend.
-     *
-     * @param bool $invalid Whether the scopes error is present, so the fieldset should be
-     *                       exposed as invalid and take focus once the page renders.
-     * @return string
-     */
-    protected function get_scopes_fieldset_open(bool $invalid): string {
-        $attributes = ['id' => self::SCOPES_FIELDSET_ID];
-
-        if ($invalid) {
-            // Mirrors what mform already does for a single invalid control such as Name:
-            // aria-invalid and aria-describedby point at the error, and, since there is no
-            // JavaScript involved in a full page reload, tabindex plus autofocus is what
-            // actually moves focus here once the browser has finished parsing the page.
-            $attributes += [
-                'tabindex' => '-1',
-                'autofocus' => 'autofocus',
-                'aria-invalid' => 'true',
-                'aria-describedby' => 'id_error_' . self::SCOPE_LABEL,
-            ];
-        }
-
-        return html_writer::start_tag('fieldset', $attributes) .
-            html_writer::tag('legend', $this->scopeslabel, ['class' => 'visually-hidden']);
-    }
-
-    /**
      * Print html form.
      *
-     * Once the form has been through validation, the scopes error (if any) is known, so the
-     * fieldset opening tag added in {@see definition()} is rewritten here to carry it.
+     * If validation failed on SCOPE_LABEL, set focus and aria-labelledby on the first scope checkbox
+     * so screen readers announce "Scopes Required" and the error message without repeating the checkbox summary.
      */
     #[\Override]
     public function display(): void {
         if ($this->_form->getElementError(self::SCOPE_LABEL)) {
-            $this->scopesfieldsetopen->setText($this->get_scopes_fieldset_open(true));
+            $scopeelementnames = array_keys($this->get_scope_elements());
+            $firstscope = reset($scopeelementnames);
+            if ($firstscope !== false && $this->_form->elementExists($firstscope)) {
+                $element = $this->_form->getElement($firstscope);
+                $element->updateAttributes([
+                    'autofocus' => 'autofocus',
+                    'aria-invalid' => 'true',
+                    'aria-labelledby' => 'id_scopes_header_label id_error_' . self::SCOPE_LABEL,
+                ]);
+            }
         }
 
         parent::display();
@@ -214,7 +154,7 @@ class create_token extends \moodleform {
         $errors = parent::validation($data, $files);
 
         if (empty($this->get_submitted_scopes($data))) {
-            // Reported against the label, which is the row that names the list.
+            // Reported against the label row so Moodle renders the error box above the checkboxes.
             $errors[self::SCOPE_LABEL] = get_string('apitokennoscopes', 'error');
         }
 
@@ -224,29 +164,28 @@ class create_token extends \moodleform {
     /**
      * Resolve the chosen period to an expiry timestamp.
      *
-     * @param \stdClass $data The submitted data.
+     * @param stdClass $data The submitted data.
      * @return int The expiry timestamp.
      */
-    public function get_expiry_time(\stdClass $data): int {
+    public function get_expiry_time(stdClass $data): int {
         /** @var token_manager $manager */
         $manager = $this->_customdata['manager'];
 
-        // Resolved now rather than when the form was rendered, so a form left open overnight still
-        // yields the number of days the user actually chose.
         return $manager->get_expiry_presets()[(int) $data->expirypreset];
     }
 
     /**
      * Resolve the checked scope elements back to scope identifiers.
      *
-     * @param array $data The submitted data.
+     * @param array|stdClass $data The submitted data.
      * @return string[] The identifiers of the checked scopes.
      */
-    public function get_submitted_scopes(array $data): array {
+    public function get_submitted_scopes(array|stdClass $data): array {
+        $dataarray = (array) $data;
         $selected = [];
 
         foreach ($this->get_scope_elements() as $elementname => $identifier) {
-            if (!empty($data[$elementname])) {
+            if (!empty($dataarray[$elementname])) {
                 $selected[] = $identifier;
             }
         }

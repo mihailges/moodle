@@ -19,6 +19,7 @@ namespace core\oauth2\server\repository;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use League\OAuth2\Server\Entities\ScopeEntityInterface;
+use core\oauth2\server\client_manager;
 use core\oauth2\server\entity\client_entity;
 use core\oauth2\server\entity\access_token_entity;
 
@@ -41,7 +42,7 @@ final class access_token_repository_test extends \advanced_testcase {
      */
     #[DataProvider('get_new_token_provider')]
     public function test_get_new_token(string $clientidentifier, array $scopeidentifiers, ?string $userid): void {
-        $repository = new access_token_repository();
+        $repository = \core\di::get(access_token_repository::class);
         $client = new client_entity();
         $client->setIdentifier($clientidentifier);
 
@@ -92,8 +93,11 @@ final class access_token_repository_test extends \advanced_testcase {
     /**
      * Test persisting a new access token under various scenarios.
      *
+     * Also verifies that the issuing client's lastaccessed timestamp is updated at the exact
+     * moment the token is persisted, since that is the definitive point at which the client's
+     * access is known, without needing to re-derive it later from the request.
+     *
      * @param string $tokenid Access token identifier string.
-     * @param string $clientid Client identifier string.
      * @param string|null $userid User identifier string.
      * @param array $scopeidentifiers Array of scope identifiers.
      * @return void
@@ -101,7 +105,6 @@ final class access_token_repository_test extends \advanced_testcase {
     #[DataProvider('persist_access_token_provider')]
     public function test_persist_new_access_token(
         string $tokenid,
-        string $clientid,
         ?string $userid,
         array $scopeidentifiers
     ): void {
@@ -109,10 +112,11 @@ final class access_token_repository_test extends \advanced_testcase {
 
         $this->resetAfterTest();
 
-        $repository = new access_token_repository();
+        $clock = $this->mock_clock_with_frozen();
 
-        $client = new client_entity();
-        $client->setIdentifier($clientid);
+        $repository = \core\di::get(access_token_repository::class);
+
+        $client = $this->create_client_entity();
 
         $scopes = [];
         foreach ($scopeidentifiers as $scopeidentifier) {
@@ -141,9 +145,12 @@ final class access_token_repository_test extends \advanced_testcase {
         $this->assertNotEmpty($record);
         $this->assertSame($tokenid, $record->identifier);
         $this->assertEquals($userid, $record->userid);
-        $this->assertSame($clientid, $record->clientidentifier);
+        $this->assertSame($client->getIdentifier(), $record->clientidentifier);
         $this->assertSame(implode(' ', $scopeidentifiers), $record->scopes);
         $this->assertEquals(access_token_entity::REVOKED_NO, (int) $record->revoked);
+
+        $clientrecord = $DB->get_record('oauth2_server_clients', ['id' => $client->get_id()]);
+        $this->assertEquals($clock->time(), $clientrecord->lastaccessed);
     }
 
     /**
@@ -155,17 +162,33 @@ final class access_token_repository_test extends \advanced_testcase {
         return [
             'token-1 with user and single scope' => [
                 'token-1',
-                'client-a',
                 '101',
                 ['profile'],
             ],
             'token-2 with null user and multiple scopes' => [
                 'token-2',
-                'client-b',
                 null,
                 ['profile', 'email'],
             ],
         ];
+    }
+
+    /**
+     * Create and persist a real client entity to attach to a token/auth code fixture.
+     *
+     * Built via a real database row (rather than a bare new client_entity() with only its
+     * identifier set), since {@see client_entity::get_id()} must not be accessed before
+     * initialisation, and persisting a token/auth code now needs the client's real id in order
+     * to track its lastaccessed timestamp.
+     *
+     * @return client_entity
+     */
+    private function create_client_entity(): client_entity {
+        return \core\di::get(client_manager::class)->create_client(
+            name: 'Example client',
+            ownercontext: \core\context\system::instance(),
+            granttypes: [],
+        );
     }
 
     /**
@@ -178,7 +201,7 @@ final class access_token_repository_test extends \advanced_testcase {
 
         $this->resetAfterTest();
 
-        $repository = new access_token_repository();
+        $repository = \core\di::get(access_token_repository::class);
 
         $DB->insert_record('oauth2_server_client_access_tokens', [
             'identifier' => 'token-1',
@@ -203,7 +226,7 @@ final class access_token_repository_test extends \advanced_testcase {
      * @return void
      */
     public function test_is_access_token_revoked_non_existent(): void {
-        $repository = new access_token_repository();
+        $repository = \core\di::get(access_token_repository::class);
 
         $this->expectException(\dml_missing_record_exception::class);
         $repository->isAccessTokenRevoked('non-existent-token');
@@ -229,7 +252,7 @@ final class access_token_repository_test extends \advanced_testcase {
             'timecreated' => time(),
         ]);
 
-        $repository = new access_token_repository();
+        $repository = \core\di::get(access_token_repository::class);
 
         $this->assertTrue($repository->is_owned_by_client('token-1', 'client-a'));
         $this->assertFalse($repository->is_owned_by_client('token-1', 'client-b'));

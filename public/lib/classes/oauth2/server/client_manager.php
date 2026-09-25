@@ -429,33 +429,6 @@ class client_manager {
     }
 
     /**
-     * Locate a secret by plain-text matching against hashes and update its lastaccessed timestamp.
-     *
-     * @param string $clientidentifier The client identifier
-     * @param string $plainsecret The plain secret
-     * @return bool True if a matching, active secret was found and its lastaccessed timestamp was updated,
-     *              false if no active secret for this client matches the given plain secret.
-     */
-    public function update_secret_lastaccessed_by_plain_secret(string $clientidentifier, string $plainsecret): bool {
-        $secrets = $this->get_secrets_by_identifier($clientidentifier);
-        // Find the secret record matching the hash.
-        foreach ($secrets as $secretrecord) {
-            if (password_verify($plainsecret, $secretrecord->secret)) {
-                $this->db->set_field(
-                    'oauth2_server_client_secrets',
-                    'lastaccessed',
-                    $this->clock->time(),
-                    ['id' => $secretrecord->id],
-                );
-
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * Get the redirect URIs registered for a client.
      *
      * @param int $clientid The client ID.

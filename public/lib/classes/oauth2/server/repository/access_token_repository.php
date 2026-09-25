@@ -29,6 +29,18 @@ use core\oauth2\server\entity\access_token_entity;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class access_token_repository implements AccessTokenRepositoryInterface {
+    /**
+     * Constructor.
+     *
+     * @param \core\oauth2\server\client_manager $clientmanager The manager used to track the
+     *      issuing client's lastaccessed timestamp.
+     */
+    public function __construct(
+        /** @var \core\oauth2\server\client_manager The manager used to track client access. */
+        private readonly \core\oauth2\server\client_manager $clientmanager,
+    ) {
+    }
+
     #[\Override]
     public function getNewToken(
         ClientEntityInterface $cliententity,
@@ -71,6 +83,18 @@ class access_token_repository implements AccessTokenRepositoryInterface {
         $record->timecreated = time();
 
         $DB->insert_record('oauth2_server_client_access_tokens', $record);
+
+        // The token has just been issued to this client, so this is the definitive moment to
+        // record the client's access - rather than re-deriving it later from the request. This is
+        // only bookkeeping: a failure here must not stop the token from being issued.
+        try {
+            $this->clientmanager->update_client_lastaccessed($accesstokenentity->getClient()->get_id());
+        } catch (\Throwable $exception) {
+            debugging(
+                'Failed to update client lastaccessed timestamp: ' . $exception->getMessage(),
+                DEBUG_DEVELOPER,
+            );
+        }
     }
 
     #[\Override]

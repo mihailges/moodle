@@ -78,22 +78,10 @@ class oauth2 {
         ResponseInterface $response,
         user_repository $userrepository,
         \core\oauth2\server\repository\granted_scopes_repository $grantedscopesrepository,
-        \core\oauth2\server\client_manager $clientmanager,
     ): ResponseInterface {
         try {
             [$requestid, $authrequest] = $this->get_auth_request($request);
             $this->check_pkce_requirement($authrequest);
-
-            // Track client interaction as soon as authorization is requested.
-            try {
-                $client = $authrequest->getClient();
-                $clientmanager->update_client_lastaccessed($client->get_id());
-            } catch (\Throwable $exception) {
-                debugging(
-                    'Failed to update client lastaccessed timestamp: ' . $exception->getMessage(),
-                    DEBUG_DEVELOPER,
-                );
-            }
         } catch (OAuthServerException $exception) {
             // All instances of OAuthServerException can be formatted into a HTTP response.
             return $exception->generateHttpResponse($response);
@@ -183,13 +171,10 @@ class oauth2 {
     public function token(
         ServerRequestInterface $request,
         ResponseInterface $response,
-        \core\oauth2\server\client_manager $clientmanager,
     ): ResponseInterface {
         try {
             // Try to respond to the request.
-            $oauth2response = $this->server->respondToAccessTokenRequest($request, $response);
-            $this->track_token_client_interaction($request, $clientmanager);
-            return $oauth2response;
+            return $this->server->respondToAccessTokenRequest($request, $response);
         } catch (OAuthServerException $exception) {
             // All instances of OAuthServerException can be formatted into a HTTP response.
             return $exception->generateHttpResponse($response);
@@ -217,13 +202,10 @@ class oauth2 {
     public function access_token(
         ServerRequestInterface $request,
         ResponseInterface $response,
-        \core\oauth2\server\client_manager $clientmanager,
     ): ResponseInterface {
         try {
             // Try to respond to the request.
-            $oauth2response = $this->server->respondToAccessTokenRequest($request, $response);
-            $this->track_token_client_interaction($request, $clientmanager);
-            return $oauth2response;
+            return $this->server->respondToAccessTokenRequest($request, $response);
         } catch (OAuthServerException $exception) {
             // All instances of OAuthServerException can be formatted into a HTTP response.
             return $exception->generateHttpResponse($response);
@@ -991,48 +973,6 @@ class oauth2 {
             $this->get_string_parameter($body, 'client_id'),
             $this->get_string_parameter($body, 'client_secret'),
         ];
-    }
-
-    /**
-     * Track a client's (and, if present, its secret's) interaction with the token endpoints.
-     *
-     * @param ServerRequestInterface $request
-     * @param \core\oauth2\server\client_manager $clientmanager
-     * @return void
-     */
-    private function track_token_client_interaction(
-        ServerRequestInterface $request,
-        \core\oauth2\server\client_manager $clientmanager,
-    ): void {
-        try {
-            $body = $this->get_form_parameters($request);
-            [$clientidentifier, $clientsecret] = $this->get_client_credentials($request, $body);
-
-            if (empty($clientidentifier)) {
-                return;
-            }
-
-            $client = $this->clientrepository->getClientEntity($clientidentifier);
-            if ($client === null) {
-                return;
-            }
-
-            if ($client->isConfidential() && !empty($clientsecret)) {
-                // Track the client secret interaction.
-                // Ensure that the secret actually matches one of that client's own stored secrets.
-                if (!$clientmanager->update_secret_lastaccessed_by_plain_secret($clientidentifier, $clientsecret)) {
-                    return;
-                }
-            }
-
-            // Track client interaction.
-            $clientmanager->update_client_lastaccessed($client->get_id());
-        } catch (\Throwable $exception) {
-            debugging(
-                'Failed to update client/secret lastaccessed timestamp: ' . $exception->getMessage(),
-                DEBUG_DEVELOPER,
-            );
-        }
     }
 
     /**

@@ -19,6 +19,7 @@ namespace core\oauth2\server\repository;
 use PHPUnit\Framework\Attributes\CoversClass;
 use League\OAuth2\Server\Entities\ScopeEntityInterface;
 use League\OAuth2\Server\Exception\UniqueTokenIdentifierConstraintViolationException;
+use core\oauth2\server\client_manager;
 use core\oauth2\server\entity\client_entity;
 use core\oauth2\server\entity\auth_code_entity;
 
@@ -35,7 +36,7 @@ final class auth_code_repository_test extends \advanced_testcase {
      * Test getting a new auth code.
      */
     public function test_get_new_auth_code(): void {
-        $repository = new auth_code_repository();
+        $repository = \core\di::get(auth_code_repository::class);
         $code = $repository->getNewAuthCode();
 
         $this->assertInstanceOf(auth_code_entity::class, $code);
@@ -43,25 +44,23 @@ final class auth_code_repository_test extends \advanced_testcase {
 
     /**
      * Test persisting a new auth code.
+     *
+     * Also verifies that the issuing client's lastaccessed timestamp is updated at the exact
+     * moment the code is persisted, since that is the definitive point at which the client's
+     * access is known - tracking it any earlier (e.g. when authorize() is merely requested)
+     * would let anyone bump it just by loading the authorize endpoint, without ever
+     * authenticating.
      */
     public function test_persist_new_auth_code(): void {
         global $DB;
 
         $this->resetAfterTest();
 
-        $repository = new auth_code_repository();
+        $clock = $this->mock_clock_with_frozen();
 
-        $DB->insert_record('oauth2_server_clients', [
-            'name' => 'Test client',
-            'clientidentifier' => 'client-id',
-            'ownercontext' => \context_system::instance()->id,
-            'status' => client_entity::STATUS_ACTIVE,
-            'isconfidential' => 1,
-            'timecreated' => time(),
-        ]);
+        $repository = \core\di::get(auth_code_repository::class);
 
-        $client = new client_entity();
-        $client->setIdentifier('client-id');
+        $client = $this->create_client_entity();
 
         $scope = $this->createMock(ScopeEntityInterface::class);
         $scope->method('getIdentifier')->willReturn('profile');
@@ -80,10 +79,13 @@ final class auth_code_repository_test extends \advanced_testcase {
         $this->assertNotEmpty($record);
         $this->assertSame('code-id', $record->identifier);
         $this->assertEquals(123, $record->userid);
-        $this->assertEquals('client-id', $record->clientidentifier);
+        $this->assertEquals($client->getIdentifier(), $record->clientidentifier);
         $this->assertSame('https://example.test/callback', $record->redirecturi);
         $this->assertSame('profile', $record->scopes);
         $this->assertEquals(0, $record->revoked);
+
+        $clientrecord = $DB->get_record('oauth2_server_clients', ['id' => $client->get_id()]);
+        $this->assertEquals($clock->time(), $clientrecord->lastaccessed);
 
         // Duplicate identifier.
         $this->expectException(\dml_write_exception::class);
@@ -98,7 +100,7 @@ final class auth_code_repository_test extends \advanced_testcase {
 
         $this->resetAfterTest();
 
-        $repository = new auth_code_repository();
+        $repository = \core\di::get(auth_code_repository::class);
 
         $clientid = $DB->insert_record('oauth2_server_clients', [
             'name' => 'Test client',
@@ -131,7 +133,7 @@ final class auth_code_repository_test extends \advanced_testcase {
      * Test check if auth code is revoked.
      */
     public function test_is_auth_code_revoked(): void {
-        $repository = new auth_code_repository();
+        $repository = \core\di::get(auth_code_repository::class);
 
         $this->expectException(\dml_missing_record_exception::class);
         $repository->isAuthCodeRevoked('non-existent-code');
@@ -158,10 +160,28 @@ final class auth_code_repository_test extends \advanced_testcase {
             'timecreated' => time(),
         ]);
 
-        $repository = new auth_code_repository();
+        $repository = \core\di::get(auth_code_repository::class);
 
         $this->assertTrue($repository->is_owned_by_client('code-1', 'client-a'));
         $this->assertFalse($repository->is_owned_by_client('code-1', 'client-b'));
         $this->assertFalse($repository->is_owned_by_client('no-such-code', 'client-a'));
+    }
+
+    /**
+     * Create and persist a real client entity to attach to an auth code fixture.
+     *
+     * Built via a real database row (rather than a bare new client_entity() with only its
+     * identifier set), since {@see client_entity::get_id()} must not be accessed before
+     * initialisation, and persisting an auth code now needs the client's real id in order to
+     * track its lastaccessed timestamp.
+     *
+     * @return client_entity
+     */
+    private function create_client_entity(): client_entity {
+        return \core\di::get(client_manager::class)->create_client(
+            name: 'Example client',
+            ownercontext: \core\context\system::instance(),
+            granttypes: [],
+        );
     }
 }

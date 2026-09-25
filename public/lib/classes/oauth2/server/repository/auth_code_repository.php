@@ -28,6 +28,18 @@ use core\oauth2\server\entity\auth_code_entity;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class auth_code_repository implements AuthCodeRepositoryInterface {
+    /**
+     * Constructor.
+     *
+     * @param \core\oauth2\server\client_manager $clientmanager The manager used to track the
+     *      issuing client's lastaccessed timestamp.
+     */
+    public function __construct(
+        /** @var \core\oauth2\server\client_manager The manager used to track client access. */
+        private readonly \core\oauth2\server\client_manager $clientmanager,
+    ) {
+    }
+
     #[\Override]
     public function getNewAuthCode(): AuthCodeEntityInterface {
         return new auth_code_entity();
@@ -52,6 +64,19 @@ class auth_code_repository implements AuthCodeRepositoryInterface {
         $record->timecreated = time();
 
         $DB->insert_record('oauth2_server_client_auth_codes', $record);
+
+        // The code has just been issued to this client, so this is the definitive moment to
+        // record the client's access - rather than tracking it earlier, e.g. when authorize() is
+        // merely requested, before the client has actually been granted anything. This is only
+        // bookkeeping: a failure here must not stop the authorization code from being issued.
+        try {
+            $this->clientmanager->update_client_lastaccessed($authcodeentity->getClient()->get_id());
+        } catch (\Throwable $exception) {
+            debugging(
+                'Failed to update client lastaccessed timestamp: ' . $exception->getMessage(),
+                DEBUG_DEVELOPER,
+            );
+        }
     }
 
     #[\Override]

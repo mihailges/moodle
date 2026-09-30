@@ -65,6 +65,30 @@ Feature: Manage personal access tokens
     When I press "Create token"
     Then I should see "Select at least one scope for the token."
 
+  @javascript
+  Scenario: The scopes error is identified to assistive technology and takes focus
+    Given I am on the "user > Personal access tokens" page logged in as "user1"
+    And I click on "Create token" "link"
+    And I set the field "Name" to "No scopes"
+    When I press "Create token"
+    Then I should see "Select at least one scope for the token."
+    # The error belongs to the set of scopes rather than to any one checkbox, so it stays
+    # attached to the scopes label at the top of the list, and focus moves to the group
+    # wrapping that label, the error and every checkbox, announced as a named, invalid
+    # group; from there the first Tab reaches the first checkbox like any other. The error
+    # is part of the group's accessible name rather than its description: JAWS does not
+    # announce aria-describedby on non-widget roles like group, but announces the name on
+    # focus whatever the role. The description instead points at the info notification,
+    # because without an explicit description Chromium fabricates one from the group's
+    # leftover text and NVDA reads the notification and the error a second time. Everything
+    # the ARIA references point at stays visible, as Firefox/NVDA resolve a reference to a
+    # hidden source to nothing.
+    And the "aria-invalid" attribute of "#id_scopesgroup" "css_element" should contain "true"
+    And the "aria-labelledby" attribute of "#id_scopesgroup" "css_element" should contain "id_scopesgroup_label"
+    And the "aria-labelledby" attribute of "#id_scopesgroup" "css_element" should contain "id_error_scopeslabel"
+    And the "aria-describedby" attribute of "#id_scopesgroup" "css_element" should contain "id_scopesgroup_note"
+    And the focused element is "#id_scopesgroup" "css_element"
+
   Scenario: A user only ever sees their own tokens
     Given I am on the "user > Personal access tokens" page logged in as "user1"
     And I click on "Create token" "link"

@@ -102,6 +102,7 @@ class create_token extends \moodleform {
         // A checkbox per scope, each its own form row.
         foreach ($this->get_scope_elements() as $elementname => $identifier) {
             $scope = $scopes[$identifier];
+            $checkboxid = 'id_' . $elementname;
             $mform->addElement(
                 'advcheckbox',
                 $elementname,
@@ -112,6 +113,7 @@ class create_token extends \moodleform {
                     'fw-bold',
                 ) .
                 html_writer::div($scope::get_description(), 'text-muted small'),
+                ['id' => $checkboxid]
             );
             $mform->setType($elementname, PARAM_BOOL);
         }
@@ -122,20 +124,27 @@ class create_token extends \moodleform {
     /**
      * Print html form.
      *
-     * If validation failed on SCOPE_LABEL, set focus and aria-labelledby on the first scope checkbox
-     * so screen readers announce "Scopes Required" and the error message without repeating the checkbox summary.
+     * Construct explicit aria-labelledby chain ordering:
+     * 1. Error message container ID
+     * 2. Header section label ID
+     * 3. First checkbox's own element ID
      */
     #[\Override]
     public function display(): void {
         if ($this->_form->getElementError(self::SCOPE_LABEL)) {
             $scopeelementnames = array_keys($this->get_scope_elements());
             $firstscope = reset($scopeelementnames);
+
             if ($firstscope !== false && $this->_form->elementExists($firstscope)) {
                 $element = $this->_form->getElement($firstscope);
+                $errorid = 'id_error_' . self::SCOPE_LABEL;
+                $headerid = 'id_scopes_header_label';
+                $firstcheckboxid = 'id_' . $firstscope;
+
                 $element->updateAttributes([
                     'autofocus' => 'autofocus',
                     'aria-invalid' => 'true',
-                    'aria-labelledby' => 'id_scopes_header_label id_error_' . self::SCOPE_LABEL,
+                    'aria-labelledby' => $errorid . ' ' . $headerid . ' ' . $firstcheckboxid,
                 ]);
             }
         }

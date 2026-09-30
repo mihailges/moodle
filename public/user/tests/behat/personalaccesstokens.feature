@@ -65,6 +65,28 @@ Feature: Manage personal access tokens
     When I press "Create token"
     Then I should see "Select at least one scope for the token."
 
+  @javascript
+  Scenario: The scopes error is identified to assistive technology and takes focus
+    Given I am on the "user > Personal access tokens" page logged in as "user1"
+    And I click on "Create token" "link"
+    And I set the field "Name" to "No scopes"
+    When I press "Create token"
+    Then I should see "Select at least one scope for the token."
+    # The error belongs to the set of scopes rather than to any one checkbox, so it stays
+    # attached to the scopes label at the top of the list, while focus moves to the first
+    # scope checkbox, named with the error; the group around the list supplies the "Scopes"
+    # label as context, announced ahead of it, so the announcement runs: label, group, error,
+    # then the checkbox itself. Scripted focus on the content-rich group itself is announced
+    # inconsistently across screen readers (JAWS never reads a group's description; NVDA
+    # speaks the container's content at the browse-mode caret on top of the name), so a
+    # native control takes focus instead. Everything the ARIA references point at stays
+    # visible, as Firefox/NVDA resolve a reference to a hidden source to nothing.
+    And the "aria-labelledby" attribute of "#id_scopesgroup" "css_element" should contain "id_scopesgroup_label"
+    And the "aria-invalid" attribute of "#id_scopesgroup input[type=checkbox]" "css_element" should contain "true"
+    And the "aria-labelledby" attribute of "#id_scopesgroup input[type=checkbox]" "css_element" should contain "id_scopesgroup_label"
+    And the "aria-labelledby" attribute of "#id_scopesgroup input[type=checkbox]" "css_element" should contain "id_error_scopeslabel"
+    And the focused element is "#id_scopesgroup input[type=checkbox]" "css_element"
+
   Scenario: A user only ever sees their own tokens
     Given I am on the "user > Personal access tokens" page logged in as "user1"
     And I click on "Create token" "link"

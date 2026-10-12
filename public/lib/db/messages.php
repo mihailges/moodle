@@ -243,4 +243,14 @@ $messageproviders = array (
             'airnotifier' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_ENABLED,
         ],
     ],
+
+    // OAuth 2 client secret expired warning.
+    'oauth2_secret_expired' => [
+        'defaults'   => [
+            'popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_ENABLED,
+            'email' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_ENABLED,
+        ],
+        'capability' => 'moodle/site:manageoauth2clients',
+    ],
+
 );

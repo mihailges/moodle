@@ -505,4 +505,13 @@ $tasks = array(
         'month' => '*',
         'disabled' => false,
     ],
+    [
+        'classname' => 'core\task\process_expired_oauth2_secrets_task',
+        'blocking'  => 0,
+        'minute'    => '15',
+        'hour'      => '*',
+        'day'       => '*',
+        'month'     => '*',
+        'dayofweek' => '*',
+    ],
 );

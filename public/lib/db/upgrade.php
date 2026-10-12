@@ -2381,5 +2381,33 @@ function xmldb_main_upgrade($oldversion) {
     // Automatically generated Moodle v5.3.0 release upgrade line.
     // Put any upgrade step following this.
 
+    if ($oldversion < 2026100500.03) {
+        // Define field expiredprocessed to be added to oauth2_server_client_secrets.
+        $table = new xmldb_table('oauth2_server_client_secrets');
+        $field = new xmldb_field('expiredprocessed', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0', 'lastaccessed');
+
+        // Conditionally launch add field expiredprocessed.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+
+            // Mark old, naturally expired secrets as processed (notification suppressed) so the scheduled task ignores
+            // them moving forward.
+            $now = \core\di::get(\core\clock::class)->time();
+            $DB->execute(
+                "UPDATE {oauth2_server_client_secrets}
+                        SET expiredprocessed = :suppressed
+                      WHERE revoked = 0
+                        AND expirytime <= :now",
+                [
+                    'suppressed' => \core\oauth2\server\entity\client_entity::SECRET_EXPIRED_PROCESSED_NOTIFICATION_SUPPRESSED,
+                    'now' => $now,
+                ]
+            );
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2026100500.03);
+    }
+
     return true;
 }

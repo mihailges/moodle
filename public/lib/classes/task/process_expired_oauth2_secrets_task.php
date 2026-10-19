@@ -16,6 +16,8 @@
 
 namespace core\task;
 
+use core\clock;
+use core\composer;
 use core\event\oauth2_client_secret_expired;
 use core\oauth2\server\entity\client_entity;
 use dml_exception;
@@ -38,6 +40,18 @@ class process_expired_oauth2_secrets_task extends scheduled_task {
     }
 
     /**
+     * Constructor.
+     *
+     * @param clock $clock
+     * @param composer $composer
+     */
+    public function __construct(
+        protected readonly clock $clock,
+        protected readonly composer $composer,
+    ) {
+    }
+
+    /**
      * Execute the task.
      *
      * @return void
@@ -49,13 +63,13 @@ class process_expired_oauth2_secrets_task extends scheduled_task {
         // Ensure that the 'league/oauth2-server' composer package is installed.
         // If it's not installed, OAuth2 authentication and client/secret management is not available, so there's no
         // need to execute this task further.
-        $package = \core\di::get(\core\composer::class)->get_package_status('league/oauth2-server');
+        $package = $this->composer->get_package_status('league/oauth2-server');
 
         if (!$package->installed) {
             return;
         }
 
-        $now = \core\di::get(\core\clock::class)->time();
+        $now = $this->clock->time();
 
         // Fetch active secrets belonging to an active client that naturally expired and are pending processing.
         $sql = "SELECT s.id,
@@ -161,7 +175,7 @@ class process_expired_oauth2_secrets_task extends scheduled_task {
     private function has_active_replacement_secret(string $clientidentifier, int $expiredsecretid): bool {
         global $DB;
 
-        $now = \core\di::get(\core\clock::class)->time();
+        $now = $this->clock->time();
 
         return $DB->record_exists_select(
             'oauth2_server_client_secrets',

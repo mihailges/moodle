@@ -123,7 +123,7 @@ final class process_expired_oauth2_secrets_task_test extends \advanced_testcase 
      * @return void
      */
     public function test_get_name(): void {
-        $task = new process_expired_oauth2_secrets_task();
+        $task = \core\di::make(process_expired_oauth2_secrets_task::class);
 
         $this->assertEquals(get_string('taskprocessexpiredoauth2clientsecrets'), $task->get_name());
     }
@@ -150,7 +150,7 @@ final class process_expired_oauth2_secrets_task_test extends \advanced_testcase 
 
         $eventsink = $this->redirectEvents();
 
-        (new process_expired_oauth2_secrets_task())->execute();
+        (\core\di::make(process_expired_oauth2_secrets_task::class))->execute();
 
         // The audit event was triggered for the expired secret.
         $events = $eventsink->get_events();
@@ -204,7 +204,7 @@ final class process_expired_oauth2_secrets_task_test extends \advanced_testcase 
 
         $eventsink = $this->redirectEvents();
 
-        (new process_expired_oauth2_secrets_task())->execute();
+        (\core\di::make(process_expired_oauth2_secrets_task::class))->execute();
 
         $events = $eventsink->get_events();
         $eventsink->close();
@@ -242,7 +242,7 @@ final class process_expired_oauth2_secrets_task_test extends \advanced_testcase 
 
         $this->create_client_secret_manager();
 
-        (new process_expired_oauth2_secrets_task())->execute();
+        (\core\di::make(process_expired_oauth2_secrets_task::class))->execute();
 
         $this->assertEquals(
             client_entity::SECRET_EXPIRED_PROCESSED_NOTIFICATION_SENT,
@@ -267,7 +267,7 @@ final class process_expired_oauth2_secrets_task_test extends \advanced_testcase 
 
         $eventsink = $this->redirectEvents();
 
-        (new process_expired_oauth2_secrets_task())->execute();
+        (\core\di::make(process_expired_oauth2_secrets_task::class))->execute();
 
         $this->assertCount(0, $eventsink->get_events());
         $eventsink->close();
@@ -297,7 +297,7 @@ final class process_expired_oauth2_secrets_task_test extends \advanced_testcase 
 
         $eventsink = $this->redirectEvents();
 
-        (new process_expired_oauth2_secrets_task())->execute();
+        (\core\di::make(process_expired_oauth2_secrets_task::class))->execute();
 
         $this->assertCount(0, $eventsink->get_events());
         $eventsink->close();
@@ -322,7 +322,7 @@ final class process_expired_oauth2_secrets_task_test extends \advanced_testcase 
 
         $eventsink = $this->redirectEvents();
 
-        (new process_expired_oauth2_secrets_task())->execute();
+        (\core\di::make(process_expired_oauth2_secrets_task::class))->execute();
 
         $this->assertCount(0, $eventsink->get_events());
         $eventsink->close();
@@ -342,7 +342,7 @@ final class process_expired_oauth2_secrets_task_test extends \advanced_testcase 
 
         $eventsink = $this->redirectEvents();
 
-        (new process_expired_oauth2_secrets_task())->execute();
+        (\core\di::make(process_expired_oauth2_secrets_task::class))->execute();
 
         $this->assertCount(0, $eventsink->get_events());
         $eventsink->close();
@@ -366,7 +366,7 @@ final class process_expired_oauth2_secrets_task_test extends \advanced_testcase 
         $client = $this->create_client();
         $secretid = $this->create_secret($client->clientidentifier, self::NOW - 1);
 
-        (new process_expired_oauth2_secrets_task())->execute();
+        (\core\di::make(process_expired_oauth2_secrets_task::class))->execute();
 
         $this->assertEquals(
             client_entity::SECRET_EXPIRED_PROCESSED_NOTIFICATION_SENT,
@@ -395,7 +395,7 @@ final class process_expired_oauth2_secrets_task_test extends \advanced_testcase 
         $recipient = $this->create_client_secret_manager();
         $DB->set_field('user', 'suspended', 1, ['id' => $recipient->id]);
 
-        (new process_expired_oauth2_secrets_task())->execute();
+        (\core\di::make(process_expired_oauth2_secrets_task::class))->execute();
 
         $this->assertCount(0, manager::get_adhoc_tasks(send_oauth2_secret_expired_notification_adhoc_task::class));
     }
@@ -420,7 +420,7 @@ final class process_expired_oauth2_secrets_task_test extends \advanced_testcase 
         $admin = $this->getDataGenerator()->create_user();
         $CFG->siteadmins = (string) $admin->id;
 
-        (new process_expired_oauth2_secrets_task())->execute();
+        (\core\di::make(process_expired_oauth2_secrets_task::class))->execute();
 
         $adhoctasks = manager::get_adhoc_tasks(send_oauth2_secret_expired_notification_adhoc_task::class);
         $this->assertCount(2, $adhoctasks);

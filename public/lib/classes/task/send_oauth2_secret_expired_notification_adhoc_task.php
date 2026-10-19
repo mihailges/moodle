@@ -33,12 +33,7 @@ class send_oauth2_secret_expired_notification_adhoc_task extends adhoc_task {
      * @return void
      */
     public function execute(): void {
-        global $OUTPUT;
-
-        $recipient = core_user::get_user($this->get_userid());
-        if (!$recipient || $recipient->deleted || $recipient->suspended) {
-            return;
-        }
+        global $OUTPUT, $USER;
 
         $data = $this->get_custom_data();
 
@@ -76,7 +71,7 @@ class send_oauth2_secret_expired_notification_adhoc_task extends adhoc_task {
             ],
         );
         $eventdata->notification = 1;
-        $eventdata->userto = $recipient;
+        $eventdata->userto = $USER;
 
         message_send($eventdata);
     }

@@ -2389,17 +2389,24 @@ function xmldb_main_upgrade($oldversion) {
 
             // Mark old, naturally expired secrets as processed (notification suppressed) so the scheduled task ignores
             // them moving forward.
-            $now = \core\di::get(\core\clock::class)->time();
-            $DB->execute(
-                "UPDATE {oauth2_server_client_secrets}
-                        SET expiredprocessed = :suppressed
-                      WHERE revoked = 0
-                        AND expirytime <= :now",
+            $DB->set_field_select(
+                'oauth2_server_client_secrets',
+                'expiredprocessed',
+                \core\oauth2\server\entity\client_entity::SECRET_EXPIRED_PROCESSED_NOTIFICATION_SUPPRESSED,
+                'revoked = :revoked AND expirytime <= :now',
                 [
-                    'suppressed' => \core\oauth2\server\entity\client_entity::SECRET_EXPIRED_PROCESSED_NOTIFICATION_SUPPRESSED,
-                    'now' => $now,
-                ]
+                    'revoked' => \core\oauth2\server\entity\client_entity::SECRET_REVOKED_NO,
+                    'now' => \core\di::get(\core\clock::class)->time(),
+                ],
             );
+        }
+
+        // Define index expiredprocessed_expirytime_ix (not unique) to be added to oauth2_server_client_secrets.
+        $index = new xmldb_index('expiredprocessed_expirytime_ix', XMLDB_INDEX_NOTUNIQUE, ['expiredprocessed', 'expirytime']);
+
+        // Conditionally launch add index expiredprocessed_expirytime_ix.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
         }
 
         // Main savepoint reached.

@@ -16,7 +16,8 @@
 
 namespace core\task;
 
-use core\event\oauth2_client_secret_expired;
+use core\clock;
+use core\composer;
 use core\oauth2\server\entity\client_entity;
 use dml_exception;
 
@@ -38,6 +39,20 @@ class process_expired_oauth2_secrets_task extends scheduled_task {
     }
 
     /**
+     * Constructor.
+     *
+     * @param clock $clock The clock.
+     * @param composer $composer The composer utility.
+     */
+    public function __construct(
+        /** @var clock The clock. */
+        protected readonly clock $clock,
+        /** @var composer The composer utility. */
+        protected readonly composer $composer,
+    ) {
+    }
+
+    /**
      * Execute the task.
      *
      * @return void
@@ -49,17 +64,16 @@ class process_expired_oauth2_secrets_task extends scheduled_task {
         // Ensure that the 'league/oauth2-server' composer package is installed.
         // If it's not installed, OAuth2 authentication and client/secret management is not available, so there's no
         // need to execute this task further.
-        $package = \core\di::get(\core\composer::class)->get_package_status('league/oauth2-server');
+        $package = $this->composer->get_package_status('league/oauth2-server');
 
         if (!$package->installed) {
             return;
         }
 
-        $now = \core\di::get(\core\clock::class)->time();
+        $now = $this->clock->time();
 
         // Fetch active secrets belonging to an active client that naturally expired and are pending processing.
         $sql = "SELECT s.id,
-                       s.clientidentifier,
                        s.expirytime,
                        c.id AS clientid,
                        c.name AS clientname
@@ -68,13 +82,13 @@ class process_expired_oauth2_secrets_task extends scheduled_task {
                  WHERE s.revoked = :secretrevoked
                    AND c.status = :clientstatus
                    AND s.expirytime <= :now
-                   AND s.expiredprocessed = :secretexpiredprocessed";
+                   AND s.expiryprocessed = :secretexpiryprocessed";
 
         $params = [
             'secretrevoked' => client_entity::SECRET_REVOKED_NO,
             'clientstatus' => client_entity::STATUS_ACTIVE,
             'now' => $now,
-            'secretexpiredprocessed' => client_entity::SECRET_EXPIRED_NOT_PROCESSED,
+            'secretexpiryprocessed' => client_entity::SECRET_EXPIRY_NOT_PROCESSED,
         ];
 
         $expiredsecrets = $DB->get_records_sql($sql, $params);
@@ -89,35 +103,14 @@ class process_expired_oauth2_secrets_task extends scheduled_task {
         $recipients = $this->get_client_secret_managers();
 
         foreach ($expiredsecrets as $secret) {
-            $this->trigger_secret_expired_event($secret->id, $secret->clientid);
-
-            // If the client has a newer active secret in use, the secret was successfully rotated and the old one was
-            // allowed to naturally expire. Since there is no service disruption in this case, notifications are
-            // suppressed to avoid unnecessary noise. If a replacement secret in use is not detected, notification should
-            // be sent to all relevant users to alert them of the expired secret and potential service disruption.
-            $sendnotification = !$this->has_active_replacement_secret($secret->clientidentifier, $secret->id);
-
-            if (!$sendnotification) {
-                // Mark the expired secret as processed (notifications suppressed) to avoid repeated evaluation by the
-                // cron.
-                $DB->set_field(
-                    'oauth2_server_client_secrets',
-                    'expiredprocessed',
-                    client_entity::SECRET_EXPIRED_PROCESSED_NOTIFICATION_SUPPRESSED,
-                    ['id' => $secret->id],
-                );
-
-                continue;
-            }
-
-            // When notifications are sent, wrap operations in a delegated transaction for atomic safety.
+            // Wrap operations in a delegated transaction for atomic safety.
             $transaction = $DB->start_delegated_transaction();
 
-            // Mark the expired secret as processed (notifications sent) to avoid repeated evaluation by the cron.
+            // Mark the expired secret as processed to avoid repeated evaluation by the cron.
             $DB->set_field(
                 'oauth2_server_client_secrets',
-                'expiredprocessed',
-                client_entity::SECRET_EXPIRED_PROCESSED_NOTIFICATION_SENT,
+                'expiryprocessed',
+                client_entity::SECRET_EXPIRY_PROCESSED,
                 ['id' => $secret->id],
             );
 
@@ -130,52 +123,6 @@ class process_expired_oauth2_secrets_task extends scheduled_task {
 
             $transaction->allow_commit();
         }
-    }
-
-    /**
-     * Triggers the 'oauth2_client_secret_expired' event for audit logging.
-     *
-     * @param int $expiredsecretid The ID of the expired secret.
-     * @param int $clientid The ID of the client associated to the expired secret.
-     * @return void
-     */
-    private function trigger_secret_expired_event(int $expiredsecretid, int $clientid): void {
-        $event = oauth2_client_secret_expired::create([
-            'objectid' => $expiredsecretid,
-            'context'  => \context_system::instance(),
-            'other'    => [
-                'clientid' => $clientid,
-            ],
-        ]);
-
-        $event->trigger();
-    }
-
-    /**
-     * Whether the client associated to the expired secret has a newer active secret in use.
-     *
-     * @param string $clientidentifier The client identifier.
-     * @param int $expiredsecretid The ID of the expired secret.
-     * @return bool
-     */
-    private function has_active_replacement_secret(string $clientidentifier, int $expiredsecretid): bool {
-        global $DB;
-
-        $now = \core\di::get(\core\clock::class)->time();
-
-        return $DB->record_exists_select(
-            'oauth2_server_client_secrets',
-            'clientidentifier = :clientidentifier
-            AND revoked = 0
-            AND expirytime > :now
-            AND id != :expiredsecretid
-            AND lastaccessed IS NOT NULL',
-            [
-                'clientidentifier' => $clientidentifier,
-                'now' => $now,
-                'expiredsecretid' => $expiredsecretid,
-            ]
-        );
     }
 
     /**

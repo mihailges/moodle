@@ -2382,27 +2382,33 @@ function xmldb_main_upgrade($oldversion) {
     // Put any upgrade step following this.
 
     if ($oldversion < 2026100500.03) {
-        // Define field expiredprocessed to be added to oauth2_server_client_secrets.
+        // Define field expiryprocessed to be added to oauth2_server_client_secrets.
         $table = new xmldb_table('oauth2_server_client_secrets');
-        $field = new xmldb_field('expiredprocessed', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0', 'lastaccessed');
+        $field = new xmldb_field('expiryprocessed', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'lastaccessed');
 
-        // Conditionally launch add field expiredprocessed.
+        // Conditionally launch add field expiryprocessed.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
 
-            // Mark old, naturally expired secrets as processed (notification suppressed) so the scheduled task ignores
-            // them moving forward.
-            $now = \core\di::get(\core\clock::class)->time();
-            $DB->execute(
-                "UPDATE {oauth2_server_client_secrets}
-                        SET expiredprocessed = :suppressed
-                      WHERE revoked = 0
-                        AND expirytime <= :now",
+            // Mark old, naturally expired secrets as processed so the scheduled task ignores them moving forward.
+            $DB->set_field_select(
+                'oauth2_server_client_secrets',
+                'expiryprocessed',
+                \core\oauth2\server\entity\client_entity::SECRET_EXPIRY_PROCESSED,
+                'revoked = :revoked AND expirytime <= :now',
                 [
-                    'suppressed' => \core\oauth2\server\entity\client_entity::SECRET_EXPIRED_PROCESSED_NOTIFICATION_SUPPRESSED,
-                    'now' => $now,
-                ]
+                    'revoked' => \core\oauth2\server\entity\client_entity::SECRET_REVOKED_NO,
+                    'now' => \core\di::get(\core\clock::class)->time(),
+                ],
             );
+        }
+
+        // Define index expiryprocessed_expirytime_ix (not unique) to be added to oauth2_server_client_secrets.
+        $index = new xmldb_index('expiryprocessed_expirytime_ix', XMLDB_INDEX_NOTUNIQUE, ['expiryprocessed', 'expirytime']);
+
+        // Conditionally launch add index expiryprocessed_expirytime_ix.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
         }
 
         // Main savepoint reached.

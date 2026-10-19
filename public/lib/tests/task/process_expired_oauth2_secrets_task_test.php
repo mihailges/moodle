@@ -16,7 +16,6 @@
 
 namespace core\task;
 
-use core\event\oauth2_client_secret_expired;
 use core\oauth2\server\entity\client_entity;
 use PHPUnit\Framework\Attributes\CoversClass;
 
@@ -78,7 +77,7 @@ final class process_expired_oauth2_secrets_task_test extends \advanced_testcase 
      * @param string $clientidentifier The owning client's identifier.
      * @param int $expirytime The expiry timestamp.
      * @param int $revoked Whether the secret is revoked.
-     * @param int $expiredprocessed The expired-processing state.
+     * @param int $expiryprocessed The expiry-processing state.
      * @param int|null $lastaccessed The last-accessed timestamp, or null if never used.
      * @return int The ID of the created secret.
      */
@@ -86,7 +85,7 @@ final class process_expired_oauth2_secrets_task_test extends \advanced_testcase 
         string $clientidentifier,
         int $expirytime,
         int $revoked = client_entity::SECRET_REVOKED_NO,
-        int $expiredprocessed = client_entity::SECRET_EXPIRED_NOT_PROCESSED,
+        int $expiryprocessed = client_entity::SECRET_EXPIRY_NOT_PROCESSED,
         ?int $lastaccessed = null,
     ): int {
         global $DB;
@@ -98,7 +97,7 @@ final class process_expired_oauth2_secrets_task_test extends \advanced_testcase 
             'revoked' => $revoked,
             'timecreated' => self::NOW - DAYSECS,
             'lastaccessed' => $lastaccessed,
-            'expiredprocessed' => $expiredprocessed,
+            'expiryprocessed' => $expiryprocessed,
         ]);
     }
 
@@ -123,18 +122,18 @@ final class process_expired_oauth2_secrets_task_test extends \advanced_testcase 
      * @return void
      */
     public function test_get_name(): void {
-        $task = new process_expired_oauth2_secrets_task();
+        $task = \core\di::make(process_expired_oauth2_secrets_task::class);
 
         $this->assertEquals(get_string('taskprocessexpiredoauth2clientsecrets'), $task->get_name());
     }
 
     /**
-     * An expired secret with no active replacement triggers the audit event, is marked as processed with
-     * notifications sent, and queues a notification adhoc task for every eligible recipient.
+     * An expired secret is marked as processed and queues a notification adhoc task for
+     * every eligible recipient.
      *
      * @return void
      */
-    public function test_execute_sends_notification_when_no_active_replacement_secret(): void {
+    public function test_execute_sends_notification_for_expired_secret(): void {
         global $CFG, $DB;
 
         $this->resetAfterTest();
@@ -148,22 +147,12 @@ final class process_expired_oauth2_secrets_task_test extends \advanced_testcase 
 
         $recipient = $this->create_client_secret_manager();
 
-        $eventsink = $this->redirectEvents();
-
-        (new process_expired_oauth2_secrets_task())->execute();
-
-        // The audit event was triggered for the expired secret.
-        $events = $eventsink->get_events();
-        $eventsink->close();
-        $this->assertCount(1, $events);
-        $this->assertInstanceOf(oauth2_client_secret_expired::class, $events[0]);
-        $this->assertEquals($secretid, $events[0]->objectid);
-        $this->assertEquals($client->id, $events[0]->other['clientid']);
+        (\core\di::make(process_expired_oauth2_secrets_task::class))->execute();
 
         // The secret is marked as processed with the notification sent.
         $this->assertEquals(
-            client_entity::SECRET_EXPIRED_PROCESSED_NOTIFICATION_SENT,
-            $DB->get_field('oauth2_server_client_secrets', 'expiredprocessed', ['id' => $secretid]),
+            client_entity::SECRET_EXPIRY_PROCESSED,
+            $DB->get_field('oauth2_server_client_secrets', 'expiryprocessed', ['id' => $secretid]),
         );
 
         // An adhoc notification task was queued for the eligible recipient.
@@ -179,53 +168,11 @@ final class process_expired_oauth2_secrets_task_test extends \advanced_testcase 
     }
 
     /**
-     * An expired secret whose client already has an active, in-use replacement secret has its notification
-     * suppressed: the event still fires, but no adhoc notification task is queued.
+     * The notification is sent even when the client has another active secret, so the expiry is always reported.
      *
      * @return void
      */
-    public function test_execute_suppresses_notification_when_active_replacement_secret_exists(): void {
-        global $DB;
-
-        $this->resetAfterTest();
-        $this->freeze_clock();
-
-        $client = $this->create_client();
-        $expiredsecretid = $this->create_secret($client->clientidentifier, self::NOW - 1);
-
-        // A replacement secret that is active and has already been used to authenticate.
-        $this->create_secret(
-            $client->clientidentifier,
-            self::NOW + DAYSECS,
-            lastaccessed: self::NOW - MINSECS,
-        );
-
-        $this->create_client_secret_manager();
-
-        $eventsink = $this->redirectEvents();
-
-        (new process_expired_oauth2_secrets_task())->execute();
-
-        $events = $eventsink->get_events();
-        $eventsink->close();
-        $this->assertCount(1, $events);
-        $this->assertEquals($expiredsecretid, $events[0]->objectid);
-
-        $this->assertEquals(
-            client_entity::SECRET_EXPIRED_PROCESSED_NOTIFICATION_SUPPRESSED,
-            $DB->get_field('oauth2_server_client_secrets', 'expiredprocessed', ['id' => $expiredsecretid]),
-        );
-
-        $this->assertCount(0, manager::get_adhoc_tasks(send_oauth2_secret_expired_notification_adhoc_task::class));
-    }
-
-    /**
-     * A replacement secret that has never been used to authenticate does not count as an active replacement,
-     * so the notification is still sent.
-     *
-     * @return void
-     */
-    public function test_execute_sends_notification_when_replacement_secret_never_used(): void {
+    public function test_execute_sends_notification_when_active_replacement_secret_exists(): void {
         global $CFG, $DB;
 
         $this->resetAfterTest();
@@ -237,16 +184,16 @@ final class process_expired_oauth2_secrets_task_test extends \advanced_testcase 
         $client = $this->create_client();
         $expiredsecretid = $this->create_secret($client->clientidentifier, self::NOW - 1);
 
-        // A replacement secret that is active, but has never been used (lastaccessed is null).
-        $this->create_secret($client->clientidentifier, self::NOW + DAYSECS);
+        // An active replacement secret that is already in use.
+        $this->create_secret($client->clientidentifier, self::NOW + DAYSECS, lastaccessed: self::NOW - MINSECS);
 
         $this->create_client_secret_manager();
 
-        (new process_expired_oauth2_secrets_task())->execute();
+        (\core\di::make(process_expired_oauth2_secrets_task::class))->execute();
 
         $this->assertEquals(
-            client_entity::SECRET_EXPIRED_PROCESSED_NOTIFICATION_SENT,
-            $DB->get_field('oauth2_server_client_secrets', 'expiredprocessed', ['id' => $expiredsecretid]),
+            client_entity::SECRET_EXPIRY_PROCESSED,
+            $DB->get_field('oauth2_server_client_secrets', 'expiryprocessed', ['id' => $expiredsecretid]),
         );
         $this->assertCount(1, manager::get_adhoc_tasks(send_oauth2_secret_expired_notification_adhoc_task::class));
     }
@@ -265,16 +212,11 @@ final class process_expired_oauth2_secrets_task_test extends \advanced_testcase 
         $client = $this->create_client();
         $secretid = $this->create_secret($client->clientidentifier, self::NOW + DAYSECS);
 
-        $eventsink = $this->redirectEvents();
-
-        (new process_expired_oauth2_secrets_task())->execute();
-
-        $this->assertCount(0, $eventsink->get_events());
-        $eventsink->close();
+        (\core\di::make(process_expired_oauth2_secrets_task::class))->execute();
 
         $this->assertEquals(
-            client_entity::SECRET_EXPIRED_NOT_PROCESSED,
-            $DB->get_field('oauth2_server_client_secrets', 'expiredprocessed', ['id' => $secretid]),
+            client_entity::SECRET_EXPIRY_NOT_PROCESSED,
+            $DB->get_field('oauth2_server_client_secrets', 'expiryprocessed', ['id' => $secretid]),
         );
         $this->assertCount(0, manager::get_adhoc_tasks(send_oauth2_secret_expired_notification_adhoc_task::class));
     }
@@ -292,15 +234,11 @@ final class process_expired_oauth2_secrets_task_test extends \advanced_testcase 
         $this->create_secret(
             $client->clientidentifier,
             self::NOW - 1,
-            expiredprocessed: client_entity::SECRET_EXPIRED_PROCESSED_NOTIFICATION_SENT,
+            expiryprocessed: client_entity::SECRET_EXPIRY_PROCESSED,
         );
 
-        $eventsink = $this->redirectEvents();
+        (\core\di::make(process_expired_oauth2_secrets_task::class))->execute();
 
-        (new process_expired_oauth2_secrets_task())->execute();
-
-        $this->assertCount(0, $eventsink->get_events());
-        $eventsink->close();
         $this->assertCount(0, manager::get_adhoc_tasks(send_oauth2_secret_expired_notification_adhoc_task::class));
     }
 
@@ -320,12 +258,7 @@ final class process_expired_oauth2_secrets_task_test extends \advanced_testcase 
             revoked: client_entity::SECRET_REVOKED_YES,
         );
 
-        $eventsink = $this->redirectEvents();
-
-        (new process_expired_oauth2_secrets_task())->execute();
-
-        $this->assertCount(0, $eventsink->get_events());
-        $eventsink->close();
+        (\core\di::make(process_expired_oauth2_secrets_task::class))->execute();
     }
 
     /**
@@ -340,16 +273,11 @@ final class process_expired_oauth2_secrets_task_test extends \advanced_testcase 
         $client = $this->create_client(client_entity::STATUS_DISABLED);
         $this->create_secret($client->clientidentifier, self::NOW - 1);
 
-        $eventsink = $this->redirectEvents();
-
-        (new process_expired_oauth2_secrets_task())->execute();
-
-        $this->assertCount(0, $eventsink->get_events());
-        $eventsink->close();
+        (\core\di::make(process_expired_oauth2_secrets_task::class))->execute();
     }
 
     /**
-     * When there are no eligible recipients, the secret is still marked as processed (notification sent), but
+     * When there are no eligible recipients, the secret is still marked as processed , but
      * no adhoc tasks are queued.
      *
      * @return void
@@ -366,11 +294,11 @@ final class process_expired_oauth2_secrets_task_test extends \advanced_testcase 
         $client = $this->create_client();
         $secretid = $this->create_secret($client->clientidentifier, self::NOW - 1);
 
-        (new process_expired_oauth2_secrets_task())->execute();
+        (\core\di::make(process_expired_oauth2_secrets_task::class))->execute();
 
         $this->assertEquals(
-            client_entity::SECRET_EXPIRED_PROCESSED_NOTIFICATION_SENT,
-            $DB->get_field('oauth2_server_client_secrets', 'expiredprocessed', ['id' => $secretid]),
+            client_entity::SECRET_EXPIRY_PROCESSED,
+            $DB->get_field('oauth2_server_client_secrets', 'expiryprocessed', ['id' => $secretid]),
         );
         $this->assertCount(0, manager::get_adhoc_tasks(send_oauth2_secret_expired_notification_adhoc_task::class));
     }
@@ -395,7 +323,7 @@ final class process_expired_oauth2_secrets_task_test extends \advanced_testcase 
         $recipient = $this->create_client_secret_manager();
         $DB->set_field('user', 'suspended', 1, ['id' => $recipient->id]);
 
-        (new process_expired_oauth2_secrets_task())->execute();
+        (\core\di::make(process_expired_oauth2_secrets_task::class))->execute();
 
         $this->assertCount(0, manager::get_adhoc_tasks(send_oauth2_secret_expired_notification_adhoc_task::class));
     }
@@ -420,7 +348,7 @@ final class process_expired_oauth2_secrets_task_test extends \advanced_testcase 
         $admin = $this->getDataGenerator()->create_user();
         $CFG->siteadmins = (string) $admin->id;
 
-        (new process_expired_oauth2_secrets_task())->execute();
+        (\core\di::make(process_expired_oauth2_secrets_task::class))->execute();
 
         $adhoctasks = manager::get_adhoc_tasks(send_oauth2_secret_expired_notification_adhoc_task::class);
         $this->assertCount(2, $adhoctasks);

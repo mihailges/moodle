@@ -847,7 +847,6 @@ $string['eventdatabasetextfieldcontentreplaced'] = 'Database global search and r
 $string['eventemailfailed'] = 'Email failed to send';
 $string['eventmycoursesviewed'] = 'My courses viewed';
 $string['eventname'] = 'Event name';
-$string['eventoauth2clientsecretexpired'] = 'OAuth 2 client secret expired';
 $string['eventrecentactivityviewed'] = 'Recent activity viewed';
 $string['eventrestrictedsectionviewed'] = 'Restricted section viewed';
 $string['eventsearchindexed'] = 'Search data indexed';
@@ -1629,7 +1628,7 @@ $string['oauth2:continueasuserinfo'] = 'You are currently logged in as {$a}';
 $string['oauth2:passwordexpiredexternal'] = 'Your password has expired and must be changed on an external site before you can sign in. Once you have changed it, return to {$a} and start signing in again.';
 $string['oauth2secretexpirednotificationaction'] = 'Please visit the <a href="{$a}">Manage secrets</a> page to generate a new secret.';
 $string['oauth2secretexpirednotificationdesc'] = 'API requests and integrations using this secret will fail until a new secret is generated and configured in your client application.';
-$string['oauth2secretexpirednotificationintro'] = 'The client secret for the OAuth 2 client "{$a->clientname}" expired on {$a->secretexpireddatetime} and no active replacement secret was detected.';
+$string['oauth2secretexpirednotificationintro'] = 'The client secret for the OAuth 2 client "{$a->clientname}" expired on {$a->secretexpireddatetime}.';
 $string['oauth2secretexpirednotificationsubject'] = 'Client secret expired for the OAuth 2 client "{$a}"';
 $string['ok'] = 'OK';
 $string['oldpassword'] = 'Current password';

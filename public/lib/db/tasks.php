@@ -506,9 +506,9 @@ $tasks = array(
         'disabled' => false,
     ],
     [
-        'classname' => 'core\task\process_expired_oauth2_secrets_task',
+        'classname' => \core\task\process_expired_oauth2_secrets_task::class,
         'blocking'  => 0,
-        'minute'    => '15',
+        'minute'    => 'R',
         'hour'      => '*',
         'day'       => '*',
         'month'     => '*',

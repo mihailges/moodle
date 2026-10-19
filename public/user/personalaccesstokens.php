@@ -34,6 +34,16 @@ use core\reportbuilder\local\systemreports\api_tokens;
 use core\url;
 use core_reportbuilder\system_report_factory;
 
+$composer = \core\di::get(\core\composer::class);
+// Ensure the 'league/oauth2-server' composer package is installed, as it is a required dependency
+// for the Personal Access Tokens (PAT) feature. PATs (token_manager) rely on scope_repository, which implements
+// ScopeRepositoryInterface provided by the package.
+$ispackageinstalled = $composer->get_package_status('league/oauth2-server')->installed;
+
+if (!$ispackageinstalled) {
+    throw new \moodle_exception('missingcomposerdependency', 'error', '', 'league/oauth2-server');
+}
+
 require_login();
 
 // A guest has no identity to act on behalf of, so a token would be meaningless.

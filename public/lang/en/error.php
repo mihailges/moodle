@@ -428,6 +428,7 @@ $string['maxdraftitemids'] = 'Your file uploads are temporarily limited after yo
 $string['messageundeliveredbynotificationsettings'] = 'The message could not be sent because personal messages between users (in Notification settings) has been disabled by a site administrator.';
 $string['messagingdisable'] = 'Messaging is disabled on this site';
 $string['missingcategoryrole'] = 'Could not assign role to user: missing role for category.';
+$string['missingcomposerdependency'] = 'The required Composer package "{$a}" is not installed.';
 $string['missingfield'] = 'Field "{$a}" is missing';
 $string['missingkeyinsql'] = 'ERROR: missing param "{$a}" in query';
 $string['missingparam'] = 'A required parameter ({$a}) was missing';

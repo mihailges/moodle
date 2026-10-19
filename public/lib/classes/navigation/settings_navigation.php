@@ -1366,7 +1366,11 @@ class settings_navigation extends navigation_node {
         }
 
         // Personal access tokens. Own tokens only, so there is nothing to show on another user.
-        if ($currentuser && has_capability('moodle/api:createtoken', $systemcontext)) {
+        $composer = \core\di::get(\core\composer::class);
+        // Ensure the 'league/oauth2-server' composer package is installed, as it is a required dependency
+        // for the Personal Access Tokens feature.
+        $ispackageinstalled = $composer->get_package_status('league/oauth2-server')->installed;
+        if ($ispackageinstalled && $currentuser && has_capability('moodle/api:createtoken', $systemcontext)) {
             $useraccount->add(
                 get_string('personalaccesstokens'),
                 new url('/user/personalaccesstokens.php'),

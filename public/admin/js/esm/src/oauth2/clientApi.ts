@@ -1,10 +1,20 @@
+let store = {id: 7, name: 'Mobile app', description: 'iOS client', ispkcerequired: true,
+             scopes: ['user:read'], redirecturis: ['com.example.app:/callback']};
+
 export async function getClient(id: number) {
-    await delay(300);
-    return {
-        values: {name: 'Test client', description: '', ispkcerequired: true,
-                 scopes: ['user:read'], redirecturis: ['https://example.com/cb']},
-        readonly: ['ispkcerequired'],      // stand-in for capability-driven state
-    };
+    await new Promise((r) => setTimeout(r, 300));
+    return {values: {...store}, readonly: ['ispkcerequired']};
+}
+
+// Mock of PATCH /oauth2/server/clients/{id}
+export async function patchClient(id: number, changes: Partial<ClientPayload>) {
+    await new Promise((r) => setTimeout(r, 300));
+    console.log('PATCH body', changes);
+    if (changes.name?.toLowerCase() === 'duplicate') {
+        throw new FormValidationError({name: ['A client with this name already exists']});
+    }
+    store = {...store, ...changes};
+    return {...store};
 }
 
 export type Option = {

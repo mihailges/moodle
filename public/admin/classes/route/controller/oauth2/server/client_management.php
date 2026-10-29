@@ -170,6 +170,8 @@ class client_management {
             ),
         );
         $response->getBody()->write(\html_writer::react_component('@moodle/lms/core_admin/oauth2/clientForm', []));
+        // Uncomment to see editing.
+        // $response->getBody()->write(\html_writer::react_component('@moodle/lms/core_admin/oauth2/clientForm', ['clientId' => 2]));
         // $response->getBody()->write($mform->render());
         $response->getBody()->write($OUTPUT->footer());
 

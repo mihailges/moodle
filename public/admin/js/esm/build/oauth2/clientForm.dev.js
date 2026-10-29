@@ -4,20 +4,67 @@ import { jsxDEV } from "react/jsx-dev-runtime";
 import { useEffect, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { Input, Textarea, Switch, Checkbox, Button } from "@moodlehq/design-system";
-import { getScopes, createClient, FormValidationError } from "@moodle/lms/core_admin/oauth2/clientApi";
-function RhfSmokeTest() {
-  const { register, control, handleSubmit, setError, formState: { errors, isDirty, isSubmitting } } = useForm({
+import { getScopes, createClient, FormValidationError, getClient, patchClient } from "@moodle/lms/core_admin/oauth2/clientApi";
+function ClientForm({ clientId }) {
+  const { register, control, handleSubmit, reset, setError, formState: { dirtyFields, errors, isDirty, isSubmitting } } = useForm({
     defaultValues: { name: "Test client", description: "", ispkcerequired: false, scopes: [], redirecturis: [{ uri: "" }] }
   });
   const { fields, append, remove } = useFieldArray({ control, name: "redirecturis" });
+  const toFormValues = /* @__PURE__ */ __name((c) => ({ ...c, redirecturis: c.redirecturis.map((uri) => ({ uri })) }), "toFormValues");
   const [scopeOptions, setScopeOptions] = useState(null);
+  const [loaded, setLoaded] = useState(false);
+  const [readonly, setReadonly] = useState([]);
+  const [loadError, setLoadError] = useState(null);
   useEffect(() => {
-    getScopes().then(setScopeOptions);
-  }, []);
+    Promise.all([getScopes(), clientId ? getClient(clientId) : Promise.resolve(null)]).then(([options, client]) => {
+      setScopeOptions(options);
+      if (client) {
+        reset(toFormValues(client.values));
+        setReadonly(client.readonly);
+      }
+      setLoaded(true);
+    }).catch(() => {
+      setLoadError("this client could not be loaded");
+    }).finally(() => setLoaded(true));
+  }, [clientId]);
+  if (!loaded) {
+    return /* @__PURE__ */ jsxDEV("p", { children: "Loading..." }, void 0, false, {
+      fileName: "public/admin/js/esm/src/oauth2/clientForm.tsx",
+      lineNumber: 45,
+      columnNumber: 16
+    }, this);
+  }
+  if (loadError) {
+    return /* @__PURE__ */ jsxDEV("div", { role: "alert", className: "alert alert-danger", children: loadError }, void 0, false, {
+      fileName: "public/admin/js/esm/src/oauth2/clientForm.tsx",
+      lineNumber: 48,
+      columnNumber: 16
+    }, this);
+  }
+  const toPayload = /* @__PURE__ */ __name((values) => ({
+    ...values,
+    redirecturis: values.redirecturis.map((r) => r.uri)
+  }), "toPayload");
+  const changedValues = /* @__PURE__ */ __name((values) => {
+    const payload = toPayload(values);
+    return Object.fromEntries(
+      Object.keys(dirtyFields).map((key) => [key, payload[key]])
+    );
+  }, "changedValues");
   const onSubmit = /* @__PURE__ */ __name(async (values) => {
     try {
-      const client = await createClient({ ...values, redirecturis: values.redirecturis.map((r) => r.uri) });
-      console.log("created", client);
+      if (clientId) {
+        const changes = changedValues(values);
+        if (Object.keys(changes).length === 0) {
+          return;
+        }
+        const saved = await patchClient(clientId, changes);
+        reset(toFormValues(saved));
+        console.log("updated", saved);
+      } else {
+        const client = await createClient(toPayload(values));
+        console.log("created", client);
+      }
     } catch (e) {
       if (!(e instanceof FormValidationError)) {
         setError("root.server", { message: "Something went wrong. Try again." });
@@ -40,13 +87,14 @@ function RhfSmokeTest() {
           maxLength: { value: 15, message: "Name must be 15 characters or fewer" }
         }),
         invalid: Boolean(errors.name),
-        invalidFeedback: errors.name?.message
+        invalidFeedback: errors.name?.message,
+        readOnly: readonly.includes("name")
       },
       void 0,
       false,
       {
         fileName: "public/admin/js/esm/src/oauth2/clientForm.tsx",
-        lineNumber: 47,
+        lineNumber: 94,
         columnNumber: 13
       },
       this
@@ -61,7 +109,7 @@ function RhfSmokeTest() {
       false,
       {
         fileName: "public/admin/js/esm/src/oauth2/clientForm.tsx",
-        lineNumber: 56,
+        lineNumber: 104,
         columnNumber: 13
       },
       this
@@ -70,13 +118,14 @@ function RhfSmokeTest() {
       Switch,
       {
         label: "Is PKCE required",
-        ...register("ispkcerequired")
+        ...register("ispkcerequired"),
+        disabled: readonly.includes("ispkcerequired")
       },
       void 0,
       false,
       {
         fileName: "public/admin/js/esm/src/oauth2/clientForm.tsx",
-        lineNumber: 60,
+        lineNumber: 108,
         columnNumber: 13
       },
       this
@@ -84,7 +133,7 @@ function RhfSmokeTest() {
     /* @__PURE__ */ jsxDEV("fieldset", { children: [
       /* @__PURE__ */ jsxDEV("legend", { className: "fs-6 mb-2", children: "Redirect URIs" }, void 0, false, {
         fileName: "public/admin/js/esm/src/oauth2/clientForm.tsx",
-        lineNumber: 66,
+        lineNumber: 115,
         columnNumber: 17
       }, this),
       /* @__PURE__ */ jsxDEV("div", { className: "d-flex flex-column gap-2", children: fields.map((field, index) => /* @__PURE__ */ jsxDEV("div", { className: "d-flex gap-2 align-items-start", children: [
@@ -105,7 +154,7 @@ function RhfSmokeTest() {
           false,
           {
             fileName: "public/admin/js/esm/src/oauth2/clientForm.tsx",
-            lineNumber: 70,
+            lineNumber: 119,
             columnNumber: 29
           },
           this
@@ -124,39 +173,39 @@ function RhfSmokeTest() {
           false,
           {
             fileName: "public/admin/js/esm/src/oauth2/clientForm.tsx",
-            lineNumber: 81,
+            lineNumber: 130,
             columnNumber: 29
           },
           this
         )
       ] }, field.id, true, {
         fileName: "public/admin/js/esm/src/oauth2/clientForm.tsx",
-        lineNumber: 69,
+        lineNumber: 118,
         columnNumber: 25
       }, this)) }, void 0, false, {
         fileName: "public/admin/js/esm/src/oauth2/clientForm.tsx",
-        lineNumber: 67,
+        lineNumber: 116,
         columnNumber: 17
       }, this),
       /* @__PURE__ */ jsxDEV(Button, { type: "button", className: "mt-2", onClick: () => append({ uri: "" }), label: "Add redirect URI" }, void 0, false, {
         fileName: "public/admin/js/esm/src/oauth2/clientForm.tsx",
-        lineNumber: 92,
+        lineNumber: 141,
         columnNumber: 17
       }, this)
     ] }, void 0, true, {
       fileName: "public/admin/js/esm/src/oauth2/clientForm.tsx",
-      lineNumber: 65,
+      lineNumber: 114,
       columnNumber: 13
     }, this),
     /* @__PURE__ */ jsxDEV("fieldset", { "aria-describedby": errors.scopes ? "oauth2client_scopes_error" : void 0, children: [
       /* @__PURE__ */ jsxDEV("legend", { className: "fs-6 mb-2", children: "Scopes" }, void 0, false, {
         fileName: "public/admin/js/esm/src/oauth2/clientForm.tsx",
-        lineNumber: 96,
+        lineNumber: 145,
         columnNumber: 17
       }, this),
       scopeOptions === null ? /* @__PURE__ */ jsxDEV("p", { className: "text-muted", children: "Loading scopes\u2026" }, void 0, false, {
         fileName: "public/admin/js/esm/src/oauth2/clientForm.tsx",
-        lineNumber: 99,
+        lineNumber: 148,
         columnNumber: 21
       }, this) : scopeOptions.map((scope) => /* @__PURE__ */ jsxDEV(
         Checkbox,
@@ -172,47 +221,47 @@ function RhfSmokeTest() {
         false,
         {
           fileName: "public/admin/js/esm/src/oauth2/clientForm.tsx",
-          lineNumber: 101,
+          lineNumber: 150,
           columnNumber: 21
         },
         this
       )),
       errors.scopes && /* @__PURE__ */ jsxDEV("div", { id: "oauth2client_scopes_error", className: "text-danger small mt-1", children: errors.scopes.message }, void 0, false, {
         fileName: "public/admin/js/esm/src/oauth2/clientForm.tsx",
-        lineNumber: 113,
-        columnNumber: 21
-      }, this),
-      errors.root?.server && /* @__PURE__ */ jsxDEV("div", { role: "alert", className: "alert alert-danger", children: errors.root.server.message }, void 0, false, {
-        fileName: "public/admin/js/esm/src/oauth2/clientForm.tsx",
-        lineNumber: 118,
+        lineNumber: 162,
         columnNumber: 21
       }, this)
     ] }, void 0, true, {
       fileName: "public/admin/js/esm/src/oauth2/clientForm.tsx",
-      lineNumber: 95,
+      lineNumber: 144,
       columnNumber: 13
+    }, this),
+    errors.root?.server && /* @__PURE__ */ jsxDEV("div", { role: "alert", className: "alert alert-danger", children: errors.root.server.message }, void 0, false, {
+      fileName: "public/admin/js/esm/src/oauth2/clientForm.tsx",
+      lineNumber: 168,
+      columnNumber: 17
     }, this),
     /* @__PURE__ */ jsxDEV("p", { children: [
       "Dirty: ",
       String(isDirty)
     ] }, void 0, true, {
       fileName: "public/admin/js/esm/src/oauth2/clientForm.tsx",
-      lineNumber: 122,
+      lineNumber: 171,
       columnNumber: 13
     }, this),
     /* @__PURE__ */ jsxDEV(Button, { type: "submit", label: isSubmitting ? "Saving\u2026" : "Save", size: "lg", disabled: isSubmitting }, void 0, false, {
       fileName: "public/admin/js/esm/src/oauth2/clientForm.tsx",
-      lineNumber: 123,
+      lineNumber: 172,
       columnNumber: 13
     }, this)
   ] }, void 0, true, {
     fileName: "public/admin/js/esm/src/oauth2/clientForm.tsx",
-    lineNumber: 46,
+    lineNumber: 93,
     columnNumber: 9
   }, this);
 }
-__name(RhfSmokeTest, "RhfSmokeTest");
+__name(ClientForm, "ClientForm");
 export {
-  RhfSmokeTest as default
+  ClientForm as default
 };
 //# sourceMappingURL=clientForm.dev.js.map

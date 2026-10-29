@@ -1,20 +1,28 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
+let store = {
+  id: 7,
+  name: "Mobile app",
+  description: "iOS client",
+  ispkcerequired: true,
+  scopes: ["user:read"],
+  redirecturis: ["com.example.app:/callback"]
+};
 async function getClient(id) {
-  await delay(300);
-  return {
-    values: {
-      name: "Test client",
-      description: "",
-      ispkcerequired: true,
-      scopes: ["user:read"],
-      redirecturis: ["https://example.com/cb"]
-    },
-    readonly: ["ispkcerequired"]
-    // stand-in for capability-driven state
-  };
+  await new Promise((r) => setTimeout(r, 300));
+  return { values: { ...store }, readonly: ["ispkcerequired"] };
 }
 __name(getClient, "getClient");
+async function patchClient(id, changes) {
+  await new Promise((r) => setTimeout(r, 300));
+  console.log("PATCH body", changes);
+  if (changes.name?.toLowerCase() === "duplicate") {
+    throw new FormValidationError({ name: ["A client with this name already exists"] });
+  }
+  store = { ...store, ...changes };
+  return { ...store };
+}
+__name(patchClient, "patchClient");
 async function getScopes() {
   await new Promise((r) => setTimeout(r, 300));
   return [
@@ -55,6 +63,7 @@ export {
   FormValidationError,
   createClient,
   getClient,
-  getScopes
+  getScopes,
+  patchClient
 };
 //# sourceMappingURL=clientApi.dev.js.map

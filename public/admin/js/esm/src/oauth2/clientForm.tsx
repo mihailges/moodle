@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import {useForm, useFieldArray} from 'react-hook-form';
-import {Input, Textarea, Switch, Checkbox ,Button} from '@moodlehq/design-system';
-import {getScopes, createClient, FormValidationError} from '@moodle/lms/core_admin/oauth2/clientApi';
+import {Input, Textarea, Switch, Checkbox, Button} from '@moodlehq/design-system';
+import {getScopes, createClient, FormValidationError, getClient, patchClient} from '@moodle/lms/core_admin/oauth2/clientApi';
 
 type ClientValues = {
     name: string;
@@ -11,23 +11,70 @@ type ClientValues = {
     redirecturis: {uri: string}[];
 };
 
-export default function RhfSmokeTest() {
-    const {register, control, handleSubmit, setError, formState: {errors, isDirty, isSubmitting}} = useForm<ClientValues>({
+export default function ClientForm({clientId}: {clientId?: number}) {
+    const {register, control, handleSubmit, reset, setError, formState: {dirtyFields, errors, isDirty, isSubmitting}} = useForm<ClientValues>({
         defaultValues: {name: 'Test client', description: '', ispkcerequired: false, scopes: [], redirecturis: [{uri: ''}]},
     });
 
     const {fields, append, remove} = useFieldArray({control, name: 'redirecturis'});
 
-    const [scopeOptions, setScopeOptions] = useState(null);
+    const toFormValues = (c: ClientPayload): ClientValues => ({...c, redirecturis: c.redirecturis.map((uri) => ({uri}))});
+
+    const [scopeOptions, setScopeOptions] = useState<Option[] | null>(null);
+    const [loaded, setLoaded] = useState(false);
+    const [readonly, setReadonly] = useState<string[]>([]);
+    const [loadError, setLoadError] = useState<string | null>(null);
 
     useEffect(() => {
-        getScopes().then(setScopeOptions);
-    }, []);
+        Promise.all([getScopes(), clientId ? getClient(clientId) : Promise.resolve(null)])
+            .then(([options, client]) => {
+                setScopeOptions(options);
+                if (client) {
+                    reset(toFormValues(client.values));   // dirty tracking starts from the loaded values
+                    setReadonly(client.readonly);
+                }
+                setLoaded(true);
+            })
+            .catch(() => {
+                setLoadError('this client could not be loaded');
+            })
+            .finally(() => setLoaded(true));
+    }, [clientId]);
+
+    if (!loaded) {
+        return <p>Loading...</p>;
+    }
+    if (loadError) {
+        return <div role="alert" className="alert alert-danger">{loadError}</div>;
+    }
+
+    const toPayload = (values: ClientValues): ClientPayload => ({
+        ...values,
+        redirecturis: values.redirecturis.map((r) => r.uri),
+    });
+
+    const changedValues = (values: ClientValues): Partial<ClientPayload> => {
+        const payload = toPayload(values);
+        return Object.fromEntries(
+            Object.keys(dirtyFields).map((key) => [key, payload[key as keyof ClientPayload]]),
+        );
+    };
 
     const onSubmit = async (values: ClientValues) => {
         try {
-            const client = await createClient({...values, redirecturis: values.redirecturis.map((r) => r.uri)});
-            console.log('created', client);
+            if (clientId) {
+                // Edit: PATCH only the changed fields.
+                const changes = changedValues(values);
+                if (Object.keys(changes).length === 0) {
+                    return;
+                }
+                const saved = await patchClient(clientId, changes);
+                reset(toFormValues(saved));          // saved state becomes the clean baseline
+                console.log('updated', saved);
+            } else {
+                const client = await createClient(toPayload(values));
+                console.log('created', client);
+            }
         } catch (e) {
             if (!(e instanceof FormValidationError)) {
                 setError('root.server', {message: 'Something went wrong. Try again.'});
@@ -52,6 +99,7 @@ export default function RhfSmokeTest() {
                 })}
                 invalid={Boolean(errors.name)}
                 invalidFeedback={errors.name?.message}
+                readOnly={readonly.includes('name')}
             />
             <Textarea
                 label="Description"
@@ -60,6 +108,7 @@ export default function RhfSmokeTest() {
             <Switch
                 label="Is PKCE required"
                 {...register('ispkcerequired')}
+                disabled={readonly.includes('ispkcerequired')}
             />
 
             <fieldset>
@@ -114,10 +163,10 @@ export default function RhfSmokeTest() {
                         {errors.scopes.message}
                     </div>
                 )}
-                {errors.root?.server && (
-                    <div role="alert" className="alert alert-danger">{errors.root.server.message}</div>
-                )}
             </fieldset>
+            {errors.root?.server && (
+                <div role="alert" className="alert alert-danger">{errors.root.server.message}</div>
+            )}
 
             <p>Dirty: {String(isDirty)}</p>
             <Button type="submit" label={isSubmitting ? 'Saving…' : 'Save'} size="lg" disabled={isSubmitting} />

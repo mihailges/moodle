@@ -250,6 +250,14 @@ class import_map implements \JsonSerializable {
             path: 'lib/bundles/bootstrap/js',
             allowedsuffixes: ['.js', '.js.map'],
         );
+        $this->add_import(
+            specifier: 'react-hook-form',
+            path: 'lib/bundles/react-hook-form/dist',
+            urlsuffix: '/index.esm.mjs',
+            allowedsuffixes: ['.mjs', '.mjs.map'],
+            themable: false,
+            preload: false,
+        );
     }
 
     /**

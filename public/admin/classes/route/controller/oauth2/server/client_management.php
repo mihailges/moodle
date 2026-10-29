@@ -169,7 +169,8 @@ class client_management {
                 'fw-bold fs-3 mb-5',
             ),
         );
-        $response->getBody()->write($mform->render());
+        $response->getBody()->write(\html_writer::react_component('@moodle/lms/core_admin/oauth2/clientForm', []));
+        // $response->getBody()->write($mform->render());
         $response->getBody()->write($OUTPUT->footer());
 
         return $response;

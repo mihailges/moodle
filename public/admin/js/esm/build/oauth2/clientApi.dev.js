@@ -1,5 +1,6 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
+import { FormValidationError } from "@moodle/lms/core/forms";
 let store = {
   id: 7,
   name: "Mobile app",
@@ -15,7 +16,6 @@ async function getClient(id) {
 __name(getClient, "getClient");
 async function patchClient(id, changes) {
   await new Promise((r) => setTimeout(r, 300));
-  console.log("PATCH body", changes);
   if (changes.name?.toLowerCase() === "duplicate") {
     throw new FormValidationError({ name: ["A client with this name already exists"] });
   }
@@ -32,16 +32,6 @@ async function getScopes() {
   ];
 }
 __name(getScopes, "getScopes");
-class FormValidationError extends Error {
-  constructor(fieldErrors, formErrors = []) {
-    super("Validation failed");
-    this.fieldErrors = fieldErrors;
-    this.formErrors = formErrors;
-  }
-  static {
-    __name(this, "FormValidationError");
-  }
-}
 async function createClient(payload) {
   await new Promise((r) => setTimeout(r, 300));
   const errors = {};
@@ -60,7 +50,6 @@ async function createClient(payload) {
 }
 __name(createClient, "createClient");
 export {
-  FormValidationError,
   createClient,
   getClient,
   getScopes,

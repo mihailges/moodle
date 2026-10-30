@@ -1,3 +1,5 @@
+import {FormValidationError} from '@moodle/lms/core/forms';
+
 let store = {id: 7, name: 'Mobile app', description: 'iOS client', ispkcerequired: true,
              scopes: ['user:read'], redirecturis: ['com.example.app:/callback']};
 
@@ -9,13 +11,21 @@ export async function getClient(id: number) {
 // Mock of PATCH /oauth2/server/clients/{id}
 export async function patchClient(id: number, changes: Partial<ClientPayload>) {
     await new Promise((r) => setTimeout(r, 300));
-    console.log('PATCH body', changes);
+    // console.log('PATCH body', changes);
     if (changes.name?.toLowerCase() === 'duplicate') {
         throw new FormValidationError({name: ['A client with this name already exists']});
     }
     store = {...store, ...changes};
     return {...store};
 }
+
+export type ClientPayload = {
+    name: string;
+    description: string;
+    ispkcerequired: boolean;
+    scopes: string[];
+    redirecturis: string[];
+};
 
 export type Option = {
     value: string;
@@ -30,15 +40,6 @@ export async function getScopes(): Promise<Option[]> {
         {value: 'user:write', label: 'Modify user data'},
         {value: 'course:read', label: 'Read course data'},
     ];
-}
-
-export class FormValidationError extends Error {
-    constructor(
-        public fieldErrors: Record<string, string[]>,   // keyed by server path
-        public formErrors: string[] = [],
-    ) {
-        super('Validation failed');
-    }
 }
 
 // Mock of POST /oauth2/server/clients returning a 422.

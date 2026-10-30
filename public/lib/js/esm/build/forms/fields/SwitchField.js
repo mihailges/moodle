@@ -1,0 +1,1 @@
+import{Switch as d}from"@moodlehq/design-system";import{useDefinedField as n}from"../useDefinedField";import{jsx as f}from"react/jsx-runtime";function F({name:e,label:o,rules:r,hideIf:t,disableIf:l,...p}){const i=n(e,{rules:r,hideIf:t,disableIf:l});return i.hidden?null:f(d,{label:o,...p,...i.registration})}export{F as SwitchField};

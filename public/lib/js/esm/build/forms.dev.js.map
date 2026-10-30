@@ -1,0 +1,8 @@
+{
+  "version": 3,
+  "sources": ["../src/forms.ts"],
+  "sourceRoot": "../../../../../../sources/public/lib/js/esm/build",
+  "sourcesContent": ["// Core of the forms system. Fields, rules and conditions are separate imports:\n//   '@moodle/lms/core/forms/fields', '@moodle/lms/core/forms/rules', '@moodle/lms/core/forms/conditions'\nexport {DefinedForm} from './forms/DefinedForm';\nexport {useDefinedField, type FieldBehaviour} from './forms/useDefinedField';\nexport {FormValidationError} from './forms/FormValidationError';\n"],
+  "mappings": "AAEA,SAAQ,mBAAkB;AAC1B,SAAQ,uBAA2C;AACnD,SAAQ,2BAA0B;",
+  "names": []
+}

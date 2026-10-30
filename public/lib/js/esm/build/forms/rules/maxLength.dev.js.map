@@ -1,0 +1,8 @@
+{
+  "version": 3,
+  "sources": ["../../../src/forms/rules/maxLength.ts"],
+  "sourceRoot": "../../../../../../sources/public/lib/js/esm/build",
+  "sourcesContent": ["import type {Rule} from './types';\nimport {stringRule} from './helpers';\n\nexport const maxLength = (max: number, message: string): Rule => stringRule((v) => v.length <= max, message);\n"],
+  "mappings": ";;AACA,SAAQ,kBAAiB;AAElB,MAAM,YAAY,wBAAC,KAAa,YAA0B,WAAW,CAAC,MAAM,EAAE,UAAU,KAAK,OAAO,GAAlF;",
+  "names": []
+}

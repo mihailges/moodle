@@ -1,4 +1,36 @@
 {
+  "EditModeSwitch": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/DefinedForm": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/fields/CheckboxGroupField": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/fields/RepeaterField": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/fields/SwitchField": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/fields/TextareaField": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/fields/TextField": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/useMoodleForm": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
   "nav/Nav": {
     "eject": "risky",
     "wrap": "risky"
@@ -6,9 +38,5 @@
   "String": {
     "eject": "risky",
     "wrap": "safe"
-  },
-  "EditModeSwitch": {
-    "eject": "risky",
-    "wrap": "risky"
   }
 }

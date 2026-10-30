@@ -1,0 +1,8 @@
+{
+  "version": 3,
+  "sources": ["../../src/forms/FormValidationError.ts"],
+  "sourceRoot": "../../../../../../sources/public/lib/js/esm/build",
+  "sourcesContent": ["/**\n * Thrown by a form's create/update call when the server rejects the data.\n * DefinedForm maps it onto the fields.\n */\nexport class FormValidationError extends Error {\n    constructor(\n        public fieldErrors: Record<string, string[]>,   // keyed by server path\n        public formErrors: string[] = [],\n    ) {\n        super('Validation failed');\n        this.name = 'FormValidationError';\n    }\n}\n\n// instanceof is unreliable if the module is loaded under two URLs (e.g. with and without a theme prefix).\nexport const isFormValidationError = (e: unknown): e is FormValidationError =>\n    e instanceof FormValidationError || (e instanceof Error && e.name === 'FormValidationError' && 'fieldErrors' in e);\n"],
+  "mappings": ";;AAIO,MAAM,4BAA4B,MAAM;AAAA,EAC3C,YACW,aACA,aAAuB,CAAC,GACjC;AACE,UAAM,mBAAmB;AAHlB;AACA;AAGP,SAAK,OAAO;AAAA,EAChB;AAAA,EAXJ,OAI+C;AAAA;AAAA;AAQ/C;AAGO,MAAM,wBAAwB,wBAAC,MAClC,aAAa,uBAAwB,aAAa,SAAS,EAAE,SAAS,yBAAyB,iBAAiB,GAD/E;",
+  "names": []
+}

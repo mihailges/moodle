@@ -1,0 +1,8 @@
+{
+  "version": 3,
+  "sources": ["../../../src/forms/rules/required.ts"],
+  "sourceRoot": "../../../../../../sources/public/lib/js/esm/build",
+  "sourcesContent": ["import type {Rule} from './types';\nimport {isEmpty} from './helpers';\n\nexport const required = (message: string): Rule => (v) => !isEmpty(v) || message;\n"],
+  "mappings": ";;AACA,SAAQ,eAAc;AAEf,MAAM,WAAW,wBAAC,YAA0B,CAAC,MAAM,CAAC,QAAQ,CAAC,KAAK,SAAjD;",
+  "names": []
+}

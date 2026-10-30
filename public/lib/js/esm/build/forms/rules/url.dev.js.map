@@ -1,0 +1,8 @@
+{
+  "version": 3,
+  "sources": ["../../../src/forms/rules/url.ts"],
+  "sourceRoot": "../../../../../../sources/public/lib/js/esm/build",
+  "sourcesContent": ["import type {Rule} from './types';\nimport {stringRule} from './helpers';\n\nexport const url = (message: string): Rule => stringRule((v) => URL.canParse(v), message);\n"],
+  "mappings": ";;AACA,SAAQ,kBAAiB;AAElB,MAAM,MAAM,wBAAC,YAA0B,WAAW,CAAC,MAAM,IAAI,SAAS,CAAC,GAAG,OAAO,GAArE;",
+  "names": []
+}

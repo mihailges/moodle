@@ -1,0 +1,8 @@
+{
+  "version": 3,
+  "sources": ["../../src/forms/fields.ts"],
+  "sourceRoot": "../../../../../../sources/public/lib/js/esm/build",
+  "sourcesContent": ["export type {FieldProps, Option} from './fields/types';\nexport {TextField} from './fields/TextField';\nexport {TextareaField} from './fields/TextareaField';\nexport {SwitchField} from './fields/SwitchField';\nexport {CheckboxGroupField} from './fields/CheckboxGroupField';\nexport {RepeaterField} from './fields/RepeaterField';\n"],
+  "mappings": "AACA,SAAQ,iBAAgB;AACxB,SAAQ,qBAAoB;AAC5B,SAAQ,mBAAkB;AAC1B,SAAQ,0BAAyB;AACjC,SAAQ,qBAAoB;",
+  "names": []
+}

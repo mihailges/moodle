@@ -1,0 +1,8 @@
+{
+  "version": 3,
+  "sources": ["../../../src/forms/rules/all.ts"],
+  "sourceRoot": "../../../../../../sources/public/lib/js/esm/build",
+  "sourcesContent": ["import type {Rule} from './types';\n\n/**\n * Combine rules; the first failing rule wins.\n */\nexport const all = <T, V>(...rules: Rule<T, V>[]): Rule<T, V> => async (value, values) => {\n    for (const rule of rules) {\n        const result = await rule(value, values);\n        if (result !== true) {\n            return result;\n        }\n    }\n    return true;\n};\n"],
+  "mappings": ";;AAKO,MAAM,MAAM,2BAAU,UAAoC,OAAO,OAAO,WAAW;AACtF,aAAW,QAAQ,OAAO;AACtB,UAAM,SAAS,MAAM,KAAK,OAAO,MAAM;AACvC,QAAI,WAAW,MAAM;AACjB,aAAO;AAAA,IACX;AAAA,EACJ;AACA,SAAO;AACX,GARmB;",
+  "names": []
+}

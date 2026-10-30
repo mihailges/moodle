@@ -1,0 +1,8 @@
+{
+  "version": 3,
+  "sources": ["../../../src/forms/fields/TextField.tsx"],
+  "sourceRoot": "../../../../../../sources/public/lib/js/esm/build",
+  "sourcesContent": ["import {Input} from '@moodlehq/design-system';\nimport {useDefinedField} from '../useDefinedField';\nimport type {FieldProps} from './types';\n\nexport function TextField({name, label, rules, hideIf, disableIf, ...rest}: FieldProps) {\n    const f = useDefinedField(name, {rules, hideIf, disableIf});\n    return f.hidden ? null : (\n        <Input label={label} {...rest} {...f.registration} invalid={f.invalid} invalidFeedback={f.message} />\n    );\n}\n"],
+  "mappings": ";;AAOQ;AAPR,SAAQ,aAAY;AACpB,SAAQ,uBAAsB;AAGvB,SAAS,UAAU,EAAC,MAAM,OAAO,OAAO,QAAQ,WAAW,GAAG,KAAI,GAAe;AACpF,QAAM,IAAI,gBAAgB,MAAM,EAAC,OAAO,QAAQ,UAAS,CAAC;AAC1D,SAAO,EAAE,SAAS,OACd,uBAAC,SAAM,OAAe,GAAG,MAAO,GAAG,EAAE,cAAc,SAAS,EAAE,SAAS,iBAAiB,EAAE,WAA1F;AAAA;AAAA;AAAA;AAAA,SAAmG;AAE3G;AALgB;",
+  "names": []
+}

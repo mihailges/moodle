@@ -1,0 +1,8 @@
+{
+  "version": 3,
+  "sources": ["../../../src/forms/rules/minItems.ts"],
+  "sourceRoot": "../../../../../../sources/public/lib/js/esm/build",
+  "sourcesContent": ["import type {Rule} from './types';\n\nexport const minItems = (min: number, message: string): Rule => (v) => !Array.isArray(v) || v.length >= min || message;\n"],
+  "mappings": ";;AAEO,MAAM,WAAW,wBAAC,KAAa,YAA0B,CAAC,MAAM,CAAC,MAAM,QAAQ,CAAC,KAAK,EAAE,UAAU,OAAO,SAAvF;",
+  "names": []
+}

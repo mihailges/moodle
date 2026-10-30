@@ -1,0 +1,8 @@
+{
+  "version": 3,
+  "sources": ["../../../src/forms/fields/SwitchField.tsx"],
+  "sourceRoot": "../../../../../../sources/public/lib/js/esm/build",
+  "sourcesContent": ["import {Switch} from '@moodlehq/design-system';\nimport {useDefinedField} from '../useDefinedField';\nimport type {FieldProps} from './types';\n\nexport function SwitchField({name, label, rules, hideIf, disableIf, ...rest}: FieldProps) {\n    const f = useDefinedField(name, {rules, hideIf, disableIf});\n    return f.hidden ? null : <Switch label={label} {...rest} {...f.registration} />;\n}\n"],
+  "mappings": ";;AAM6B;AAN7B,SAAQ,cAAa;AACrB,SAAQ,uBAAsB;AAGvB,SAAS,YAAY,EAAC,MAAM,OAAO,OAAO,QAAQ,WAAW,GAAG,KAAI,GAAe;AACtF,QAAM,IAAI,gBAAgB,MAAM,EAAC,OAAO,QAAQ,UAAS,CAAC;AAC1D,SAAO,EAAE,SAAS,OAAO,uBAAC,UAAO,OAAe,GAAG,MAAO,GAAG,EAAE,gBAAtC;AAAA;AAAA;AAAA;AAAA,SAAoD;AACjF;AAHgB;",
+  "names": []
+}

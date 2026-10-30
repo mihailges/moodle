@@ -1,0 +1,8 @@
+{
+  "version": 3,
+  "sources": ["../../src/forms/context.ts"],
+  "sourceRoot": "../../../../../../sources/public/lib/js/esm/build",
+  "sourcesContent": ["import {createContext} from 'react';\n\nexport type FormState = {\n    // Fields disabled by the server (e.g. capability driven), on top of each field's disableIf.\n    serverDisabled: string[];\n};\n\nexport const FormStateContext = createContext<FormState>({serverDisabled: []});\n"],
+  "mappings": "AAAA,SAAQ,qBAAoB;AAOrB,MAAM,mBAAmB,cAAyB,EAAC,gBAAgB,CAAC,EAAC,CAAC;",
+  "names": []
+}

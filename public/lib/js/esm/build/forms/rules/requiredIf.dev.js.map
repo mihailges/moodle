@@ -1,0 +1,8 @@
+{
+  "version": 3,
+  "sources": ["../../../src/forms/rules/requiredIf.ts"],
+  "sourceRoot": "../../../../../../sources/public/lib/js/esm/build",
+  "sourcesContent": ["import type {Condition} from '../conditions';\nimport type {Rule} from './types';\nimport {isEmpty} from './helpers';\n\n// Only applies when the condition is met by the current form values.\nexport const requiredIf = <V>(condition: Condition<V>, message: string): Rule<unknown, V> =>\n    (v, values) => !condition(values) || !isEmpty(v) || message;\n"],
+  "mappings": ";;AAEA,SAAQ,eAAc;AAGf,MAAM,aAAa,wBAAI,WAAyB,YACnD,CAAC,GAAG,WAAW,CAAC,UAAU,MAAM,KAAK,CAAC,QAAQ,CAAC,KAAK,SAD9B;",
+  "names": []
+}

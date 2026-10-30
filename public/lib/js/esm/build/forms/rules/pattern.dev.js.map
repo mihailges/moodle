@@ -1,0 +1,8 @@
+{
+  "version": 3,
+  "sources": ["../../../src/forms/rules/pattern.ts"],
+  "sourceRoot": "../../../../../../sources/public/lib/js/esm/build",
+  "sourcesContent": ["import type {Rule} from './types';\nimport {stringRule} from './helpers';\n\nexport const pattern = (regex: RegExp, message: string): Rule => stringRule((v) => regex.test(v), message);\n"],
+  "mappings": ";;AACA,SAAQ,kBAAiB;AAElB,MAAM,UAAU,wBAAC,OAAe,YAA0B,WAAW,CAAC,MAAM,MAAM,KAAK,CAAC,GAAG,OAAO,GAAlF;",
+  "names": []
+}

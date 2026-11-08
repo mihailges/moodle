@@ -2,7 +2,7 @@
   "version": 3,
   "sources": ["../src/forms.ts"],
   "sourceRoot": "../../../../../../sources/public/lib/js/esm/build",
-  "sourcesContent": ["// Core of the forms system. Fields, rules and conditions are separate imports:\n//   '@moodle/lms/core/forms/fields', '@moodle/lms/core/forms/rules', '@moodle/lms/core/forms/conditions'\nexport {DefinedForm} from './forms/DefinedForm';\nexport {useDefinedField, type FieldBehaviour} from './forms/useDefinedField';\nexport {FormValidationError} from './forms/FormValidationError';\n"],
-  "mappings": "AAEA,SAAQ,mBAAkB;AAC1B,SAAQ,uBAA2C;AACnD,SAAQ,2BAA0B;",
+  "sourcesContent": ["// Core of the forms system. Fields, rules and conditions are separate imports:\n//   '@moodle/lms/core/forms/fields', '@moodle/lms/core/forms/rules', '@moodle/lms/core/forms/conditions'\nexport {MoodleForm} from './forms/MoodleForm';\nexport {useMoodleFormField, type FieldBehaviour} from './forms/useMoodleFormField';\nexport {FormValidationError} from './forms/FormValidationError';\nexport {FormSlot} from './forms/slots/FormSlot';\nexport {registerFormExtension, getFormExtensions, type FormExtension} from './forms/registry';\nexport {ExtensionModules, loadFormExtensionModules} from './forms/slots/ExtensionModules';\n"],
+  "mappings": "AAEA,SAAQ,kBAAiB;AACzB,SAAQ,0BAA8C;AACtD,SAAQ,2BAA0B;AAClC,SAAQ,gBAAe;AACvB,SAAQ,uBAAuB,yBAA4C;AAC3E,SAAQ,kBAAkB,gCAA+B;",
   "names": []
 }

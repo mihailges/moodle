@@ -3,7 +3,15 @@
     "eject": "risky",
     "wrap": "risky"
   },
-  "forms/DefinedForm": {
+  "forms/MoodleForm": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/fields/ActionButtons": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/fields/CheckboxField": {
     "eject": "risky",
     "wrap": "risky"
   },
@@ -11,7 +19,27 @@
     "eject": "risky",
     "wrap": "risky"
   },
+  "forms/fields/GroupField": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/fields/NoticeField": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/fields/RadioField": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/fields/RadioGroupField": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
   "forms/fields/RepeaterField": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/fields/StaticField": {
     "eject": "risky",
     "wrap": "risky"
   },
@@ -24,6 +52,14 @@
     "wrap": "risky"
   },
   "forms/fields/TextField": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/slots/ExtensionModules": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/slots/FormSlot": {
     "eject": "risky",
     "wrap": "risky"
   },

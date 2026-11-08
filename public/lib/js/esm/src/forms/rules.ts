@@ -1,5 +1,6 @@
 export type {Rule} from './rules/types';
 export {all} from './rules/all';
+export {validIf} from './rules/validIf';
 export {required} from './rules/required';
 export {requiredIf} from './rules/requiredIf';
 export {maxLength} from './rules/maxLength';

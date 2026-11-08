@@ -19,8 +19,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-import {all, required, requiredIf, maxLength, minLength, pattern, url, minItems, passwordPolicy} from '../src/forms/rules';
-import {checked, eq, not, anyOf} from '../src/forms/conditions';
+import {
+    all, required, requiredIf, maxLength, minLength, pattern, url, minItems, validIf, passwordPolicy,
+} from '../src/forms/rules';
 
 describe('rules', () => {
     it('all() returns the first failing message, awaiting async rules', async() => {
@@ -32,7 +33,7 @@ describe('rules', () => {
     });
 
     it('requiredIf() only requires a value when the condition is met', () => {
-        const rule = requiredIf(checked('on'), 'req');
+        const rule = requiredIf((v: any) => Boolean(v.on), 'req');
         expect(rule('', {on: false})).toBe(true);
         expect(rule('', {on: true})).toBe('req');
     });
@@ -70,17 +71,21 @@ describe('rules paired with incompatible values', () => {
         }
     });
 
+    it('validIf turns a condition into a rule with the message as the error', () => {
+        const rule = validIf((v: number) => v > 1, 'Too small');
+        expect(rule(2, {})).toBe(true);
+        expect(rule(1, {})).toBe('Too small');
+    });
+
+    it('minItems only counts filled items', () => {
+        const rule = minItems(1, 'Need one');
+        expect(rule(['', 'a'], {})).toBe(true);
+        expect(rule(['', ' '], {})).toBe('Need one');
+        expect(rule([], {})).toBe('Need one');
+    });
+
     it('minItems ignores non-array values', () => {
         expect(minItems(1, 'm')(true, {})).toBe(true);
         expect(minItems(1, 'm')([], {})).toBe('m');
-    });
-});
-
-describe('conditions', () => {
-    it('combine and expose the fields they depend on', () => {
-        const condition = anyOf(not(checked('a')), eq('b.c', 5));
-        expect(condition({a: true, b: {c: 5}})).toBe(true);
-        expect(condition({a: true, b: {c: 1}})).toBe(false);
-        expect(condition.deps).toEqual(['a', 'b.c']);
     });
 });

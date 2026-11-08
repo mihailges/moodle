@@ -1,4 +1,5 @@
 import { all } from "./rules/all";
+import { validIf } from "./rules/validIf";
 import { required } from "./rules/required";
 import { requiredIf } from "./rules/requiredIf";
 import { maxLength } from "./rules/maxLength";
@@ -16,6 +17,7 @@ export {
   pattern,
   required,
   requiredIf,
-  url
+  url,
+  validIf
 };
 //# sourceMappingURL=rules.dev.js.map

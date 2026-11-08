@@ -1,6 +1,6 @@
 /**
  * Thrown by a form's create/update call when the server rejects the data.
- * DefinedForm maps it onto the fields.
+ * MoodleForm maps it onto the fields.
  */
 export class FormValidationError extends Error {
     constructor(

@@ -2,7 +2,7 @@
   "version": 3,
   "sources": ["../../src/forms/fields.ts"],
   "sourceRoot": "../../../../../../sources/public/lib/js/esm/build",
-  "sourcesContent": ["export type {FieldProps, Option} from './fields/types';\nexport {TextField} from './fields/TextField';\nexport {TextareaField} from './fields/TextareaField';\nexport {SwitchField} from './fields/SwitchField';\nexport {CheckboxGroupField} from './fields/CheckboxGroupField';\nexport {RepeaterField} from './fields/RepeaterField';\n"],
-  "mappings": "AACA,SAAQ,iBAAgB;AACxB,SAAQ,qBAAoB;AAC5B,SAAQ,mBAAkB;AAC1B,SAAQ,0BAAyB;AACjC,SAAQ,qBAAoB;",
+  "sourcesContent": ["export type {FieldProps, Option} from './fields/types';\nexport {TextField} from './fields/TextField';\nexport {TextareaField} from './fields/TextareaField';\nexport {SwitchField} from './fields/SwitchField';\nexport {RepeaterField} from './fields/RepeaterField';\nexport {GroupField} from './fields/GroupField';\nexport {CheckboxField} from './fields/CheckboxField';\nexport {RadioField} from './fields/RadioField';\nexport {StaticField} from './fields/StaticField';\nexport {ActionButtons, ActionButton} from './fields/ActionButtons';\n"],
+  "mappings": "AACA,SAAQ,iBAAgB;AACxB,SAAQ,qBAAoB;AAC5B,SAAQ,mBAAkB;AAC1B,SAAQ,qBAAoB;AAC5B,SAAQ,kBAAiB;AACzB,SAAQ,qBAAoB;AAC5B,SAAQ,kBAAiB;AACzB,SAAQ,mBAAkB;AAC1B,SAAQ,eAAe,oBAAmB;",
   "names": []
 }

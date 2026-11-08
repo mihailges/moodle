@@ -1,78 +1,93 @@
-import {useRef, type ReactNode} from 'react';
-import {useController, useFormContext} from 'react-hook-form';
+import {useContext, type ReactElement} from 'react';
+import {useFieldArray, useFormContext} from 'react-hook-form';
 import {Button} from '@moodlehq/design-system';
-import {useFieldConditions, type FieldBehaviour} from '../useDefinedField';
+import {useFieldConditions, type FieldBehaviour} from '../useMoodleFormField';
 import {all} from '../rules/all';
+import {FieldRegistryContext, RowContext} from '../context';
 
 type RepeaterFieldProps = FieldBehaviour & {
     name: string;
     label: string;
     addLabel: string;
-    // The value of a new row, e.g. ''. Rows are plain values, stored as name = [row0, row1, …].
+    // The value of a new row, e.g. ''. The form's values stay a plain array; rows are wrapped as {value} internally.
     emptyItem?: unknown;
     minRows?: number;
-    // Render the field of one row, using `${name}.${index}` as its name.
-    children: (index: number) => ReactNode;
+    removeLabel?: string;
+    // The single field repeated for each row, without a name: the row names it. For example
+    // <TextField label="URL" rules={[url('Invalid')]} />. Rules on the repeater itself get the list of rows.
+    children: ReactElement;
 };
 
-let nextKey = 0;
-
 export function RepeaterField({
-    name, label, addLabel, emptyItem = '', minRows = 1, rules, hideIf, disableIf, children,
+    name, label, addLabel, emptyItem = '', minRows = 1, removeLabel = 'Remove', rules, hideIf, disableIf, children,
 }: RepeaterFieldProps) {
-    const {clearErrors} = useFormContext();
-    // Owns the list as a whole: its value, list-level rules (e.g. minItems) and their error.
-    const {field, fieldState} = useController({
+    const {control, clearErrors, getFieldState, formState, getValues, setValue} = useFormContext();
+    const registry = useContext(FieldRegistryContext);
+    registry.addRepeater(name);
+    // Forms hold plain arrays; useFieldArray needs object rows, so convert them before it first reads them.
+    const initial = getValues(name);
+    if (Array.isArray(initial) && initial.some((row) => row === null || typeof row !== 'object' || !('value' in row))) {
+        const rows = toRows(initial.map((row) => row?.value ?? row));
+        setValue(name, rows);
+        // Until the field array mounts, react-hook-form reads its rows from the default values.
+        const parts = name.split('.');
+        const parent = parts.slice(0, -1).reduce((o: any, k) => o?.[k], (control as any)._defaultValues);
+        if (parent) {
+            parent[parts[parts.length - 1]] = rows;
+        }
+    }
+    const {fields, append, remove} = useFieldArray({
+        control,
         name,
-        defaultValue: [],
-        rules: {validate: rules?.length ? all(...rules) : undefined},
-    });
+        // Rules see the plain list of values, not the {value} rows used internally.
+        rules: {
+            validate: rules?.length
+                ? (rows: {value: unknown}[], values: unknown) => all(...rules)(rows.map((row) => row.value), values)
+                : undefined,
+        },
+    } as any);
     const {hidden, disabled} = useFieldConditions(name, {hideIf, disableIf});
-    const keys = useRef<number[]>([]);
     if (hidden) {
         return null;
     }
-
-    const rows: unknown[] = Array.isArray(field.value) ? field.value : [];
-
-    // Stable keys, so removing a row keeps the other rows' inputs (and their values) with their data.
-    if (keys.current.length !== rows.length) {
-        keys.current = rows.map(() => nextKey++);
-    }
-    const update = (next: unknown[]) => {
-        clearErrors(name);
-        field.onChange(next);
-    };
+    const message = getFieldState(name, formState).error?.message ?? (formState.errors as any)?.[name]?.root?.message;
     const addRow = () => {
-        keys.current = [...keys.current, nextKey++];
-        update([...rows, emptyItem]);
+        clearErrors(name);
+        append({value: emptyItem});
     };
     const removeRow = (index: number) => {
-        keys.current = keys.current.filter((_, i) => i !== index);
-        update(rows.filter((_, i) => i !== index));
+        clearErrors(name);
+        remove(index);
     };
-    const message = fieldState.error?.message;
 
     return (
         <fieldset>
             <legend className="fs-6 mb-2">{label}</legend>
             <div className="d-flex flex-column gap-2">
-                {rows.map((_, index) => (
-                    <div key={keys.current[index]} className="d-flex gap-2 align-items-start">
-                        {children(index)}
+                {fields.map((field, index) => (
+                    <div key={field.id} className="d-flex gap-2 align-items-center">
+                        <RowContext.Provider value={`${name}.${index}.value`}>{children}</RowContext.Provider>
                         <Button
                             type="button"
                             onClick={() => removeRow(index)}
-                            disabled={disabled || rows.length <= minRows}
-                            aria-label={`Remove ${label} ${index + 1}`}
-                            label="Remove"
-                            variant="secondary"
+                            disabled={disabled || fields.length <= minRows}
+                            aria-label={`${removeLabel} ${label} ${index + 1}`}
+                            label=""
+                            size="lg"
+                            startIcon={<i aria-hidden="true" className="fa-solid fa-xmark"/>}
+                            variant="outline-secondary"
                         />
                     </div>
                 ))}
             </div>
             {message && <div role="alert" className="text-danger small mt-1">{message}</div>}
-            <Button type="button" className="mt-2" onClick={addRow} label={addLabel} disabled={disabled} />
+            <Button
+                type="button"
+                className="mt-2"
+                onClick={addRow}
+                label={addLabel} disabled={disabled} />
         </fieldset>
     );
 }
+
+const toRows = <T,>(items: T[]): {value: T}[] => items.map((value) => ({value}));

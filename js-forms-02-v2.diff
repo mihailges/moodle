@@ -1,0 +1,3340 @@
+diff --git a/last-commit.diff b/last-commit.diff
+new file mode 100644
+index 00000000000..f3b821e43e6
+--- /dev/null
++++ b/last-commit.diff
+@@ -0,0 +1,190 @@
++commit b73e6e59b4240d5fde7854f299050f7ac7b4270b
++Author: Adrian Greeve <adrian@moodle.com>
++Date:   Thu Oct 29 12:25:54 2026 +0800
++
++    form edit of data
++
++diff --git a/public/admin/classes/route/controller/oauth2/server/client_management.php b/public/admin/classes/route/controller/oauth2/server/client_management.php
++index bf694739219..b03030b8923 100644
++--- a/public/admin/classes/route/controller/oauth2/server/client_management.php
+++++ b/public/admin/classes/route/controller/oauth2/server/client_management.php
++@@ -170,6 +170,8 @@ class client_management {
++             ),
++         );
++         $response->getBody()->write(\html_writer::react_component('@moodle/lms/core_admin/oauth2/clientForm', []));
+++        // Uncomment to see editing.
+++        // $response->getBody()->write(\html_writer::react_component('@moodle/lms/core_admin/oauth2/clientForm', ['clientId' => 2]));
++         // $response->getBody()->write($mform->render());
++         $response->getBody()->write($OUTPUT->footer());
++ 
++diff --git a/public/admin/js/esm/build/oauth2/clientApi.dev.js b/public/admin/js/esm/build/oauth2/clientApi.dev.js
++index b05c0a05526..4e7d84cc888 100644
++Binary files a/public/admin/js/esm/build/oauth2/clientApi.dev.js and b/public/admin/js/esm/build/oauth2/clientApi.dev.js differ
++diff --git a/public/admin/js/esm/build/oauth2/clientApi.dev.js.map b/public/admin/js/esm/build/oauth2/clientApi.dev.js.map
++index 1b553d72254..ec9cde51129 100644
++Binary files a/public/admin/js/esm/build/oauth2/clientApi.dev.js.map and b/public/admin/js/esm/build/oauth2/clientApi.dev.js.map differ
++diff --git a/public/admin/js/esm/build/oauth2/clientApi.js b/public/admin/js/esm/build/oauth2/clientApi.js
++index 4d8737c4dcc..efc97ebf821 100644
++Binary files a/public/admin/js/esm/build/oauth2/clientApi.js and b/public/admin/js/esm/build/oauth2/clientApi.js differ
++diff --git a/public/admin/js/esm/build/oauth2/clientForm.dev.js b/public/admin/js/esm/build/oauth2/clientForm.dev.js
++index 7ec5f537439..d1b2c9f92ff 100644
++Binary files a/public/admin/js/esm/build/oauth2/clientForm.dev.js and b/public/admin/js/esm/build/oauth2/clientForm.dev.js differ
++diff --git a/public/admin/js/esm/build/oauth2/clientForm.dev.js.map b/public/admin/js/esm/build/oauth2/clientForm.dev.js.map
++index 9df602f6f5b..f47fa26d1f3 100644
++Binary files a/public/admin/js/esm/build/oauth2/clientForm.dev.js.map and b/public/admin/js/esm/build/oauth2/clientForm.dev.js.map differ
++diff --git a/public/admin/js/esm/build/oauth2/clientForm.js b/public/admin/js/esm/build/oauth2/clientForm.js
++index 4715a1738c1..d36ac57fe6a 100644
++Binary files a/public/admin/js/esm/build/oauth2/clientForm.js and b/public/admin/js/esm/build/oauth2/clientForm.js differ
++diff --git a/public/admin/js/esm/src/oauth2/clientApi.ts b/public/admin/js/esm/src/oauth2/clientApi.ts
++index 67fe0462784..4205ceb2449 100644
++--- a/public/admin/js/esm/src/oauth2/clientApi.ts
+++++ b/public/admin/js/esm/src/oauth2/clientApi.ts
++@@ -1,10 +1,20 @@
+++let store = {id: 7, name: 'Mobile app', description: 'iOS client', ispkcerequired: true,
+++             scopes: ['user:read'], redirecturis: ['com.example.app:/callback']};
+++
++ export async function getClient(id: number) {
++-    await delay(300);
++-    return {
++-        values: {name: 'Test client', description: '', ispkcerequired: true,
++-                 scopes: ['user:read'], redirecturis: ['https://example.com/cb']},
++-        readonly: ['ispkcerequired'],      // stand-in for capability-driven state
++-    };
+++    await new Promise((r) => setTimeout(r, 300));
+++    return {values: {...store}, readonly: ['ispkcerequired']};
+++}
+++
+++// Mock of PATCH /oauth2/server/clients/{id}
+++export async function patchClient(id: number, changes: Partial<ClientPayload>) {
+++    await new Promise((r) => setTimeout(r, 300));
+++    console.log('PATCH body', changes);
+++    if (changes.name?.toLowerCase() === 'duplicate') {
+++        throw new FormValidationError({name: ['A client with this name already exists']});
+++    }
+++    store = {...store, ...changes};
+++    return {...store};
++ }
++ 
++ export type Option = {
++diff --git a/public/admin/js/esm/src/oauth2/clientForm.tsx b/public/admin/js/esm/src/oauth2/clientForm.tsx
++index 2271b8e3240..75ea392f558 100644
++--- a/public/admin/js/esm/src/oauth2/clientForm.tsx
+++++ b/public/admin/js/esm/src/oauth2/clientForm.tsx
++@@ -1,7 +1,7 @@
++ import {useEffect, useState} from 'react';
++ import {useForm, useFieldArray} from 'react-hook-form';
++-import {Input, Textarea, Switch, Checkbox ,Button} from '@moodlehq/design-system';
++-import {getScopes, createClient, FormValidationError} from '@moodle/lms/core_admin/oauth2/clientApi';
+++import {Input, Textarea, Switch, Checkbox, Button} from '@moodlehq/design-system';
+++import {getScopes, createClient, FormValidationError, getClient, patchClient} from '@moodle/lms/core_admin/oauth2/clientApi';
++ 
++ type ClientValues = {
++     name: string;
++@@ -11,23 +11,70 @@ type ClientValues = {
++     redirecturis: {uri: string}[];
++ };
++ 
++-export default function RhfSmokeTest() {
++-    const {register, control, handleSubmit, setError, formState: {errors, isDirty, isSubmitting}} = useForm<ClientValues>({
+++export default function ClientForm({clientId}: {clientId?: number}) {
+++    const {register, control, handleSubmit, reset, setError, formState: {dirtyFields, errors, isDirty, isSubmitting}} = useForm<ClientValues>({
++         defaultValues: {name: 'Test client', description: '', ispkcerequired: false, scopes: [], redirecturis: [{uri: ''}]},
++     });
++ 
++     const {fields, append, remove} = useFieldArray({control, name: 'redirecturis'});
++ 
++-    const [scopeOptions, setScopeOptions] = useState(null);
+++    const toFormValues = (c: ClientPayload): ClientValues => ({...c, redirecturis: c.redirecturis.map((uri) => ({uri}))});
+++
+++    const [scopeOptions, setScopeOptions] = useState<Option[] | null>(null);
+++    const [loaded, setLoaded] = useState(false);
+++    const [readonly, setReadonly] = useState<string[]>([]);
+++    const [loadError, setLoadError] = useState<string | null>(null);
++ 
++     useEffect(() => {
++-        getScopes().then(setScopeOptions);
++-    }, []);
+++        Promise.all([getScopes(), clientId ? getClient(clientId) : Promise.resolve(null)])
+++            .then(([options, client]) => {
+++                setScopeOptions(options);
+++                if (client) {
+++                    reset(toFormValues(client.values));   // dirty tracking starts from the loaded values
+++                    setReadonly(client.readonly);
+++                }
+++                setLoaded(true);
+++            })
+++            .catch(() => {
+++                setLoadError('this client could not be loaded');
+++            })
+++            .finally(() => setLoaded(true));
+++    }, [clientId]);
+++
+++    if (!loaded) {
+++        return <p>Loading...</p>;
+++    }
+++    if (loadError) {
+++        return <div role="alert" className="alert alert-danger">{loadError}</div>;
+++    }
+++
+++    const toPayload = (values: ClientValues): ClientPayload => ({
+++        ...values,
+++        redirecturis: values.redirecturis.map((r) => r.uri),
+++    });
+++
+++    const changedValues = (values: ClientValues): Partial<ClientPayload> => {
+++        const payload = toPayload(values);
+++        return Object.fromEntries(
+++            Object.keys(dirtyFields).map((key) => [key, payload[key as keyof ClientPayload]]),
+++        );
+++    };
++ 
++     const onSubmit = async (values: ClientValues) => {
++         try {
++-            const client = await createClient({...values, redirecturis: values.redirecturis.map((r) => r.uri)});
++-            console.log('created', client);
+++            if (clientId) {
+++                // Edit: PATCH only the changed fields.
+++                const changes = changedValues(values);
+++                if (Object.keys(changes).length === 0) {
+++                    return;
+++                }
+++                const saved = await patchClient(clientId, changes);
+++                reset(toFormValues(saved));          // saved state becomes the clean baseline
+++                console.log('updated', saved);
+++            } else {
+++                const client = await createClient(toPayload(values));
+++                console.log('created', client);
+++            }
++         } catch (e) {
++             if (!(e instanceof FormValidationError)) {
++                 setError('root.server', {message: 'Something went wrong. Try again.'});
++@@ -52,6 +99,7 @@ export default function RhfSmokeTest() {
++                 })}
++                 invalid={Boolean(errors.name)}
++                 invalidFeedback={errors.name?.message}
+++                readOnly={readonly.includes('name')}
++             />
++             <Textarea
++                 label="Description"
++@@ -60,6 +108,7 @@ export default function RhfSmokeTest() {
++             <Switch
++                 label="Is PKCE required"
++                 {...register('ispkcerequired')}
+++                disabled={readonly.includes('ispkcerequired')}
++             />
++ 
++             <fieldset>
++@@ -114,10 +163,10 @@ export default function RhfSmokeTest() {
++                         {errors.scopes.message}
++                     </div>
++                 )}
++-                {errors.root?.server && (
++-                    <div role="alert" className="alert alert-danger">{errors.root.server.message}</div>
++-                )}
++             </fieldset>
+++            {errors.root?.server && (
+++                <div role="alert" className="alert alert-danger">{errors.root.server.message}</div>
+++            )}
++ 
++             <p>Dirty: {String(isDirty)}</p>
++             <Button type="submit" label={isSubmitting ? 'Saving…' : 'Save'} size="lg" disabled={isSubmitting} />
+diff --git a/public/admin/classes/local/oauth2/server/client_editor.php b/public/admin/classes/local/oauth2/server/client_editor.php
+new file mode 100644
+index 00000000000..499117a6ea0
+--- /dev/null
++++ b/public/admin/classes/local/oauth2/server/client_editor.php
+@@ -0,0 +1,261 @@
++<?php
++// This file is part of Moodle - http://moodle.org/
++//
++// Moodle is free software: you can redistribute it and/or modify
++// it under the terms of the GNU General Public License as published by
++// the Free Software Foundation, either version 3 of the License, or
++// (at your option) any later version.
++//
++// Moodle is distributed in the hope that it will be useful,
++// but WITHOUT ANY WARRANTY; without even the implied warranty of
++// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++// GNU General Public License for more details.
++//
++// You should have received a copy of the GNU General Public License
++// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
++
++namespace core_admin\local\oauth2\server;
++
++use core\oauth2\server\client_manager;
++use core\oauth2\server\entity\client_entity;
++use core\oauth2\server\repository\scope_repository;
++
++/**
++ * Validates and saves OAuth 2 client data submitted by the client create and edit forms.
++ *
++ * This holds the rules that used to live in the create_client_form and edit_client_form validation() methods,
++ * so the REST endpoints used by the React forms enforce the same rules.
++ *
++ * @package    core_admin
++ * @copyright  2026 Mihail Geshoski <mihailgesoski@gmail.com>
++ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
++ */
++class client_editor {
++    /** @var string The client type value for a confidential client. */
++    public const string TYPE_CONFIDENTIAL = 'confidential';
++
++    /** @var string The client type value for a public client. */
++    public const string TYPE_PUBLIC = 'public';
++
++    /**
++     * Constructor.
++     *
++     * @param client_manager $clientmanager
++     * @param scope_repository $scoperepository
++     */
++    public function __construct(
++        protected readonly client_manager $clientmanager,
++        protected readonly scope_repository $scoperepository,
++    ) {
++    }
++
++    /**
++     * Validate the submitted data and create a client.
++     *
++     * @param array $data The submitted data:
++     *      name, description, clienttype, flows[auth_code|client_credentials], redirecturis[], ispkcerequired, scopes[].
++     * @return client_entity The created client.
++     * @throws client_validation_exception If the data is not valid.
++     */
++    public function create(array $data): client_entity {
++        $errors = [];
++
++        $name = $this->validate_name($data['name'] ?? null, $errors);
++        $description = $this->clean_text($data['description'] ?? '');
++        $scopes = $this->validate_scopes($data['scopes'] ?? null, $errors);
++
++        $clienttype = $data['clienttype'] ?? null;
++        if (!in_array($clienttype, [self::TYPE_CONFIDENTIAL, self::TYPE_PUBLIC], true)) {
++            $errors['clienttype'][] = get_string('invaliddata', 'error');
++        }
++        $ispublic = $clienttype === self::TYPE_PUBLIC;
++
++        $flows = is_array($data['flows'] ?? null) ? $data['flows'] : [];
++        $hasauthcode = !empty($flows['auth_code']);
++        $hasclientcreds = !empty($flows['client_credentials']);
++
++        // Confidential clients must select at least one primary flow.
++        if (!$ispublic && $clienttype !== null && !$hasauthcode && !$hasclientcreds) {
++            $errors['flows'][] = get_string('oauth2server_clientmustselectprimaryflow', 'admin');
++        }
++
++        // A redirect URI is required for Public clients and for Authorization Code.
++        $redirecturis = $this->validate_redirect_uris($data['redirecturis'] ?? [], $ispublic || $hasauthcode, $errors);
++
++        if ($errors) {
++            throw new client_validation_exception($errors);
++        }
++
++        // Public clients always use Authorization Code. Client Credentials is not available to them.
++        $granttypes = [];
++        if ($ispublic || $hasauthcode) {
++            $granttypes = [
++                client_entity::GRANT_TYPE_AUTHORIZATION_CODE,
++                client_entity::GRANT_TYPE_REFRESH_TOKEN,
++            ];
++        }
++        if (!$ispublic && $hasclientcreds) {
++            $granttypes[] = client_entity::GRANT_TYPE_CLIENT_CREDENTIALS;
++        }
++
++        return $this->clientmanager->create_client(
++            $name,
++            \core\context\system::instance(),
++            $granttypes,
++            $ispublic || $hasauthcode ? $redirecturis : [],
++            $description,
++            !$ispublic,
++            $ispublic || !empty($data['ispkcerequired']),
++            $scopes,
++        );
++    }
++
++    /**
++     * Validate the submitted changes and apply them to a client.
++     *
++     * Only the fields present in $data are changed. Redirect URIs only apply to clients using the Authorization Code
++     * grant, and the PKCE setting only to confidential clients using it, so those are ignored for other clients.
++     *
++     * @param client_entity $cliententity The client to update.
++     * @param array $data The changes: name, description, redirecturis[], ispkcerequired, scopes[].
++     * @return client_entity The updated client.
++     * @throws client_validation_exception If the data is not valid.
++     */
++    public function update(client_entity $cliententity, array $data): client_entity {
++        global $DB;
++
++        $errors = [];
++        $updates = [];
++
++        if (array_key_exists('name', $data)) {
++            $updates['name'] = $this->validate_name($data['name'], $errors);
++        }
++        if (array_key_exists('description', $data)) {
++            $updates['description'] = $this->clean_text($data['description']);
++        }
++        if (array_key_exists('scopes', $data)) {
++            $updates['scopes'] = $this->validate_scopes($data['scopes'], $errors);
++        }
++
++        $hasauthcode = $cliententity->supportsGrantType(client_entity::GRANT_TYPE_AUTHORIZATION_CODE);
++
++        if (
++            array_key_exists('ispkcerequired', $data)
++            && $cliententity->isConfidential()
++            && $hasauthcode
++        ) {
++            $updates['ispkcerequired'] = empty($data['ispkcerequired']) ? 0 : 1;
++        }
++
++        $redirecturis = null;
++        if (array_key_exists('redirecturis', $data) && $hasauthcode) {
++            $redirecturis = $this->validate_redirect_uris($data['redirecturis'], true, $errors);
++        }
++
++        if ($errors) {
++            throw new client_validation_exception($errors);
++        }
++
++        $transaction = $DB->start_delegated_transaction();
++
++        $this->clientmanager->update_client($cliententity->get_id(), $updates);
++
++        if ($redirecturis !== null) {
++            $existing = $this->clientmanager->get_redirect_uris($cliententity->get_id());
++
++            foreach (array_diff($existing, $redirecturis) as $uri) {
++                $this->clientmanager->remove_redirect_uri($cliententity->get_id(), $uri);
++            }
++            foreach (array_diff($redirecturis, $existing) as $uri) {
++                $this->clientmanager->add_redirect_uri($cliententity->get_id(), $uri);
++            }
++        }
++
++        $transaction->allow_commit();
++
++        return $this->clientmanager->get_client_by_id($cliententity->get_id());
++    }
++
++    /**
++     * Clean free text the same way the mforms did (PARAM_TEXT).
++     *
++     * @param mixed $value
++     * @return string
++     */
++    protected function clean_text(mixed $value): string {
++        return is_scalar($value) ? clean_param((string) $value, PARAM_TEXT) : '';
++    }
++
++    /**
++     * Validate the client name, which is required.
++     *
++     * @param mixed $value
++     * @param array $errors The errors, appended to.
++     * @return string
++     */
++    protected function validate_name(mixed $value, array &$errors): string {
++        $name = trim($this->clean_text($value));
++
++        if ($name === '') {
++            $errors['name'][] = get_string('required');
++        }
++
++        return $name;
++    }
++
++    /**
++     * Validate the selected scopes: at least one, all of them known.
++     *
++     * @param mixed $value
++     * @param array $errors The errors, appended to.
++     * @return string[]
++     */
++    protected function validate_scopes(mixed $value, array &$errors): array {
++        $scopes = is_array($value) ? array_values(array_unique(array_filter($value, 'is_string'))) : [];
++
++        if (!$scopes) {
++            $errors['scopes'][] = get_string('oauth2serverclientnoscopes', 'error');
++            return [];
++        }
++
++        $known = array_keys($this->scoperepository->get_all_scopes());
++        if (array_diff($scopes, $known)) {
++            $errors['scopes'][] = get_string('invaliddata', 'error');
++        }
++
++        return $scopes;
++    }
++
++    /**
++     * Validate the redirect URIs. Blank entries are dropped, as the mforms did.
++     *
++     * @param mixed $value
++     * @param bool $required Whether at least one URI is needed.
++     * @param array $errors The errors, appended to. Format errors are keyed by the URI's position in the submitted list.
++     * @return string[] The trimmed, non-blank URIs.
++     */
++    protected function validate_redirect_uris(mixed $value, bool $required, array &$errors): array {
++        $submitted = is_array($value) ? $value : [$value];
++        $uris = [];
++
++        foreach (array_values($submitted) as $index => $uri) {
++            $uri = is_scalar($uri) ? trim((string) $uri) : '';
++            if ($uri === '') {
++                continue;
++            }
++
++            try {
++                $this->clientmanager->validate_redirect_uri_format($uri);
++                $uris[] = $uri;
++            } catch (\moodle_exception) {
++                $errors["redirecturis.{$index}"][] = get_string('oauth2server_clientcallbackurisinvalid', 'admin');
++            }
++        }
++
++        if ($required && !$uris && !preg_grep('/^redirecturis\./', array_keys($errors))) {
++            $errors['redirecturis'][] = get_string('oauth2server_clientcallbackurirequired', 'admin');
++        }
++
++        return array_values(array_unique($uris));
++    }
++}
+diff --git a/public/admin/classes/local/oauth2/server/client_validation_exception.php b/public/admin/classes/local/oauth2/server/client_validation_exception.php
+new file mode 100644
+index 00000000000..46436d0ac76
+--- /dev/null
++++ b/public/admin/classes/local/oauth2/server/client_validation_exception.php
+@@ -0,0 +1,38 @@
++<?php
++// This file is part of Moodle - http://moodle.org/
++//
++// Moodle is free software: you can redistribute it and/or modify
++// it under the terms of the GNU General Public License as published by
++// the Free Software Foundation, either version 3 of the License, or
++// (at your option) any later version.
++//
++// Moodle is distributed in the hope that it will be useful,
++// but WITHOUT ANY WARRANTY; without even the implied warranty of
++// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++// GNU General Public License for more details.
++//
++// You should have received a copy of the GNU General Public License
++// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
++
++namespace core_admin\local\oauth2\server;
++
++/**
++ * Thrown when submitted OAuth 2 client data is invalid.
++ *
++ * @package    core_admin
++ * @copyright  2026 Mihail Geshoski <mihailgesoski@gmail.com>
++ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
++ */
++class client_validation_exception extends \moodle_exception {
++    /**
++     * Constructor.
++     *
++     * @param array<string, string[]> $errors Messages per field path, e.g. ['redirecturis.1' => ['Invalid URL']].
++     */
++    public function __construct(
++        /** @var array<string, string[]> Messages per field path. */
++        public readonly array $errors,
++    ) {
++        parent::__construct('invaliddata', 'error');
++    }
++}
+diff --git a/public/admin/classes/route/api/oauth2/server/clients.php b/public/admin/classes/route/api/oauth2/server/clients.php
+index 6355dae5a09..d0463db4ecc 100644
+--- a/public/admin/classes/route/api/oauth2/server/clients.php
++++ b/public/admin/classes/route/api/oauth2/server/clients.php
+@@ -16,10 +16,20 @@
+ 
+ namespace core_admin\route\api\oauth2\server;
+ 
++use core\param;
+ use core\router\require_login;
+ use core\router\route;
+-use core\router\scope\scopeset;
++use core\router\schema\objects\array_of_strings;
++use core\router\schema\objects\scalar_type;
++use core\router\schema\objects\schema_object;
++use core\router\schema\request_body;
++use core\router\schema\response\content\payload_response_type;
+ use core\router\schema\response\payload_response;
++use core\router\schema\response\response;
++use core\router\scope\scopeset;
++use core_admin\local\oauth2\server\client_editor;
++use core_admin\local\oauth2\server\client_validation_exception;
++use GuzzleHttp\Psr7\Response as HttpResponse;
+ use Psr\Http\Message\ResponseInterface;
+ use Psr\Http\Message\ServerRequestInterface;
+ 
+@@ -31,6 +41,179 @@ use Psr\Http\Message\ServerRequestInterface;
+  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+  */
+ class clients {
++    /**
++     * Create a client.
++     *
++     * @param ServerRequestInterface $request The request object
++     * @param ResponseInterface $response The response object
++     * @return payload_response The created client, or the validation errors
++     */
++    #[route(
++        path: '/oauth2/server/clients',
++        method: ['POST'],
++        title: 'Create an OAuth 2 client',
++        description: 'Create an OAuth 2 client. Public clients always use the authorization code flow.',
++        requestbody: new request_body(
++            required: true,
++            content: new payload_response_type(
++                schema: new schema_object(
++                    content: [
++                        'name' => new scalar_type(param::RAW, required: true),
++                        'description' => new scalar_type(param::RAW),
++                        'clienttype' => new scalar_type(param::ALPHA, required: true),
++                        'flows' => new schema_object(
++                            content: [
++                                'auth_code' => new scalar_type(param::BOOL),
++                                'client_credentials' => new scalar_type(param::BOOL),
++                            ],
++                        ),
++                        'redirecturis' => new array_of_strings(keyparamtype: param::INT, valueparamtype: param::RAW),
++                        'ispkcerequired' => new scalar_type(param::BOOL),
++                        'scopes' => new array_of_strings(keyparamtype: param::INT, valueparamtype: param::RAW),
++                    ],
++                ),
++            ),
++        ),
++        responses: [
++            new response(statuscode: 201, description: 'The client was created'),
++            new response(statuscode: 422, description: 'The submitted data is not valid'),
++        ],
++        requirelogin: new require_login(
++            requirelogin: true,
++            autologinguest: false,
++        ),
++    )]
++    #[scopeset(
++        new \core_admin\route\scope\config\read(),
++        new \core_admin\route\scope\config\write(),
++    )]
++    public function create_client(
++        ServerRequestInterface $request,
++        ResponseInterface $response,
++    ): payload_response {
++        require_capability('moodle/site:manageoauth2clients', \core\context\system::instance());
++
++        $editor = \core\di::get(client_editor::class);
++
++        try {
++            $cliententity = $editor->create($request->getParsedBody() ?? []);
++        } catch (client_validation_exception $e) {
++            return $this->get_validation_error_response($e, $request);
++        }
++
++        // Confidential clients continue to their secrets, public clients to the list.
++        $nextroute = $cliententity->isConfidential() ? 'manage_client_secrets' : 'list_clients';
++        $nexturl = \core\router\util::get_path_for_callable(
++            [\core_admin\route\controller\oauth2\server\client_management::class, $nextroute],
++            $cliententity->isConfidential() ? ['client' => $cliententity->get_id()] : [],
++        );
++
++        return new payload_response(
++            payload: [
++                'id' => $cliententity->get_id(),
++                'isconfidential' => $cliententity->isConfidential(),
++                'redirecturl' => $nexturl->out(false),
++            ],
++            request: $request,
++            response: new HttpResponse(201),
++        );
++    }
++
++    /**
++     * Update a client. Only the fields in the request body are changed.
++     *
++     * @param ServerRequestInterface $request The request object
++     * @param ResponseInterface $response The response object
++     * @param \core\oauth2\server\entity\client_entity $cliententity The client entity
++     * @return payload_response The updated client, or the validation errors
++     */
++    #[route(
++        path: '/oauth2/server/clients/{client}',
++        method: ['PATCH'],
++        title: 'Update an OAuth 2 client',
++        description: 'Update the given fields of an OAuth 2 client. Client type and flows cannot be changed.',
++        pathtypes: [
++            new \core_admin\route\parameters\oauth2\server\path_client(),
++        ],
++        requestbody: new request_body(
++            required: true,
++            content: new payload_response_type(
++                schema: new schema_object(
++                    content: [
++                        'name' => new scalar_type(param::RAW),
++                        'description' => new scalar_type(param::RAW),
++                        'redirecturis' => new array_of_strings(keyparamtype: param::INT, valueparamtype: param::RAW),
++                        'ispkcerequired' => new scalar_type(param::BOOL),
++                        'scopes' => new array_of_strings(keyparamtype: param::INT, valueparamtype: param::RAW),
++                    ],
++                ),
++            ),
++        ),
++        responses: [
++            new response(statuscode: 200, description: 'The client was updated'),
++            new response(statuscode: 422, description: 'The submitted data is not valid'),
++        ],
++        requirelogin: new require_login(
++            requirelogin: true,
++            autologinguest: false,
++        ),
++    )]
++    #[scopeset(
++        new \core_admin\route\scope\config\read(),
++        new \core_admin\route\scope\config\write(),
++    )]
++    public function update_client(
++        ServerRequestInterface $request,
++        ResponseInterface $response,
++        \core\oauth2\server\entity\client_entity $cliententity,
++    ): payload_response {
++        require_capability('moodle/site:manageoauth2clients', \core\context\system::instance());
++
++        $editor = \core\di::get(client_editor::class);
++
++        try {
++            $cliententity = $editor->update($cliententity, $request->getParsedBody() ?? []);
++        } catch (client_validation_exception $e) {
++            return $this->get_validation_error_response($e, $request);
++        }
++
++        $clientmanager = \core\di::get(\core\oauth2\server\client_manager::class);
++
++        return new payload_response(
++            payload: [
++                'id' => $cliententity->get_id(),
++                'name' => $cliententity->getName(),
++                'description' => (string) $cliententity->get_description(),
++                'ispkcerequired' => $cliententity->is_pkce_required(),
++                'scopes' => array_values($cliententity->get_scopes()),
++                'redirecturis' => array_values($clientmanager->get_redirect_uris($cliententity->get_id())),
++            ],
++            request: $request,
++            response: $response,
++        );
++    }
++
++    /**
++     * Build the 422 response for invalid data, with the messages keyed by field path.
++     *
++     * @param client_validation_exception $exception
++     * @param ServerRequestInterface $request
++     * @return payload_response
++     */
++    protected function get_validation_error_response(
++        client_validation_exception $exception,
++        ServerRequestInterface $request,
++    ): payload_response {
++        return new payload_response(
++            payload: [
++                'message' => $exception->getMessage(),
++                'errors' => $exception->errors,
++            ],
++            request: $request,
++            response: new HttpResponse(422),
++        );
++    }
++
+     /**
+      * Disable a client.
+      *
+diff --git a/public/admin/classes/route/controller/oauth2/server/client_management.php b/public/admin/classes/route/controller/oauth2/server/client_management.php
+index 9da76cf891d..45fcf4e8bd8 100644
+--- a/public/admin/classes/route/controller/oauth2/server/client_management.php
++++ b/public/admin/classes/route/controller/oauth2/server/client_management.php
+@@ -89,7 +89,7 @@ class client_management {
+      */
+     #[\core\router\route(
+         path: '/create',
+-        method: ['GET', 'POST'],
++        method: ['GET'],
+         requirelogin: new require_login(
+             requirelogin: true,
+             autologinguest: false,
+@@ -109,58 +109,6 @@ class client_management {
+ 
+         $PAGE->set_pagetype('admin-oauth2server-client-create');
+ 
+-        $mform = \core\di::make(\core_admin\form\oauth2\server\create_client_form::class);
+-
+-        // Handle form cancellation.
+-        if ($mform->is_cancelled()) {
+-            redirect(\core\router\util::get_path_for_callable([self::class, 'list_clients']));
+-        }
+-
+-        // Process the form data.
+-        if ($data = $mform->get_data()) {
+-            // Sanitize the redirect URIs by trimming whitespace and removing empty entries.
+-            $redirecturis = array_values(array_filter(array_map('trim', $data->redirecturi ?? [])));
+-
+-            $ispublicclient = (int) $data->clienttype === client_entity::TYPE_PUBLIC;
+-
+-            // Set the grant types based on the selected Primary flows.
+-            $granttypes = [];
+-            // If Authorization Code flow is selected or the client type is Public, add both Authorization Code and
+-            // Refresh Token grant types.
+-            if ($ispublicclient || !empty($data->flow_auth_code)) {
+-                $granttypes = [
+-                    client_entity::GRANT_TYPE_AUTHORIZATION_CODE,
+-                    client_entity::GRANT_TYPE_REFRESH_TOKEN,
+-                ];
+-            }
+-            // If Client Credentials flow is selected, add the Client Credentials grant type.
+-            if (!empty($data->flow_client_credentials)) {
+-                $granttypes[] = client_entity::GRANT_TYPE_CLIENT_CREDENTIALS;
+-            }
+-
+-            $scopes = $mform->get_submitted_scopes((array) $data);
+-
+-            $clientmanager = \core\di::get(\core\oauth2\server\client_manager::class);
+-            $cliententity = $clientmanager->create_client(
+-                $data->name,
+-                \core\context\system::instance(),
+-                $granttypes,
+-                $redirecturis,
+-                $data->description,
+-                (int) $data->clienttype === client_entity::TYPE_CONFIDENTIAL,
+-                ($ispublicclient || !empty($data->ispkcerequired)),
+-                $scopes,
+-            );
+-
+-            if ($cliententity->isConfidential()) {
+-                redirect(\core\router\util::get_path_for_callable(
+-                    [self::class, 'manage_client_secrets'],
+-                    ['client' => $cliententity->get_id()],
+-                ));
+-            }
+-            redirect(\core\router\util::get_path_for_callable([self::class, 'list_clients']));
+-        }
+-
+         $response->getBody()->write($OUTPUT->header());
+         $response->getBody()->write(
+             $OUTPUT->heading(
+@@ -169,7 +117,26 @@ class client_management {
+                 'fw-bold fs-3 mb-5',
+             ),
+         );
+-        $response->getBody()->write($mform->render());
++        // The form submits to the create client API endpoint.
++        $response->getBody()->write(\html_writer::react_component('@moodle/lms/core_admin/oauth2/createClientForm', [
++            'scopes' => $this->get_scope_options(),
++            'listUrl' => \core\router\util::get_path_for_callable([self::class, 'list_clients'])->out(false),
++            'strings' => $this->get_form_strings(get_string('oauth2server_clientcreate', 'admin')) + [
++                'type' => get_string('oauth2server_clienttype', 'admin'),
++                'typeConfidential' => get_string('oauth2server_clienttypeconfidential', 'admin'),
++                'typeConfidentialHelp' => get_string('oauth2server_clienttypeconfidentialdesc', 'admin'),
++                'typePublic' => get_string('oauth2server_clienttypepublic', 'admin'),
++                'typePublicHelp' => get_string('oauth2server_clienttypepublicdesc', 'admin'),
++                'flows' => get_string('oauth2server_clientprimaryflows', 'admin'),
++                'flowRequired' => get_string('oauth2server_clientmustselectprimaryflow', 'admin'),
++                'flowAuthCode' => get_string('oauth2server_clientgranttypeauthcode', 'admin'),
++                'flowAuthCodeHelp' => get_string('oauth2server_clientgranttypeauthcodedesc', 'admin'),
++                'flowClientCredentials' => get_string('oauth2server_clientgranttypeclientcreds', 'admin'),
++                'flowClientCredentialsHelp' => get_string('oauth2server_clientgranttypeclientcredsdesc', 'admin'),
++                'clientCredentialsWarning' => get_string('oauth2server_clientgranttypeclientcredswarning', 'admin'),
++                'creationWarning' => get_string('oauth2server_clientcreationwarning', 'admin'),
++            ],
++        ]));
+         $response->getBody()->write($OUTPUT->footer());
+ 
+         return $response;
+@@ -187,7 +154,7 @@ class client_management {
+         pathtypes: [
+             new \core_admin\route\parameters\oauth2\server\path_client(),
+         ],
+-        method: ['GET', 'POST'],
++        method: ['GET'],
+         requirelogin: new require_login(
+             requirelogin: true,
+             autologinguest: false,
+@@ -197,7 +164,7 @@ class client_management {
+         ResponseInterface $response,
+         \core\oauth2\server\entity\client_entity $cliententity,
+     ): ResponseInterface {
+-        global $OUTPUT, $PAGE, $DB;
++        global $OUTPUT, $PAGE;
+ 
+         require_capability('moodle/site:manageoauth2clients', \core\context\system::instance());
+ 
+@@ -210,56 +177,6 @@ class client_management {
+ 
+         $clientmanager = \core\di::get(\core\oauth2\server\client_manager::class);
+ 
+-        $mform = \core\di::make(\core_admin\form\oauth2\server\edit_client_form::class, [
+-            'customdata' => [
+-                'cliententity' => $cliententity,
+-            ],
+-        ]);
+-
+-        // Handle form cancellation.
+-        if ($mform->is_cancelled()) {
+-            redirect(\core\router\util::get_path_for_callable([self::class, 'list_clients']));
+-        }
+-        // Process the form data.
+-        if ($data = $mform->get_data()) {
+-            $updates = [
+-                'name' => $data->name,
+-                'description' => $data->description,
+-                'scopes' => $mform->get_submitted_scopes((array) $data),
+-            ];
+-
+-            if ($cliententity->isConfidential() && $cliententity->supportsGrantType(client_entity::GRANT_TYPE_AUTHORIZATION_CODE)) {
+-                $updates['ispkcerequired'] = empty($data->ispkcerequired) ? 0 : 1;
+-            }
+-            $transaction = $DB->start_delegated_transaction();
+-
+-            $clientmanager->update_client(
+-                $cliententity->get_id(),
+-                $updates,
+-            );
+-
+-            // Sanitize the redirect URIs by trimming whitespace and removing empty entries.
+-            $redirecturis = array_values(array_filter(array_map('trim', $data->redirecturi ?? [])));
+-            // Fetch the current records from the database.
+-            $existingredirecturis = $clientmanager->get_redirect_uris($cliententity->get_id());
+-
+-            // Find URIs that are in db, but missing from form and delete them.
+-            $redirecturistodelete = array_diff($existingredirecturis, $redirecturis);
+-            foreach ($redirecturistodelete as $redirecturi) {
+-                $clientmanager->remove_redirect_uri($cliententity->get_id(), $redirecturi);
+-            }
+-
+-            // Find URIs that are in the form, but missing from the database and add them.
+-            $redirecturistoadd = array_diff($redirecturis, $existingredirecturis);
+-            foreach ($redirecturistoadd as $redirecturi) {
+-                $clientmanager->add_redirect_uri($cliententity->get_id(), $redirecturi);
+-            }
+-
+-            $transaction->allow_commit();
+-
+-            redirect(\core\router\util::get_path_for_callable([self::class, 'list_clients']));
+-        }
+-
+         $response->getBody()->write($OUTPUT->header());
+ 
+         $isclientactive = $cliententity->get_status() === client_entity::STATUS_ACTIVE;
+@@ -280,7 +197,23 @@ class client_management {
+                 true,
+             ),
+             'backurl' => \core\router\util::get_path_for_callable([self::class, 'list_clients'])->out(),
+-            'editclientform' => $mform->render(),
++            'editclientform' => \html_writer::react_component('@moodle/lms/core_admin/oauth2/editClientForm', [
++                'clientId' => $cliententity->get_id(),
++                'values' => [
++                    'name' => $cliententity->getName(),
++                    'description' => $cliententity->get_description() ?? '',
++                    'ispkcerequired' => $cliententity->is_pkce_required(),
++                    'scopes' => array_values($cliententity->get_scopes()),
++                    'redirecturis' => array_values($clientmanager->get_redirect_uris($cliententity->get_id())),
++                ],
++                'hasAuthCode' => $cliententity->supportsGrantType(client_entity::GRANT_TYPE_AUTHORIZATION_CODE),
++                'isConfidential' => $cliententity->isConfidential(),
++                'scopes' => $this->get_scope_options(),
++                'listUrl' => \core\router\util::get_path_for_callable([self::class, 'list_clients'])->out(false),
++                'strings' => array_merge($this->get_form_strings(get_string('savechanges')), [
++                    'pkceHelp' => $this->plain_text(get_string('oauth2server_clientpkcerequiredconfidentialdesc', 'admin')),
++                ]),
++            ]),
+         ];
+ 
+         if ($cliententity->isConfidential()) {
+@@ -413,4 +346,61 @@ class client_management {
+             $PAGE->set_title(get_string('oauth2server_clients', 'admin'));
+         }
+     }
++
++    /**
++     * The scopes a client can be granted, as options for the React forms.
++     *
++     * @return array[] List of value, label and description.
++     */
++    private function get_scope_options(): array {
++        $options = [];
++        foreach (\core\di::get(\core\oauth2\server\repository\scope_repository::class)->get_all_scopes() as $identifier => $scope) {
++            $options[] = [
++                'value' => $identifier,
++                'label' => $scope::get_summary() . ' - ' . $identifier,
++                'description' => $scope::get_description(),
++            ];
++        }
++        return $options;
++    }
++
++    /**
++     * The strings shared by the create and edit React forms.
++     *
++     * @param string $submitlabel The label of the submit button
++     * @return string[]
++     */
++    private function get_form_strings(string $submitlabel): array {
++        return [
++            'name' => get_string('name'),
++            'nameRequired' => get_string('required'),
++            'nameTooLong' => get_string('maximumchars', '', 255),
++            'description' => get_string('description'),
++            'redirectUris' => get_string('oauth2server_clientcallbackuris', 'admin'),
++            'redirectUrisHelp' => get_string('oauth2server_clientcallbackurisdesc', 'admin'),
++            'redirectUriRequired' => get_string('oauth2server_clientcallbackurirequired', 'admin'),
++            'redirectUriInvalid' => get_string('oauth2server_clientcallbackurisinvalid', 'admin'),
++            'addRedirectUri' => get_string('oauth2server_clientaddcallbackuri', 'admin'),
++            'remove' => get_string('remove'),
++            'pkce' => get_string('oauth2server_clientpkcerequired', 'admin'),
++            'pkceHelp' => $this->plain_text(get_string('oauth2server_clientpkcerequireddesc', 'admin')),
++            'scopes' => get_string('oauth2server_scopes', 'admin'),
++            'scopesRequired' => get_string('oauth2serverclientnoscopes', 'error'),
++            'loading' => get_string('loading'),
++            'submit' => $submitlabel,
++            'saving' => $submitlabel,
++            'cancel' => get_string('cancel'),
++            'genericError' => get_string('unknownerror'),
++        ];
++    }
++
++    /**
++     * Strips markup from a string that was written for HTML output.
++     *
++     * @param string $text
++     * @return string
++     */
++    private function plain_text(string $text): string {
++        return trim(strip_tags(str_replace(['<br>', '<br/>'], ' ', $text)));
++    }
+ }
+diff --git a/public/admin/js/esm/build/oauth2/clientApi.dev.js b/public/admin/js/esm/build/oauth2/clientApi.dev.js
+new file mode 100644
+index 00000000000..0f14ebfa8a1
+Binary files /dev/null and b/public/admin/js/esm/build/oauth2/clientApi.dev.js differ
+diff --git a/public/admin/js/esm/build/oauth2/clientApi.dev.js.map b/public/admin/js/esm/build/oauth2/clientApi.dev.js.map
+new file mode 100644
+index 00000000000..456927ac609
+Binary files /dev/null and b/public/admin/js/esm/build/oauth2/clientApi.dev.js.map differ
+diff --git a/public/admin/js/esm/build/oauth2/clientApi.js b/public/admin/js/esm/build/oauth2/clientApi.js
+new file mode 100644
+index 00000000000..cda470f1f58
+Binary files /dev/null and b/public/admin/js/esm/build/oauth2/clientApi.js differ
+diff --git a/public/admin/js/esm/build/oauth2/clientFields.dev.js b/public/admin/js/esm/build/oauth2/clientFields.dev.js
+new file mode 100644
+index 00000000000..b7524d22573
+Binary files /dev/null and b/public/admin/js/esm/build/oauth2/clientFields.dev.js differ
+diff --git a/public/admin/js/esm/build/oauth2/clientFields.dev.js.map b/public/admin/js/esm/build/oauth2/clientFields.dev.js.map
+new file mode 100644
+index 00000000000..73ec29d31d7
+Binary files /dev/null and b/public/admin/js/esm/build/oauth2/clientFields.dev.js.map differ
+diff --git a/public/admin/js/esm/build/oauth2/clientFields.js b/public/admin/js/esm/build/oauth2/clientFields.js
+new file mode 100644
+index 00000000000..14754a38778
+Binary files /dev/null and b/public/admin/js/esm/build/oauth2/clientFields.js differ
+diff --git a/public/admin/js/esm/build/oauth2/createClientForm.dev.js b/public/admin/js/esm/build/oauth2/createClientForm.dev.js
+new file mode 100644
+index 00000000000..ee38021884b
+Binary files /dev/null and b/public/admin/js/esm/build/oauth2/createClientForm.dev.js differ
+diff --git a/public/admin/js/esm/build/oauth2/createClientForm.dev.js.map b/public/admin/js/esm/build/oauth2/createClientForm.dev.js.map
+new file mode 100644
+index 00000000000..864844288e0
+Binary files /dev/null and b/public/admin/js/esm/build/oauth2/createClientForm.dev.js.map differ
+diff --git a/public/admin/js/esm/build/oauth2/createClientForm.js b/public/admin/js/esm/build/oauth2/createClientForm.js
+new file mode 100644
+index 00000000000..ea3bf9cb3a5
+Binary files /dev/null and b/public/admin/js/esm/build/oauth2/createClientForm.js differ
+diff --git a/public/admin/js/esm/build/oauth2/editClientForm.dev.js b/public/admin/js/esm/build/oauth2/editClientForm.dev.js
+new file mode 100644
+index 00000000000..4e30f2aba74
+Binary files /dev/null and b/public/admin/js/esm/build/oauth2/editClientForm.dev.js differ
+diff --git a/public/admin/js/esm/build/oauth2/editClientForm.dev.js.map b/public/admin/js/esm/build/oauth2/editClientForm.dev.js.map
+new file mode 100644
+index 00000000000..c8851b3a1d9
+Binary files /dev/null and b/public/admin/js/esm/build/oauth2/editClientForm.dev.js.map differ
+diff --git a/public/admin/js/esm/build/oauth2/editClientForm.js b/public/admin/js/esm/build/oauth2/editClientForm.js
+new file mode 100644
+index 00000000000..485af314c44
+Binary files /dev/null and b/public/admin/js/esm/build/oauth2/editClientForm.js differ
+diff --git a/public/admin/js/esm/src/oauth2/clientApi.ts b/public/admin/js/esm/src/oauth2/clientApi.ts
+new file mode 100644
+index 00000000000..124a798e31d
+--- /dev/null
++++ b/public/admin/js/esm/src/oauth2/clientApi.ts
+@@ -0,0 +1,49 @@
++import Fetch from '@moodle/lms/core/fetch';
++import {FormValidationError} from '@moodle/lms/core/forms';
++
++export type ClientPayload = {
++    name: string;
++    description: string;
++    clienttype: 'confidential' | 'public';
++    flows: {auth_code: boolean; client_credentials: boolean};
++    redirecturis: string[];
++    ispkcerequired: boolean;
++    scopes: string[];
++};
++
++export type CreatedClient = {id: number; isconfidential: boolean; redirecturl: string};
++
++export type UpdatedClient = Pick<ClientPayload, 'name' | 'description' | 'ispkcerequired' | 'scopes' | 'redirecturis'> & {
++    id: number;
++};
++
++// Turns a 422 response ({message, errors: {path: [messages]}}) into a FormValidationError.
++async function toError(e: unknown): Promise<unknown> {
++    if (e instanceof Response && e.status === 422) {
++        const body = await e.json();
++        return new FormValidationError(body.errors ?? {}, body.errors && Object.keys(body.errors).length ? [] : [body.message]);
++    }
++    return e instanceof Response ? new Error(e.statusText) : e;
++}
++
++export async function createClient(payload: ClientPayload): Promise<CreatedClient> {
++    try {
++        const response = await Fetch.performPost('core_admin', 'oauth2/server/clients', {body: payload, rejectWithResponse: true});
++        return await response.json();
++    } catch (e) {
++        throw await toError(e);
++    }
++}
++
++export async function patchClient(id: number, changes: Partial<ClientPayload>): Promise<UpdatedClient> {
++    try {
++        const response = await Fetch.performPatch(
++            'core_admin',
++            `oauth2/server/clients/${id}`,
++            {body: changes, rejectWithResponse: true},
++        );
++        return await response.json();
++    } catch (e) {
++        throw await toError(e);
++    }
++}
+diff --git a/public/admin/js/esm/src/oauth2/clientFields.tsx b/public/admin/js/esm/src/oauth2/clientFields.tsx
+new file mode 100644
+index 00000000000..3155c221bb6
+--- /dev/null
++++ b/public/admin/js/esm/src/oauth2/clientFields.tsx
+@@ -0,0 +1,85 @@
++import {TextField, TextareaField, CheckboxGroupField, CheckboxField, RepeaterField}
++    from '@moodle/lms/core/forms/fields';
++import {required, maxLength, url} from '@moodle/lms/core/forms/rules';
++import type {Condition} from '@moodle/lms/core/forms/conditions';
++import type {Option} from '@moodle/lms/core/forms/fields';
++
++// Every user-facing string comes from PHP lang strings.
++export type ClientStrings = {
++    name: string;
++    nameRequired: string;
++    nameTooLong: string;
++    description: string;
++    redirectUris: string;
++    redirectUrisHelp: string;
++    redirectUriRequired: string;
++    redirectUriInvalid: string;
++    addRedirectUri: string;
++    remove: string;
++    pkce: string;
++    pkceHelp: string;
++    scopes: string;
++    scopesRequired: string;
++    loading: string;
++    submit: string;
++    saving: string;
++    cancel: string;
++    genericError: string;
++};
++
++export type ScopeOption = Required<Option>;
++
++export const NAME_MAX_LENGTH = 255;
++
++export function DetailsFields({strings}: {strings: ClientStrings}) {
++    return (
++        <>
++            <TextField
++                name="name"
++                label={strings.name}
++                rules={[required(strings.nameRequired), maxLength(NAME_MAX_LENGTH, strings.nameTooLong)]}
++            />
++            <TextareaField name="description" label={strings.description} />
++        </>
++    );
++}
++
++export function RedirectUriField({strings, hideIf}: {strings: ClientStrings; hideIf?: Condition}) {
++    return (
++        <RepeaterField
++            name="redirecturis"
++            label={strings.redirectUris}
++            addLabel={strings.addRedirectUri}
++            removeLabel={strings.remove}
++            hideIf={hideIf}
++        >
++            {(index) => (
++                <TextField
++                    name={`redirecturis.${index}`}
++                    label={`${strings.redirectUris} ${index + 1}`}
++                    hideLabel
++                    rules={[
++                        ...(index === 0 ? [required(strings.redirectUriRequired)] : []),
++                        url(strings.redirectUriInvalid),
++                    ]}
++                />
++            )}
++        </RepeaterField>
++    );
++}
++
++export function PkceField({strings, hideIf, help}: {strings: ClientStrings; hideIf?: Condition; help?: string}) {
++    return <CheckboxField name="ispkcerequired" label={strings.pkce} supportingText={help ?? strings.pkceHelp} hideIf={hideIf} />;
++}
++
++export function ScopesField({strings, scopes}: {strings: ClientStrings; scopes: ScopeOption[]}) {
++    return (
++        <CheckboxGroupField
++            name="scopes"
++            label={strings.scopes}
++            options={scopes}
++            loadingLabel={strings.loading}
++            rules={[(v) => (Array.isArray(v) && v.length > 0) || strings.scopesRequired]}
++        />
++    );
++}
+diff --git a/public/admin/js/esm/src/oauth2/createClientForm.tsx b/public/admin/js/esm/src/oauth2/createClientForm.tsx
+new file mode 100644
+index 00000000000..449ec0d97d0
+--- /dev/null
++++ b/public/admin/js/esm/src/oauth2/createClientForm.tsx
+@@ -0,0 +1,100 @@
++import {DefinedForm} from '@moodle/lms/core/forms';
++import {
++    RadioGroupField,
++    CheckboxField,
++    GroupField,
++    NoticeField,
++    TextField,
++    TextareaField
++} from '@moodle/lms/core/forms/fields';
++import {eq, checked, not, anyOf, allOf} from '@moodle/lms/core/forms/conditions';
++import {createClient, type ClientPayload, type CreatedClient} from '@moodle/lms/core_admin/oauth2/clientApi';
++import {
++    DetailsFields, RedirectUriField, PkceField, ScopesField, type ClientStrings, type ScopeOption, NAME_MAX_LENGTH,
++} from '@moodle/lms/core_admin/oauth2/clientFields';
++import {required} from "@moodle/lms/core/forms/rules/required";
++import {maxLength} from "@moodle/lms/core/forms/rules/maxLength";
++
++type CreateStrings = ClientStrings & {
++    type: string;
++    typeConfidential: string;
++    typeConfidentialHelp: string;
++    typePublic: string;
++    typePublicHelp: string;
++    flows: string;
++    flowRequired: string;
++    flowAuthCode: string;
++    flowAuthCodeHelp: string;
++    flowClientCredentials: string;
++    flowClientCredentialsHelp: string;
++    clientCredentialsWarning: string;
++    creationWarning: string;
++};
++
++type Props = {
++    scopes: ScopeOption[];
++    listUrl: string;
++    strings: CreateStrings;
++};
++
++const isPublic = eq('clienttype', 'public');
++const authCodeUnchecked = not(checked('flows.auth_code'));
++
++export default function CreateClientForm({scopes, listUrl, strings}: Props) {
++    const typeOptions = [
++        {value: 'confidential', label: strings.typeConfidential, description: strings.typeConfidentialHelp},
++        {value: 'public', label: strings.typePublic, description: strings.typePublicHelp},
++    ];
++
++    return (
++        <DefinedForm<ClientPayload, ClientPayload, number, CreatedClient>
++            defaultValues={{
++                name: '',
++                description: '',
++                clienttype: 'confidential',
++                flows: {auth_code: true, client_credentials: false},
++                redirecturis: [''],
++                ispkcerequired: true,
++                scopes: [],
++            }}
++            create={createClient}
++            onSaved={(saved) => {
++                window.location.href = saved.redirecturl;
++            }}
++            submitLabel={strings.submit}
++            savingLabel={strings.saving}
++            genericError={strings.genericError}
++            cancel={{href: listUrl, label: strings.cancel}}
++        >
++            <TextField
++                name="name"
++                label={strings.name}
++                rules={[required(strings.nameRequired), maxLength(NAME_MAX_LENGTH, strings.nameTooLong)]}
++            />
++            <TextareaField name="description" label={strings.description} />
++            <RadioGroupField name="clienttype" label={strings.type} options={typeOptions} />
++            <GroupField
++                name="flows"
++                label={strings.flows}
++                hideIf={isPublic}
++                rules={[(v) => Boolean(v?.auth_code || v?.client_credentials) || strings.flowRequired]}
++            >
++                <CheckboxField name="flows.auth_code" label={strings.flowAuthCode} supportingText={strings.flowAuthCodeHelp} />
++                <CheckboxField
++                    name="flows.client_credentials"
++                    label={strings.flowClientCredentials}
++                    supportingText={strings.flowClientCredentialsHelp}
++                />
++            </GroupField>
++            <NoticeField
++                type="warning"
++                message={strings.clientCredentialsWarning}
++                hideIf={anyOf(isPublic, not(checked('flows.client_credentials')))}
++            />
++            <RedirectUriField strings={strings} hideIf={allOf(not(isPublic), authCodeUnchecked)} />
++            <PkceField strings={strings} hideIf={anyOf(isPublic, authCodeUnchecked)} />
++            <NoticeField type="warning" message={strings.creationWarning} />
++            <ScopesField strings={strings} scopes={scopes} />
++        </DefinedForm>
++    );
++}
+diff --git a/public/admin/js/esm/src/oauth2/editClientForm.tsx b/public/admin/js/esm/src/oauth2/editClientForm.tsx
+new file mode 100644
+index 00000000000..c402b1b160b
+--- /dev/null
++++ b/public/admin/js/esm/src/oauth2/editClientForm.tsx
+@@ -0,0 +1,40 @@
++import {DefinedForm} from '@moodle/lms/core/forms';
++import {patchClient, type ClientPayload, type UpdatedClient} from '@moodle/lms/core_admin/oauth2/clientApi';
++import {
++    DetailsFields, RedirectUriField, PkceField, ScopesField, type ClientStrings, type ScopeOption,
++} from '@moodle/lms/core_admin/oauth2/clientFields';
++
++type EditValues = Pick<ClientPayload, 'name' | 'description' | 'ispkcerequired' | 'scopes' | 'redirecturis'>;
++
++type Props = {
++    clientId: number;
++    values: EditValues;
++    // Which optional fields apply to this client.
++    hasAuthCode: boolean;
++    isConfidential: boolean;
++    scopes: ScopeOption[];
++    listUrl: string;
++    strings: ClientStrings;
++};
++
++export default function EditClientForm({clientId, values, hasAuthCode, isConfidential, scopes, listUrl, strings}: Props) {
++    return (
++        <DefinedForm<EditValues, EditValues, number, UpdatedClient>
++            defaultValues={{...values, redirecturis: values.redirecturis.length ? values.redirecturis : ['']}}
++            id={clientId}
++            update={patchClient}
++            onSaved={() => {
++                window.location.href = listUrl;
++            }}
++            submitLabel={strings.submit}
++            savingLabel={strings.saving}
++            genericError={strings.genericError}
++            cancel={{href: listUrl, label: strings.cancel}}
++        >
++            <DetailsFields strings={strings} />
++            {hasAuthCode && <RedirectUriField strings={strings} />}
++            {hasAuthCode && isConfidential && <PkceField strings={strings} />}
++            <ScopesField strings={strings} scopes={scopes} />
++        </DefinedForm>
++    );
++}
+diff --git a/public/admin/js/esm/src/swizzle.json b/public/admin/js/esm/src/swizzle.json
+new file mode 100644
+index 00000000000..e7415f571da
+--- /dev/null
++++ b/public/admin/js/esm/src/swizzle.json
+@@ -0,0 +1,14 @@
++{
++  "oauth2/clientForm": {
++    "eject": "risky",
++    "wrap": "risky"
++  },
++  "oauth2/createClientForm": {
++    "eject": "risky",
++    "wrap": "risky"
++  },
++  "oauth2/editClientForm": {
++    "eject": "risky",
++    "wrap": "risky"
++  }
++}
+diff --git a/public/admin/tests/route/api/oauth2/server/clients_test.php b/public/admin/tests/route/api/oauth2/server/clients_test.php
+index b506282e780..96e0d6f4854 100644
+--- a/public/admin/tests/route/api/oauth2/server/clients_test.php
++++ b/public/admin/tests/route/api/oauth2/server/clients_test.php
+@@ -16,7 +16,11 @@
+ 
+ namespace core_admin\route\api\oauth2\server;
+ 
++use core\oauth2\server\client_manager;
++use core\oauth2\server\entity\client_entity;
++use core\oauth2\server\repository\scope_repository;
+ use core\tests\router\route_testcase;
++use GuzzleHttp\Psr7\Utils;
+ use PHPUnit\Framework\Attributes\CoversClass;
+ use PHPUnit\Framework\Attributes\DataProvider;
+ 
+@@ -53,6 +57,219 @@ final class clients_test extends route_testcase {
+             'disable_client' => ['disable_client'],
+             'reactivate_client' => ['reactivate_client'],
+             'delete_client' => ['delete_client'],
++            'create_client' => ['create_client'],
++            'update_client' => ['update_client'],
+         ];
+     }
++
++    /**
++     * Get the identifier of a scope that exists.
++     *
++     * @return string
++     */
++    private function get_scope(): string {
++        return array_key_first(\core\di::get(scope_repository::class)->get_all_scopes());
++    }
++
++    /**
++     * Send a JSON request to the clients API as an admin.
++     *
++     * @param string $method
++     * @param string $path
++     * @param array $body
++     * @return \Psr\Http\Message\ResponseInterface
++     */
++    private function request(string $method, string $path, array $body) {
++        $this->add_class_routes_to_route_loader(clients::class);
++        // The redirect URL in the response refers to these controller routes.
++        $this->add_class_routes_to_route_loader(
++            \core_admin\route\controller\oauth2\server\client_management::class,
++            \core\router\route_loader_interface::ROUTE_GROUP_PAGE,
++        );
++        $this->setAdminUser();
++
++        return $this->process_api_request($method, $path, body: Utils::streamFor(json_encode($body)));
++    }
++
++    /**
++     * Create a confidential client using the Authorization Code grant.
++     *
++     * @return client_entity
++     */
++    private function create_auth_code_client(): client_entity {
++        return \core\di::get(client_manager::class)->create_client(
++            'Existing',
++            \core\context\system::instance(),
++            [client_entity::GRANT_TYPE_AUTHORIZATION_CODE, client_entity::GRANT_TYPE_REFRESH_TOKEN],
++            ['https://example.com/one', 'https://example.com/two'],
++            'Desc',
++            true,
++            true,
++            [$this->get_scope()],
++        );
++    }
++
++    /**
++     * A public client always gets the authorization code grant and PKCE, whatever else is sent.
++     */
++    public function test_create_public_client(): void {
++        $this->resetAfterTest();
++
++        $response = $this->request('POST', '/oauth2/server/clients', [
++            'name' => 'Mobile',
++            'clienttype' => 'public',
++            'flows' => ['client_credentials' => true],
++            'redirecturis' => ['https://example.com/cb', ' ', 'https://example.com/cb'],
++            'scopes' => [$this->get_scope()],
++        ]);
++
++        $this->assert_valid_response($response, 201);
++        $payload = $this->decode_response($response);
++        $this->assertFalse($payload->isconfidential);
++
++        $client = \core\di::get(client_manager::class)->get_client_by_id($payload->id);
++        $this->assertFalse($client->isConfidential());
++        $this->assertTrue($client->is_pkce_required());
++        $this->assertTrue($client->supportsGrantType(client_entity::GRANT_TYPE_AUTHORIZATION_CODE));
++        $this->assertFalse($client->supportsGrantType(client_entity::GRANT_TYPE_CLIENT_CREDENTIALS));
++        $this->assertEquals(
++            ['https://example.com/cb'],
++            array_values(\core\di::get(client_manager::class)->get_redirect_uris($payload->id)),
++        );
++    }
++
++    /**
++     * A confidential client using only client credentials needs no redirect URI, and continues to its secrets.
++     */
++    public function test_create_confidential_client_credentials_client(): void {
++        $this->resetAfterTest();
++
++        $response = $this->request('POST', '/oauth2/server/clients', [
++            'name' => 'Service',
++            'description' => 'Machine',
++            'clienttype' => 'confidential',
++            'flows' => ['auth_code' => false, 'client_credentials' => true],
++            'scopes' => [$this->get_scope()],
++        ]);
++
++        $this->assert_valid_response($response, 201);
++        $payload = $this->decode_response($response);
++        $this->assertTrue($payload->isconfidential);
++        $this->assertStringContainsString("/{$payload->id}/secrets", $payload->redirecturl);
++
++        $client = \core\di::get(client_manager::class)->get_client_by_id($payload->id);
++        $this->assertTrue($client->supportsGrantType(client_entity::GRANT_TYPE_CLIENT_CREDENTIALS));
++        $this->assertFalse($client->supportsGrantType(client_entity::GRANT_TYPE_AUTHORIZATION_CODE));
++    }
++
++    /**
++     * The rules of the old create form are reported per field, with a 422.
++     */
++    public function test_create_client_validation(): void {
++        $this->resetAfterTest();
++
++        $response = $this->request('POST', '/oauth2/server/clients', [
++            'name' => ' ',
++            'clienttype' => 'confidential',
++            'flows' => ['auth_code' => false, 'client_credentials' => false],
++            'scopes' => [],
++        ]);
++        $this->assert_valid_response($response, 422);
++        $errors = $this->decode_response($response, true)['errors'];
++        $this->assertEqualsCanonicalizing(['name', 'flows', 'scopes'], array_keys($errors));
++
++        $response = $this->request('POST', '/oauth2/server/clients', [
++            'name' => 'Needs a URI',
++            'clienttype' => 'public',
++            'scopes' => [$this->get_scope(), 'not:a:scope'],
++        ]);
++        $this->assert_valid_response($response, 422);
++        $errors = $this->decode_response($response, true)['errors'];
++        $this->assertEqualsCanonicalizing(['redirecturis', 'scopes'], array_keys($errors));
++
++        $response = $this->request('POST', '/oauth2/server/clients', [
++            'name' => 'Bad URI',
++            'clienttype' => 'public',
++            'redirecturis' => ['https://example.com/ok', 'http://example.com/not-https#frag'],
++            'scopes' => [$this->get_scope()],
++        ]);
++        $this->assert_valid_response($response, 422);
++        $this->assertSame(['redirecturis.1'], array_keys($this->decode_response($response, true)['errors']));
++    }
++
++    /**
++     * Only the submitted fields change, and redirect URIs are added and removed to match the submitted list.
++     */
++    public function test_update_client(): void {
++        $this->resetAfterTest();
++        $client = $this->create_auth_code_client();
++
++        $response = $this->request('PATCH', "/oauth2/server/clients/{$client->get_id()}", [
++            'name' => 'Renamed',
++            'redirecturis' => ['https://example.com/two', 'https://example.com/three', ''],
++            'ispkcerequired' => false,
++        ]);
++
++        $this->assert_valid_response($response);
++        $payload = $this->decode_response($response, true);
++        $this->assertSame('Renamed', $payload['name']);
++        $this->assertSame('Desc', $payload['description']);
++        $this->assertFalse($payload['ispkcerequired']);
++        $this->assertEqualsCanonicalizing(
++            ['https://example.com/two', 'https://example.com/three'],
++            $payload['redirecturis'],
++        );
++        $this->assertSame([$this->get_scope()], $payload['scopes']);
++    }
++
++    /**
++     * Invalid changes are reported with a 422 and nothing is saved.
++     */
++    public function test_update_client_validation(): void {
++        $this->resetAfterTest();
++        $client = $this->create_auth_code_client();
++
++        $response = $this->request('PATCH', "/oauth2/server/clients/{$client->get_id()}", [
++            'name' => 'Renamed',
++            'redirecturis' => ['', ''],
++            'scopes' => [],
++        ]);
++
++        $this->assert_valid_response($response, 422);
++        $this->assertEqualsCanonicalizing(
++            ['redirecturis', 'scopes'],
++            array_keys($this->decode_response($response, true)['errors']),
++        );
++        $this->assertSame(
++            'Existing',
++            \core\di::get(client_manager::class)->get_client_by_id($client->get_id())->getName(),
++        );
++    }
++
++    /**
++     * Redirect URIs and PKCE do not apply to a client without the authorization code grant, so they are ignored.
++     */
++    public function test_update_client_ignores_fields_that_do_not_apply(): void {
++        $this->resetAfterTest();
++        $manager = \core\di::get(client_manager::class);
++        $client = $manager->create_client(
++            'Service',
++            \core\context\system::instance(),
++            [client_entity::GRANT_TYPE_CLIENT_CREDENTIALS],
++            [],
++            '',
++            true,
++            false,
++            [$this->get_scope()],
++        );
++
++        $response = $this->request('PATCH', "/oauth2/server/clients/{$client->get_id()}", [
++            'redirecturis' => ['https://example.com/cb'],
++            'ispkcerequired' => true,
++        ]);
++
++        $this->assert_valid_response($response);
++        $this->assertSame([], $this->decode_response($response, true)['redirecturis']);
++        $this->assertFalse($manager->get_client_by_id($client->get_id())->is_pkce_required());
++    }
+ }
+diff --git a/public/blocks/timeline/js/esm/build/Timeline.dev.js.map b/public/blocks/timeline/js/esm/build/Timeline.dev.js.map
+index 45072340764..335579c9797 100644
+Binary files a/public/blocks/timeline/js/esm/build/Timeline.dev.js.map and b/public/blocks/timeline/js/esm/build/Timeline.dev.js.map differ
+diff --git a/public/blocks/timeline/js/esm/build/common/types.dev.js.map b/public/blocks/timeline/js/esm/build/common/types.dev.js.map
+index 96895478309..c7e4eef46c1 100644
+Binary files a/public/blocks/timeline/js/esm/build/common/types.dev.js.map and b/public/blocks/timeline/js/esm/build/common/types.dev.js.map differ
+diff --git a/public/blocks/timeline/js/esm/build/common/useAriaLabels.dev.js.map b/public/blocks/timeline/js/esm/build/common/useAriaLabels.dev.js.map
+index 307a4495e10..505ef2076f5 100644
+Binary files a/public/blocks/timeline/js/esm/build/common/useAriaLabels.dev.js.map and b/public/blocks/timeline/js/esm/build/common/useAriaLabels.dev.js.map differ
+diff --git a/public/blocks/timeline/js/esm/build/common/useComposedLabel.dev.js.map b/public/blocks/timeline/js/esm/build/common/useComposedLabel.dev.js.map
+index 73d34005f91..d875234723a 100644
+Binary files a/public/blocks/timeline/js/esm/build/common/useComposedLabel.dev.js.map and b/public/blocks/timeline/js/esm/build/common/useComposedLabel.dev.js.map differ
+diff --git a/public/blocks/timeline/js/esm/build/common/utils.dev.js.map b/public/blocks/timeline/js/esm/build/common/utils.dev.js.map
+index 9732008335e..496f9b2972d 100644
+Binary files a/public/blocks/timeline/js/esm/build/common/utils.dev.js.map and b/public/blocks/timeline/js/esm/build/common/utils.dev.js.map differ
+diff --git a/public/blocks/timeline/js/esm/build/nav/DayFilter.dev.js.map b/public/blocks/timeline/js/esm/build/nav/DayFilter.dev.js.map
+index 7e5b14f8653..72b99263152 100644
+Binary files a/public/blocks/timeline/js/esm/build/nav/DayFilter.dev.js.map and b/public/blocks/timeline/js/esm/build/nav/DayFilter.dev.js.map differ
+diff --git a/public/blocks/timeline/js/esm/build/nav/Search.dev.js.map b/public/blocks/timeline/js/esm/build/nav/Search.dev.js.map
+index 36b6fb82714..0b8b8c31bf2 100644
+Binary files a/public/blocks/timeline/js/esm/build/nav/Search.dev.js.map and b/public/blocks/timeline/js/esm/build/nav/Search.dev.js.map differ
+diff --git a/public/blocks/timeline/js/esm/build/nav/ViewSelector.dev.js.map b/public/blocks/timeline/js/esm/build/nav/ViewSelector.dev.js.map
+index cea34499a6c..9510e8500eb 100644
+Binary files a/public/blocks/timeline/js/esm/build/nav/ViewSelector.dev.js.map and b/public/blocks/timeline/js/esm/build/nav/ViewSelector.dev.js.map differ
+diff --git a/public/blocks/timeline/js/esm/build/repository.dev.js.map b/public/blocks/timeline/js/esm/build/repository.dev.js.map
+index b7f1762233b..462a483ffc7 100644
+Binary files a/public/blocks/timeline/js/esm/build/repository.dev.js.map and b/public/blocks/timeline/js/esm/build/repository.dev.js.map differ
+diff --git a/public/blocks/timeline/js/esm/build/views/ActivityIcon.dev.js.map b/public/blocks/timeline/js/esm/build/views/ActivityIcon.dev.js.map
+index 20ac12bd1b8..1499c410881 100644
+Binary files a/public/blocks/timeline/js/esm/build/views/ActivityIcon.dev.js.map and b/public/blocks/timeline/js/esm/build/views/ActivityIcon.dev.js.map differ
+diff --git a/public/blocks/timeline/js/esm/build/views/CoursesView.dev.js.map b/public/blocks/timeline/js/esm/build/views/CoursesView.dev.js.map
+index 7f05859f941..55d356f6c62 100644
+Binary files a/public/blocks/timeline/js/esm/build/views/CoursesView.dev.js.map and b/public/blocks/timeline/js/esm/build/views/CoursesView.dev.js.map differ
+diff --git a/public/blocks/timeline/js/esm/build/views/DatesView.dev.js.map b/public/blocks/timeline/js/esm/build/views/DatesView.dev.js.map
+index c788d0d6995..489a5679ce2 100644
+Binary files a/public/blocks/timeline/js/esm/build/views/DatesView.dev.js.map and b/public/blocks/timeline/js/esm/build/views/DatesView.dev.js.map differ
+diff --git a/public/blocks/timeline/js/esm/build/views/EventListItem.dev.js.map b/public/blocks/timeline/js/esm/build/views/EventListItem.dev.js.map
+index ce2d2a69f5c..f324c63151b 100644
+Binary files a/public/blocks/timeline/js/esm/build/views/EventListItem.dev.js.map and b/public/blocks/timeline/js/esm/build/views/EventListItem.dev.js.map differ
+diff --git a/public/lib/js/esm/build/fetch.dev.js b/public/lib/js/esm/build/fetch.dev.js
+index 2c473e81382..c0dce04c0c6 100644
+Binary files a/public/lib/js/esm/build/fetch.dev.js and b/public/lib/js/esm/build/fetch.dev.js differ
+diff --git a/public/lib/js/esm/build/fetch.dev.js.map b/public/lib/js/esm/build/fetch.dev.js.map
+index 1689617535c..4e07db8a9dd 100644
+Binary files a/public/lib/js/esm/build/fetch.dev.js.map and b/public/lib/js/esm/build/fetch.dev.js.map differ
+diff --git a/public/lib/js/esm/build/fetch.js b/public/lib/js/esm/build/fetch.js
+index bc5150c6fcc..ef04a9c1b2d 100644
+Binary files a/public/lib/js/esm/build/fetch.js and b/public/lib/js/esm/build/fetch.js differ
+diff --git a/public/lib/js/esm/build/forms.dev.js b/public/lib/js/esm/build/forms.dev.js
+new file mode 100644
+index 00000000000..85b566a32b9
+Binary files /dev/null and b/public/lib/js/esm/build/forms.dev.js differ
+diff --git a/public/lib/js/esm/build/forms.dev.js.map b/public/lib/js/esm/build/forms.dev.js.map
+new file mode 100644
+index 00000000000..ef420c4e398
+Binary files /dev/null and b/public/lib/js/esm/build/forms.dev.js.map differ
+diff --git a/public/lib/js/esm/build/forms.js b/public/lib/js/esm/build/forms.js
+new file mode 100644
+index 00000000000..2481c6b2495
+Binary files /dev/null and b/public/lib/js/esm/build/forms.js differ
+diff --git a/public/lib/js/esm/build/forms/DefinedForm.dev.js b/public/lib/js/esm/build/forms/DefinedForm.dev.js
+new file mode 100644
+index 00000000000..6b94739769d
+Binary files /dev/null and b/public/lib/js/esm/build/forms/DefinedForm.dev.js differ
+diff --git a/public/lib/js/esm/build/forms/DefinedForm.dev.js.map b/public/lib/js/esm/build/forms/DefinedForm.dev.js.map
+new file mode 100644
+index 00000000000..9ad4ac753f3
+Binary files /dev/null and b/public/lib/js/esm/build/forms/DefinedForm.dev.js.map differ
+diff --git a/public/lib/js/esm/build/forms/DefinedForm.js b/public/lib/js/esm/build/forms/DefinedForm.js
+new file mode 100644
+index 00000000000..0c057230c8d
+Binary files /dev/null and b/public/lib/js/esm/build/forms/DefinedForm.js differ
+diff --git a/public/lib/js/esm/build/forms/FormValidationError.dev.js b/public/lib/js/esm/build/forms/FormValidationError.dev.js
+new file mode 100644
+index 00000000000..a1a7e0d08c0
+Binary files /dev/null and b/public/lib/js/esm/build/forms/FormValidationError.dev.js differ
+diff --git a/public/lib/js/esm/build/forms/FormValidationError.dev.js.map b/public/lib/js/esm/build/forms/FormValidationError.dev.js.map
+new file mode 100644
+index 00000000000..85748addc5f
+Binary files /dev/null and b/public/lib/js/esm/build/forms/FormValidationError.dev.js.map differ
+diff --git a/public/lib/js/esm/build/forms/FormValidationError.js b/public/lib/js/esm/build/forms/FormValidationError.js
+new file mode 100644
+index 00000000000..15450772a9c
+Binary files /dev/null and b/public/lib/js/esm/build/forms/FormValidationError.js differ
+diff --git a/public/lib/js/esm/build/forms/conditions.dev.js b/public/lib/js/esm/build/forms/conditions.dev.js
+new file mode 100644
+index 00000000000..dc92c3ddee4
+Binary files /dev/null and b/public/lib/js/esm/build/forms/conditions.dev.js differ
+diff --git a/public/lib/js/esm/build/forms/conditions.dev.js.map b/public/lib/js/esm/build/forms/conditions.dev.js.map
+new file mode 100644
+index 00000000000..2f9f36125c6
+Binary files /dev/null and b/public/lib/js/esm/build/forms/conditions.dev.js.map differ
+diff --git a/public/lib/js/esm/build/forms/conditions.js b/public/lib/js/esm/build/forms/conditions.js
+new file mode 100644
+index 00000000000..3c51621a18e
+Binary files /dev/null and b/public/lib/js/esm/build/forms/conditions.js differ
+diff --git a/public/lib/js/esm/build/forms/context.dev.js b/public/lib/js/esm/build/forms/context.dev.js
+new file mode 100644
+index 00000000000..e8aac81f1e8
+Binary files /dev/null and b/public/lib/js/esm/build/forms/context.dev.js differ
+diff --git a/public/lib/js/esm/build/forms/context.dev.js.map b/public/lib/js/esm/build/forms/context.dev.js.map
+new file mode 100644
+index 00000000000..e6fca5a3235
+Binary files /dev/null and b/public/lib/js/esm/build/forms/context.dev.js.map differ
+diff --git a/public/lib/js/esm/build/forms/context.js b/public/lib/js/esm/build/forms/context.js
+new file mode 100644
+index 00000000000..c52ea7928fb
+Binary files /dev/null and b/public/lib/js/esm/build/forms/context.js differ
+diff --git a/public/lib/js/esm/build/forms/fields.dev.js b/public/lib/js/esm/build/forms/fields.dev.js
+new file mode 100644
+index 00000000000..ee4c2eb16e1
+Binary files /dev/null and b/public/lib/js/esm/build/forms/fields.dev.js differ
+diff --git a/public/lib/js/esm/build/forms/fields.dev.js.map b/public/lib/js/esm/build/forms/fields.dev.js.map
+new file mode 100644
+index 00000000000..cb8ae7c105f
+Binary files /dev/null and b/public/lib/js/esm/build/forms/fields.dev.js.map differ
+diff --git a/public/lib/js/esm/build/forms/fields.js b/public/lib/js/esm/build/forms/fields.js
+new file mode 100644
+index 00000000000..30cfaf67035
+Binary files /dev/null and b/public/lib/js/esm/build/forms/fields.js differ
+diff --git a/public/lib/js/esm/build/forms/fields/CheckboxField.dev.js b/public/lib/js/esm/build/forms/fields/CheckboxField.dev.js
+new file mode 100644
+index 00000000000..ef871d83e50
+Binary files /dev/null and b/public/lib/js/esm/build/forms/fields/CheckboxField.dev.js differ
+diff --git a/public/lib/js/esm/build/forms/fields/CheckboxField.dev.js.map b/public/lib/js/esm/build/forms/fields/CheckboxField.dev.js.map
+new file mode 100644
+index 00000000000..39449506737
+Binary files /dev/null and b/public/lib/js/esm/build/forms/fields/CheckboxField.dev.js.map differ
+diff --git a/public/lib/js/esm/build/forms/fields/CheckboxField.js b/public/lib/js/esm/build/forms/fields/CheckboxField.js
+new file mode 100644
+index 00000000000..a241a9c030a
+Binary files /dev/null and b/public/lib/js/esm/build/forms/fields/CheckboxField.js differ
+diff --git a/public/lib/js/esm/build/forms/fields/CheckboxGroupField.dev.js b/public/lib/js/esm/build/forms/fields/CheckboxGroupField.dev.js
+new file mode 100644
+index 00000000000..e9149da53da
+Binary files /dev/null and b/public/lib/js/esm/build/forms/fields/CheckboxGroupField.dev.js differ
+diff --git a/public/lib/js/esm/build/forms/fields/CheckboxGroupField.dev.js.map b/public/lib/js/esm/build/forms/fields/CheckboxGroupField.dev.js.map
+new file mode 100644
+index 00000000000..739c0336111
+Binary files /dev/null and b/public/lib/js/esm/build/forms/fields/CheckboxGroupField.dev.js.map differ
+diff --git a/public/lib/js/esm/build/forms/fields/CheckboxGroupField.js b/public/lib/js/esm/build/forms/fields/CheckboxGroupField.js
+new file mode 100644
+index 00000000000..4a5f6cd96d0
+Binary files /dev/null and b/public/lib/js/esm/build/forms/fields/CheckboxGroupField.js differ
+diff --git a/public/lib/js/esm/build/forms/fields/GroupField.dev.js b/public/lib/js/esm/build/forms/fields/GroupField.dev.js
+new file mode 100644
+index 00000000000..8226c8c4f43
+Binary files /dev/null and b/public/lib/js/esm/build/forms/fields/GroupField.dev.js differ
+diff --git a/public/lib/js/esm/build/forms/fields/GroupField.dev.js.map b/public/lib/js/esm/build/forms/fields/GroupField.dev.js.map
+new file mode 100644
+index 00000000000..17f2ffac9ac
+Binary files /dev/null and b/public/lib/js/esm/build/forms/fields/GroupField.dev.js.map differ
+diff --git a/public/lib/js/esm/build/forms/fields/GroupField.js b/public/lib/js/esm/build/forms/fields/GroupField.js
+new file mode 100644
+index 00000000000..70cce3ccba6
+Binary files /dev/null and b/public/lib/js/esm/build/forms/fields/GroupField.js differ
+diff --git a/public/lib/js/esm/build/forms/fields/NoticeField.dev.js b/public/lib/js/esm/build/forms/fields/NoticeField.dev.js
+new file mode 100644
+index 00000000000..b6ad38cb3ff
+Binary files /dev/null and b/public/lib/js/esm/build/forms/fields/NoticeField.dev.js differ
+diff --git a/public/lib/js/esm/build/forms/fields/NoticeField.dev.js.map b/public/lib/js/esm/build/forms/fields/NoticeField.dev.js.map
+new file mode 100644
+index 00000000000..66fb6241e9d
+Binary files /dev/null and b/public/lib/js/esm/build/forms/fields/NoticeField.dev.js.map differ
+diff --git a/public/lib/js/esm/build/forms/fields/NoticeField.js b/public/lib/js/esm/build/forms/fields/NoticeField.js
+new file mode 100644
+index 00000000000..4c2203df5bd
+Binary files /dev/null and b/public/lib/js/esm/build/forms/fields/NoticeField.js differ
+diff --git a/public/lib/js/esm/build/forms/fields/RadioGroupField.dev.js b/public/lib/js/esm/build/forms/fields/RadioGroupField.dev.js
+new file mode 100644
+index 00000000000..c6b489401f6
+Binary files /dev/null and b/public/lib/js/esm/build/forms/fields/RadioGroupField.dev.js differ
+diff --git a/public/lib/js/esm/build/forms/fields/RadioGroupField.dev.js.map b/public/lib/js/esm/build/forms/fields/RadioGroupField.dev.js.map
+new file mode 100644
+index 00000000000..18a50e44f4e
+Binary files /dev/null and b/public/lib/js/esm/build/forms/fields/RadioGroupField.dev.js.map differ
+diff --git a/public/lib/js/esm/build/forms/fields/RadioGroupField.js b/public/lib/js/esm/build/forms/fields/RadioGroupField.js
+new file mode 100644
+index 00000000000..d49b6862b9e
+Binary files /dev/null and b/public/lib/js/esm/build/forms/fields/RadioGroupField.js differ
+diff --git a/public/lib/js/esm/build/forms/fields/RepeaterField.dev.js b/public/lib/js/esm/build/forms/fields/RepeaterField.dev.js
+new file mode 100644
+index 00000000000..cf14a23570a
+Binary files /dev/null and b/public/lib/js/esm/build/forms/fields/RepeaterField.dev.js differ
+diff --git a/public/lib/js/esm/build/forms/fields/RepeaterField.dev.js.map b/public/lib/js/esm/build/forms/fields/RepeaterField.dev.js.map
+new file mode 100644
+index 00000000000..721d7fb729c
+Binary files /dev/null and b/public/lib/js/esm/build/forms/fields/RepeaterField.dev.js.map differ
+diff --git a/public/lib/js/esm/build/forms/fields/RepeaterField.js b/public/lib/js/esm/build/forms/fields/RepeaterField.js
+new file mode 100644
+index 00000000000..616693c863e
+Binary files /dev/null and b/public/lib/js/esm/build/forms/fields/RepeaterField.js differ
+diff --git a/public/lib/js/esm/build/forms/fields/SwitchField.dev.js b/public/lib/js/esm/build/forms/fields/SwitchField.dev.js
+new file mode 100644
+index 00000000000..af73ee34f62
+Binary files /dev/null and b/public/lib/js/esm/build/forms/fields/SwitchField.dev.js differ
+diff --git a/public/lib/js/esm/build/forms/fields/SwitchField.dev.js.map b/public/lib/js/esm/build/forms/fields/SwitchField.dev.js.map
+new file mode 100644
+index 00000000000..bc1961b8893
+Binary files /dev/null and b/public/lib/js/esm/build/forms/fields/SwitchField.dev.js.map differ
+diff --git a/public/lib/js/esm/build/forms/fields/SwitchField.js b/public/lib/js/esm/build/forms/fields/SwitchField.js
+new file mode 100644
+index 00000000000..4c3c44ddb66
+Binary files /dev/null and b/public/lib/js/esm/build/forms/fields/SwitchField.js differ
+diff --git a/public/lib/js/esm/build/forms/fields/TextField.dev.js b/public/lib/js/esm/build/forms/fields/TextField.dev.js
+new file mode 100644
+index 00000000000..f5c3512075b
+Binary files /dev/null and b/public/lib/js/esm/build/forms/fields/TextField.dev.js differ
+diff --git a/public/lib/js/esm/build/forms/fields/TextField.dev.js.map b/public/lib/js/esm/build/forms/fields/TextField.dev.js.map
+new file mode 100644
+index 00000000000..db55f8be79e
+Binary files /dev/null and b/public/lib/js/esm/build/forms/fields/TextField.dev.js.map differ
+diff --git a/public/lib/js/esm/build/forms/fields/TextField.js b/public/lib/js/esm/build/forms/fields/TextField.js
+new file mode 100644
+index 00000000000..e0da2c96462
+Binary files /dev/null and b/public/lib/js/esm/build/forms/fields/TextField.js differ
+diff --git a/public/lib/js/esm/build/forms/fields/TextareaField.dev.js b/public/lib/js/esm/build/forms/fields/TextareaField.dev.js
+new file mode 100644
+index 00000000000..d47e7a05101
+Binary files /dev/null and b/public/lib/js/esm/build/forms/fields/TextareaField.dev.js differ
+diff --git a/public/lib/js/esm/build/forms/fields/TextareaField.dev.js.map b/public/lib/js/esm/build/forms/fields/TextareaField.dev.js.map
+new file mode 100644
+index 00000000000..89482262f0c
+Binary files /dev/null and b/public/lib/js/esm/build/forms/fields/TextareaField.dev.js.map differ
+diff --git a/public/lib/js/esm/build/forms/fields/TextareaField.js b/public/lib/js/esm/build/forms/fields/TextareaField.js
+new file mode 100644
+index 00000000000..9ac4ea8ec83
+Binary files /dev/null and b/public/lib/js/esm/build/forms/fields/TextareaField.js differ
+diff --git a/public/lib/js/esm/build/forms/fields/types.dev.js b/public/lib/js/esm/build/forms/fields/types.dev.js
+new file mode 100644
+index 00000000000..698cd9e6405
+Binary files /dev/null and b/public/lib/js/esm/build/forms/fields/types.dev.js differ
+diff --git a/public/lib/js/esm/build/forms/fields/types.dev.js.map b/public/lib/js/esm/build/forms/fields/types.dev.js.map
+new file mode 100644
+index 00000000000..bceb77b1fe7
+Binary files /dev/null and b/public/lib/js/esm/build/forms/fields/types.dev.js.map differ
+diff --git a/public/lib/js/esm/build/forms/fields/types.js b/public/lib/js/esm/build/forms/fields/types.js
+new file mode 100644
+index 00000000000..e69de29bb2d
+diff --git a/public/lib/js/esm/build/forms/rules.dev.js b/public/lib/js/esm/build/forms/rules.dev.js
+new file mode 100644
+index 00000000000..809ec9dac3f
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules.dev.js differ
+diff --git a/public/lib/js/esm/build/forms/rules.dev.js.map b/public/lib/js/esm/build/forms/rules.dev.js.map
+new file mode 100644
+index 00000000000..db34be26082
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules.dev.js.map differ
+diff --git a/public/lib/js/esm/build/forms/rules.js b/public/lib/js/esm/build/forms/rules.js
+new file mode 100644
+index 00000000000..997026afd66
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules.js differ
+diff --git a/public/lib/js/esm/build/forms/rules/all.dev.js b/public/lib/js/esm/build/forms/rules/all.dev.js
+new file mode 100644
+index 00000000000..735df6c9fa1
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules/all.dev.js differ
+diff --git a/public/lib/js/esm/build/forms/rules/all.dev.js.map b/public/lib/js/esm/build/forms/rules/all.dev.js.map
+new file mode 100644
+index 00000000000..a8ce62107a0
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules/all.dev.js.map differ
+diff --git a/public/lib/js/esm/build/forms/rules/all.js b/public/lib/js/esm/build/forms/rules/all.js
+new file mode 100644
+index 00000000000..6a3ddfdc090
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules/all.js differ
+diff --git a/public/lib/js/esm/build/forms/rules/helpers.dev.js b/public/lib/js/esm/build/forms/rules/helpers.dev.js
+new file mode 100644
+index 00000000000..3742744a8b6
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules/helpers.dev.js differ
+diff --git a/public/lib/js/esm/build/forms/rules/helpers.dev.js.map b/public/lib/js/esm/build/forms/rules/helpers.dev.js.map
+new file mode 100644
+index 00000000000..10ca4659667
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules/helpers.dev.js.map differ
+diff --git a/public/lib/js/esm/build/forms/rules/helpers.js b/public/lib/js/esm/build/forms/rules/helpers.js
+new file mode 100644
+index 00000000000..7d84efd35e2
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules/helpers.js differ
+diff --git a/public/lib/js/esm/build/forms/rules/maxLength.dev.js b/public/lib/js/esm/build/forms/rules/maxLength.dev.js
+new file mode 100644
+index 00000000000..2591f32e0d7
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules/maxLength.dev.js differ
+diff --git a/public/lib/js/esm/build/forms/rules/maxLength.dev.js.map b/public/lib/js/esm/build/forms/rules/maxLength.dev.js.map
+new file mode 100644
+index 00000000000..d04fe3c247b
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules/maxLength.dev.js.map differ
+diff --git a/public/lib/js/esm/build/forms/rules/maxLength.js b/public/lib/js/esm/build/forms/rules/maxLength.js
+new file mode 100644
+index 00000000000..6271c162028
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules/maxLength.js differ
+diff --git a/public/lib/js/esm/build/forms/rules/minItems.dev.js b/public/lib/js/esm/build/forms/rules/minItems.dev.js
+new file mode 100644
+index 00000000000..02031efee53
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules/minItems.dev.js differ
+diff --git a/public/lib/js/esm/build/forms/rules/minItems.dev.js.map b/public/lib/js/esm/build/forms/rules/minItems.dev.js.map
+new file mode 100644
+index 00000000000..8d0368d1b66
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules/minItems.dev.js.map differ
+diff --git a/public/lib/js/esm/build/forms/rules/minItems.js b/public/lib/js/esm/build/forms/rules/minItems.js
+new file mode 100644
+index 00000000000..2a23c1c1ce2
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules/minItems.js differ
+diff --git a/public/lib/js/esm/build/forms/rules/minLength.dev.js b/public/lib/js/esm/build/forms/rules/minLength.dev.js
+new file mode 100644
+index 00000000000..4fa96a7c6b0
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules/minLength.dev.js differ
+diff --git a/public/lib/js/esm/build/forms/rules/minLength.dev.js.map b/public/lib/js/esm/build/forms/rules/minLength.dev.js.map
+new file mode 100644
+index 00000000000..7e550c6878d
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules/minLength.dev.js.map differ
+diff --git a/public/lib/js/esm/build/forms/rules/minLength.js b/public/lib/js/esm/build/forms/rules/minLength.js
+new file mode 100644
+index 00000000000..69c2a76fc17
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules/minLength.js differ
+diff --git a/public/lib/js/esm/build/forms/rules/passwordPolicy.dev.js b/public/lib/js/esm/build/forms/rules/passwordPolicy.dev.js
+new file mode 100644
+index 00000000000..36010d1a5c1
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules/passwordPolicy.dev.js differ
+diff --git a/public/lib/js/esm/build/forms/rules/passwordPolicy.dev.js.map b/public/lib/js/esm/build/forms/rules/passwordPolicy.dev.js.map
+new file mode 100644
+index 00000000000..e1dd4076ac1
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules/passwordPolicy.dev.js.map differ
+diff --git a/public/lib/js/esm/build/forms/rules/passwordPolicy.js b/public/lib/js/esm/build/forms/rules/passwordPolicy.js
+new file mode 100644
+index 00000000000..741925c3548
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules/passwordPolicy.js differ
+diff --git a/public/lib/js/esm/build/forms/rules/pattern.dev.js b/public/lib/js/esm/build/forms/rules/pattern.dev.js
+new file mode 100644
+index 00000000000..d919f077a8c
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules/pattern.dev.js differ
+diff --git a/public/lib/js/esm/build/forms/rules/pattern.dev.js.map b/public/lib/js/esm/build/forms/rules/pattern.dev.js.map
+new file mode 100644
+index 00000000000..c93720ccc79
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules/pattern.dev.js.map differ
+diff --git a/public/lib/js/esm/build/forms/rules/pattern.js b/public/lib/js/esm/build/forms/rules/pattern.js
+new file mode 100644
+index 00000000000..c068ede02c0
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules/pattern.js differ
+diff --git a/public/lib/js/esm/build/forms/rules/required.dev.js b/public/lib/js/esm/build/forms/rules/required.dev.js
+new file mode 100644
+index 00000000000..18646112695
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules/required.dev.js differ
+diff --git a/public/lib/js/esm/build/forms/rules/required.dev.js.map b/public/lib/js/esm/build/forms/rules/required.dev.js.map
+new file mode 100644
+index 00000000000..01b08cb617f
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules/required.dev.js.map differ
+diff --git a/public/lib/js/esm/build/forms/rules/required.js b/public/lib/js/esm/build/forms/rules/required.js
+new file mode 100644
+index 00000000000..ef4e11820c1
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules/required.js differ
+diff --git a/public/lib/js/esm/build/forms/rules/requiredIf.dev.js b/public/lib/js/esm/build/forms/rules/requiredIf.dev.js
+new file mode 100644
+index 00000000000..55b4061c939
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules/requiredIf.dev.js differ
+diff --git a/public/lib/js/esm/build/forms/rules/requiredIf.dev.js.map b/public/lib/js/esm/build/forms/rules/requiredIf.dev.js.map
+new file mode 100644
+index 00000000000..72f6503dcba
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules/requiredIf.dev.js.map differ
+diff --git a/public/lib/js/esm/build/forms/rules/requiredIf.js b/public/lib/js/esm/build/forms/rules/requiredIf.js
+new file mode 100644
+index 00000000000..6f618cc22bc
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules/requiredIf.js differ
+diff --git a/public/lib/js/esm/build/forms/rules/types.dev.js b/public/lib/js/esm/build/forms/rules/types.dev.js
+new file mode 100644
+index 00000000000..698cd9e6405
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules/types.dev.js differ
+diff --git a/public/lib/js/esm/build/forms/rules/types.dev.js.map b/public/lib/js/esm/build/forms/rules/types.dev.js.map
+new file mode 100644
+index 00000000000..bceb77b1fe7
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules/types.dev.js.map differ
+diff --git a/public/lib/js/esm/build/forms/rules/types.js b/public/lib/js/esm/build/forms/rules/types.js
+new file mode 100644
+index 00000000000..e69de29bb2d
+diff --git a/public/lib/js/esm/build/forms/rules/url.dev.js b/public/lib/js/esm/build/forms/rules/url.dev.js
+new file mode 100644
+index 00000000000..49a6a307450
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules/url.dev.js differ
+diff --git a/public/lib/js/esm/build/forms/rules/url.dev.js.map b/public/lib/js/esm/build/forms/rules/url.dev.js.map
+new file mode 100644
+index 00000000000..dc5294471ae
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules/url.dev.js.map differ
+diff --git a/public/lib/js/esm/build/forms/rules/url.js b/public/lib/js/esm/build/forms/rules/url.js
+new file mode 100644
+index 00000000000..ba6a4480e4d
+Binary files /dev/null and b/public/lib/js/esm/build/forms/rules/url.js differ
+diff --git a/public/lib/js/esm/build/forms/useDefinedField.dev.js b/public/lib/js/esm/build/forms/useDefinedField.dev.js
+new file mode 100644
+index 00000000000..57f21423f62
+Binary files /dev/null and b/public/lib/js/esm/build/forms/useDefinedField.dev.js differ
+diff --git a/public/lib/js/esm/build/forms/useDefinedField.dev.js.map b/public/lib/js/esm/build/forms/useDefinedField.dev.js.map
+new file mode 100644
+index 00000000000..fd873997777
+Binary files /dev/null and b/public/lib/js/esm/build/forms/useDefinedField.dev.js.map differ
+diff --git a/public/lib/js/esm/build/forms/useDefinedField.js b/public/lib/js/esm/build/forms/useDefinedField.js
+new file mode 100644
+index 00000000000..44df32deccb
+Binary files /dev/null and b/public/lib/js/esm/build/forms/useDefinedField.js differ
+diff --git a/public/lib/js/esm/src/fetch.ts b/public/lib/js/esm/src/fetch.ts
+index 0d69d44e219..5ef5a86d028 100644
+--- a/public/lib/js/esm/src/fetch.ts
++++ b/public/lib/js/esm/src/fetch.ts
+@@ -52,6 +52,8 @@ interface RequestOptions {
+     body?: RequestBody | null;
+     /** The HTTP method to use. */
+     method?: string;
++    /** Reject with the {@link Response} instead of its status text, e.g. to read validation errors from the body. */
++    rejectWithResponse?: boolean;
+ }
+ 
+ /** Options for read-only convenience methods (GET / HEAD). */
+@@ -70,6 +72,8 @@ interface WriteRequestOptions {
+     headers?: Record<string, string>;
+     /** The request body. */
+     body: RequestBody;
++    /** Reject with the {@link Response} instead of its status text. */
++    rejectWithResponse?: boolean;
+ }
+ 
+ /** Options for the DELETE convenience method. */
+@@ -90,7 +94,7 @@ class RequestWrapper {
+     #request: Request;
+     #promise: Promise<Response>;
+     #resolve!: (value: Response) => void;
+-    #reject!: (reason: string) => void;
++    #reject!: (reason: string | Response) => void;
+ 
+     constructor(request: Request) {
+         this.#request = request;
+@@ -108,11 +112,11 @@ class RequestWrapper {
+         return this.#promise;
+     }
+ 
+-    handleResponse(response: Response): void {
++    handleResponse(response: Response, rejectWithResponse = false): void {
+         if (response.ok) {
+             this.#resolve(response);
+         } else {
+-            this.#reject(response.statusText);
++            this.#reject(rejectWithResponse ? response : response.statusText);
+         }
+     }
+ }
+@@ -138,6 +142,7 @@ export default class Fetch {
+             params = {},
+             body = null,
+             method = 'GET',
++            rejectWithResponse = false,
+         }: RequestOptions = {},
+     ): Promise<Response> {
+         const resolvePending = new Pending(`Requesting ${component}/${action} with ${method}`);
+@@ -149,7 +154,7 @@ export default class Fetch {
+         const result = await fetch(requestWrapper.request);
+ 
+         resolvePending.resolve();
+-        requestWrapper.handleResponse(result);
++        requestWrapper.handleResponse(result, rejectWithResponse);
+ 
+         return requestWrapper.promise;
+     }
+@@ -194,9 +199,9 @@ export default class Fetch {
+     static performPost(
+         component: string,
+         action: string,
+-        {headers = {}, body}: WriteRequestOptions,
++        {headers = {}, body, rejectWithResponse}: WriteRequestOptions,
+     ): Promise<Response> {
+-        return this.request(component, action, {headers, body, method: 'POST'});
++        return this.request(component, action, {headers, body, method: 'POST', rejectWithResponse});
+     }
+ 
+     /**
+@@ -209,9 +214,9 @@ export default class Fetch {
+     static performPut(
+         component: string,
+         action: string,
+-        {headers = {}, body}: WriteRequestOptions,
++        {headers = {}, body, rejectWithResponse}: WriteRequestOptions,
+     ): Promise<Response> {
+-        return this.request(component, action, {headers, body, method: 'PUT'});
++        return this.request(component, action, {headers, body, method: 'PUT', rejectWithResponse});
+     }
+ 
+     /**
+@@ -224,9 +229,9 @@ export default class Fetch {
+     static performPatch(
+         component: string,
+         action: string,
+-        {headers = {}, body}: WriteRequestOptions,
++        {headers = {}, body, rejectWithResponse}: WriteRequestOptions,
+     ): Promise<Response> {
+-        return this.request(component, action, {headers, body, method: 'PATCH'});
++        return this.request(component, action, {headers, body, method: 'PATCH', rejectWithResponse});
+     }
+ 
+     /**
+diff --git a/public/lib/js/esm/src/forms.ts b/public/lib/js/esm/src/forms.ts
+new file mode 100644
+index 00000000000..b504095c0d7
+--- /dev/null
++++ b/public/lib/js/esm/src/forms.ts
+@@ -0,0 +1,5 @@
++// Core of the forms system. Fields, rules and conditions are separate imports:
++//   '@moodle/lms/core/forms/fields', '@moodle/lms/core/forms/rules', '@moodle/lms/core/forms/conditions'
++export {DefinedForm} from './forms/DefinedForm';
++export {useDefinedField, type FieldBehaviour} from './forms/useDefinedField';
++export {FormValidationError} from './forms/FormValidationError';
+diff --git a/public/lib/js/esm/src/forms/DefinedForm.tsx b/public/lib/js/esm/src/forms/DefinedForm.tsx
+new file mode 100644
+index 00000000000..4d45bfbb015
+--- /dev/null
++++ b/public/lib/js/esm/src/forms/DefinedForm.tsx
+@@ -0,0 +1,127 @@
++import {useEffect, useMemo, useState, Children, type ReactNode} from 'react';
++import {useForm, FormProvider, type DefaultValues, type FieldValues, type Path} from 'react-hook-form';
++import {Button} from '@moodlehq/design-system';
++import {FormStateContext} from './context';
++import {isFormValidationError} from './FormValidationError';
++
++type DefinedFormProps<V extends FieldValues, P, I extends number | string, S> = {
++    defaultValues: DefaultValues<V>;
++    // Present when editing an existing record.
++    id?: I;
++    load?: (id: I) => Promise<{values: P; readonly?: string[]}>;
++    create?: (payload: P) => Promise<S>;
++    // Receives only the fields that changed.
++    update?: (id: I, changes: Partial<P>) => Promise<S>;
++    // Only needed when the form values differ in shape from the payload.
++    toForm?: (payload: P) => V;
++    toPayload?: (values: V) => P;
++    // Translate a server error path into a form field path.
++    mapErrorPath?: (path: string) => string;
++    onSaved?: (saved: S) => void;
++    // Strings default to English; pass translated ones from PHP.
++    submitLabel?: string;
++    savingLabel?: string;
++    genericError?: string;
++    cancel?: {href: string; label: string};
++    children: ReactNode;
++};
++
++/**
++ * Renders a form from its fields (children) and owns the shared plumbing:
++ * loading, create/update, dirty-only updates and server error mapping.
++ */
++export function DefinedForm<V extends FieldValues, P = V, I extends number | string = number, S = P>({
++    defaultValues, id, load, create, update, toForm, toPayload, mapErrorPath = (p) => p, onSaved, children,
++    submitLabel = 'Save', savingLabel = 'Saving…', genericError = 'Something went wrong. Try again.', cancel,
++}: DefinedFormProps<V, P, I, S>) {
++    const form = useForm<V>({defaultValues, shouldUnregister: true});   // unmounted (hidden) fields are not submitted
++    const {reset, setError, handleSubmit, formState: {dirtyFields, errors, isSubmitting}} = form;
++
++    const [status, setStatus] = useState<'loading' | 'ready' | 'error'>(id !== undefined && load ? 'loading' : 'ready');
++    const [serverDisabled, setServerDisabled] = useState<string[]>([]);
++
++    const asForm = (payload: P) => (toForm ? toForm(payload) : payload as unknown as V);
++    const asPayload = (values: V) => (toPayload ? toPayload(values) : values as unknown as P);
++
++    useEffect(() => {
++        if (id === undefined || !load) {
++            return;
++        }
++        let cancelled = false;
++        setStatus('loading');
++        load(id)
++            .then((record) => {
++                if (cancelled) {
++                    return;
++                }
++                reset(asForm(record.values) as DefaultValues<V>);   // dirty tracking starts from the loaded values
++                setServerDisabled(record.readonly ?? []);
++                setStatus('ready');
++            })
++            .catch(() => !cancelled && setStatus('error'));
++        return () => {
++            cancelled = true;
++        };
++    }, [id]);
++
++    const state = useMemo(() => ({serverDisabled}), [serverDisabled]);
++
++    const onSubmit = async (values: V) => {
++        try {
++            const payload = asPayload(values);
++            let saved: S;
++            if (id !== undefined && update) {
++                const changes = Object.fromEntries(
++                    Object.keys(dirtyFields).map((key) => [key, payload[key as keyof P]]),
++                ) as Partial<P>;
++                if (Object.keys(changes).length === 0) {
++                    // Nothing to save, but the user still expects to be done.
++                    onSaved?.(payload as unknown as S);
++                    return;
++                }
++                saved = await update(id, changes);
++                reset(asForm(saved as unknown as P) as DefaultValues<V>);   // saved state becomes the clean baseline
++            } else {
++                saved = await create!(payload);
++            }
++            onSaved?.(saved);
++        } catch (e) {
++            if (!isFormValidationError(e)) {
++                setError('root.server', {message: genericError});
++                return;
++            }
++            Object.entries(e.fieldErrors).forEach(([path, messages], i) => {
++                setError(mapErrorPath(path) as Path<V>, {type: 'server', message: messages[0]}, {shouldFocus: i === 0});
++            });
++            e.formErrors.forEach((message) => setError('root.server', {message}));
++        }
++    };
++
++    if (status === 'loading') {
++        return <p>Loading...</p>;
++    }
++    if (status === 'error') {
++        return <div role="alert" className="alert alert-danger">This record could not be loaded.</div>;
++    }
++
++    return (
++        <FormProvider {...form}>
++            <FormStateContext.Provider value={state}>
++                <form onSubmit={handleSubmit(onSubmit)} noValidate>
++                    {Children.map(children, (child) => (
++                        <div className="mt-3">
++                            {child}
++                        </div>
++                    ))}
++                    {errors.root?.server && (
++                        <div role="alert" className="alert alert-danger">{errors.root.server.message}</div>
++                    )}
++                    <div className="d-flex gap-2 mt-3">
++                        <Button type="submit" label={isSubmitting ? savingLabel : submitLabel} size="lg" disabled={isSubmitting} />
++                        {cancel && <a className="btn btn-secondary btn-lg" href={cancel.href}>{cancel.label}</a>}
++                    </div>
++                </form>
++            </FormStateContext.Provider>
++        </FormProvider>
++    );
++}
+diff --git a/public/lib/js/esm/src/forms/FormValidationError.ts b/public/lib/js/esm/src/forms/FormValidationError.ts
+new file mode 100644
+index 00000000000..e998315f2d0
+--- /dev/null
++++ b/public/lib/js/esm/src/forms/FormValidationError.ts
+@@ -0,0 +1,17 @@
++/**
++ * Thrown by a form's create/update call when the server rejects the data.
++ * DefinedForm maps it onto the fields.
++ */
++export class FormValidationError extends Error {
++    constructor(
++        public fieldErrors: Record<string, string[]>,   // keyed by server path
++        public formErrors: string[] = [],
++    ) {
++        super('Validation failed');
++        this.name = 'FormValidationError';
++    }
++}
++
++// instanceof is unreliable if the module is loaded under two URLs (e.g. with and without a theme prefix).
++export const isFormValidationError = (e: unknown): e is FormValidationError =>
++    e instanceof FormValidationError || (e instanceof Error && e.name === 'FormValidationError' && 'fieldErrors' in e);
+diff --git a/public/lib/js/esm/src/forms/conditions.ts b/public/lib/js/esm/src/forms/conditions.ts
+new file mode 100644
+index 00000000000..83662303a9d
+--- /dev/null
++++ b/public/lib/js/esm/src/forms/conditions.ts
+@@ -0,0 +1,33 @@
++import {get} from 'react-hook-form';
++
++/**
++ * A pure, synchronous predicate over the form values.
++ * `deps` lists the field paths it reads so the form only watches what it needs.
++ */
++export type Condition<V = any> = ((values: V) => boolean) & {deps: string[]};
++
++const make = <V>(deps: string[], fn: (values: V) => boolean): Condition<V> => Object.assign(fn, {deps});
++
++const isEmpty = (v: unknown): boolean =>
++    v === undefined || v === null || v === '' || (Array.isArray(v) && v.length === 0);
++
++export const eq = <V = any>(field: string, expected: unknown): Condition<V> =>
++    make([field], (values) => get(values, field) === expected);
++
++export const neq = <V = any>(field: string, expected: unknown): Condition<V> =>
++    make([field], (values) => get(values, field) !== expected);
++
++export const checked = <V = any>(field: string): Condition<V> =>
++    make([field], (values) => Boolean(get(values, field)));
++
++export const notEmpty = <V = any>(field: string): Condition<V> =>
++    make([field], (values) => !isEmpty(get(values, field)));
++
++export const not = <V = any>(condition: Condition<V>): Condition<V> =>
++    make(condition.deps, (values) => !condition(values));
++
++export const anyOf = <V = any>(...conditions: Condition<V>[]): Condition<V> =>
++    make(conditions.flatMap((c) => c.deps), (values) => conditions.some((c) => c(values)));
++
++export const allOf = <V = any>(...conditions: Condition<V>[]): Condition<V> =>
++    make(conditions.flatMap((c) => c.deps), (values) => conditions.every((c) => c(values)));
+diff --git a/public/lib/js/esm/src/forms/context.ts b/public/lib/js/esm/src/forms/context.ts
+new file mode 100644
+index 00000000000..d9d1fc69897
+--- /dev/null
++++ b/public/lib/js/esm/src/forms/context.ts
+@@ -0,0 +1,11 @@
++import {createContext} from 'react';
++
++export type FormState = {
++    // Fields disabled by the server (e.g. capability driven), on top of each field's disableIf.
++    serverDisabled: string[];
++};
++
++export const FormStateContext = createContext<FormState>({serverDisabled: []});
++
++// Set by a group that is disabled, so every field inside it is disabled too.
++export const GroupContext = createContext<{disabled: boolean}>({disabled: false});
+diff --git a/public/lib/js/esm/src/forms/fields.ts b/public/lib/js/esm/src/forms/fields.ts
+new file mode 100644
+index 00000000000..d77535a572f
+--- /dev/null
++++ b/public/lib/js/esm/src/forms/fields.ts
+@@ -0,0 +1,10 @@
++export type {FieldProps, Option} from './fields/types';
++export {TextField} from './fields/TextField';
++export {TextareaField} from './fields/TextareaField';
++export {SwitchField} from './fields/SwitchField';
++export {CheckboxGroupField} from './fields/CheckboxGroupField';
++export {RepeaterField} from './fields/RepeaterField';
++export {GroupField} from './fields/GroupField';
++export {CheckboxField} from './fields/CheckboxField';
++export {RadioGroupField} from './fields/RadioGroupField';
++export {NoticeField} from './fields/NoticeField';
+diff --git a/public/lib/js/esm/src/forms/fields/CheckboxField.tsx b/public/lib/js/esm/src/forms/fields/CheckboxField.tsx
+new file mode 100644
+index 00000000000..ea2de128a6c
+--- /dev/null
++++ b/public/lib/js/esm/src/forms/fields/CheckboxField.tsx
+@@ -0,0 +1,21 @@
++import {Checkbox} from '@moodlehq/design-system';
++import {useDefinedField} from '../useDefinedField';
++import type {FieldProps} from './types';
++
++// A single checkbox holding a boolean.
++export function CheckboxField({name, label, supportingText, rules, hideIf, disableIf, id}: FieldProps & {supportingText?: string}) {
++    const f = useDefinedField(name, {rules, hideIf, disableIf});
++    if (f.hidden) {
++        return null;
++    }
++    return (
++        <Checkbox
++            id={id ?? `field_${name.replace(/\W+/g, '_')}`}
++            label={label}
++            supportingText={supportingText}
++            invalid={f.invalid}
++            invalidFeedback={f.message}
++            {...f.registration}
++        />
++    );
++}
+diff --git a/public/lib/js/esm/src/forms/fields/CheckboxGroupField.tsx b/public/lib/js/esm/src/forms/fields/CheckboxGroupField.tsx
+new file mode 100644
+index 00000000000..584c06118b3
+--- /dev/null
++++ b/public/lib/js/esm/src/forms/fields/CheckboxGroupField.tsx
+@@ -0,0 +1,55 @@
++import {useController, useFormContext, get} from 'react-hook-form';
++import {Checkbox} from '@moodlehq/design-system';
++import {useFieldConditions, type FieldBehaviour} from '../useDefinedField';
++import {all} from '../rules/all';
++import type {FieldProps, Option} from './types';
++
++type Props = FieldProps & {
++    // Pass null while options are still loading.
++    options: Option[] | null;
++    loadingLabel?: string;
++};
++
++// The value is always an array of the selected option values, even for a single option.
++export function CheckboxGroupField({name, label, options, rules, hideIf, disableIf, id, loadingLabel = 'Loading…'}: Props) {
++    const {hidden, disabled} = useFieldConditions(name, {hideIf, disableIf} as FieldBehaviour);
++    const {control, formState: {errors}} = useFormContext();
++    const {field} = useController({
++        name,
++        control,
++        disabled,
++        shouldUnregister: true,
++        rules: {validate: rules?.length ? all(...rules) : undefined},
++    });
++    const prefix = id ?? `field_${name.replace(/\W+/g, '_')}`;
++    if (hidden) {
++        return null;
++    }
++    const error = get(errors, name);
++    const selected: string[] = Array.isArray(field.value) ? field.value : [];
++    const toggle = (value: string, checked: boolean) => {
++        field.onChange(checked ? [...selected, value] : selected.filter((v) => v !== value));
++    };
++    return (
++        <fieldset aria-describedby={error ? `${prefix}_error` : undefined}>
++            <legend className="fs-6 mb-2">{label}</legend>
++            {options === null ? (
++                <p className="text-muted">{loadingLabel}</p>
++            ) : options.map((option) => (
++                <div key={option.value} className="mb-2">
++                    <Checkbox
++                        key={option.value}
++                        id={`${prefix}_${option.value.replace(/\W+/g, '_')}`}
++                        label={option.label}
++                        supportingText={option.description}
++                        checked={selected.includes(option.value)}
++                        disabled={disabled}
++                        onBlur={field.onBlur}
++                        onChange={(e) => toggle(option.value, e.target.checked)}
++                    />
++                </div>
++            ))}
++            {error && <div id={`${prefix}_error`} className="text-danger small mt-1">{error.message as string}</div>}
++        </fieldset>
++    );
++}
+diff --git a/public/lib/js/esm/src/forms/fields/GroupField.tsx b/public/lib/js/esm/src/forms/fields/GroupField.tsx
+new file mode 100644
+index 00000000000..f4da9f5f2b4
+--- /dev/null
++++ b/public/lib/js/esm/src/forms/fields/GroupField.tsx
+@@ -0,0 +1,40 @@
++import type {ReactNode} from 'react';
++import {useController} from 'react-hook-form';
++import {useFieldConditions, type FieldBehaviour} from '../useDefinedField';
++import {GroupContext} from '../context';
++import {all} from '../rules/all';
++
++type GroupFieldProps = FieldBehaviour & {
++    // The path of the object holding the group's fields, e.g. 'duration' for duration.value and duration.unit.
++    name: string;
++    label: string;
++    children: ReactNode;
++};
++
++/**
++ * Lays out several fields under one label. Fields inside use `${name}.<key>` as their names.
++ * hideIf and disableIf apply to every field inside, and rules validate the group's object as a whole.
++ */
++export function GroupField({name, label, rules, hideIf, disableIf, children}: GroupFieldProps) {
++    const {fieldState} = useController({
++        name,
++        rules: {validate: rules?.length ? all(...rules) : undefined},
++    });
++    const {hidden, disabled} = useFieldConditions(name, {hideIf, disableIf});
++    if (hidden) {
++        return null;
++    }
++
++    // Child errors are objects nested under the group's path; only a group-level error has a message.
++    const message = fieldState.error?.message;
++
++    return (
++        <GroupContext.Provider value={{disabled}}>
++            <fieldset>
++                <legend className="fs-6 mb-2">{label}</legend>
++                <div className="d-flex gap-2 align-items-start">{children}</div>
++                {message && <div role="alert" className="text-danger small mt-1">{message}</div>}
++            </fieldset>
++        </GroupContext.Provider>
++    );
++}
+diff --git a/public/lib/js/esm/src/forms/fields/NoticeField.tsx b/public/lib/js/esm/src/forms/fields/NoticeField.tsx
+new file mode 100644
+index 00000000000..3f06d0631cd
+--- /dev/null
++++ b/public/lib/js/esm/src/forms/fields/NoticeField.tsx
+@@ -0,0 +1,9 @@
++import {Alert, type AlertProps} from '@moodlehq/design-system';
++import {useFieldConditions, type FieldBehaviour} from '../useDefinedField';
++
++// Static message that takes no value; it can still be shown or hidden by a condition.
++export function NoticeField({message, type = 'info', hideIf, name = 'notice'}: Pick<AlertProps, 'message' | 'type'> &
++    Pick<FieldBehaviour, 'hideIf'> & {name?: string}) {
++    const {hidden} = useFieldConditions(name, {hideIf});
++    return hidden ? null : <Alert type={type} message={message} />;
++}
+diff --git a/public/lib/js/esm/src/forms/fields/RadioGroupField.tsx b/public/lib/js/esm/src/forms/fields/RadioGroupField.tsx
+new file mode 100644
+index 00000000000..a2cbbf81fd2
+--- /dev/null
++++ b/public/lib/js/esm/src/forms/fields/RadioGroupField.tsx
+@@ -0,0 +1,28 @@
++import {Radio} from '@moodlehq/design-system';
++import {useDefinedField} from '../useDefinedField';
++import type {FieldProps, Option} from './types';
++
++export function RadioGroupField({name, label, options, rules, hideIf, disableIf, id}: FieldProps & {options: Option[]}) {
++    const f = useDefinedField(name, {rules, hideIf, disableIf});
++    const prefix = id ?? `field_${name.replace(/\W+/g, '_')}`;
++    if (f.hidden) {
++        return null;
++    }
++    return (
++        <fieldset aria-describedby={f.invalid ? `${prefix}_error` : undefined}>
++            <legend className="fs-6 mb-2">{label}</legend>
++            {options.map((option) => (
++                <div key={option.value} className="mb-2">
++                    <Radio
++                        id={`${prefix}_${option.value.replace(/\W+/g, '_')}`}
++                        label={option.label}
++                        value={option.value}
++                        {...f.registration}
++                    />
++                    {option.description && <div className="text-muted small ms-4">{option.description}</div>}
++                </div>
++            ))}
++            {f.invalid && <div id={`${prefix}_error`} className="text-danger small mt-1">{f.message}</div>}
++        </fieldset>
++    );
++}
+diff --git a/public/lib/js/esm/src/forms/fields/RepeaterField.tsx b/public/lib/js/esm/src/forms/fields/RepeaterField.tsx
+new file mode 100644
+index 00000000000..7d05f427613
+--- /dev/null
++++ b/public/lib/js/esm/src/forms/fields/RepeaterField.tsx
+@@ -0,0 +1,79 @@
++import {useRef, type ReactNode} from 'react';
++import {useController, useFormContext} from 'react-hook-form';
++import {Button} from '@moodlehq/design-system';
++import {useFieldConditions, type FieldBehaviour} from '../useDefinedField';
++import {all} from '../rules/all';
++
++type RepeaterFieldProps = FieldBehaviour & {
++    name: string;
++    label: string;
++    addLabel: string;
++    // The value of a new row, e.g. ''. Rows are plain values, stored as name = [row0, row1, …].
++    emptyItem?: unknown;
++    minRows?: number;
++    removeLabel?: string;
++    // Render the field of one row, using `${name}.${index}` as its name.
++    children: (index: number) => ReactNode;
++};
++
++let nextKey = 0;
++
++export function RepeaterField({
++    name, label, addLabel, emptyItem = '', minRows = 1, removeLabel = 'Remove', rules, hideIf, disableIf, children,
++}: RepeaterFieldProps) {
++    const {clearErrors} = useFormContext();
++    // Owns the list as a whole: its value, list-level rules (e.g. minItems) and their error.
++    const {field, fieldState} = useController({
++        name,
++        defaultValue: [],
++        rules: {validate: rules?.length ? all(...rules) : undefined},
++    });
++    const {hidden, disabled} = useFieldConditions(name, {hideIf, disableIf});
++    const keys = useRef<number[]>([]);
++    if (hidden) {
++        return null;
++    }
++
++    const rows: unknown[] = Array.isArray(field.value) ? field.value : [];
++
++    // Stable keys, so removing a row keeps the other rows' inputs (and their values) with their data.
++    if (keys.current.length !== rows.length) {
++        keys.current = rows.map(() => nextKey++);
++    }
++    const update = (next: unknown[]) => {
++        clearErrors(name);
++        field.onChange(next);
++    };
++    const addRow = () => {
++        keys.current = [...keys.current, nextKey++];
++        update([...rows, emptyItem]);
++    };
++    const removeRow = (index: number) => {
++        keys.current = keys.current.filter((_, i) => i !== index);
++        update(rows.filter((_, i) => i !== index));
++    };
++    const message = fieldState.error?.message;
++
++    return (
++        <fieldset>
++            <legend className="fs-6 mb-2">{label}</legend>
++            <div className="d-flex flex-column gap-2">
++                {rows.map((_, index) => (
++                    <div key={keys.current[index]} className="d-flex gap-2 align-items-start">
++                        {children(index)}
++                        <Button
++                            type="button"
++                            onClick={() => removeRow(index)}
++                            disabled={disabled || rows.length <= minRows}
++                            aria-label={`${removeLabel} ${label} ${index + 1}`}
++                            label={removeLabel}
++                            variant="secondary"
++                        />
++                    </div>
++                ))}
++            </div>
++            {message && <div role="alert" className="text-danger small mt-1">{message}</div>}
++            <Button type="button" className="mt-2" onClick={addRow} label={addLabel} disabled={disabled} />
++        </fieldset>
++    );
++}
+diff --git a/public/lib/js/esm/src/forms/fields/SwitchField.tsx b/public/lib/js/esm/src/forms/fields/SwitchField.tsx
+new file mode 100644
+index 00000000000..58744d8381e
+--- /dev/null
++++ b/public/lib/js/esm/src/forms/fields/SwitchField.tsx
+@@ -0,0 +1,8 @@
++import {Switch} from '@moodlehq/design-system';
++import {useDefinedField} from '../useDefinedField';
++import type {FieldProps} from './types';
++
++export function SwitchField({name, label, rules, hideIf, disableIf, ...rest}: FieldProps) {
++    const f = useDefinedField(name, {rules, hideIf, disableIf});
++    return f.hidden ? null : <Switch label={label} {...rest} {...f.registration} />;
++}
+diff --git a/public/lib/js/esm/src/forms/fields/TextField.tsx b/public/lib/js/esm/src/forms/fields/TextField.tsx
+new file mode 100644
+index 00000000000..9910bb2fee5
+--- /dev/null
++++ b/public/lib/js/esm/src/forms/fields/TextField.tsx
+@@ -0,0 +1,10 @@
++import {Input} from '@moodlehq/design-system';
++import {useDefinedField} from '../useDefinedField';
++import type {FieldProps} from './types';
++
++export function TextField({name, label, rules, hideIf, disableIf, ...rest}: FieldProps) {
++    const f = useDefinedField(name, {rules, hideIf, disableIf});
++    return f.hidden ? null : (
++        <Input label={label} {...rest} {...f.registration} invalid={f.invalid} invalidFeedback={f.message} infoTooltipL />
++    );
++}
+diff --git a/public/lib/js/esm/src/forms/fields/TextareaField.tsx b/public/lib/js/esm/src/forms/fields/TextareaField.tsx
+new file mode 100644
+index 00000000000..b2793adf016
+--- /dev/null
++++ b/public/lib/js/esm/src/forms/fields/TextareaField.tsx
+@@ -0,0 +1,8 @@
++import {Textarea} from '@moodlehq/design-system';
++import {useDefinedField} from '../useDefinedField';
++import type {FieldProps} from './types';
++
++export function TextareaField({name, label, rules, hideIf, disableIf, ...rest}: FieldProps) {
++    const f = useDefinedField(name, {rules, hideIf, disableIf});
++    return f.hidden ? null : <Textarea label={label} {...rest} {...f.registration} />;
++}
+diff --git a/public/lib/js/esm/src/forms/fields/types.ts b/public/lib/js/esm/src/forms/fields/types.ts
+new file mode 100644
+index 00000000000..0eb3747b19f
+--- /dev/null
++++ b/public/lib/js/esm/src/forms/fields/types.ts
+@@ -0,0 +1,8 @@
++import type {FieldBehaviour} from '../useDefinedField';
++
++/**
++ * Props shared by every form field. Custom fields should accept these and call useDefinedField.
++ */
++export type FieldProps = FieldBehaviour & {name: string; label: string; hideLabel?: boolean; id?: string};
++
++export type Option = {value: string; label: string; description?: string};
+diff --git a/public/lib/js/esm/src/forms/rules.ts b/public/lib/js/esm/src/forms/rules.ts
+new file mode 100644
+index 00000000000..f0a368dbbdc
+--- /dev/null
++++ b/public/lib/js/esm/src/forms/rules.ts
+@@ -0,0 +1,10 @@
++export type {Rule} from './rules/types';
++export {all} from './rules/all';
++export {required} from './rules/required';
++export {requiredIf} from './rules/requiredIf';
++export {maxLength} from './rules/maxLength';
++export {minLength} from './rules/minLength';
++export {pattern} from './rules/pattern';
++export {url} from './rules/url';
++export {minItems} from './rules/minItems';
++export {passwordPolicy, type PasswordPolicy, type PasswordPolicyMessages} from './rules/passwordPolicy';
+diff --git a/public/lib/js/esm/src/forms/rules/all.ts b/public/lib/js/esm/src/forms/rules/all.ts
+new file mode 100644
+index 00000000000..272cf5d8ba5
+--- /dev/null
++++ b/public/lib/js/esm/src/forms/rules/all.ts
+@@ -0,0 +1,14 @@
++import type {Rule} from './types';
++
++/**
++ * Combine rules; the first failing rule wins.
++ */
++export const all = <T, V>(...rules: Rule<T, V>[]): Rule<T, V> => async (value, values) => {
++    for (const rule of rules) {
++        const result = await rule(value, values);
++        if (result !== true) {
++            return result;
++        }
++    }
++    return true;
++};
+diff --git a/public/lib/js/esm/src/forms/rules/helpers.ts b/public/lib/js/esm/src/forms/rules/helpers.ts
+new file mode 100644
+index 00000000000..66a4d06ba06
+--- /dev/null
++++ b/public/lib/js/esm/src/forms/rules/helpers.ts
+@@ -0,0 +1,10 @@
++import type {Rule} from './types';
++
++export const isEmpty = (v: unknown): boolean =>
++    v === undefined || v === null || (typeof v === 'string' && v.trim() === '') || (Array.isArray(v) && v.length === 0);
++
++// Rules are not tied to field types, as in mform. A rule paired with a value it can't evaluate
++// (e.g. maxLength on a switch) passes instead of throwing or failing.
++// String rules also ignore empty values; combine with `required` to make a field mandatory.
++export const stringRule = (check: (v: string) => boolean, message: string): Rule => (v) =>
++    typeof v !== 'string' || v === '' || check(v) || message;
+diff --git a/public/lib/js/esm/src/forms/rules/maxLength.ts b/public/lib/js/esm/src/forms/rules/maxLength.ts
+new file mode 100644
+index 00000000000..044224da863
+--- /dev/null
++++ b/public/lib/js/esm/src/forms/rules/maxLength.ts
+@@ -0,0 +1,4 @@
++import type {Rule} from './types';
++import {stringRule} from './helpers';
++
++export const maxLength = (max: number, message: string): Rule => stringRule((v) => v.length <= max, message);
+diff --git a/public/lib/js/esm/src/forms/rules/minItems.ts b/public/lib/js/esm/src/forms/rules/minItems.ts
+new file mode 100644
+index 00000000000..d9725832154
+--- /dev/null
++++ b/public/lib/js/esm/src/forms/rules/minItems.ts
+@@ -0,0 +1,3 @@
++import type {Rule} from './types';
++
++export const minItems = (min: number, message: string): Rule => (v) => !Array.isArray(v) || v.length >= min || message;
+diff --git a/public/lib/js/esm/src/forms/rules/minLength.ts b/public/lib/js/esm/src/forms/rules/minLength.ts
+new file mode 100644
+index 00000000000..6bb8a5d508e
+--- /dev/null
++++ b/public/lib/js/esm/src/forms/rules/minLength.ts
+@@ -0,0 +1,4 @@
++import type {Rule} from './types';
++import {stringRule} from './helpers';
++
++export const minLength = (min: number, message: string): Rule => stringRule((v) => v.length >= min, message);
+diff --git a/public/lib/js/esm/src/forms/rules/passwordPolicy.ts b/public/lib/js/esm/src/forms/rules/passwordPolicy.ts
+new file mode 100644
+index 00000000000..438f6ccbc04
+--- /dev/null
++++ b/public/lib/js/esm/src/forms/rules/passwordPolicy.ts
+@@ -0,0 +1,70 @@
++import type {Rule} from './types';
++
++export type PasswordPolicy = {
++    minLength: number;
++    minDigits: number;
++    minLower: number;
++    minUpper: number;
++    minNonAlphanumeric: number;
++};
++
++export type PasswordPolicyMessages = Record<keyof PasswordPolicy, string>;
++
++// Mock of the site password policy config. Replace with the real web service call.
++export const fetchPasswordPolicy = async(): Promise<PasswordPolicy> => ({
++    minLength: 8, minDigits: 1, minLower: 1, minUpper: 1, minNonAlphanumeric: 1,
++});
++
++// TODO: replace with lang strings.
++const defaultMessages = (p: PasswordPolicy): PasswordPolicyMessages => ({
++    minLength: `Password must be at least ${p.minLength} characters long`,
++    minDigits: `Password must have at least ${p.minDigits} digit(s)`,
++    minLower: `Password must have at least ${p.minLower} lower case letter(s)`,
++    minUpper: `Password must have at least ${p.minUpper} upper case letter(s)`,
++    minNonAlphanumeric: `Password must have at least ${p.minNonAlphanumeric} special character(s)`,
++});
++
++type Options = {
++    fetchPolicy?: () => Promise<PasswordPolicy>;
++    messages?: PasswordPolicyMessages;
++};
++
++/**
++ * Enforces the site password policy, fetched once on first use and cached.
++ * If the policy cannot be fetched the rule passes, and the server stays the final authority.
++ */
++export const passwordPolicy = ({fetchPolicy = fetchPasswordPolicy, messages}: Options = {}): Rule => {
++    let policyPromise: Promise<PasswordPolicy | null> | undefined;
++    const getPolicy = () => {
++        policyPromise ??= fetchPolicy().catch(() => null);
++        return policyPromise;
++    };
++
++    return async(v) => {
++        if (typeof v !== 'string') {
++            return true;
++        }
++        const policy = await getPolicy();
++        if (!policy) {
++            return true;
++        }
++        const text = messages ?? defaultMessages(policy);
++        const count = (re: RegExp) => (v.match(re) ?? []).length;
++        if (v.length < policy.minLength) {
++            return text.minLength;
++        }
++        if (count(/\d/g) < policy.minDigits) {
++            return text.minDigits;
++        }
++        if (count(/[a-z]/g) < policy.minLower) {
++            return text.minLower;
++        }
++        if (count(/[A-Z]/g) < policy.minUpper) {
++            return text.minUpper;
++        }
++        if (count(/[^a-zA-Z0-9]/g) < policy.minNonAlphanumeric) {
++            return text.minNonAlphanumeric;
++        }
++        return true;
++    };
++};
+diff --git a/public/lib/js/esm/src/forms/rules/pattern.ts b/public/lib/js/esm/src/forms/rules/pattern.ts
+new file mode 100644
+index 00000000000..0e1c798218b
+--- /dev/null
++++ b/public/lib/js/esm/src/forms/rules/pattern.ts
+@@ -0,0 +1,4 @@
++import type {Rule} from './types';
++import {stringRule} from './helpers';
++
++export const pattern = (regex: RegExp, message: string): Rule => stringRule((v) => regex.test(v), message);
+diff --git a/public/lib/js/esm/src/forms/rules/required.ts b/public/lib/js/esm/src/forms/rules/required.ts
+new file mode 100644
+index 00000000000..18114e78680
+--- /dev/null
++++ b/public/lib/js/esm/src/forms/rules/required.ts
+@@ -0,0 +1,4 @@
++import type {Rule} from './types';
++import {isEmpty} from './helpers';
++
++export const required = (message: string): Rule => (v) => !isEmpty(v) || message;
+diff --git a/public/lib/js/esm/src/forms/rules/requiredIf.ts b/public/lib/js/esm/src/forms/rules/requiredIf.ts
+new file mode 100644
+index 00000000000..b977ac03911
+--- /dev/null
++++ b/public/lib/js/esm/src/forms/rules/requiredIf.ts
+@@ -0,0 +1,7 @@
++import type {Condition} from '../conditions';
++import type {Rule} from './types';
++import {isEmpty} from './helpers';
++
++// Only applies when the condition is met by the current form values.
++export const requiredIf = <V>(condition: Condition<V>, message: string): Rule<unknown, V> =>
++    (v, values) => !condition(values) || !isEmpty(v) || message;
+diff --git a/public/lib/js/esm/src/forms/rules/types.ts b/public/lib/js/esm/src/forms/rules/types.ts
+new file mode 100644
+index 00000000000..25a508937f7
+--- /dev/null
++++ b/public/lib/js/esm/src/forms/rules/types.ts
+@@ -0,0 +1,6 @@
++/**
++ * The contract every validation rule fulfils: return true when valid, or an error message.
++ * Matches react-hook-form's `validate` option, so rules can be async.
++ * Plugins add rules by exporting a factory that returns a Rule.
++ */
++export type Rule<T = any, V = any> = (value: T, values: V) => true | string | Promise<true | string>;
+diff --git a/public/lib/js/esm/src/forms/rules/url.ts b/public/lib/js/esm/src/forms/rules/url.ts
+new file mode 100644
+index 00000000000..f764bc256dc
+--- /dev/null
++++ b/public/lib/js/esm/src/forms/rules/url.ts
+@@ -0,0 +1,4 @@
++import type {Rule} from './types';
++import {stringRule} from './helpers';
++
++export const url = (message: string): Rule => stringRule((v) => URL.canParse(v), message);
+diff --git a/public/lib/js/esm/src/forms/useDefinedField.ts b/public/lib/js/esm/src/forms/useDefinedField.ts
+new file mode 100644
+index 00000000000..c6dec7ec210
+--- /dev/null
++++ b/public/lib/js/esm/src/forms/useDefinedField.ts
+@@ -0,0 +1,61 @@
++import {useContext, useMemo} from 'react';
++import {useFormContext, useWatch, set, get} from 'react-hook-form';
++import type {Condition} from './conditions';
++import {all} from './rules/all';
++import type {Rule} from './rules/types';
++import {FormStateContext, GroupContext} from './context';
++
++/**
++ * Behaviour every field accepts as props.
++ */
++export type FieldBehaviour = {
++    rules?: Rule[];
++    // Hidden fields are not rendered, not validated and not submitted.
++    hideIf?: Condition;
++    // Disabled fields are not editable and not validated.
++    disableIf?: Condition;
++};
++
++/**
++ * Resolves whether a field is hidden or disabled from its conditions and the server's disabled list.
++ * For fields that manage their own registration (e.g. repeaters); simple fields use useDefinedField.
++ */
++export function useFieldConditions(name: string, {hideIf, disableIf}: Pick<FieldBehaviour, 'hideIf' | 'disableIf'> = {}) {
++    const {serverDisabled} = useContext(FormStateContext);
++    const {disabled: groupDisabled} = useContext(GroupContext);
++    const {control} = useFormContext();
++
++    // Watch only the fields the conditions read.
++    const deps = [...(hideIf?.deps ?? []), ...(disableIf?.deps ?? [])];
++    const depsKey = deps.join('|');
++    const stableDeps = useMemo(() => deps, [depsKey]);
++    const watched = useWatch({control, name: stableDeps, disabled: stableDeps.length === 0});
++    const values = useMemo(() => {
++        const result = {};
++        stableDeps.forEach((dep, i) => set(result, dep, watched?.[i]));
++        return result;
++    }, [stableDeps, watched]);
++
++    return {
++        hidden: hideIf?.(values) ?? false,
++        disabled: (disableIf?.(values) ?? false) || groupDisabled || serverDisabled.includes(name),
++    };
++}
++
++/**
++ * The building block for form fields. Applies rules, conditions and error state from the field's props,
++ * so a field (core or plugin) only has to render its element with the result.
++ */
++export function useDefinedField(name: string, {rules, hideIf, disableIf}: FieldBehaviour = {}) {
++    const {register, formState: {errors}} = useFormContext();
++    const {hidden, disabled} = useFieldConditions(name, {hideIf, disableIf});
++    const error = get(errors, name);
++
++    // A hidden field is not registered, so it is neither validated nor submitted.
++    const registration = hidden ? undefined : register(name, {
++        validate: rules?.length ? all(...rules) : undefined,
++        disabled,
++    });
++
++    return {hidden, disabled, registration, invalid: Boolean(error), message: error?.message as string | undefined};
++}
+diff --git a/public/lib/js/esm/src/swizzle.json b/public/lib/js/esm/src/swizzle.json
+index 9a9b7aeac22..fe681c1c0c8 100644
+--- a/public/lib/js/esm/src/swizzle.json
++++ b/public/lib/js/esm/src/swizzle.json
+@@ -1,14 +1,58 @@
+ {
+-  "nav/Nav": {
++  "EditModeSwitch": {
+     "eject": "risky",
+     "wrap": "risky"
+   },
+-  "String": {
++  "forms/DefinedForm": {
+     "eject": "risky",
+-    "wrap": "safe"
++    "wrap": "risky"
+   },
+-  "EditModeSwitch": {
++  "forms/fields/CheckboxField": {
++    "eject": "risky",
++    "wrap": "risky"
++  },
++  "forms/fields/CheckboxGroupField": {
++    "eject": "risky",
++    "wrap": "risky"
++  },
++  "forms/fields/GroupField": {
++    "eject": "risky",
++    "wrap": "risky"
++  },
++  "forms/fields/NoticeField": {
++    "eject": "risky",
++    "wrap": "risky"
++  },
++  "forms/fields/RadioGroupField": {
++    "eject": "risky",
++    "wrap": "risky"
++  },
++  "forms/fields/RepeaterField": {
+     "eject": "risky",
+     "wrap": "risky"
++  },
++  "forms/fields/SwitchField": {
++    "eject": "risky",
++    "wrap": "risky"
++  },
++  "forms/fields/TextareaField": {
++    "eject": "risky",
++    "wrap": "risky"
++  },
++  "forms/fields/TextField": {
++    "eject": "risky",
++    "wrap": "risky"
++  },
++  "forms/useMoodleForm": {
++    "eject": "risky",
++    "wrap": "risky"
++  },
++  "nav/Nav": {
++    "eject": "risky",
++    "wrap": "risky"
++  },
++  "String": {
++    "eject": "risky",
++    "wrap": "safe"
+   }
+ }
+diff --git a/public/lib/js/esm/tests/DefinedForm.test.tsx b/public/lib/js/esm/tests/DefinedForm.test.tsx
+new file mode 100644
+index 00000000000..7b40b3cbd18
+--- /dev/null
++++ b/public/lib/js/esm/tests/DefinedForm.test.tsx
+@@ -0,0 +1,243 @@
++// This file is part of Moodle - http://moodle.org/
++//
++// Moodle is free software: you can redistribute it and/or modify
++// it under the terms of the GNU General Public License as published by
++// the Free Software Foundation, either version 3 of the License, or
++// (at your option) any later version.
++//
++// Moodle is distributed in the hope that it will be useful,
++// but WITHOUT ANY WARRANTY; without even the implied warranty of
++// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++// GNU General Public License for more details.
++//
++// You should have received a copy of the GNU General Public License
++// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
++
++
++/**
++ * Tests for core/forms DefinedForm: rule and condition enforcement, dirty-only updates and server errors.
++ *
++ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
++ */
++
++import {render, screen, waitFor, fireEvent} from '@testing-library/react';
++import {DefinedForm, FormValidationError} from '@moodle/lms/core/forms';
++import {TextField, SwitchField, RepeaterField, GroupField, CheckboxGroupField} from '@moodle/lms/core/forms/fields';
++import {required, maxLength, minItems} from '@moodle/lms/core/forms/rules';
++import {checked, not} from '@moodle/lms/core/forms/conditions';
++
++// @moodlehq/design-system is ESM only; stand in minimal markup carrying the props the fields pass.
++jest.mock('@moodlehq/design-system', () => ({
++    Input: ({label, invalid, invalidFeedback, hideLabel, ...rest}: any) => (
++        <div>
++            <label htmlFor={rest.name}>{label}</label>
++            <input id={rest.name} {...rest} />
++            {invalid && <span role="alert">{invalidFeedback}</span>}
++        </div>
++    ),
++    Switch: ({label, ...rest}: any) => (
++        <div>
++            <label htmlFor={rest.name}>{label}</label>
++            <input id={rest.name} type="checkbox" role="switch" {...rest} />
++        </div>
++    ),
++    Checkbox: ({label, supportingText, invalid, invalidFeedback, ...rest}: any) => (
++        <label>{label}<input type="checkbox" {...rest} /></label>
++    ),
++    Button: ({label, ...rest}: any) => <button {...rest}>{label}</button>,
++}), {virtual: true});
++
++type Values = {name: string; pkce: boolean; method: string};
++const defaults: Values = {name: '', pkce: false, method: ''};
++
++const click = (el: HTMLElement) => fireEvent.click(el);
++const type = (el: HTMLElement, value: string) => fireEvent.change(el, {target: {value}});
++
++const renderForm = (props: Partial<React.ComponentProps<typeof DefinedForm<Values>>> = {}) => {
++    const create = jest.fn().mockResolvedValue(defaults);
++    render(
++        <DefinedForm<Values> defaultValues={defaults} create={create} {...props}>
++            <TextField name="name" label="Name" rules={[required('Enter a name'), maxLength(5, 'Too long')]} />
++            <SwitchField name="pkce" label="PKCE" />
++            <TextField name="method" label="Method" hideIf={not(checked('pkce'))} rules={[required('Choose a method')]} />
++        </DefinedForm>,
++    );
++    return create;
++};
++
++describe('core/forms DefinedForm', () => {
++    it('shows rule errors and does not submit invalid data', async() => {
++        const create = renderForm();
++        click(screen.getByText('Save'));
++        expect(await screen.findByText('Enter a name')).toBeTruthy();
++        expect(create).not.toHaveBeenCalled();
++    });
++
++    it('does not validate or submit a hidden field, and does once it is shown', async() => {
++        const create = renderForm();
++        type(screen.getByLabelText('Name'), 'abc');
++        click(screen.getByText('Save'));
++        await waitFor(() => expect(create).toHaveBeenCalledTimes(1));
++        expect(create.mock.calls[0][0]).not.toHaveProperty('method');
++
++        click(screen.getByLabelText('PKCE'));
++        click(screen.getByText('Save'));
++        expect(await screen.findByText('Choose a method')).toBeTruthy();
++        expect(create).toHaveBeenCalledTimes(1);
++    });
++
++    it('hides a repeater with hideIf, skipping its rows when validating and submitting', async() => {
++        const create = jest.fn().mockResolvedValue(defaults);
++        render(
++            <DefinedForm<any> defaultValues={{name: 'ok', pkce: false, uris: ['']}} create={create}>
++                <SwitchField name="pkce" label="PKCE" />
++                <RepeaterField name="uris" label="URIs" addLabel="Add" emptyItem="" hideIf={checked('pkce')}>
++                    {(i) => <TextField name={`uris.${i}`} label={`URI ${i + 1}`} rules={[required('Enter a URI')]} />}
++                </RepeaterField>
++            </DefinedForm>,
++        );
++        expect(screen.queryByLabelText('URI 1')).toBeTruthy();
++        click(screen.getByLabelText('PKCE'));
++        expect(screen.queryByLabelText('URI 1')).toBeNull();
++        click(screen.getByText('Save'));
++        await waitFor(() => expect(create).toHaveBeenCalledTimes(1));
++        expect(create.mock.calls[0][0]).not.toHaveProperty('uris');
++    });
++
++    it('validates a repeater as a whole with its own rules', async() => {
++        const create = jest.fn().mockResolvedValue(defaults);
++        render(
++            <DefinedForm<any> defaultValues={{uris: []}} create={create}>
++                <RepeaterField name="uris" label="URIs" addLabel="Add" emptyItem="" minRows={0}
++                    rules={[minItems(1, 'Add at least one URI')]}>
++                    {(i) => <TextField name={`uris.${i}`} label={`URI ${i + 1}`} />}
++                </RepeaterField>
++            </DefinedForm>,
++        );
++        click(screen.getByText('Save'));
++        expect(await screen.findByText('Add at least one URI')).toBeTruthy();
++        expect(create).not.toHaveBeenCalled();
++    });
++
++    it('adds and removes plain-value rows, keeping values aligned', async() => {
++        const create = jest.fn().mockResolvedValue(defaults);
++        render(
++            <DefinedForm<any> defaultValues={{uris: ['a', 'b', 'c']}} create={create}>
++                <RepeaterField name="uris" label="URIs" addLabel="Add">
++                    {(i) => <TextField name={`uris.${i}`} label={`URI ${i + 1}`} rules={[required('Enter a URI')]} />}
++                </RepeaterField>
++            </DefinedForm>,
++        );
++        click(screen.getByLabelText('Remove URIs 1'));
++        expect((screen.getByLabelText('URI 1') as HTMLInputElement).value).toBe('b');
++        click(screen.getByText('Add'));
++        type(screen.getByLabelText('URI 3'), 'd');
++        click(screen.getByText('Save'));
++        await waitFor(() => expect(create).toHaveBeenCalledWith({uris: ['b', 'c', 'd']}));
++    });
++
++    it('validates each plain-value row and maps server errors by index', async() => {
++        const create = jest.fn().mockRejectedValue(new FormValidationError({'uris.1': ['Bad URI']}));
++        render(
++            <DefinedForm<any> defaultValues={{uris: ['a', '']}} create={create}>
++                <RepeaterField name="uris" label="URIs" addLabel="Add">
++                    {(i) => <TextField name={`uris.${i}`} label={`URI ${i + 1}`} rules={[required('Enter a URI')]} />}
++                </RepeaterField>
++            </DefinedForm>,
++        );
++        click(screen.getByText('Save'));
++        expect(await screen.findByText('Enter a URI')).toBeTruthy();
++        type(screen.getByLabelText('URI 2'), 'x');
++        click(screen.getByText('Save'));
++        expect(await screen.findByText('Bad URI')).toBeTruthy();
++    });
++
++    it('groups fields under one object, with child and group-level rules', async() => {
++        const create = jest.fn().mockResolvedValue(defaults);
++        const sameUnit = (v: any) => (v.value && !v.unit ? 'Enter a unit' : true);
++        render(
++            <DefinedForm<any> defaultValues={{duration: {value: '', unit: ''}}} create={create}>
++                <GroupField name="duration" label="Duration" rules={[sameUnit]}>
++                    <TextField name="duration.value" label="Amount" rules={[maxLength(3, 'Too long')]} />
++                    <TextField name="duration.unit" label="Unit" />
++                </GroupField>
++            </DefinedForm>,
++        );
++        type(screen.getByLabelText('Amount'), '12345');
++        click(screen.getByText('Save'));
++        expect(await screen.findByText('Too long')).toBeTruthy();
++        type(screen.getByLabelText('Amount'), '12');
++        click(screen.getByText('Save'));
++        expect(await screen.findByText('Enter a unit')).toBeTruthy();
++        type(screen.getByLabelText('Unit'), 'min');
++        click(screen.getByText('Save'));
++        await waitFor(() => expect(create).toHaveBeenCalledWith({duration: {value: '12', unit: 'min'}}));
++    });
++
++    it('hides or disables every field in a group with the group conditions', async() => {
++        const create = jest.fn().mockResolvedValue(defaults);
++        render(
++            <DefinedForm<any> defaultValues={{off: false, lock: false, g: {a: ''}, h: {b: ''}}} create={create}>
++                <SwitchField name="off" label="Off" />
++                <SwitchField name="lock" label="Lock" />
++                <GroupField name="g" label="G" hideIf={checked('off')} disableIf={checked('lock')}>
++                    <TextField name="g.a" label="A" rules={[required('A needed')]} />
++                </GroupField>
++            </DefinedForm>,
++        );
++        click(screen.getByLabelText('Lock'));
++        expect((screen.getByLabelText('A') as HTMLInputElement).disabled).toBe(true);
++        click(screen.getByLabelText('Off'));
++        expect(screen.queryByLabelText('A')).toBeNull();
++        click(screen.getByText('Save'));
++        await waitFor(() => expect(create).toHaveBeenCalled());
++        expect(screen.queryByText('A needed')).toBeNull();
++    });
++
++    it('updates only the changed fields when editing', async() => {
++        const load = jest.fn().mockResolvedValue({values: {name: 'old', pkce: false, method: ''}});
++        const update = jest.fn().mockResolvedValue({name: 'new', pkce: false, method: ''});
++        renderForm({id: 1, load, update});
++        const input = await screen.findByLabelText('Name');
++        type(input, 'new');
++        click(screen.getByText('Save'));
++        await waitFor(() => expect(update).toHaveBeenCalledWith(1, {name: 'new'}));
++    });
++
++    it('shows server validation errors thrown by create, mapped onto fields and the form', async() => {
++        const create = jest.fn().mockRejectedValue(new FormValidationError({name: ['Already exists']}, ['Form level problem']));
++        renderForm({create});
++        type(screen.getByLabelText('Name'), 'abc');
++        click(screen.getByText('Save'));
++        expect(await screen.findByText('Already exists')).toBeTruthy();
++        expect(await screen.findByText('Form level problem')).toBeTruthy();
++    });
++
++    it('applies server-disabled fields and maps server validation errors', async() => {
++        const load = jest.fn().mockResolvedValue({values: {name: 'old', pkce: false, method: ''}, readonly: ['pkce']});
++        const update = jest.fn().mockRejectedValue(new FormValidationError({name: ['Already exists']}));
++        renderForm({id: 1, load, update});
++        expect(((await screen.findByLabelText('PKCE')) as HTMLInputElement).disabled).toBe(true);
++        type(screen.getByLabelText('Name'), 'x');
++        click(screen.getByText('Save'));
++        expect(await screen.findByText('Already exists')).toBeTruthy();
++    });
++
++    it('submits a checkbox group as an array, even with a single option, and shows custom labels', async() => {
++        const create = jest.fn().mockResolvedValue({});
++        render(
++            <DefinedForm<{scopes: string[]}>
++                defaultValues={{scopes: []}}
++                create={create}
++                submitLabel="Create client"
++                cancel={{href: '/list', label: 'Back'}}
++            >
++                <CheckboxGroupField name="scopes" label="Scopes" options={[{value: 'a:read', label: 'Read'}]} />
++            </DefinedForm>,
++        );
++        click(screen.getByLabelText('Read'));
++        click(screen.getByText('Create client'));
++        await waitFor(() => expect(create).toHaveBeenCalledWith({scopes: ['a:read']}));
++        expect(screen.getByText('Back').getAttribute('href')).toBe('/list');
++    });
++});
+diff --git a/public/lib/js/esm/tests/fetch.test.ts b/public/lib/js/esm/tests/fetch.test.ts
+index 09076a09080..a1a35b24c1e 100644
+--- a/public/lib/js/esm/tests/fetch.test.ts
++++ b/public/lib/js/esm/tests/fetch.test.ts
+@@ -195,6 +195,14 @@ describe('@moodle/lms/core/fetch', () => {
+             await expect(Fetch.request('mod_example', 'missing')).rejects.toBe('Not Found');
+         });
+ 
++        it('rejects with the response when rejectWithResponse is set', async() => {
++            const response = errorResponse(422, 'Unprocessable Content');
++            mockFetch.mockResolvedValueOnce(response);
++
++            await expect(Fetch.performPost('mod_example', 'items', {body: {}, rejectWithResponse: true}))
++                .rejects.toBe(response);
++        });
++
+         it('registers and completes a Pending operation', async() => {
+             await Fetch.request('mod_example', 'get_items');
+ 
+diff --git a/public/lib/js/esm/tests/forms.test.ts b/public/lib/js/esm/tests/forms.test.ts
+new file mode 100644
+index 00000000000..5da6fef3a42
+--- /dev/null
++++ b/public/lib/js/esm/tests/forms.test.ts
+@@ -0,0 +1,86 @@
++// This file is part of Moodle - http://moodle.org/
++//
++// Moodle is free software: you can redistribute it and/or modify
++// it under the terms of the GNU General Public License as published by
++// the Free Software Foundation, either version 3 of the License, or
++// (at your option) any later version.
++//
++// Moodle is distributed in the hope that it will be useful,
++// but WITHOUT ANY WARRANTY; without even the implied warranty of
++// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++// GNU General Public License for more details.
++//
++// You should have received a copy of the GNU General Public License
++// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
++
++/**
++ * Tests for the form rules and conditions.
++ *
++ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
++ */
++
++import {all, required, requiredIf, maxLength, minLength, pattern, url, minItems, passwordPolicy} from '../src/forms/rules';
++import {checked, eq, not, anyOf} from '../src/forms/conditions';
++
++describe('rules', () => {
++    it('all() returns the first failing message, awaiting async rules', async() => {
++        const rule = all(required('req'), async(v: string) => v !== 'taken' || 'taken', maxLength(5, 'long'));
++        expect(await rule('', {})).toBe('req');
++        expect(await rule('taken', {})).toBe('taken');
++        expect(await rule('toolong', {})).toBe('long');
++        expect(await rule('ok', {})).toBe(true);
++    });
++
++    it('requiredIf() only requires a value when the condition is met', () => {
++        const rule = requiredIf(checked('on'), 'req');
++        expect(rule('', {on: false})).toBe(true);
++        expect(rule('', {on: true})).toBe('req');
++    });
++
++    it('passwordPolicy() fetches the policy once and enforces it', async() => {
++        const fetchPolicy = jest.fn().mockResolvedValue(
++            {minLength: 8, minDigits: 1, minLower: 1, minUpper: 1, minNonAlphanumeric: 1},
++        );
++        const rule = passwordPolicy({
++            fetchPolicy,
++            messages: {minLength: 'len', minDigits: 'digits', minLower: 'lower', minUpper: 'upper', minNonAlphanumeric: 'sym'},
++        });
++        expect(await rule('Ab1!', {})).toBe('len');
++        expect(await rule('Abcdefgh!', {})).toBe('digits');
++        expect(await rule('ABCDEFG1!', {})).toBe('lower');
++        expect(await rule('Abcdefg1', {})).toBe('sym');
++        expect(await rule('Abcdefg1!', {})).toBe(true);
++        expect(fetchPolicy).toHaveBeenCalledTimes(1);
++    });
++
++    it('passwordPolicy() passes when the policy cannot be fetched', async() => {
++        const rule = passwordPolicy({fetchPolicy: () => Promise.reject(new Error('offline'))});
++        expect(await rule('a', {})).toBe(true);
++    });
++});
++
++describe('rules paired with incompatible values', () => {
++    it.each([true, false, undefined, null, 5, ['a'], {a: 1}])('do not throw or fail for %p', async(value) => {
++        const rules = [
++            maxLength(1, 'm'), minLength(3, 'm'), pattern(/^x$/, 'm'), url('m'),
++            passwordPolicy(),
++        ];
++        for (const rule of rules) {
++            expect(await rule(value, {})).toBe(true);
++        }
++    });
++
++    it('minItems ignores non-array values', () => {
++        expect(minItems(1, 'm')(true, {})).toBe(true);
++        expect(minItems(1, 'm')([], {})).toBe('m');
++    });
++});
++
++describe('conditions', () => {
++    it('combine and expose the fields they depend on', () => {
++        const condition = anyOf(not(checked('a')), eq('b.c', 5));
++        expect(condition({a: true, b: {c: 5}})).toBe(true);
++        expect(condition({a: true, b: {c: 1}})).toBe(false);
++        expect(condition.deps).toEqual(['a', 'b.c']);
++    });
++});

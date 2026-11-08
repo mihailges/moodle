@@ -1,0 +1,1 @@
+import{useFieldConditions as d}from"../useMoodleFormField";import{Fragment as r,jsx as c}from"react/jsx-runtime";function a({name:e="static",hideIf:i,children:t}){const{hidden:o}=d(e,{hideIf:i});return o?null:c(r,{children:t})}export{a as StaticField};

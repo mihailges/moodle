@@ -32,8 +32,13 @@ export const sendFormEndpointRequest = (endpoint: string, method: SaveMethod = '
         get: () => send(Fetch.performGet(component, endpoint, {cachekey: null})),
         save: (payload: unknown) => {
             const options = {body: payload as any, rejectWithResponse: true};
-            const request = method === 'POST' ? Fetch.performPost : method === 'PUT' ? Fetch.performPut : Fetch.performPatch;
-            return send(request(component, endpoint, options));
+            // Called on Fetch, not through a variable: the perform methods need it as `this`.
+            const request = method === 'POST'
+                ? Fetch.performPost(component, endpoint, options)
+                : method === 'PUT'
+                    ? Fetch.performPut(component, endpoint, options)
+                    : Fetch.performPatch(component, endpoint, options);
+            return send(request);
         },
     };
 };

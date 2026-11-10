@@ -17,7 +17,7 @@ function RatingField({ name, label, max = 5, rules, hideIf, disableIf, advanced 
       columnNumber: 13
     }, this),
     /* @__PURE__ */ jsxDEV("div", { className: "btn-group", role: "group", "aria-label": label, children: Array.from({ length: max }, (_, i) => String(i + 1)).map((value) => /* @__PURE__ */ jsxDEV("label", { className: "btn btn-outline-primary mb-0", children: [
-      /* @__PURE__ */ jsxDEV("input", { type: "radio", className: "me-1", value, ...f.registration }, void 0, false, {
+      /* @__PURE__ */ jsxDEV("input", { type: "radio", className: "me-1", value, ...f.registration, ...f.inputProps }, void 0, false, {
         fileName: "public/lib/js/esm/src/forms/test/fields/RatingField.tsx",
         lineNumber: 20,
         columnNumber: 25
@@ -32,7 +32,7 @@ function RatingField({ name, label, max = 5, rules, hideIf, disableIf, advanced 
       lineNumber: 17,
       columnNumber: 13
     }, this),
-    f.invalid && /* @__PURE__ */ jsxDEV("div", { role: "alert", className: "text-danger small mt-1", children: f.message }, void 0, false, {
+    f.invalid && /* @__PURE__ */ jsxDEV("div", { ...f.errorProps, className: "text-danger small mt-1", children: f.message }, void 0, false, {
       fileName: "public/lib/js/esm/src/forms/test/fields/RatingField.tsx",
       lineNumber: 25,
       columnNumber: 27

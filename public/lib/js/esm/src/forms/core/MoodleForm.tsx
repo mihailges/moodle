@@ -45,7 +45,7 @@ export function MoodleForm<V extends FieldValues, P = V, S = P>({
     defaultValues, endpoint, method = 'POST', load, submit, cancel, toForm, toPayload, mapErrorPath = (p) => p, children,
 }: MoodleFormProps<V, P, S>) {
     const rest = useMemo(() => (endpoint ? sendFormEndpointRequest(endpoint, method) : null), [endpoint, method]);
-    const form = useForm<V>({defaultValues: defaultValues ?? ({} as DefaultValues<V>)});
+    const form = useForm<V>({defaultValues: defaultValues ?? ({} as DefaultValues<V>), shouldFocusError: false});
     const {reset, setError, handleSubmit, formState: {errors, isSubmitting}} = form;
 
     // An update form starts from the saved values; a create form starts from its defaults.
@@ -104,6 +104,27 @@ export function MoodleForm<V extends FieldValues, P = V, S = P>({
 
     const state = useMemo(() => ({serverDisabled}), [serverDisabled]);
 
+    // After a failed save the first invalid field gets the focus, even if it was collapsed and has just opened. The
+    // errors render over a few updates, so this keeps looking after each render until it finds one.
+    const formElement = useRef<HTMLFormElement>(null);
+    const focusPending = useRef(false);
+    const focusFirstInvalid = () => {
+        focusPending.current = true;
+        setTimeout(() => {
+            focusPending.current = false;
+        }, 500);
+    };
+    useEffect(() => {
+        if (!focusPending.current) {
+            return;
+        }
+        const invalid = formElement.current?.querySelector<HTMLElement>('[aria-invalid="true"], [data-invalid]');
+        if (invalid) {
+            focusPending.current = false;
+            invalid.focus();
+        }
+    });
+
     const onSubmit = async (values: V, override?: SubmitOverride) => {
         const action = override?.action ?? submit?.action
             ?? (rest
@@ -124,27 +145,28 @@ export function MoodleForm<V extends FieldValues, P = V, S = P>({
                 setError('root.server', {message: strings.error});
                 return;
             }
-            Object.entries(e.fieldErrors).forEach(([path, messages], i) => {
+            Object.entries(e.fieldErrors).forEach(([path, messages]) => {
                 const field = registry.resolve(mapErrorPath(path));
                 if (field) {
-                    setError(field as Path<V>, {type: 'server', message: messages[0]}, {shouldFocus: i === 0});
+                    setError(field as Path<V>, {type: 'server', message: messages[0]});
                 } else {
                     setError('root.server', {message: messages[0]});
                 }
             });
             e.formErrors.forEach((message) => setError('root.server', {message}));
+            focusFirstInvalid();
         }
     };
 
     const actionApi = {
-        submit: (override?: SubmitOverride) => handleSubmit((values) => onSubmit(values, override))(),
+        submit: (override?: SubmitOverride) => handleSubmit((values) => onSubmit(values, override), focusFirstInvalid)(),
         submitting: isSubmitting,
         getValues: () => registry.unwrap(form.getValues()),
         setValue: (name: string, value: unknown) => form.setValue(name as Path<V>, value as any, {shouldDirty: true}),
     };
 
     if (status === 'loading') {
-        return <p>Loading...</p>;
+        return <p role="status">Loading...</p>;
     }
     if (status === 'error') {
         return <div role="alert" className="alert alert-danger">This record could not be loaded.</div>;
@@ -156,7 +178,7 @@ export function MoodleForm<V extends FieldValues, P = V, S = P>({
             <FormStateContext.Provider value={state}>
                 <FormActionContext.Provider value={actionApi}>
                 <AdvancedContext.Provider value={advanced}>
-                <form onSubmit={handleSubmit((values) => onSubmit(values))} noValidate>
+                <form ref={formElement} onSubmit={handleSubmit((values) => onSubmit(values), focusFirstInvalid)} noValidate>
                     {Children.map(children, (child) => (
                         <div className="mt-3">
                             {child}

@@ -25,8 +25,8 @@ const sendFormEndpointRequest = /* @__PURE__ */ __name((endpoint, method = "POST
     get: /* @__PURE__ */ __name(() => send(Fetch.performGet(component, endpoint, { cachekey: null })), "get"),
     save: /* @__PURE__ */ __name((payload) => {
       const options = { body: payload, rejectWithResponse: true };
-      const request = method === "POST" ? Fetch.performPost : method === "PUT" ? Fetch.performPut : Fetch.performPatch;
-      return send(request(component, endpoint, options));
+      const request = method === "POST" ? Fetch.performPost(component, endpoint, options) : method === "PUT" ? Fetch.performPut(component, endpoint, options) : Fetch.performPatch(component, endpoint, options);
+      return send(request);
     }, "save")
   };
 }, "sendFormEndpointRequest");

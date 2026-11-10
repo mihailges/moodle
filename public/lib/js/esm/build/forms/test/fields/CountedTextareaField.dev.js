@@ -20,7 +20,7 @@ function CountedTextareaField({ name, label, maxLength, rules, hideIf, disableIf
       lineNumber: 20,
       columnNumber: 13
     }, this),
-    /* @__PURE__ */ jsxDEV("textarea", { id: `field_${name}`, className: "form-control", rows: 3, ...f.registration }, void 0, false, {
+    /* @__PURE__ */ jsxDEV("textarea", { id: `field_${name}`, className: "form-control", rows: 3, ...f.registration, ...f.inputProps }, void 0, false, {
       fileName: "public/lib/js/esm/src/forms/test/fields/CountedTextareaField.tsx",
       lineNumber: 21,
       columnNumber: 13
@@ -33,7 +33,7 @@ function CountedTextareaField({ name, label, maxLength, rules, hideIf, disableIf
       lineNumber: 22,
       columnNumber: 13
     }, this),
-    f.invalid && /* @__PURE__ */ jsxDEV("div", { role: "alert", className: "text-danger small mt-1", children: f.message }, void 0, false, {
+    f.invalid && /* @__PURE__ */ jsxDEV("div", { ...f.errorProps, className: "text-danger small mt-1", children: f.message }, void 0, false, {
       fileName: "public/lib/js/esm/src/forms/test/fields/CountedTextareaField.tsx",
       lineNumber: 23,
       columnNumber: 27

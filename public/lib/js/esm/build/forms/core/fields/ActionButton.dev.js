@@ -20,8 +20,15 @@ function ActionButton({ label, variant = "secondary", inProgressLabel, submit, o
       label: submitting && submit && inProgressLabel ? inProgressLabel : label,
       variant,
       size: "lg",
-      disabled: submitting,
-      onClick: submit === true ? void 0 : run
+      "aria-disabled": submitting || void 0,
+      className: submitting ? "disabled" : void 0,
+      onClick: (e) => {
+        if (submitting) {
+          e.preventDefault();
+        } else if (submit !== true) {
+          run();
+        }
+      }
     },
     void 0,
     false,

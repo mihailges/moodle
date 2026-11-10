@@ -39,7 +39,7 @@ jest.mock('@moodlehq/design-system', () => ({
     Input: ({label, invalid, invalidFeedback, hideLabel, ...rest}: any) => (
         <div>
             <label htmlFor={rest.name}>{label}</label>
-            <input id={rest.name} {...rest} />
+            <input id={rest.name} aria-invalid={invalid || undefined} {...rest} />
             {invalid && <span role="alert">{invalidFeedback}</span>}
         </div>
     ),
@@ -129,6 +129,50 @@ describe('core/forms MoodleForm', () => {
         click(await screen.findByText('[save, core]'));
         expect(await screen.findByText('Add at least one URI')).toBeTruthy();
         expect(create).not.toHaveBeenCalled();
+    });
+
+    it('clears the repeater\'s own error once a row is filled in', async() => {
+        const create = jest.fn().mockResolvedValue(defaults);
+        render(
+            <MoodleForm<any> defaultValues={{uris: ['']}} submit={{action: create}}>
+                <RepeaterField name="uris" label="URIs" addLabel="Add" emptyItem=""
+                    rules={[minItems(1, 'Add at least one URI')]}>
+                    <TextField label="URI" />
+                </RepeaterField>
+            </MoodleForm>,
+        );
+        click(await screen.findByText('[save, core]'));
+        expect(await screen.findByText('Add at least one URI')).toBeTruthy();
+        type(screen.getByLabelText('URI'), 'https://a.test');
+        await waitFor(() => expect(screen.queryByText('Add at least one URI')).toBeNull());
+    });
+
+    it('focuses the first invalid field, opening a collapsed advanced one', async() => {
+        render(
+            <MoodleForm<any> defaultValues={{name: 'ok', note: ''}} submit={{action: jest.fn()}}>
+                <TextField name="name" label="Name" rules={[required('Name needed')]} />
+                <TextField name="note" label="Note" advanced rules={[required('Note needed')]} />
+            </MoodleForm>,
+        );
+        click(await screen.findByText('[save, core]'));
+        const note = await screen.findByLabelText('Note');
+        await waitFor(() => expect(document.activeElement).toBe(note));
+        expect(note.getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('focuses the repeater when its own rule fails', async() => {
+        render(
+            <MoodleForm<any> defaultValues={{uris: ['']}} submit={{action: jest.fn()}}>
+                <RepeaterField name="uris" label="URIs" addLabel="Add" rules={[minItems(1, 'Add at least one URI')]}>
+                    <TextField label="URI" />
+                </RepeaterField>
+            </MoodleForm>,
+        );
+        click(await screen.findByText('[save, core]'));
+        const message = await screen.findByText('Add at least one URI');
+        const fieldset = message.closest('fieldset')!;
+        await waitFor(() => expect(document.activeElement).toBe(fieldset));
+        expect(fieldset.getAttribute('aria-describedby')).toBe(message.id);
     });
 
     it('adds and removes plain-value rows, keeping values aligned', async() => {

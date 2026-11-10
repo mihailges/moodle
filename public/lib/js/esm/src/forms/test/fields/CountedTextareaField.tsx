@@ -18,9 +18,9 @@ export function CountedTextareaField({name, label, maxLength, rules, hideIf, dis
     return (
         <div>
             <label className="form-label" htmlFor={`field_${name}`}>{label}{f.requiredIndicator}</label>
-            <textarea id={`field_${name}`} className="form-control" rows={3} {...f.registration} />
+            <textarea id={`field_${name}`} className="form-control" rows={3} {...f.registration} {...f.inputProps} />
             <div className={`small mt-1 ${left < 0 ? 'text-danger' : 'text-muted'}`}>{left} characters left</div>
-            {f.invalid && <div role="alert" className="text-danger small mt-1">{f.message}</div>}
+            {f.invalid && <div {...f.errorProps} className="text-danger small mt-1">{f.message}</div>}
         </div>
     );
 }

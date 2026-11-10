@@ -1,5 +1,6 @@
 import {createElement, useContext, useEffect, useState} from 'react';
 import {useFormContext, useWatch, get} from 'react-hook-form';
+import {getString} from '@moodle/lms/core/stringUtils';
 import type {Condition} from './formCondition';
 import type {Rule, Validate} from './formRule';
 import {FormStateContext, GroupContext, FieldRegistryContext, RowContext, ContainerContext, AdvancedContext} from './formContext';
@@ -74,13 +75,23 @@ export function useFieldConditions(
 export const toValidate = (rules?: Rule[]): Validate | undefined =>
     (rules?.length ? Object.fromEntries(rules.map((rule, i) => [i, rule])) : undefined);
 
+// The asterisk is only visual, so screen readers get the word "Required" in its place.
+function RequiredMark() {
+    const [text, setText] = useState('Required');
+    useEffect(() => {
+        getString('required').then(setText).catch(() => undefined);
+    }, []);
+    return createElement(
+        'span',
+        {style: {color: 'var(--mds-text-danger)', marginInlineStart: 'var(--mds-spacing-xxs)'}},
+        createElement('span', {'aria-hidden': true}, '*'),
+        createElement('span', {className: 'visually-hidden'}, text),
+    );
+}
+
 // The red asterisk of a mandatory field, for fields that draw their own label. It matches the design system's,
 // which fields built on its components get by passing them `required`.
-export const requiredIndicator = createElement(
-    'span',
-    {'aria-hidden': true, style: {color: 'var(--mds-text-danger)', marginInlineStart: 'var(--mds-spacing-xxs)'}},
-    '*',
-);
+export const requiredIndicator = createElement(RequiredMark);
 
 type Mandatory = boolean | ((values: any) => boolean);
 
@@ -144,6 +155,7 @@ export function useFormField(fieldName: string | undefined, {rules, hideIf, disa
         }
     });
 
+    const errorId = `field_${name.replace(/\W+/g, '_')}_error`;
     return {
         hidden: hidden || collapsed,
         disabled,
@@ -154,5 +166,9 @@ export function useFormField(fieldName: string | undefined, {rules, hideIf, disa
         registration,
         invalid: Boolean(error),
         message: error?.message as string | undefined,
+        // For fields that draw their own input and error: put `inputProps` on the input and `errorProps` on the
+        // message, so assistive technology knows the input is invalid and reads the message with it.
+        inputProps: error ? {'aria-invalid': true as const, 'aria-describedby': errorId} : {},
+        errorProps: {id: errorId, role: 'alert' as const},
     };
 }

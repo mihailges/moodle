@@ -1,4 +1,4 @@
-import {useContext} from 'react';
+import {useContext, type MouseEvent} from 'react';
 import {Button} from '@moodlehq/design-system';
 import {FormActionContext, type FormActionApi, type SubmitOverride} from '../formContext';
 
@@ -34,8 +34,16 @@ export function ActionButton({label, variant = 'secondary', inProgressLabel, sub
             label={submitting && submit && inProgressLabel ? inProgressLabel : label}
             variant={variant}
             size="lg"
-            disabled={submitting}
-            onClick={submit === true ? undefined : run}
+            // Not `disabled`, so a keyboard user's focus stays on the button while the form saves.
+            aria-disabled={submitting || undefined}
+            className={submitting ? 'disabled' : undefined}
+            onClick={(e: MouseEvent) => {
+                if (submitting) {
+                    e.preventDefault();
+                } else if (submit !== true) {
+                    run();
+                }
+            }}
         />
     );
 }

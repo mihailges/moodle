@@ -2,6 +2,7 @@ var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 import { createElement, useContext, useEffect, useState } from "react";
 import { useFormContext, useWatch, get } from "react-hook-form";
+import { getString } from "@moodle/lms/core/stringUtils";
 import { FormStateContext, GroupContext, FieldRegistryContext, RowContext, ContainerContext, AdvancedContext } from "./formContext";
 function useFieldConditions(name, { hideIf, disableIf, advanced } = {}) {
   const { serverDisabled } = useContext(FormStateContext);
@@ -37,11 +38,20 @@ function useFieldConditions(name, { hideIf, disableIf, advanced } = {}) {
 }
 __name(useFieldConditions, "useFieldConditions");
 const toValidate = /* @__PURE__ */ __name((rules) => rules?.length ? Object.fromEntries(rules.map((rule, i) => [i, rule])) : void 0, "toValidate");
-const requiredIndicator = createElement(
-  "span",
-  { "aria-hidden": true, style: { color: "var(--mds-text-danger)", marginInlineStart: "var(--mds-spacing-xxs)" } },
-  "*"
-);
+function RequiredMark() {
+  const [text, setText] = useState("Required");
+  useEffect(() => {
+    getString("required").then(setText).catch(() => void 0);
+  }, []);
+  return createElement(
+    "span",
+    { style: { color: "var(--mds-text-danger)", marginInlineStart: "var(--mds-spacing-xxs)" } },
+    createElement("span", { "aria-hidden": true }, "*"),
+    createElement("span", { className: "visually-hidden" }, text)
+  );
+}
+__name(RequiredMark, "RequiredMark");
+const requiredIndicator = createElement(RequiredMark);
 const mandatory = /* @__PURE__ */ new WeakMap();
 const markMandatory = /* @__PURE__ */ __name((rule, when) => {
   mandatory.set(rule, when);
@@ -76,6 +86,7 @@ function useFormField(fieldName, { rules, hideIf, disableIf, advanced } = {}) {
       register(name, { validate, disabled });
     }
   });
+  const errorId = `field_${name.replace(/\W+/g, "_")}_error`;
   return {
     hidden: hidden || collapsed,
     disabled,
@@ -85,7 +96,11 @@ function useFormField(fieldName, { rules, hideIf, disableIf, advanced } = {}) {
     requiredIndicator: required ? requiredIndicator : null,
     registration,
     invalid: Boolean(error),
-    message: error?.message
+    message: error?.message,
+    // For fields that draw their own input and error: put `inputProps` on the input and `errorProps` on the
+    // message, so assistive technology knows the input is invalid and reads the message with it.
+    inputProps: error ? { "aria-invalid": true, "aria-describedby": errorId } : {},
+    errorProps: { id: errorId, role: "alert" }
   };
 }
 __name(useFormField, "useFormField");

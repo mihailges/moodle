@@ -27,13 +27,19 @@ export function GroupField({name, label, layout = 'row', rules, hideIf, disableI
 
     // Child errors are objects nested under the group's path; only a group-level error has a message.
     const message = fieldState.error?.message;
+    const errorId = `field_${name.replace(/\W+/g, '_')}_error`;
 
     return (
         <GroupContext.Provider value={{disabled, name, validate}}>
-            <fieldset hidden={collapsed}>
+            <fieldset
+                hidden={collapsed}
+                tabIndex={message ? -1 : undefined}
+                data-invalid={message ? true : undefined}
+                aria-describedby={message ? errorId : undefined}
+            >
                 <legend className="fs-6 mb-2">{label}{required && requiredIndicator}</legend>
                 <div className={layout === 'row' ? 'd-flex gap-2 align-items-start' : 'd-flex flex-column gap-2'}>{children}</div>
-                {message && <div role="alert" className="text-danger small mt-1">{message}</div>}
+                {message && <div id={errorId} role="alert" className="text-danger small mt-1">{message}</div>}
             </fieldset>
         </GroupContext.Provider>
     );

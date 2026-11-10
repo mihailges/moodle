@@ -17,12 +17,12 @@ export function RatingField({name, label, max = 5, rules, hideIf, disableIf, adv
             <div className="btn-group" role="group" aria-label={label}>
                 {Array.from({length: max}, (_, i) => String(i + 1)).map((value) => (
                     <label key={value} className="btn btn-outline-primary mb-0">
-                        <input type="radio" className="me-1" value={value} {...f.registration} />
+                        <input type="radio" className="me-1" value={value} {...f.registration} {...f.inputProps} />
                         {value}
                     </label>
                 ))}
             </div>
-            {f.invalid && <div role="alert" className="text-danger small mt-1">{f.message}</div>}
+            {f.invalid && <div {...f.errorProps} className="text-danger small mt-1">{f.message}</div>}
         </fieldset>
     );
 }

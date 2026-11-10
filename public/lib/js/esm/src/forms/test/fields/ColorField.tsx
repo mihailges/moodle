@@ -15,10 +15,16 @@ export function ColorField({name, label, rules, hideIf, disableIf, advanced}: Co
         <div>
             <label className="form-label d-block" htmlFor={`field_${name}`}>{label}{f.requiredIndicator}</label>
             <div className="d-flex align-items-center gap-2">
-                <input id={`field_${name}`} type="color" className="form-control form-control-color" {...f.registration} />
+                <input
+                    id={`field_${name}`}
+                    type="color"
+                    className="form-control form-control-color"
+                    {...f.registration}
+                    {...f.inputProps}
+                />
                 <code>{value}</code>
             </div>
-            {f.invalid && <div role="alert" className="text-danger small mt-1">{f.message}</div>}
+            {f.invalid && <div {...f.errorProps} className="text-danger small mt-1">{f.message}</div>}
         </div>
     );
 }

@@ -1,5 +1,5 @@
-import {useContext, type ReactElement} from 'react';
-import {useFieldArray, useFormContext} from 'react-hook-form';
+import {useContext, useEffect, useRef, type ReactElement} from 'react';
+import {useFieldArray, useFormContext, useWatch} from 'react-hook-form';
 import {Button} from '@moodlehq/design-system';
 import {useFieldConditions, useIsRequired, toValidate, requiredIndicator, type FieldBehaviour} from '../formField';
 import {FieldRegistryContext, RowContext} from '../formContext';
@@ -20,7 +20,7 @@ type RepeaterFieldProps = FieldBehaviour & {
 export function RepeaterField({
     name, label, addLabel, emptyItem = '', minRows = 1, removeLabel = 'Remove', rules, hideIf, disableIf, advanced, children,
 }: RepeaterFieldProps) {
-    const {control, clearErrors, getFieldState, formState, getValues, setValue} = useFormContext();
+    const {control, clearErrors, getFieldState, formState, getValues, setValue, trigger} = useFormContext();
     const registry = useContext(FieldRegistryContext);
     registry.addRepeater(name);
     // Forms hold plain arrays; useFieldArray needs object rows, so convert them before it first reads them.
@@ -45,23 +45,39 @@ export function RepeaterField({
             )),
         },
     } as any);
+    const addButton = useRef<HTMLDivElement>(null);
     const {hidden, collapsed, disabled} = useFieldConditions(name, {hideIf, disableIf, advanced});
     const required = useIsRequired(rules, !hidden && !disabled);
+    const message = getFieldState(name, formState).error?.message ?? (formState.errors as any)?.[name]?.root?.message;
+    // Editing a row only revalidates that row's field, so the list's own error (e.g. at least one item) is rechecked here.
+    const rows = useWatch({control, name});
+    useEffect(() => {
+        if (message && !hidden) {
+            trigger(name);
+        }
+    }, [rows]);
     if (hidden) {
         return null;
     }
-    const message = getFieldState(name, formState).error?.message ?? (formState.errors as any)?.[name]?.root?.message;
     const addRow = () => {
         clearErrors(name);
         append({value: emptyItem});
     };
+    // Removing the focused row's button would leave the focus nowhere, so it moves to the add button.
     const removeRow = (index: number) => {
         clearErrors(name);
         remove(index);
+        addButton.current?.querySelector('button')?.focus();
     };
+    const errorId = `field_${name.replace(/\W+/g, '_')}_error`;
 
     return (
-        <fieldset hidden={collapsed}>
+        <fieldset
+            hidden={collapsed}
+            tabIndex={message ? -1 : undefined}
+            data-invalid={message ? true : undefined}
+            aria-describedby={message ? errorId : undefined}
+        >
             <legend className="fs-6 mb-2">{label}{required && requiredIndicator}</legend>
             <div className="d-flex flex-column gap-2">
                 {fields.map((field, index) => (
@@ -80,12 +96,10 @@ export function RepeaterField({
                     </div>
                 ))}
             </div>
-            {message && <div role="alert" className="text-danger small mt-1">{message}</div>}
-            <Button
-                type="button"
-                className="mt-2"
-                onClick={addRow}
-                label={addLabel} disabled={disabled} />
+            {message && <div id={errorId} role="alert" className="text-danger small mt-1">{message}</div>}
+            <div ref={addButton}>
+                <Button type="button" className="mt-2" onClick={addRow} label={addLabel} disabled={disabled} />
+            </div>
         </fieldset>
     );
 }

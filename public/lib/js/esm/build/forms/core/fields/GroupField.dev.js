@@ -13,32 +13,46 @@ function GroupField({ name, label, layout = "row", rules, hideIf, disableIf, adv
     return null;
   }
   const message = fieldState.error?.message;
-  return /* @__PURE__ */ jsxDEV(GroupContext.Provider, { value: { disabled, name, validate }, children: /* @__PURE__ */ jsxDEV("fieldset", { hidden: collapsed, children: [
-    /* @__PURE__ */ jsxDEV("legend", { className: "fs-6 mb-2", children: [
-      label,
-      required && requiredIndicator
-    ] }, void 0, true, {
+  const errorId = `field_${name.replace(/\W+/g, "_")}_error`;
+  return /* @__PURE__ */ jsxDEV(GroupContext.Provider, { value: { disabled, name, validate }, children: /* @__PURE__ */ jsxDEV(
+    "fieldset",
+    {
+      hidden: collapsed,
+      tabIndex: message ? -1 : void 0,
+      "data-invalid": message ? true : void 0,
+      "aria-describedby": message ? errorId : void 0,
+      children: [
+        /* @__PURE__ */ jsxDEV("legend", { className: "fs-6 mb-2", children: [
+          label,
+          required && requiredIndicator
+        ] }, void 0, true, {
+          fileName: "public/lib/js/esm/src/forms/core/fields/GroupField.tsx",
+          lineNumber: 40,
+          columnNumber: 17
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: layout === "row" ? "d-flex gap-2 align-items-start" : "d-flex flex-column gap-2", children }, void 0, false, {
+          fileName: "public/lib/js/esm/src/forms/core/fields/GroupField.tsx",
+          lineNumber: 41,
+          columnNumber: 17
+        }, this),
+        message && /* @__PURE__ */ jsxDEV("div", { id: errorId, role: "alert", className: "text-danger small mt-1", children: message }, void 0, false, {
+          fileName: "public/lib/js/esm/src/forms/core/fields/GroupField.tsx",
+          lineNumber: 42,
+          columnNumber: 29
+        }, this)
+      ]
+    },
+    void 0,
+    true,
+    {
       fileName: "public/lib/js/esm/src/forms/core/fields/GroupField.tsx",
       lineNumber: 34,
-      columnNumber: 17
-    }, this),
-    /* @__PURE__ */ jsxDEV("div", { className: layout === "row" ? "d-flex gap-2 align-items-start" : "d-flex flex-column gap-2", children }, void 0, false, {
-      fileName: "public/lib/js/esm/src/forms/core/fields/GroupField.tsx",
-      lineNumber: 35,
-      columnNumber: 17
-    }, this),
-    message && /* @__PURE__ */ jsxDEV("div", { role: "alert", className: "text-danger small mt-1", children: message }, void 0, false, {
-      fileName: "public/lib/js/esm/src/forms/core/fields/GroupField.tsx",
-      lineNumber: 36,
-      columnNumber: 29
-    }, this)
-  ] }, void 0, true, {
+      columnNumber: 13
+    },
+    this
+  ) }, void 0, false, {
     fileName: "public/lib/js/esm/src/forms/core/fields/GroupField.tsx",
     lineNumber: 33,
-    columnNumber: 13
-  }, this) }, void 0, false, {
-    fileName: "public/lib/js/esm/src/forms/core/fields/GroupField.tsx",
-    lineNumber: 32,
     columnNumber: 9
   }, this);
 }

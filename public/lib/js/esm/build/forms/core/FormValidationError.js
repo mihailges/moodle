@@ -1,0 +1,1 @@
+class o extends Error{constructor(n,a=[]){super("Validation failed");this.fieldErrors=n;this.formErrors=a;this.name="FormValidationError"}}const t=r=>r instanceof o||r instanceof Error&&r.name==="FormValidationError"&&"fieldErrors"in r;export{o as FormValidationError,t as isFormValidationError};

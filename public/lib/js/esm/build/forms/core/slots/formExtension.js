@@ -1,0 +1,1 @@
+const t=[],i=(n,o)=>n.slot===o.slot&&n.plugin===o.plugin&&(n.id??"")===(o.id??"");function r(n){const o=t.findIndex(e=>i(e,n));o>=0&&t.splice(o,1),t.push(n)}function s(n){return t.filter(o=>o.slot===n)}export{s as getFormExtensions,r as registerFormExtension};

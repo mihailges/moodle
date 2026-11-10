@@ -1,0 +1,8 @@
+{
+  "version": 3,
+  "sources": ["../../../../src/forms/core/elements/ActionGroup.tsx"],
+  "sourceRoot": "../../../../../../sources/public/local/formtest/js/esm/build",
+  "sourcesContent": ["import type {ReactNode} from 'react';\n\ntype ActionGroupProps = {\n    // Names the group for screen readers, e.g. \"Form actions\".\n    label: string;\n    children: ReactNode;\n};\n\n/**\n * Lays out ActionButtons in a row, like an mform group of action buttons. Use it, instead of `create`, `update` and\n * `cancel`, to give the form its own buttons:\n *   <ActionGroup label=\"Actions\">\n *     <ActionButton label=\"Save\" variant=\"primary\" submit={{action: save, onSuccess: goToList}} />\n *     <ActionButton label=\"Save and continue\" submit={{action: saveAndNext, onSuccess: goToNext}} />\n *     <ActionButton label=\"Cancel\" onClick={goBack} />\n *   </ActionGroup>\n */\nexport function ActionGroup({label, children}: ActionGroupProps) {\n    return <div role=\"group\" aria-label={label} className=\"d-flex flex-wrap gap-2\">{children}</div>;\n}\n"],
+  "mappings": ";;AAkBW;AADJ,SAAS,YAAY,EAAC,OAAO,SAAQ,GAAqB;AAC7D,SAAO,uBAAC,SAAI,MAAK,SAAQ,cAAY,OAAO,WAAU,0BAA0B,YAAzE;AAAA;AAAA;AAAA;AAAA,SAAkF;AAC7F;AAFgB;",
+  "names": []
+}

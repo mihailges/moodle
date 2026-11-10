@@ -52,6 +52,8 @@ interface RequestOptions {
     body?: RequestBody | null;
     /** The HTTP method to use. */
     method?: string;
+    /** Reject with the {@link Response} instead of its status text, e.g. to read validation errors from the body. */
+    rejectWithResponse?: boolean;
 }
 
 /** Options for read-only convenience methods (GET / HEAD). */
@@ -70,6 +72,8 @@ interface WriteRequestOptions {
     headers?: Record<string, string>;
     /** The request body. */
     body: RequestBody;
+    /** Reject with the {@link Response} instead of its status text. */
+    rejectWithResponse?: boolean;
 }
 
 /** Options for the DELETE convenience method. */
@@ -90,7 +94,7 @@ class RequestWrapper {
     #request: Request;
     #promise: Promise<Response>;
     #resolve!: (value: Response) => void;
-    #reject!: (reason: string) => void;
+    #reject!: (reason: string | Response) => void;
 
     constructor(request: Request) {
         this.#request = request;
@@ -108,11 +112,11 @@ class RequestWrapper {
         return this.#promise;
     }
 
-    handleResponse(response: Response): void {
+    handleResponse(response: Response, rejectWithResponse = false): void {
         if (response.ok) {
             this.#resolve(response);
         } else {
-            this.#reject(response.statusText);
+            this.#reject(rejectWithResponse ? response : response.statusText);
         }
     }
 }
@@ -138,6 +142,7 @@ export default class Fetch {
             params = {},
             body = null,
             method = 'GET',
+            rejectWithResponse = false,
         }: RequestOptions = {},
     ): Promise<Response> {
         const resolvePending = new Pending(`Requesting ${component}/${action} with ${method}`);
@@ -149,7 +154,7 @@ export default class Fetch {
         const result = await fetch(requestWrapper.request);
 
         resolvePending.resolve();
-        requestWrapper.handleResponse(result);
+        requestWrapper.handleResponse(result, rejectWithResponse);
 
         return requestWrapper.promise;
     }
@@ -194,9 +199,9 @@ export default class Fetch {
     static performPost(
         component: string,
         action: string,
-        {headers = {}, body}: WriteRequestOptions,
+        {headers = {}, body, rejectWithResponse}: WriteRequestOptions,
     ): Promise<Response> {
-        return this.request(component, action, {headers, body, method: 'POST'});
+        return this.request(component, action, {headers, body, method: 'POST', rejectWithResponse});
     }
 
     /**
@@ -209,9 +214,9 @@ export default class Fetch {
     static performPut(
         component: string,
         action: string,
-        {headers = {}, body}: WriteRequestOptions,
+        {headers = {}, body, rejectWithResponse}: WriteRequestOptions,
     ): Promise<Response> {
-        return this.request(component, action, {headers, body, method: 'PUT'});
+        return this.request(component, action, {headers, body, method: 'PUT', rejectWithResponse});
     }
 
     /**
@@ -224,9 +229,9 @@ export default class Fetch {
     static performPatch(
         component: string,
         action: string,
-        {headers = {}, body}: WriteRequestOptions,
+        {headers = {}, body, rejectWithResponse}: WriteRequestOptions,
     ): Promise<Response> {
-        return this.request(component, action, {headers, body, method: 'PATCH'});
+        return this.request(component, action, {headers, body, method: 'PATCH', rejectWithResponse});
     }
 
     /**

@@ -3,7 +3,7 @@ var __name = (target, value) => __defProp(target, "name", { value, configurable:
 import { jsxDEV } from "react/jsx-dev-runtime";
 import { Suspense, use } from "react";
 import { getString } from "@moodle/lms/core/stringUtils";
-import { MoodleForm, FormSlot, ExtensionModules } from "@moodle/lms/core/forms";
+import { MoodleForm } from "@moodle/lms/core/forms";
 import {
   GroupField,
   CheckboxField,
@@ -18,8 +18,7 @@ function EditClientForm({
   hasAuthCode,
   isConfidential,
   scopes,
-  listUrl,
-  extensionModules
+  listUrl
 }) {
   const s = {
     name: getString("name"),
@@ -40,11 +39,11 @@ function EditClientForm({
   const redirectUriRequired = use(s.redirectUriRequired);
   const redirectUriInvalid = use(s.redirectUriInvalid);
   const scopesRequired = use(s.scopesRequired);
-  return /* @__PURE__ */ jsxDEV(ExtensionModules, { modules: extensionModules, children: /* @__PURE__ */ jsxDEV(
+  return /* @__PURE__ */ jsxDEV(
     MoodleForm,
     {
-      endpoint: "/admin/oauth2/server/clients",
-      resourceId: clientId,
+      endpoint: `/admin/oauth2/server/clients/${clientId}`,
+      method: "PATCH",
       submit: {
         onSuccess: /* @__PURE__ */ __name(() => {
           window.location.href = listUrl;
@@ -65,19 +64,14 @@ function EditClientForm({
           false,
           {
             fileName: "public/admin/js/esm/src/oauth2/editClientForm.tsx",
-            lineNumber: 75,
+            lineNumber: 70,
             columnNumber: 13
           },
           this
         ),
         /* @__PURE__ */ jsxDEV(TextareaField, { name: "description", label: use(s.description) }, void 0, false, {
           fileName: "public/admin/js/esm/src/oauth2/editClientForm.tsx",
-          lineNumber: 80,
-          columnNumber: 13
-        }, this),
-        /* @__PURE__ */ jsxDEV(FormSlot, { name: "core_admin_oauth2_client.general" }, void 0, false, {
-          fileName: "public/admin/js/esm/src/oauth2/editClientForm.tsx",
-          lineNumber: 81,
+          lineNumber: 75,
           columnNumber: 13
         }, this),
         hasAuthCode && /* @__PURE__ */ jsxDEV(
@@ -90,7 +84,7 @@ function EditClientForm({
             removeLabel: use(s.remove),
             children: /* @__PURE__ */ jsxDEV(TextField, { label: redirectUris, hideLabel: true, rules: [url(redirectUriInvalid)] }, void 0, false, {
               fileName: "public/admin/js/esm/src/oauth2/editClientForm.tsx",
-              lineNumber: 90,
+              lineNumber: 84,
               columnNumber: 21
             }, this)
           },
@@ -98,14 +92,14 @@ function EditClientForm({
           false,
           {
             fileName: "public/admin/js/esm/src/oauth2/editClientForm.tsx",
-            lineNumber: 83,
+            lineNumber: 77,
             columnNumber: 17
           },
           this
         ),
         hasAuthCode && isConfidential && /* @__PURE__ */ jsxDEV(CheckboxField, { name: "ispkcerequired", label: use(s.pkce), supportingText: use(s.pkceHelp) }, void 0, false, {
           fileName: "public/admin/js/esm/src/oauth2/editClientForm.tsx",
-          lineNumber: 94,
+          lineNumber: 88,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ jsxDEV(
@@ -127,7 +121,7 @@ function EditClientForm({
               false,
               {
                 fileName: "public/admin/js/esm/src/oauth2/editClientForm.tsx",
-                lineNumber: 103,
+                lineNumber: 97,
                 columnNumber: 21
               },
               this
@@ -137,41 +131,32 @@ function EditClientForm({
           false,
           {
             fileName: "public/admin/js/esm/src/oauth2/editClientForm.tsx",
-            lineNumber: 96,
+            lineNumber: 90,
             columnNumber: 13
           },
           this
-        ),
-        /* @__PURE__ */ jsxDEV(FormSlot, { name: "core_admin_oauth2_client.footer" }, void 0, false, {
-          fileName: "public/admin/js/esm/src/oauth2/editClientForm.tsx",
-          lineNumber: 112,
-          columnNumber: 13
-        }, this)
+        )
       ]
     },
     void 0,
     true,
     {
       fileName: "public/admin/js/esm/src/oauth2/editClientForm.tsx",
-      lineNumber: 63,
+      lineNumber: 58,
       columnNumber: 9
     },
     this
-  ) }, void 0, false, {
-    fileName: "public/admin/js/esm/src/oauth2/editClientForm.tsx",
-    lineNumber: 62,
-    columnNumber: 9
-  }, this);
+  );
 }
 __name(EditClientForm, "EditClientForm");
 function EditClientFormLoader(props) {
   return /* @__PURE__ */ jsxDEV(Suspense, { fallback: null, children: /* @__PURE__ */ jsxDEV(EditClientForm, { ...props }, void 0, false, {
     fileName: "public/admin/js/esm/src/oauth2/editClientForm.tsx",
-    lineNumber: 122,
+    lineNumber: 114,
     columnNumber: 13
   }, this) }, void 0, false, {
     fileName: "public/admin/js/esm/src/oauth2/editClientForm.tsx",
-    lineNumber: 121,
+    lineNumber: 113,
     columnNumber: 9
   }, this);
 }

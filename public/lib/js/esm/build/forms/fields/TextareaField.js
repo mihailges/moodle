@@ -1,1 +1,0 @@
-import{Textarea as d}from"@moodlehq/design-system";import{useMoodleFormField as m}from"../useMoodleFormField";import{jsx as n}from"react/jsx-runtime";function s({name:o,label:r,rules:t,hideIf:i,disableIf:l,...p}){const e=m(o,{rules:t,hideIf:i,disableIf:l});return e.hidden?null:n(d,{label:r,...p,...e.registration})}export{s as TextareaField};

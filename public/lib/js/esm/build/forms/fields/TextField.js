@@ -1,1 +1,0 @@
-import{Input as n}from"@moodlehq/design-system";import{useMoodleFormField as p}from"../useMoodleFormField";import{jsx as m}from"react/jsx-runtime";function F({name:i,label:o,rules:l,hideIf:r,disableIf:d,...t}){const e=p(i,{rules:l,hideIf:r,disableIf:d});return e.hidden?null:m(n,{label:o,...t,...e.registration,invalid:e.invalid,invalidFeedback:e.message})}export{F as TextField};

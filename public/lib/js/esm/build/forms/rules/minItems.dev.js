@@ -1,8 +1,0 @@
-var __defProp = Object.defineProperty;
-var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
-import { isEmpty } from "./helpers";
-const minItems = /* @__PURE__ */ __name((min, message) => (v) => !Array.isArray(v) || v.filter((item) => !isEmpty(item)).length >= min || message, "minItems");
-export {
-  minItems
-};
-//# sourceMappingURL=minItems.dev.js.map

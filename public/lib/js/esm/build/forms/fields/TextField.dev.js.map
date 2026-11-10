@@ -1,8 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/forms/fields/TextField.tsx"],
-  "sourceRoot": "../../../../../../sources/public/lib/js/esm/build",
-  "sourcesContent": ["import {Input} from '@moodlehq/design-system';\nimport {useMoodleFormField} from '../useMoodleFormField';\nimport type {FieldProps} from './types';\n\nexport function TextField({name, label, rules, hideIf, disableIf, ...rest}: FieldProps) {\n    const f = useMoodleFormField(name, {rules, hideIf, disableIf});\n    return f.hidden ? null : (\n        <Input\n            label={label}\n            {...rest}\n            {...f.registration}\n            invalid={f.invalid}\n            invalidFeedback={f.message}\n        />\n    );\n}\n"],
-  "mappings": ";;AAOQ;AAPR,SAAQ,aAAY;AACpB,SAAQ,0BAAyB;AAG1B,SAAS,UAAU,EAAC,MAAM,OAAO,OAAO,QAAQ,WAAW,GAAG,KAAI,GAAe;AACpF,QAAM,IAAI,mBAAmB,MAAM,EAAC,OAAO,QAAQ,UAAS,CAAC;AAC7D,SAAO,EAAE,SAAS,OACd;AAAA,IAAC;AAAA;AAAA,MACG;AAAA,MACC,GAAG;AAAA,MACH,GAAG,EAAE;AAAA,MACN,SAAS,EAAE;AAAA,MACX,iBAAiB,EAAE;AAAA;AAAA,IALvB;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,EAMA;AAER;AAXgB;",
-  "names": []
-}

@@ -1,15 +1,13 @@
-import { all } from "./rules/all";
-import { validIf } from "./rules/validIf";
-import { required } from "./rules/required";
-import { requiredIf } from "./rules/requiredIf";
-import { maxLength } from "./rules/maxLength";
-import { minLength } from "./rules/minLength";
-import { pattern } from "./rules/pattern";
-import { url } from "./rules/url";
-import { minItems } from "./rules/minItems";
-import { passwordPolicy } from "./rules/passwordPolicy";
+import { validIf } from "./core/rules/validIf";
+import { required } from "./core/rules/required";
+import { requiredIf } from "./core/rules/requiredIf";
+import { maxLength } from "./core/rules/maxLength";
+import { minLength } from "./core/rules/minLength";
+import { pattern } from "./core/rules/pattern";
+import { url } from "./core/rules/url";
+import { minItems } from "./core/rules/minItems";
+import { passwordPolicy } from "./core/rules/passwordPolicy";
 export {
-  all,
   maxLength,
   minItems,
   minLength,

@@ -212,7 +212,6 @@ final class clients_test extends route_testcase {
         $this->assertSame('Desc', $payload['description']);
         $this->assertSame([$this->get_scope()], $payload['scopes']);
         $this->assertNotEmpty($payload['redirecturis']);
-        $this->assertSame([], $payload['extensions']);
     }
 
     /**
@@ -289,72 +288,5 @@ final class clients_test extends route_testcase {
         $this->assert_valid_response($response);
         $this->assertSame([], $this->decode_response($response, true)['redirecturis']);
         $this->assertFalse($manager->get_client_by_id($client->get_id())->is_pkce_required());
-    }
-
-    /**
-     * A listener of before_form_validation can reject the submitted data, which the endpoint returns as a 422.
-     */
-    public function test_before_form_validation_hook_errors_are_returned(): void {
-        $this->resetAfterTest();
-
-        $seen = [];
-        $this->redirectHook(\core\hook\form\before_form_validation::class, function ($hook) use (&$seen) {
-            $seen[] = $hook->formname;
-            $limit = $hook->payload['extensions']['local_example']['limit'] ?? 0;
-            if ($limit > 10) {
-                $hook->add_error('extensions.local_example.limit', 'Too high');
-            }
-        });
-        $client = $this->create_auth_code_client();
-
-        $create = [
-            'name' => 'Service',
-            'clienttype' => 'confidential',
-            'flows' => ['client_credentials'],
-            'scopes' => [$this->get_scope()],
-            'extensions' => ['local_example' => ['limit' => 50]],
-        ];
-        $response = $this->request('POST', '/oauth2/server/clients', $create);
-        $this->assert_valid_response($response, 422);
-        $this->assertEquals(
-            ['Too high'],
-            $this->decode_response($response, true)['errors']['extensions.local_example.limit'],
-        );
-
-        $response = $this->request('PATCH', "/oauth2/server/clients/{$client->get_id()}", [
-            'name' => 'Renamed',
-            'extensions' => ['local_example' => ['limit' => 50]],
-        ]);
-        $this->assert_valid_response($response, 422);
-        $this->assertEquals('Existing', \core\di::get(client_manager::class)->get_client_by_id($client->get_id())->getName());
-
-        $this->assertSame(['core_admin_oauth2_client', 'core_admin_oauth2_client'], $seen);
-    }
-
-    /**
-     * A listener of after_form_saved is told the id of the created or updated client and the submitted data.
-     */
-    public function test_after_form_saved_hook_receives_the_client_id(): void {
-        $this->resetAfterTest();
-
-        $saved = [];
-        $this->redirectHook(\core\hook\form\after_form_saved::class, function ($hook) use (&$saved) {
-            $saved[] = [$hook->formname, $hook->id, $hook->payload['extensions'] ?? null];
-        });
-
-        $response = $this->request('POST', '/oauth2/server/clients', [
-            'name' => 'Service',
-            'clienttype' => 'confidential',
-            'flows' => ['client_credentials'],
-            'scopes' => [$this->get_scope()],
-            'extensions' => ['local_example' => ['limit' => 5]],
-        ]);
-        $this->assert_valid_response($response, 201);
-        $id = $this->decode_response($response)->id;
-        $this->assertSame([['core_admin_oauth2_client', $id, ['local_example' => ['limit' => 5]]]], $saved);
-
-        $saved = [];
-        $this->assert_valid_response($this->request('PATCH', "/oauth2/server/clients/{$id}", ['name' => 'Renamed']), 200);
-        $this->assertSame([['core_admin_oauth2_client', $id, null]], $saved);
     }
 }

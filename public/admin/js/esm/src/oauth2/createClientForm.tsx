@@ -1,7 +1,7 @@
 import {Suspense, use} from 'react';
 import {Alert} from '@moodlehq/design-system';
 import {getString} from '@moodle/lms/core/stringUtils';
-import {MoodleForm, FormSlot, ExtensionModules} from '@moodle/lms/core/forms';
+import {MoodleForm} from '@moodle/lms/core/forms';
 import {
     GroupField,
     RadioField,
@@ -17,9 +17,6 @@ type Props = {
     // Scope names and descriptions come from the scope classes, so they arrive as plain text.
     scopes: {value: string; label: string; description: string}[];
     listUrl: string;
-    // Plugins can extend the form: their modules are loaded with it and their initial values go in `extensions`.
-    extensionModules?: string[];
-    extensionValues?: Record<string, Record<string, unknown>>;
 };
 
 type ClientPayload = {
@@ -30,15 +27,13 @@ type ClientPayload = {
     redirecturis: string[];
     ispkcerequired: boolean;
     scopes: string[];
-    // Values of plugin form extensions, by component.
-    extensions?: Record<string, Record<string, unknown>>;
 };
 
 type CreatedClient = {id: number; isconfidential: boolean; redirecturl: string};
 
 const isPublic = (v: ClientPayload) => v.clienttype === 'public';
 
-function CreateClientForm({scopes, listUrl, extensionModules, extensionValues}: Props) {
+function CreateClientForm({scopes, listUrl}: Props) {
     // Every getString starts before any `use`, so the strings load in one batch.
     const flowRequired = use(getString('oauth2server_clientmustselectprimaryflow', 'admin'));
     const scopesRequired = use(getString('oauth2serverclientnoscopes', 'error'));
@@ -47,8 +42,7 @@ function CreateClientForm({scopes, listUrl, extensionModules, extensionValues}: 
     const redirectUriInvalid = use(getString('oauth2server_clientcallbackurisinvalid', 'admin'));
 
     return (
-        <ExtensionModules modules={extensionModules}>
-        <MoodleForm<ClientPayload, ClientPayload, number, CreatedClient>
+        <MoodleForm<ClientPayload, ClientPayload, CreatedClient>
             defaultValues={{
                 name: '',
                 description: '',
@@ -57,7 +51,6 @@ function CreateClientForm({scopes, listUrl, extensionModules, extensionValues}: 
                 redirecturis: [''],
                 ispkcerequired: true,
                 scopes: [],
-                extensions: extensionValues ?? {},
             }}
             endpoint="/admin/oauth2/server/clients"
             submit={{
@@ -81,7 +74,6 @@ function CreateClientForm({scopes, listUrl, extensionModules, extensionValues}: 
                 ]}
             />
             <TextareaField name="description" label={use(getString('description'))} />
-            <FormSlot name="core_admin_oauth2_client.general" />
             <GroupField name="clienttype" label={use(getString('oauth2server_clienttype', 'admin'))} layout="column">
                 <RadioField
                     name="clienttype"
@@ -154,9 +146,7 @@ function CreateClientForm({scopes, listUrl, extensionModules, extensionValues}: 
             <StaticField>
                 <Alert type="warning" message={use(getString('oauth2server_clientcreationwarning', 'admin'))} />
             </StaticField>
-            <FormSlot name="core_admin_oauth2_client.footer" />
         </MoodleForm>
-        </ExtensionModules>
     );
 }
 

@@ -4,7 +4,7 @@ import { jsxDEV } from "react/jsx-dev-runtime";
 import { Suspense, use } from "react";
 import { Alert } from "@moodlehq/design-system";
 import { getString } from "@moodle/lms/core/stringUtils";
-import { MoodleForm, FormSlot, ExtensionModules } from "@moodle/lms/core/forms";
+import { MoodleForm } from "@moodle/lms/core/forms";
 import {
   GroupField,
   RadioField,
@@ -16,13 +16,13 @@ import {
 } from "@moodle/lms/core/forms/fields";
 import { required, maxLength, url, minItems } from "@moodle/lms/core/forms/rules";
 const isPublic = /* @__PURE__ */ __name((v) => v.clienttype === "public", "isPublic");
-function CreateClientForm({ scopes, listUrl, extensionModules, extensionValues }) {
+function CreateClientForm({ scopes, listUrl }) {
   const flowRequired = use(getString("oauth2server_clientmustselectprimaryflow", "admin"));
   const scopesRequired = use(getString("oauth2serverclientnoscopes", "error"));
   const redirectUris = use(getString("oauth2server_clientcallbackuris", "admin"));
   const redirectUriRequired = use(getString("oauth2server_clientcallbackurirequired", "admin"));
   const redirectUriInvalid = use(getString("oauth2server_clientcallbackurisinvalid", "admin"));
-  return /* @__PURE__ */ jsxDEV(ExtensionModules, { modules: extensionModules, children: /* @__PURE__ */ jsxDEV(
+  return /* @__PURE__ */ jsxDEV(
     MoodleForm,
     {
       defaultValues: {
@@ -32,8 +32,7 @@ function CreateClientForm({ scopes, listUrl, extensionModules, extensionValues }
         flows: ["auth_code"],
         redirecturis: [""],
         ispkcerequired: true,
-        scopes: [],
-        extensions: extensionValues ?? {}
+        scopes: []
       },
       endpoint: "/admin/oauth2/server/clients",
       submit: {
@@ -62,19 +61,14 @@ function CreateClientForm({ scopes, listUrl, extensionModules, extensionValues }
           false,
           {
             fileName: "public/admin/js/esm/src/oauth2/createClientForm.tsx",
-            lineNumber: 75,
+            lineNumber: 68,
             columnNumber: 13
           },
           this
         ),
         /* @__PURE__ */ jsxDEV(TextareaField, { name: "description", label: use(getString("description")) }, void 0, false, {
           fileName: "public/admin/js/esm/src/oauth2/createClientForm.tsx",
-          lineNumber: 83,
-          columnNumber: 13
-        }, this),
-        /* @__PURE__ */ jsxDEV(FormSlot, { name: "core_admin_oauth2_client.general" }, void 0, false, {
-          fileName: "public/admin/js/esm/src/oauth2/createClientForm.tsx",
-          lineNumber: 84,
+          lineNumber: 76,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ jsxDEV(GroupField, { name: "clienttype", label: use(getString("oauth2server_clienttype", "admin")), layout: "column", children: [
@@ -90,7 +84,7 @@ function CreateClientForm({ scopes, listUrl, extensionModules, extensionValues }
             false,
             {
               fileName: "public/admin/js/esm/src/oauth2/createClientForm.tsx",
-              lineNumber: 86,
+              lineNumber: 78,
               columnNumber: 17
             },
             this
@@ -107,14 +101,14 @@ function CreateClientForm({ scopes, listUrl, extensionModules, extensionValues }
             false,
             {
               fileName: "public/admin/js/esm/src/oauth2/createClientForm.tsx",
-              lineNumber: 92,
+              lineNumber: 84,
               columnNumber: 17
             },
             this
           )
         ] }, void 0, true, {
           fileName: "public/admin/js/esm/src/oauth2/createClientForm.tsx",
-          lineNumber: 85,
+          lineNumber: 77,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ jsxDEV(
@@ -138,7 +132,7 @@ function CreateClientForm({ scopes, listUrl, extensionModules, extensionValues }
                 false,
                 {
                   fileName: "public/admin/js/esm/src/oauth2/createClientForm.tsx",
-                  lineNumber: 106,
+                  lineNumber: 98,
                   columnNumber: 17
                 },
                 this
@@ -155,7 +149,7 @@ function CreateClientForm({ scopes, listUrl, extensionModules, extensionValues }
                 false,
                 {
                   fileName: "public/admin/js/esm/src/oauth2/createClientForm.tsx",
-                  lineNumber: 112,
+                  lineNumber: 104,
                   columnNumber: 17
                 },
                 this
@@ -166,18 +160,18 @@ function CreateClientForm({ scopes, listUrl, extensionModules, extensionValues }
           true,
           {
             fileName: "public/admin/js/esm/src/oauth2/createClientForm.tsx",
-            lineNumber: 99,
+            lineNumber: 91,
             columnNumber: 13
           },
           this
         ),
         /* @__PURE__ */ jsxDEV(StaticField, { hideIf: (v) => isPublic(v) || !v.flows.includes("client_credentials"), children: /* @__PURE__ */ jsxDEV(Alert, { type: "warning", message: use(getString("oauth2server_clientgranttypeclientcredswarning", "admin")) }, void 0, false, {
           fileName: "public/admin/js/esm/src/oauth2/createClientForm.tsx",
-          lineNumber: 120,
+          lineNumber: 112,
           columnNumber: 17
         }, this) }, void 0, false, {
           fileName: "public/admin/js/esm/src/oauth2/createClientForm.tsx",
-          lineNumber: 119,
+          lineNumber: 111,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ jsxDEV(
@@ -191,7 +185,7 @@ function CreateClientForm({ scopes, listUrl, extensionModules, extensionValues }
             hideIf: (v) => !isPublic(v) && !v.flows.includes("auth_code"),
             children: /* @__PURE__ */ jsxDEV(TextField, { label: redirectUris, hideLabel: true, rules: [url(redirectUriInvalid)] }, void 0, false, {
               fileName: "public/admin/js/esm/src/oauth2/createClientForm.tsx",
-              lineNumber: 130,
+              lineNumber: 122,
               columnNumber: 17
             }, this)
           },
@@ -199,7 +193,7 @@ function CreateClientForm({ scopes, listUrl, extensionModules, extensionValues }
           false,
           {
             fileName: "public/admin/js/esm/src/oauth2/createClientForm.tsx",
-            lineNumber: 122,
+            lineNumber: 114,
             columnNumber: 13
           },
           this
@@ -216,7 +210,7 @@ function CreateClientForm({ scopes, listUrl, extensionModules, extensionValues }
           false,
           {
             fileName: "public/admin/js/esm/src/oauth2/createClientForm.tsx",
-            lineNumber: 132,
+            lineNumber: 124,
             columnNumber: 13
           },
           this
@@ -240,7 +234,7 @@ function CreateClientForm({ scopes, listUrl, extensionModules, extensionValues }
               false,
               {
                 fileName: "public/admin/js/esm/src/oauth2/createClientForm.tsx",
-                lineNumber: 145,
+                lineNumber: 137,
                 columnNumber: 21
               },
               this
@@ -250,23 +244,18 @@ function CreateClientForm({ scopes, listUrl, extensionModules, extensionValues }
           false,
           {
             fileName: "public/admin/js/esm/src/oauth2/createClientForm.tsx",
-            lineNumber: 138,
+            lineNumber: 130,
             columnNumber: 13
           },
           this
         ),
         /* @__PURE__ */ jsxDEV(StaticField, { children: /* @__PURE__ */ jsxDEV(Alert, { type: "warning", message: use(getString("oauth2server_clientcreationwarning", "admin")) }, void 0, false, {
           fileName: "public/admin/js/esm/src/oauth2/createClientForm.tsx",
-          lineNumber: 155,
+          lineNumber: 147,
           columnNumber: 17
         }, this) }, void 0, false, {
           fileName: "public/admin/js/esm/src/oauth2/createClientForm.tsx",
-          lineNumber: 154,
-          columnNumber: 13
-        }, this),
-        /* @__PURE__ */ jsxDEV(FormSlot, { name: "core_admin_oauth2_client.footer" }, void 0, false, {
-          fileName: "public/admin/js/esm/src/oauth2/createClientForm.tsx",
-          lineNumber: 157,
+          lineNumber: 146,
           columnNumber: 13
         }, this)
       ]
@@ -275,25 +264,21 @@ function CreateClientForm({ scopes, listUrl, extensionModules, extensionValues }
     true,
     {
       fileName: "public/admin/js/esm/src/oauth2/createClientForm.tsx",
-      lineNumber: 51,
+      lineNumber: 45,
       columnNumber: 9
     },
     this
-  ) }, void 0, false, {
-    fileName: "public/admin/js/esm/src/oauth2/createClientForm.tsx",
-    lineNumber: 50,
-    columnNumber: 9
-  }, this);
+  );
 }
 __name(CreateClientForm, "CreateClientForm");
 function CreateClientFormLoader(props) {
   return /* @__PURE__ */ jsxDEV(Suspense, { fallback: null, children: /* @__PURE__ */ jsxDEV(CreateClientForm, { ...props }, void 0, false, {
     fileName: "public/admin/js/esm/src/oauth2/createClientForm.tsx",
-    lineNumber: 167,
+    lineNumber: 157,
     columnNumber: 13
   }, this) }, void 0, false, {
     fileName: "public/admin/js/esm/src/oauth2/createClientForm.tsx",
-    lineNumber: 166,
+    lineNumber: 156,
     columnNumber: 9
   }, this);
 }

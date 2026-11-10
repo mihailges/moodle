@@ -20,18 +20,10 @@
  */
 
 import {
-    all, required, requiredIf, maxLength, minLength, pattern, url, minItems, validIf, passwordPolicy,
+    required, requiredIf, maxLength, minLength, pattern, url, minItems, validIf, passwordPolicy,
 } from '../src/forms/rules';
 
 describe('rules', () => {
-    it('all() returns the first failing message, awaiting async rules', async() => {
-        const rule = all(required('req'), async(v: string) => v !== 'taken' || 'taken', maxLength(5, 'long'));
-        expect(await rule('', {})).toBe('req');
-        expect(await rule('taken', {})).toBe('taken');
-        expect(await rule('toolong', {})).toBe('long');
-        expect(await rule('ok', {})).toBe(true);
-    });
-
     it('requiredIf() only requires a value when the condition is met', () => {
         const rule = requiredIf((v: any) => Boolean(v.on), 'req');
         expect(rule('', {on: false})).toBe(true);

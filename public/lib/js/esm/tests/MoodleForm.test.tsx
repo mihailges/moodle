@@ -24,9 +24,9 @@ import {render, screen, waitFor, fireEvent} from '@testing-library/react';
 import {MoodleForm, FormValidationError} from '@moodle/lms/core/forms';
 import {
     TextField, SwitchField, RepeaterField, GroupField, CheckboxField, RadioField, StaticField,
-    ActionButtons, ActionButton,
+    ActionButton, SectionField,
 } from '@moodle/lms/core/forms/fields';
-import {required, maxLength, minItems} from '@moodle/lms/core/forms/rules';
+import {required, requiredIf, maxLength, minItems} from '@moodle/lms/core/forms/rules';
 import Fetch from '@moodle/lms/core/fetch';
 
 jest.mock('@moodle/lms/core/fetch', () => ({
@@ -221,7 +221,7 @@ describe('core/forms MoodleForm', () => {
     it('sends the full values when editing', async() => {
         const load = jest.fn().mockResolvedValue({values: {name: 'old', pkce: false, method: ''}});
         const update = jest.fn().mockResolvedValue({name: 'new', pkce: false, method: ''});
-        renderForm({resourceId: 1, load, submit: {action: (payload) => update(1, payload)}});
+        renderForm({load, submit: {action: (payload) => update(1, payload)}});
         const input = await screen.findByLabelText('Name');
         type(input, 'new');
         click(await screen.findByText('[save, core]'));
@@ -240,7 +240,7 @@ describe('core/forms MoodleForm', () => {
     it('applies server-disabled fields and maps server validation errors', async() => {
         const load = jest.fn().mockResolvedValue({values: {name: 'old', pkce: false, method: ''}, readonly: ['pkce']});
         const update = jest.fn().mockRejectedValue(new FormValidationError({name: ['Already exists']}));
-        renderForm({resourceId: 1, load, submit: {action: (payload) => update(1, payload)}});
+        renderForm({load, submit: {action: (payload) => update(1, payload)}});
         expect(((await screen.findByLabelText('PKCE')) as HTMLInputElement).disabled).toBe(true);
         type(screen.getByLabelText('Name'), 'x');
         click(await screen.findByText('[save, core]'));
@@ -304,10 +304,10 @@ describe('core/forms MoodleForm', () => {
         render(
             <MoodleForm<any> defaultValues={{name: 'x'}}>
                 <TextField name="name" label="Name" />
-                <ActionButtons>
+                <div>
                     <ActionButton label="Save and next" submit={{action: create, onSuccess}} />
                     <ActionButton label="Clear" onClick={(form) => form.setValue('name', '')} />
-                </ActionButtons>
+                </div>
             </MoodleForm>,
         );
         expect(screen.queryByText('[save, core]')).toBeNull();
@@ -359,7 +359,7 @@ describe('core/forms MoodleForm', () => {
             );
         });
 
-        it('loads with a GET and saves with a PATCH when given an id, mapping a 422 onto the field', async() => {
+        it('loads with a GET and saves with a PATCH on the given endpoint, mapping a 422 onto the field', async() => {
             (Fetch.performGet as jest.Mock).mockReturnValue(json({name: 'old'}));
             class FakeResponse {
                 status = 422;
@@ -368,7 +368,7 @@ describe('core/forms MoodleForm', () => {
             (global as any).Response = FakeResponse;
             (Fetch.performPatch as jest.Mock).mockRejectedValue(new FakeResponse());
             render(
-                <MoodleForm<any> {...route} resourceId={7}>
+                <MoodleForm<any> endpoint="/test/things/7" method="PATCH">
                     <TextField name="name" label="Name" />
                 </MoodleForm>,
             );
@@ -380,5 +380,95 @@ describe('core/forms MoodleForm', () => {
                 '', '/test/things/7', {body: {name: 'old'}, rejectWithResponse: true},
             );
         });
+    });
+
+    it('runs a field\'s rules in order, awaiting async ones, and shows the first failure', async() => {
+        const create = jest.fn().mockResolvedValue({});
+        render(
+            <MoodleForm<any> defaultValues={{name: ''}} submit={{action: create}}>
+                <TextField
+                    name="name"
+                    label="Name"
+                    rules={[required('req'), async(v: string) => v !== 'taken' || 'taken', maxLength(5, 'long')]}
+                />
+            </MoodleForm>,
+        );
+        click(await screen.findByText('[save, core]'));
+        expect(await screen.findByText('req')).toBeTruthy();
+
+        type(screen.getByLabelText('Name'), 'taken');
+        click(screen.getByText('[save, core]'));
+        expect(await screen.findByText('taken')).toBeTruthy();
+        expect(screen.queryByText('req')).toBeNull();
+        expect(create).not.toHaveBeenCalled();
+    });
+
+    it('marks fields mandatory from their rules, following requiredIf conditions and group rules', async() => {
+        render(
+            <MoodleForm<any> defaultValues={{name: '', pkce: false, method: '', scopes: []}} submit={{action: jest.fn()}}>
+                <TextField name="name" label="Name" rules={[required('Enter a name')]} />
+                <TextField name="nick" label="Nickname" rules={[maxLength(5, 'Too long')]} />
+                <SwitchField name="pkce" label="PKCE" />
+                <TextField name="method" label="Method" rules={[requiredIf((v: any) => v.pkce, 'Choose a method')]} />
+                <GroupField name="scopes" label="Scopes" layout="column" rules={[minItems(1, 'Select a scope')]}>
+                    <CheckboxField name="scopes" value="read" label="Read" />
+                </GroupField>
+            </MoodleForm>,
+        );
+        const isRequired = (label: string) => (screen.getByLabelText(label) as HTMLInputElement).required;
+        expect(isRequired('Name')).toBe(true);
+        expect(isRequired('Nickname')).toBe(false);
+        expect(isRequired('Method')).toBe(false);
+        expect(screen.getByText('Scopes').parentElement!.textContent).toContain('*');
+
+        click(screen.getByLabelText('PKCE'));
+        await waitFor(() => expect(isRequired('Method')).toBe(true));
+    });
+
+    it('hides advanced fields anywhere in the form behind "Show more", still validating and submitting them', async() => {
+        const create = jest.fn().mockResolvedValue({});
+        render(
+            <MoodleForm<any> defaultValues={{name: 'a', note: 'kept', other: 'ok'}} submit={{action: create}}>
+                <TextField name="note" label="Note" advanced rules={[maxLength(2, 'Note too long')]} />
+                <SectionField title="Section">
+                    <TextField name="name" label="Name" />
+                    <TextField name="other" label="Other" advanced />
+                </SectionField>
+            </MoodleForm>,
+        );
+        const hidden = (label: string) => screen.queryByLabelText(label) === null;
+        expect(hidden('Note')).toBe(true);
+        expect(hidden('Other')).toBe(true);
+        expect(hidden('Name')).toBe(false);
+        click(await screen.findByText('[showmore, core]'));
+        expect(hidden('Note')).toBe(false);
+        expect(hidden('Other')).toBe(false);
+        click(screen.getByText('[showless, core]'));
+        expect(hidden('Note')).toBe(true);
+
+        click(screen.getByText('[save, core]'));
+        expect(await screen.findByText('Note too long')).toBeTruthy();
+        expect(hidden('Note')).toBe(false);
+        expect(create).not.toHaveBeenCalled();
+
+        type(screen.getByLabelText('Note'), 'ok');
+        click(screen.getByText('[save, core]'));
+        await waitFor(() => expect(create).toHaveBeenCalledWith({name: 'a', note: 'ok', other: 'ok'}));
+    });
+
+    it('keeps the fields of a collapsed section and opens it when one has an error', async() => {
+        const create = jest.fn().mockResolvedValue({});
+        render(
+            <MoodleForm<any> defaultValues={{note: 'long'}} submit={{action: create}}>
+                <SectionField title="More" defaultOpen={false}>
+                    <TextField name="note" label="Note" rules={[maxLength(2, 'Note too long')]} />
+                </SectionField>
+            </MoodleForm>,
+        );
+        const details = screen.getByText('More').closest('details')!;
+        expect(details.open).toBe(false);
+        click(await screen.findByText('[save, core]'));
+        expect(await screen.findByText('Note too long')).toBeTruthy();
+        expect(details.open).toBe(true);
     });
 });

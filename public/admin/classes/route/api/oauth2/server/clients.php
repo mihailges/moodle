@@ -20,7 +20,6 @@ use core\param;
 use core\router\require_login;
 use core\router\route;
 use core\router\schema\objects\array_of_strings;
-use core\router\schema\objects\array_of_things;
 use core\router\schema\objects\scalar_type;
 use core\router\schema\objects\schema_object;
 use core\router\schema\request_body;
@@ -66,8 +65,6 @@ class clients {
                         'redirecturis' => new array_of_strings(keyparamtype: param::INT, valueparamtype: param::RAW),
                         'ispkcerequired' => new scalar_type(param::BOOL),
                         'scopes' => new array_of_strings(keyparamtype: param::INT, valueparamtype: param::RAW),
-                        // Data of plugin form extensions, by component. Validated by the plugins' hook callbacks.
-                        'extensions' => new array_of_things(),
                     ],
                 ),
             ),
@@ -159,16 +156,13 @@ class clients {
     }
 
     /**
-     * The editable fields of a client, with the values plugins add to the form.
+     * The editable fields of a client.
      *
      * @param \core\oauth2\server\entity\client_entity $cliententity The client entity
      * @return array
      */
     protected function get_client_payload(\core\oauth2\server\entity\client_entity $cliententity): array {
         $clientmanager = \core\di::get(\core\oauth2\server\client_manager::class);
-
-        $hook = new \core_admin\hook\oauth2_client_form_extend($cliententity);
-        \core\di::get(\core\hook\manager::class)->dispatch($hook);
 
         return [
             'id' => $cliententity->get_id(),
@@ -177,7 +171,6 @@ class clients {
             'ispkcerequired' => $cliententity->is_pkce_required(),
             'scopes' => array_values($cliententity->get_scopes()),
             'redirecturis' => array_values($clientmanager->get_redirect_uris($cliententity->get_id())),
-            'extensions' => (object) $hook->get_values(),
         ];
     }
 
@@ -207,8 +200,6 @@ class clients {
                         'redirecturis' => new array_of_strings(keyparamtype: param::INT, valueparamtype: param::RAW),
                         'ispkcerequired' => new scalar_type(param::BOOL),
                         'scopes' => new array_of_strings(keyparamtype: param::INT, valueparamtype: param::RAW),
-                        // Data of plugin form extensions, by component. Validated by the plugins' hook callbacks.
-                        'extensions' => new array_of_things(),
                     ],
                 ),
             ),

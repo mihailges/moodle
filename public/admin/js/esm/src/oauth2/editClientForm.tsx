@@ -1,6 +1,6 @@
 import {Suspense, use} from 'react';
 import {getString} from '@moodle/lms/core/stringUtils';
-import {MoodleForm, FormSlot, ExtensionModules} from '@moodle/lms/core/forms';
+import {MoodleForm} from '@moodle/lms/core/forms';
 import {
     GroupField,
     CheckboxField,
@@ -18,8 +18,6 @@ type EditValues = {
     ispkcerequired: boolean;
     scopes: string[];
     redirecturis: string[];
-    // Values of plugin form extensions, by component.
-    extensions?: Record<string, Record<string, unknown>>;
 };
 
 type Props = {
@@ -30,12 +28,10 @@ type Props = {
     // Scope names and descriptions come from the scope classes, so they arrive as plain text.
     scopes: {value: string; label: string; description: string}[];
     listUrl: string;
-    // Plugins can extend the form: their modules are loaded with it and their values come with the client's `extensions`.
-    extensionModules?: string[];
 };
 
 function EditClientForm({
-    clientId, hasAuthCode, isConfidential, scopes, listUrl, extensionModules,
+    clientId, hasAuthCode, isConfidential, scopes, listUrl,
 }: Props) {
     // Every getString starts before any `use`, so the strings load in one batch.
     const s = {
@@ -59,10 +55,9 @@ function EditClientForm({
     const scopesRequired = use(s.scopesRequired);
 
     return (
-        <ExtensionModules modules={extensionModules}>
         <MoodleForm<EditValues>
-            endpoint="/admin/oauth2/server/clients"
-            resourceId={clientId}
+            endpoint={`/admin/oauth2/server/clients/${clientId}`}
+            method="PATCH"
             submit={{
                 onSuccess: () => {
                     window.location.href = listUrl;
@@ -78,7 +73,6 @@ function EditClientForm({
                 rules={[required(use(s.nameRequired)), maxLength(NAME_MAX_LENGTH, use(s.nameTooLong))]}
             />
             <TextareaField name="description" label={use(s.description)} />
-            <FormSlot name="core_admin_oauth2_client.general" />
             {hasAuthCode && (
                 <RepeaterField
                     name="redirecturis"
@@ -109,9 +103,7 @@ function EditClientForm({
                     />
                 ))}
             </GroupField>
-            <FormSlot name="core_admin_oauth2_client.footer" />
         </MoodleForm>
-        </ExtensionModules>
     );
 }
 

@@ -118,10 +118,7 @@ class client_management {
             ),
         );
         // The form submits to the create client API endpoint.
-        $extensions = $this->get_form_extensions(null);
         $response->getBody()->write(\html_writer::react_component('@moodle/lms/core_admin/oauth2/createClientForm', [
-            'extensionModules' => $extensions->get_modules(),
-            'extensionValues' => (object) $extensions->get_values(),
             'scopes' => $this->get_scope_options(),
             'listUrl' => \core\router\util::get_path_for_callable([self::class, 'list_clients'])->out(false),
         ]));
@@ -169,8 +166,6 @@ class client_management {
 
         $isclientactive = $cliententity->get_status() === client_entity::STATUS_ACTIVE;
 
-        $extensions = $this->get_form_extensions($cliententity);
-
         $templatedata = [
             'title' => $cliententity->getName(),
             'clientidentifier' => $cliententity->getIdentifier(),
@@ -188,7 +183,6 @@ class client_management {
             ),
             'backurl' => \core\router\util::get_path_for_callable([self::class, 'list_clients'])->out(),
             'editclientform' => \html_writer::react_component('@moodle/lms/core_admin/oauth2/editClientForm', [
-                'extensionModules' => $extensions->get_modules(),
                 'clientId' => $cliententity->get_id(),
                 'hasAuthCode' => $cliententity->supportsGrantType(client_entity::GRANT_TYPE_AUTHORIZATION_CODE),
                 'isConfidential' => $cliententity->isConfidential(),
@@ -326,18 +320,6 @@ class client_management {
         } else {
             $PAGE->set_title(get_string('oauth2server_clients', 'admin'));
         }
-    }
-
-    /**
-     * Let plugins extend the client form.
-     *
-     * @param client_entity|null $cliententity The client being edited, or null when creating one.
-     * @return \core_admin\hook\oauth2_client_form_extend The modules and initial values the plugins added.
-     */
-    private function get_form_extensions(?client_entity $cliententity): \core_admin\hook\oauth2_client_form_extend {
-        $hook = new \core_admin\hook\oauth2_client_form_extend($cliententity);
-        \core\di::get(\core\hook\manager::class)->dispatch($hook);
-        return $hook;
     }
 
     /**

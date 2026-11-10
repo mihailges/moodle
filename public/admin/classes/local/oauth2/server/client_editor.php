@@ -19,8 +19,6 @@ namespace core_admin\local\oauth2\server;
 use core\oauth2\server\client_manager;
 use core\oauth2\server\entity\client_entity;
 use core\oauth2\server\repository\scope_repository;
-use core\hook\form\after_form_saved;
-use core\hook\form\before_form_validation;
 
 /**
  * Validates and saves OAuth 2 client data submitted by the client create and edit forms.
@@ -33,9 +31,6 @@ use core\hook\form\before_form_validation;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class client_editor {
-    /** @var string The name of the client form, as passed to the form hooks. */
-    public const string FORM_NAME = 'core_admin_oauth2_client';
-
     /** @var string The client type value for a confidential client. */
     public const string TYPE_CONFIDENTIAL = 'confidential';
 
@@ -87,8 +82,6 @@ class client_editor {
         // A redirect URI is required for Public clients and for Authorization Code.
         $redirecturis = $this->validate_redirect_uris($data['redirecturis'] ?? [], $ispublic || $hasauthcode, $errors);
 
-        $errors = array_merge_recursive($errors, $this->dispatch_validation($data));
-
         if ($errors) {
             throw new client_validation_exception($errors);
         }
@@ -118,10 +111,6 @@ class client_editor {
             $ispublic || !empty($data['ispkcerequired']),
             $scopes,
         );
-        \core\di::get(\core\hook\manager::class)->dispatch(
-            new after_form_saved(self::FORM_NAME, $cliententity->get_id(), $data),
-        );
-
         $transaction->allow_commit();
 
         return $cliententity;
@@ -169,8 +158,6 @@ class client_editor {
             $redirecturis = $this->validate_redirect_uris($data['redirecturis'], true, $errors);
         }
 
-        $errors = array_merge_recursive($errors, $this->dispatch_validation($data));
-
         if ($errors) {
             throw new client_validation_exception($errors);
         }
@@ -191,25 +178,9 @@ class client_editor {
         }
 
         $updated = $this->clientmanager->get_client_by_id($cliententity->get_id());
-        \core\di::get(\core\hook\manager::class)->dispatch(
-            new after_form_saved(self::FORM_NAME, $updated->get_id(), $data),
-        );
-
         $transaction->allow_commit();
 
         return $updated;
-    }
-
-    /**
-     * Let plugins validate the submitted data.
-     *
-     * @param array $data The submitted data.
-     * @return array<string, string[]> The errors the plugins reported, keyed by field path.
-     */
-    protected function dispatch_validation(array $data): array {
-        $hook = new before_form_validation(self::FORM_NAME, $data);
-        \core\di::get(\core\hook\manager::class)->dispatch($hook);
-        return $hook->get_errors();
     }
 
     /**

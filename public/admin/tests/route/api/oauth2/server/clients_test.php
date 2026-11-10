@@ -16,7 +16,11 @@
 
 namespace core_admin\route\api\oauth2\server;
 
+use core\oauth2\server\client_manager;
+use core\oauth2\server\entity\client_entity;
+use core\oauth2\server\repository\scope_repository;
 use core\tests\router\route_testcase;
+use GuzzleHttp\Psr7\Utils;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 
@@ -53,6 +57,237 @@ final class clients_test extends route_testcase {
             'disable_client' => ['disable_client'],
             'reactivate_client' => ['reactivate_client'],
             'delete_client' => ['delete_client'],
+            'create_client' => ['create_client'],
+            'update_client' => ['update_client'],
         ];
+    }
+
+    /**
+     * Get the identifier of a scope that exists.
+     *
+     * @return string
+     */
+    private function get_scope(): string {
+        return array_key_first(\core\di::get(scope_repository::class)->get_all_scopes());
+    }
+
+    /**
+     * Send a JSON request to the clients API as an admin.
+     *
+     * @param string $method
+     * @param string $path
+     * @param array $body
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    private function request(string $method, string $path, array $body) {
+        $this->add_class_routes_to_route_loader(clients::class);
+        // The redirect URL in the response refers to these controller routes.
+        $this->add_class_routes_to_route_loader(
+            \core_admin\route\controller\oauth2\server\client_management::class,
+            \core\router\route_loader_interface::ROUTE_GROUP_PAGE,
+        );
+        $this->setAdminUser();
+
+        return $this->process_api_request($method, $path, body: Utils::streamFor(json_encode($body)));
+    }
+
+    /**
+     * Create a confidential client using the Authorization Code grant.
+     *
+     * @return client_entity
+     */
+    private function create_auth_code_client(): client_entity {
+        return \core\di::get(client_manager::class)->create_client(
+            'Existing',
+            \core\context\system::instance(),
+            [client_entity::GRANT_TYPE_AUTHORIZATION_CODE, client_entity::GRANT_TYPE_REFRESH_TOKEN],
+            ['https://example.com/one', 'https://example.com/two'],
+            'Desc',
+            true,
+            true,
+            [$this->get_scope()],
+        );
+    }
+
+    /**
+     * A public client always gets the authorization code grant and PKCE, whatever else is sent.
+     */
+    public function test_create_public_client(): void {
+        $this->resetAfterTest();
+
+        $response = $this->request('POST', '/oauth2/server/clients', [
+            'name' => 'Mobile',
+            'clienttype' => 'public',
+            'flows' => ['client_credentials'],
+            'redirecturis' => ['https://example.com/cb', ' ', 'https://example.com/cb'],
+            'scopes' => [$this->get_scope()],
+        ]);
+
+        $this->assert_valid_response($response, 201);
+        $payload = $this->decode_response($response);
+        $this->assertFalse($payload->isconfidential);
+
+        $client = \core\di::get(client_manager::class)->get_client_by_id($payload->id);
+        $this->assertFalse($client->isConfidential());
+        $this->assertTrue($client->is_pkce_required());
+        $this->assertTrue($client->supportsGrantType(client_entity::GRANT_TYPE_AUTHORIZATION_CODE));
+        $this->assertFalse($client->supportsGrantType(client_entity::GRANT_TYPE_CLIENT_CREDENTIALS));
+        $this->assertEquals(
+            ['https://example.com/cb'],
+            array_values(\core\di::get(client_manager::class)->get_redirect_uris($payload->id)),
+        );
+    }
+
+    /**
+     * A confidential client using only client credentials needs no redirect URI.
+     */
+    public function test_create_confidential_client_credentials_client(): void {
+        $this->resetAfterTest();
+
+        $response = $this->request('POST', '/oauth2/server/clients', [
+            'name' => 'Service',
+            'description' => 'Machine',
+            'clienttype' => 'confidential',
+            'flows' => ['client_credentials'],
+            'scopes' => [$this->get_scope()],
+        ]);
+
+        $this->assert_valid_response($response, 201);
+        $payload = $this->decode_response($response);
+        $this->assertTrue($payload->isconfidential);
+
+        $client = \core\di::get(client_manager::class)->get_client_by_id($payload->id);
+        $this->assertTrue($client->supportsGrantType(client_entity::GRANT_TYPE_CLIENT_CREDENTIALS));
+        $this->assertFalse($client->supportsGrantType(client_entity::GRANT_TYPE_AUTHORIZATION_CODE));
+    }
+
+    /**
+     * The rules of the old create form are reported per field, with a 422.
+     */
+    public function test_create_client_validation(): void {
+        $this->resetAfterTest();
+
+        $response = $this->request('POST', '/oauth2/server/clients', [
+            'name' => ' ',
+            'clienttype' => 'confidential',
+            'flows' => [],
+            'scopes' => [],
+        ]);
+        $this->assert_valid_response($response, 422);
+        $errors = $this->decode_response($response, true)['errors'];
+        $this->assertEqualsCanonicalizing(['name', 'flows', 'scopes'], array_keys($errors));
+
+        $response = $this->request('POST', '/oauth2/server/clients', [
+            'name' => 'Needs a URI',
+            'clienttype' => 'public',
+            'scopes' => [$this->get_scope(), 'not:a:scope'],
+        ]);
+        $this->assert_valid_response($response, 422);
+        $errors = $this->decode_response($response, true)['errors'];
+        $this->assertEqualsCanonicalizing(['redirecturis', 'scopes'], array_keys($errors));
+
+        $response = $this->request('POST', '/oauth2/server/clients', [
+            'name' => 'Bad URI',
+            'clienttype' => 'public',
+            'redirecturis' => ['https://example.com/ok', 'http://example.com/not-https#frag'],
+            'scopes' => [$this->get_scope()],
+        ]);
+        $this->assert_valid_response($response, 422);
+        $this->assertSame(['redirecturis.1'], array_keys($this->decode_response($response, true)['errors']));
+    }
+
+    /**
+     * A client is returned with the values the edit form sends back.
+     */
+    public function test_get_client(): void {
+        $this->resetAfterTest();
+        $client = $this->create_auth_code_client();
+
+        $response = $this->request('GET', "/oauth2/server/clients/{$client->get_id()}", []);
+
+        $this->assert_valid_response($response);
+        $payload = $this->decode_response($response, true);
+        $this->assertSame($client->get_id(), $payload['id']);
+        $this->assertSame('Desc', $payload['description']);
+        $this->assertSame([$this->get_scope()], $payload['scopes']);
+        $this->assertNotEmpty($payload['redirecturis']);
+        $this->assertSame('confidential', $payload['clienttype']);
+        $this->assertSame(['auth_code'], $payload['flows']);
+    }
+
+    /**
+     * Only the submitted fields change, and redirect URIs are added and removed to match the submitted list.
+     */
+    public function test_update_client(): void {
+        $this->resetAfterTest();
+        $client = $this->create_auth_code_client();
+
+        $response = $this->request('PATCH', "/oauth2/server/clients/{$client->get_id()}", [
+            'name' => 'Renamed',
+            'redirecturis' => ['https://example.com/two', 'https://example.com/three', ''],
+            'ispkcerequired' => false,
+        ]);
+
+        $this->assert_valid_response($response);
+        $payload = $this->decode_response($response, true);
+        $this->assertSame('Renamed', $payload['name']);
+        $this->assertSame('Desc', $payload['description']);
+        $this->assertFalse($payload['ispkcerequired']);
+        $this->assertEqualsCanonicalizing(
+            ['https://example.com/two', 'https://example.com/three'],
+            $payload['redirecturis'],
+        );
+        $this->assertSame([$this->get_scope()], $payload['scopes']);
+    }
+
+    /**
+     * Invalid changes are reported with a 422 and nothing is saved.
+     */
+    public function test_update_client_validation(): void {
+        $this->resetAfterTest();
+        $client = $this->create_auth_code_client();
+
+        $response = $this->request('PATCH', "/oauth2/server/clients/{$client->get_id()}", [
+            'name' => 'Renamed',
+            'redirecturis' => ['', ''],
+            'scopes' => [],
+        ]);
+
+        $this->assert_valid_response($response, 422);
+        $this->assertEqualsCanonicalizing(
+            ['redirecturis', 'scopes'],
+            array_keys($this->decode_response($response, true)['errors']),
+        );
+        $this->assertSame(
+            'Existing',
+            \core\di::get(client_manager::class)->get_client_by_id($client->get_id())->getName(),
+        );
+    }
+
+    /**
+     * Redirect URIs and PKCE do not apply to a client without the authorization code grant, so they are ignored.
+     */
+    public function test_update_client_ignores_fields_that_do_not_apply(): void {
+        $this->resetAfterTest();
+        $manager = \core\di::get(client_manager::class);
+        $client = $manager->create_client(
+            'Service',
+            \core\context\system::instance(),
+            [client_entity::GRANT_TYPE_CLIENT_CREDENTIALS],
+            [],
+            '',
+            true,
+            false,
+            [$this->get_scope()],
+        );
+
+        $response = $this->request('PATCH', "/oauth2/server/clients/{$client->get_id()}", [
+            'redirecturis' => ['https://example.com/cb'],
+            'ispkcerequired' => true,
+        ]);
+
+        $this->assert_valid_response($response);
+        $this->assertSame([], $this->decode_response($response, true)['redirecturis']);
+        $this->assertFalse($manager->get_client_by_id($client->get_id())->is_pkce_required());
     }
 }

@@ -1,4 +1,76 @@
 {
+  "EditModeSwitch": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/core/elements/ActionButton": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/core/elements/CheckboxField": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/core/elements/CheckboxGroupField": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/core/elements/GroupField": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/core/elements/NoticeField": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/core/elements/RadioField": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/core/elements/RadioGroupField": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/core/elements/RepeaterField": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/core/elements/SectionField": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/core/elements/StaticField": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/core/elements/SwitchField": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/core/elements/TextareaField": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/core/elements/TextField": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/core/formField": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/core/MoodleForm": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/core/slots/ExtensionModules": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/core/slots/FormSlot": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
   "nav/Nav": {
     "eject": "risky",
     "wrap": "risky"
@@ -7,7 +79,7 @@
     "eject": "risky",
     "wrap": "safe"
   },
-  "EditModeSwitch": {
+  "forms/core/elements/ActionGroup": {
     "eject": "risky",
     "wrap": "risky"
   }

@@ -1,0 +1,8 @@
+{
+  "version": 3,
+  "sources": ["../../../../src/forms/core/slots/formExtension.ts"],
+  "sourceRoot": "../../../../../../sources/public/lib/js/esm/build",
+  "sourcesContent": ["import type {ComponentType} from 'react';\n\nexport type FormExtension = {\n    slot: string;\n    plugin: string;\n    // Distinguishes several extensions of one plugin in the same slot; also their React key.\n    id?: string;\n    order?: number;\n    // Rendered inside the form; use useFormField or the core fields so values, rules and errors are shared.\n    component: ComponentType<{control: any}>;\n};\n\nconst extensions: FormExtension[] = [];\n\nconst sameExtension = (a: FormExtension, b: FormExtension) =>\n    a.slot === b.slot && a.plugin === b.plugin && (a.id ?? '') === (b.id ?? '');\n\n// Registering the same slot, plugin and id again replaces the earlier entry.\nexport function registerFormExtension(extension: FormExtension): void {\n    const existing = extensions.findIndex((e) => sameExtension(e, extension));\n    if (existing >= 0) {\n        extensions.splice(existing, 1);\n    }\n    extensions.push(extension);\n}\n\nexport function getFormExtensions(slot: string): FormExtension[] {\n    return extensions.filter((e) => e.slot === slot);\n}\n"],
+  "mappings": ";;AAYA,MAAM,aAA8B,CAAC;AAErC,MAAM,gBAAgB,wBAAC,GAAkB,MACrC,EAAE,SAAS,EAAE,QAAQ,EAAE,WAAW,EAAE,WAAW,EAAE,MAAM,SAAS,EAAE,MAAM,KADtD;AAIf,SAAS,sBAAsB,WAAgC;AAClE,QAAM,WAAW,WAAW,UAAU,CAAC,MAAM,cAAc,GAAG,SAAS,CAAC;AACxE,MAAI,YAAY,GAAG;AACf,eAAW,OAAO,UAAU,CAAC;AAAA,EACjC;AACA,aAAW,KAAK,SAAS;AAC7B;AANgB;AAQT,SAAS,kBAAkB,MAA+B;AAC7D,SAAO,WAAW,OAAO,CAAC,MAAM,EAAE,SAAS,IAAI;AACnD;AAFgB;",
+  "names": []
+}

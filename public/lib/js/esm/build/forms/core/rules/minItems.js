@@ -1,0 +1,1 @@
+import{isEmpty as o}from"./helpers";import{markMandatory as i}from"../formField";const l=(t,e)=>i(r=>r!=null&&!Array.isArray(r)||(Array.isArray(r)?r.filter(m=>!o(m)).length:0)>=t||e,t>=1);export{l as minItems};

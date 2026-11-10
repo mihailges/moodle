@@ -195,6 +195,14 @@ describe('@moodle/lms/core/fetch', () => {
             await expect(Fetch.request('mod_example', 'missing')).rejects.toBe('Not Found');
         });
 
+        it('rejects with the response when rejectWithResponse is set', async() => {
+            const response = errorResponse(422, 'Unprocessable Content');
+            mockFetch.mockResolvedValueOnce(response);
+
+            await expect(Fetch.performPost('mod_example', 'items', {body: {}, rejectWithResponse: true}))
+                .rejects.toBe(response);
+        });
+
         it('registers and completes a Pending operation', async() => {
             await Fetch.request('mod_example', 'get_items');
 

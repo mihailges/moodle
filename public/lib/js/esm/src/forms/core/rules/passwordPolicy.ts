@@ -1,4 +1,4 @@
-import type {Rule} from './types';
+import type {Rule} from '../formRule';
 
 export type PasswordPolicy = {
     minLength: number;

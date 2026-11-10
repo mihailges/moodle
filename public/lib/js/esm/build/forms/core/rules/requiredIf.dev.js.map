@@ -1,8 +1,8 @@
 {
   "version": 3,
   "sources": ["../../../../src/forms/core/rules/requiredIf.ts"],
-  "sourceRoot": "../../../../../../sources/public/local/formtest/js/esm/build",
-  "sourcesContent": ["import type {Condition} from '../conditions';\nimport type {Rule} from './types';\nimport {isEmpty} from './helpers';\nimport {markMandatory} from '../useMoodleFormField';\n\n// Only applies when the condition is met by the current form values.\nexport const requiredIf = <V>(condition: Condition<V>, message: string): Rule<unknown, V> =>\n    markMandatory((v, values) => !condition(values) || !isEmpty(v) || message, condition);\n"],
+  "sourceRoot": "../../../../../../sources/public/lib/js/esm/build",
+  "sourcesContent": ["import type {Condition} from '../formCondition';\nimport type {Rule} from '../formRule';\nimport {isEmpty} from './helpers';\nimport {markMandatory} from '../formField';\n\n// Only applies when the condition is met by the current form values.\nexport const requiredIf = <V>(condition: Condition<V>, message: string): Rule<unknown, V> =>\n    markMandatory((v, values) => !condition(values) || !isEmpty(v) || message, condition);\n"],
   "mappings": ";;AAEA,SAAQ,eAAc;AACtB,SAAQ,qBAAoB;AAGrB,MAAM,aAAa,wBAAI,WAAyB,YACnD,cAAc,CAAC,GAAG,WAAW,CAAC,UAAU,MAAM,KAAK,CAAC,QAAQ,CAAC,KAAK,SAAS,SAAS,GAD9D;",
   "names": []
 }

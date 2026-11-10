@@ -1,6 +1,5 @@
 import {Checkbox} from '@moodlehq/design-system';
-import {useMoodleFormField} from '../useMoodleFormField';
-import type {FieldProps} from './types';
+import {useFormField, type FieldProps} from '../formField';
 
 type CheckboxFieldProps = Omit<FieldProps, 'name'> & {
     name: string;
@@ -11,7 +10,7 @@ type CheckboxFieldProps = Omit<FieldProps, 'name'> & {
 
 // A checkbox holding true or false. With `value`, several checkboxes sharing a name hold the list of checked values.
 export function CheckboxField({name, label, supportingText, rules, hideIf, disableIf, advanced, id, value}: CheckboxFieldProps) {
-    const f = useMoodleFormField(name, {rules, hideIf, disableIf, advanced});
+    const f = useFormField(name, {rules, hideIf, disableIf, advanced});
     if (f.hidden) {
         return null;
     }

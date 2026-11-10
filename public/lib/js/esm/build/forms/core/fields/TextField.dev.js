@@ -2,9 +2,9 @@ var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 import { jsxDEV } from "react/jsx-dev-runtime";
 import { Input } from "@moodlehq/design-system";
-import { useMoodleFormField } from "../useMoodleFormField";
+import { useFormField } from "../formField";
 function TextField({ name, label, rules, hideIf, disableIf, advanced, ...rest }) {
-  const f = useMoodleFormField(name, { rules, hideIf, disableIf, advanced });
+  const f = useFormField(name, { rules, hideIf, disableIf, advanced });
   return f.hidden ? null : /* @__PURE__ */ jsxDEV(
     Input,
     {
@@ -19,7 +19,7 @@ function TextField({ name, label, rules, hideIf, disableIf, advanced, ...rest })
     false,
     {
       fileName: "public/lib/js/esm/src/forms/core/fields/TextField.tsx",
-      lineNumber: 8,
+      lineNumber: 7,
       columnNumber: 9
     },
     this

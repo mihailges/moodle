@@ -1,7 +1,7 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 import { Fragment, jsxDEV } from "react/jsx-dev-runtime";
-import { useFieldConditions } from "../useMoodleFormField";
+import { useFieldConditions } from "../formField";
 function StaticField({ name = "static", hideIf, children }) {
   const { hidden } = useFieldConditions(name, { hideIf });
   return hidden ? null : /* @__PURE__ */ jsxDEV(Fragment, { children }, void 0, false, {

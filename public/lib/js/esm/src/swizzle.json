@@ -3,10 +3,6 @@
     "eject": "risky",
     "wrap": "risky"
   },
-  "forms/core/MoodleForm": {
-    "eject": "risky",
-    "wrap": "risky"
-  },
   "forms/core/fields/ActionButton": {
     "eject": "risky",
     "wrap": "risky"
@@ -35,11 +31,11 @@
     "eject": "risky",
     "wrap": "risky"
   },
-  "forms/core/fields/SectionField": {
+  "forms/core/fields/RepeaterField": {
     "eject": "risky",
     "wrap": "risky"
   },
-  "forms/core/fields/RepeaterField": {
+  "forms/core/fields/SectionField": {
     "eject": "risky",
     "wrap": "risky"
   },
@@ -59,6 +55,14 @@
     "eject": "risky",
     "wrap": "risky"
   },
+  "forms/core/formField": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/core/MoodleForm": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
   "forms/core/slots/ExtensionModules": {
     "eject": "risky",
     "wrap": "risky"
@@ -67,7 +71,19 @@
     "eject": "risky",
     "wrap": "risky"
   },
-  "forms/core/useMoodleForm": {
+  "forms/test/fields/ColorField": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/test/fields/CountedTextareaField": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/test/fields/RatingField": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/test/testForm": {
     "eject": "risky",
     "wrap": "risky"
   },

@@ -1,5 +1,5 @@
 import type {ReactNode} from 'react';
-import {useFieldConditions, type FieldBehaviour} from '../useMoodleFormField';
+import {useFieldConditions, type FieldBehaviour} from '../formField';
 
 type StaticFieldProps = Pick<FieldBehaviour, 'hideIf'> & {
     // Only used to look up server-disabled state; a static field holds no value.

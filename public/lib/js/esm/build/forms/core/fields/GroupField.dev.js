@@ -2,8 +2,8 @@ var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 import { jsxDEV } from "react/jsx-dev-runtime";
 import { useController } from "react-hook-form";
-import { useFieldConditions, useIsRequired, toValidate, requiredIndicator } from "../useMoodleFormField";
-import { GroupContext } from "../context";
+import { useFieldConditions, useIsRequired, toValidate, requiredIndicator } from "../formField";
+import { GroupContext } from "../formContext";
 function GroupField({ name, label, layout = "row", rules, hideIf, disableIf, advanced, children }) {
   const validate = toValidate(rules);
   const { fieldState } = useController({ name, rules: { validate } });

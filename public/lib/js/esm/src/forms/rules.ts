@@ -1,4 +1,4 @@
-export type {Rule} from './core/rules/types';
+export type {Rule} from './core/formRule';
 export {validIf} from './core/rules/validIf';
 export {required} from './core/rules/required';
 export {requiredIf} from './core/rules/requiredIf';

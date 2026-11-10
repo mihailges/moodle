@@ -1,8 +1,8 @@
 {
   "version": 3,
   "sources": ["../src/forms.ts"],
-  "sourceRoot": "../../../../../../sources/public/local/formtest/js/esm/build",
-  "sourcesContent": ["// Core of the forms system. Fields, rules and conditions are separate imports:\n//   '@moodle/lms/core/forms/fields', '@moodle/lms/core/forms/rules', '@moodle/lms/core/forms/conditions'\nexport {MoodleForm} from './forms/core/MoodleForm';\nexport {useMoodleFormField, requiredIndicator, type FieldBehaviour} from './forms/core/useMoodleFormField';\nexport {FormValidationError} from './forms/core/FormValidationError';\nexport {FormSlot} from './forms/core/slots/FormSlot';\nexport {registerFormExtension, getFormExtensions, type FormExtension} from './forms/core/registry';\nexport {ExtensionModules, loadFormExtensionModules} from './forms/core/slots/ExtensionModules';\n"],
-  "mappings": "AAEA,SAAQ,kBAAiB;AACzB,SAAQ,oBAAoB,yBAA6C;AACzE,SAAQ,2BAA0B;AAClC,SAAQ,gBAAe;AACvB,SAAQ,uBAAuB,yBAA4C;AAC3E,SAAQ,kBAAkB,gCAA+B;",
+  "sourceRoot": "../../../../../../sources/public/lib/js/esm/build",
+  "sourcesContent": ["// Core of the forms system. Fields and rules are separate imports:\n//   '@moodle/lms/core/forms/fields', '@moodle/lms/core/forms/rules'\nexport {MoodleForm} from './forms/core/MoodleForm';\nexport {useFormField, requiredIndicator, type FieldBehaviour} from './forms/core/formField';\nexport {FormValidationError} from './forms/core/FormValidationError';\nexport {FormSlot} from './forms/core/slots/FormSlot';\nexport {registerFormExtension, getFormExtensions, type FormExtension} from './forms/core/slots/formExtension';\nexport {ExtensionModules, loadFormExtensionModules} from './forms/core/slots/ExtensionModules';\n"],
+  "mappings": "AAEA,SAAQ,kBAAiB;AACzB,SAAQ,cAAc,yBAA6C;AACnE,SAAQ,2BAA0B;AAClC,SAAQ,gBAAe;AACvB,SAAQ,uBAAuB,yBAA4C;AAC3E,SAAQ,kBAAkB,gCAA+B;",
   "names": []
 }

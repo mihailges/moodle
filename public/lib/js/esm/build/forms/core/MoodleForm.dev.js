@@ -10,10 +10,10 @@ import {
   FieldRegistryContext,
   FormActionContext,
   AdvancedContext
-} from "./context";
+} from "./formContext";
 import { ActionButton } from "./fields/ActionButton";
 import { isFormValidationError } from "./FormValidationError";
-import { formApi } from "./restApi";
+import { sendFormEndpointRequest } from "./formEndpointRequest";
 function MoodleForm({
   defaultValues,
   endpoint,
@@ -26,7 +26,7 @@ function MoodleForm({
   mapErrorPath = /* @__PURE__ */ __name((p) => p, "mapErrorPath"),
   children
 }) {
-  const rest = useMemo(() => endpoint ? formApi(endpoint, method) : null, [endpoint, method]);
+  const rest = useMemo(() => endpoint ? sendFormEndpointRequest(endpoint, method) : null, [endpoint, method]);
   const form = useForm({ defaultValues: defaultValues ?? {} });
   const { reset, setError, handleSubmit, formState: { errors, isSubmitting } } = form;
   const loader = load ?? (rest && method !== "POST" ? async () => ({ values: await rest.get() }) : null);

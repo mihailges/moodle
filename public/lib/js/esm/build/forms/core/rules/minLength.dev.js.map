@@ -1,8 +1,8 @@
 {
   "version": 3,
   "sources": ["../../../../src/forms/core/rules/minLength.ts"],
-  "sourceRoot": "../../../../../../sources/public/local/formtest/js/esm/build",
-  "sourcesContent": ["import type {Rule} from './types';\nimport {stringRule} from './helpers';\n\nexport const minLength = (min: number, message: string): Rule => stringRule((v) => v.length >= min, message);\n"],
+  "sourceRoot": "../../../../../../sources/public/lib/js/esm/build",
+  "sourcesContent": ["import type {Rule} from '../formRule';\nimport {stringRule} from './helpers';\n\nexport const minLength = (min: number, message: string): Rule => stringRule((v) => v.length >= min, message);\n"],
   "mappings": ";;AACA,SAAQ,kBAAiB;AAElB,MAAM,YAAY,wBAAC,KAAa,YAA0B,WAAW,CAAC,MAAM,EAAE,UAAU,KAAK,OAAO,GAAlF;",
   "names": []
 }

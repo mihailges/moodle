@@ -1,5 +1,5 @@
 import {createContext} from 'react';
-import type {Validate} from './rules/types';
+import type {Validate} from './formRule';
 
 export type FormState = {
     // Fields disabled by the server (e.g. capability driven), on top of each field's disableIf.

@@ -1,1 +1,1 @@
-const l=(e,n)=>(o,a)=>!!e(o,a)||n;export{l as validIf};
+const a=(e,n)=>(o,l)=>!!e(o,l)||n;export{a as validIf};

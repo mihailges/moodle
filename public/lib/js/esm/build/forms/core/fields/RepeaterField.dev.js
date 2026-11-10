@@ -4,8 +4,8 @@ import { jsxDEV } from "react/jsx-dev-runtime";
 import { useContext } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { Button } from "@moodlehq/design-system";
-import { useFieldConditions, useIsRequired, toValidate, requiredIndicator } from "../useMoodleFormField";
-import { FieldRegistryContext, RowContext } from "../context";
+import { useFieldConditions, useIsRequired, toValidate, requiredIndicator } from "../formField";
+import { FieldRegistryContext, RowContext } from "../formContext";
 function RepeaterField({
   name,
   label,

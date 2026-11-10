@@ -3,7 +3,7 @@ var __name = (target, value) => __defProp(target, "name", { value, configurable:
 import { jsxDEV } from "react/jsx-dev-runtime";
 import { useContext } from "react";
 import { Button } from "@moodlehq/design-system";
-import { FormActionContext } from "../context";
+import { FormActionContext } from "../formContext";
 function ActionButton({ label, variant = "secondary", inProgressLabel, submit, onClick }) {
   const api = useContext(FormActionContext);
   const run = /* @__PURE__ */ __name(() => {

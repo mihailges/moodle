@@ -25,7 +25,7 @@ export type SaveMethod = 'POST' | 'PUT' | 'PATCH';
  * The requests of a form on one resource URL, e.g. `/admin/oauth2/server/clients/5` or `/admin/settings/foo`. The
  * URL is used as given, so it is the same for a record and a singleton: GET loads the values and `method` saves them.
  */
-export const formApi = (endpoint: string, method: SaveMethod = 'POST') => {
+export const sendFormEndpointRequest = (endpoint: string, method: SaveMethod = 'POST') => {
     // The route already starts with its component (e.g. /admin/...), so there is no separate component.
     const component = '';
     return {

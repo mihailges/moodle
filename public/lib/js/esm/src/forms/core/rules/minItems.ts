@@ -1,6 +1,6 @@
-import type {Rule} from './types';
+import type {Rule} from '../formRule';
 import {isEmpty} from './helpers';
-import {markMandatory} from '../useMoodleFormField';
+import {markMandatory} from '../formField';
 
 /**
  * For a list: at least `min` items must be filled in. Blank items (e.g. unused rows of a repeater) don't count.

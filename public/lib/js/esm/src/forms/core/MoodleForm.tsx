@@ -3,10 +3,10 @@ import {useForm, FormProvider, type DefaultValues, type FieldValues, type Path} 
 import {getString} from '@moodle/lms/core/stringUtils';
 import {
     FormStateContext, FieldRegistry, FieldRegistryContext, FormActionContext, AdvancedContext, type SubmitOverride,
-} from './context';
+} from './formContext';
 import {ActionButton} from './fields/ActionButton';
 import {isFormValidationError} from './FormValidationError';
-import {formApi, type SaveMethod} from './restApi';
+import {sendFormEndpointRequest, type SaveMethod} from './formEndpointRequest';
 
 type MoodleFormProps<V extends FieldValues, P, S> = {
     // Not needed when the values come from the server (`method` other than POST, or `load`).
@@ -44,7 +44,7 @@ type MoodleFormProps<V extends FieldValues, P, S> = {
 export function MoodleForm<V extends FieldValues, P = V, S = P>({
     defaultValues, endpoint, method = 'POST', load, submit, cancel, toForm, toPayload, mapErrorPath = (p) => p, children,
 }: MoodleFormProps<V, P, S>) {
-    const rest = useMemo(() => (endpoint ? formApi(endpoint, method) : null), [endpoint, method]);
+    const rest = useMemo(() => (endpoint ? sendFormEndpointRequest(endpoint, method) : null), [endpoint, method]);
     const form = useForm<V>({defaultValues: defaultValues ?? ({} as DefaultValues<V>)});
     const {reset, setError, handleSubmit, formState: {errors, isSubmitting}} = form;
 

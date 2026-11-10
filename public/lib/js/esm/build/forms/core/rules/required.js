@@ -1,1 +1,1 @@
-import{isEmpty as o}from"./helpers";import{markMandatory as e}from"../useMoodleFormField";const i=r=>e(t=>!o(t)||r,!0);export{i as required};
+import{isEmpty as t}from"./helpers";import{markMandatory as m}from"../formField";const p=r=>m(o=>!t(o)||r,!0);export{p as required};

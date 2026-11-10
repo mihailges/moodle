@@ -1,1 +1,1 @@
-import{stringRule as p}from"./helpers";const s=(t,e)=>p(r=>t.test(r),e);export{s as pattern};
+import{stringRule as o}from"./helpers";const m=(t,e)=>o(r=>t.test(r),e);export{m as pattern};

@@ -1,4 +1,4 @@
-export type {FieldProps, Option} from './core/fields/types';
+export type {FieldProps, Option} from './core/formField';
 export {TextField} from './core/fields/TextField';
 export {TextareaField} from './core/fields/TextareaField';
 export {SwitchField} from './core/fields/SwitchField';

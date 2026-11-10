@@ -1,8 +1,8 @@
 import { MoodleForm } from "./forms/core/MoodleForm";
-import { useMoodleFormField, requiredIndicator } from "./forms/core/useMoodleFormField";
+import { useFormField, requiredIndicator } from "./forms/core/formField";
 import { FormValidationError } from "./forms/core/FormValidationError";
 import { FormSlot } from "./forms/core/slots/FormSlot";
-import { registerFormExtension, getFormExtensions } from "./forms/core/registry";
+import { registerFormExtension, getFormExtensions } from "./forms/core/slots/formExtension";
 import { ExtensionModules, loadFormExtensionModules } from "./forms/core/slots/ExtensionModules";
 export {
   ExtensionModules,
@@ -13,6 +13,6 @@ export {
   loadFormExtensionModules,
   registerFormExtension,
   requiredIndicator,
-  useMoodleFormField
+  useFormField
 };
 //# sourceMappingURL=forms.dev.js.map

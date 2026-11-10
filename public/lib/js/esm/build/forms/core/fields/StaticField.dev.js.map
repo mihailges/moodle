@@ -1,8 +1,8 @@
 {
   "version": 3,
   "sources": ["../../../../src/forms/core/fields/StaticField.tsx"],
-  "sourceRoot": "../../../../../../sources/public/local/formtest/js/esm/build",
-  "sourcesContent": ["import type {ReactNode} from 'react';\nimport {useFieldConditions, type FieldBehaviour} from '../useMoodleFormField';\n\ntype StaticFieldProps = Pick<FieldBehaviour, 'hideIf'> & {\n    // Only used to look up server-disabled state; a static field holds no value.\n    name?: string;\n    children: ReactNode;\n};\n\n/**\n * Renders any content inside the form without a value, like the mform 'static' element.\n * Pass anything as children (an Alert, text, a link...); a condition can still show or hide it.\n */\nexport function StaticField({name = 'static', hideIf, children}: StaticFieldProps) {\n    const {hidden} = useFieldConditions(name, {hideIf});\n    return hidden ? null : <>{children}</>;\n}\n"],
+  "sourceRoot": "../../../../../../sources/public/lib/js/esm/build",
+  "sourcesContent": ["import type {ReactNode} from 'react';\nimport {useFieldConditions, type FieldBehaviour} from '../formField';\n\ntype StaticFieldProps = Pick<FieldBehaviour, 'hideIf'> & {\n    // Only used to look up server-disabled state; a static field holds no value.\n    name?: string;\n    children: ReactNode;\n};\n\n/**\n * Renders any content inside the form without a value, like the mform 'static' element.\n * Pass anything as children (an Alert, text, a link...); a condition can still show or hide it.\n */\nexport function StaticField({name = 'static', hideIf, children}: StaticFieldProps) {\n    const {hidden} = useFieldConditions(name, {hideIf});\n    return hidden ? null : <>{children}</>;\n}\n"],
   "mappings": ";;AAe2B;AAd3B,SAAQ,0BAA8C;AAY/C,SAAS,YAAY,EAAC,OAAO,UAAU,QAAQ,SAAQ,GAAqB;AAC/E,QAAM,EAAC,OAAM,IAAI,mBAAmB,MAAM,EAAC,OAAM,CAAC;AAClD,SAAO,SAAS,OAAO,mCAAG,YAAH;AAAA;AAAA;AAAA;AAAA,SAAY;AACvC;AAHgB;",
   "names": []
 }

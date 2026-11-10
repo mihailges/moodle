@@ -1,5 +1,4 @@
-import {useMoodleFormField} from '../../core/useMoodleFormField';
-import type {FieldProps} from '../../core/fields/types';
+import {useFormField, type FieldProps} from '../../core/formField';
 
 type RatingFieldProps = Omit<FieldProps, 'hideLabel'> & {
     name: string;
@@ -8,7 +7,7 @@ type RatingFieldProps = Omit<FieldProps, 'hideLabel'> & {
 
 // A custom field: a 1..max rating made of native radios, so the form registers them like any other input.
 export function RatingField({name, label, max = 5, rules, hideIf, disableIf, advanced}: RatingFieldProps) {
-    const f = useMoodleFormField(name, {rules, hideIf, disableIf, advanced});
+    const f = useFormField(name, {rules, hideIf, disableIf, advanced});
     if (f.hidden) {
         return null;
     }

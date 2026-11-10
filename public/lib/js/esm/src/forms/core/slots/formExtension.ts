@@ -6,7 +6,7 @@ export type FormExtension = {
     // Distinguishes several extensions of one plugin in the same slot; also their React key.
     id?: string;
     order?: number;
-    // Rendered inside the form; use useMoodleFormField or the core fields so values, rules and errors are shared.
+    // Rendered inside the form; use useFormField or the core fields so values, rules and errors are shared.
     component: ComponentType<{control: any}>;
 };
 

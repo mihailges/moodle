@@ -1,6 +1,5 @@
 import {Radio} from '@moodlehq/design-system';
-import {useMoodleFormField} from '../useMoodleFormField';
-import type {FieldProps} from './types';
+import {useFormField, type FieldProps} from '../formField';
 
 type RadioFieldProps = Omit<FieldProps, 'hideLabel' | 'name'> & {
     name: string;
@@ -11,7 +10,7 @@ type RadioFieldProps = Omit<FieldProps, 'hideLabel' | 'name'> & {
 
 // One radio button; render several with the same name, usually inside a GroupField for the shared label.
 export function RadioField({name, value, label, supportingText, rules, hideIf, disableIf, advanced, id}: RadioFieldProps) {
-    const f = useMoodleFormField(name, {rules, hideIf, disableIf, advanced});
+    const f = useFormField(name, {rules, hideIf, disableIf, advanced});
     if (f.hidden) {
         return null;
     }

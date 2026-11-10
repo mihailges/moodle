@@ -1,8 +1,8 @@
 import {useContext, type ReactElement} from 'react';
 import {useFieldArray, useFormContext} from 'react-hook-form';
 import {Button} from '@moodlehq/design-system';
-import {useFieldConditions, useIsRequired, toValidate, requiredIndicator, type FieldBehaviour} from '../useMoodleFormField';
-import {FieldRegistryContext, RowContext} from '../context';
+import {useFieldConditions, useIsRequired, toValidate, requiredIndicator, type FieldBehaviour} from '../formField';
+import {FieldRegistryContext, RowContext} from '../formContext';
 
 type RepeaterFieldProps = FieldBehaviour & {
     name: string;

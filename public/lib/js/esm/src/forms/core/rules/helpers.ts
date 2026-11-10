@@ -1,4 +1,4 @@
-import type {Rule} from './types';
+import type {Rule} from '../formRule';
 
 export const isEmpty = (v: unknown): boolean =>
     v === undefined || v === null || (typeof v === 'string' && v.trim() === '') || (Array.isArray(v) && v.length === 0);

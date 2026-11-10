@@ -3,7 +3,7 @@ var __name = (target, value) => __defProp(target, "name", { value, configurable:
 import { Fragment, jsxDEV } from "react/jsx-dev-runtime";
 import { Component } from "react";
 import { useFormContext } from "react-hook-form";
-import { getFormExtensions } from "../registry";
+import { getFormExtensions } from "./formExtension";
 const DEFAULT_ORDER = 100;
 class ExtensionBoundary extends Component {
   static {

@@ -1,12 +1,11 @@
 import {useWatch, useFormContext} from 'react-hook-form';
-import {useMoodleFormField} from '../../core/useMoodleFormField';
-import type {FieldProps} from '../../core/fields/types';
+import {useFormField, type FieldProps} from '../../core/formField';
 
 type ColorFieldProps = Omit<FieldProps, 'hideLabel' | 'name'> & {name: string};
 
 // A custom field: a native colour picker that also shows the chosen value.
 export function ColorField({name, label, rules, hideIf, disableIf, advanced}: ColorFieldProps) {
-    const f = useMoodleFormField(name, {rules, hideIf, disableIf, advanced});
+    const f = useFormField(name, {rules, hideIf, disableIf, advanced});
     const {control} = useFormContext();
     const value = useWatch({control, name});
     if (f.hidden) {

@@ -2,9 +2,9 @@ var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 import { jsxDEV } from "react/jsx-dev-runtime";
 import { Checkbox } from "@moodlehq/design-system";
-import { useMoodleFormField } from "../useMoodleFormField";
+import { useFormField } from "../formField";
 function CheckboxField({ name, label, supportingText, rules, hideIf, disableIf, advanced, id, value }) {
-  const f = useMoodleFormField(name, { rules, hideIf, disableIf, advanced });
+  const f = useFormField(name, { rules, hideIf, disableIf, advanced });
   if (f.hidden) {
     return null;
   }
@@ -24,7 +24,7 @@ function CheckboxField({ name, label, supportingText, rules, hideIf, disableIf, 
     false,
     {
       fileName: "public/lib/js/esm/src/forms/core/fields/CheckboxField.tsx",
-      lineNumber: 19,
+      lineNumber: 18,
       columnNumber: 9
     },
     this

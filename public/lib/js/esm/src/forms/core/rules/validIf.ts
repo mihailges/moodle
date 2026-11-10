@@ -1,4 +1,4 @@
-import type {Rule} from './types';
+import type {Rule} from '../formRule';
 
 /**
  * A rule from a condition and a message: valid when `isValid` returns true, otherwise the message is the error.

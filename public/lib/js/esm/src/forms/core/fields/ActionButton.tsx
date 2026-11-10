@@ -1,6 +1,6 @@
 import {useContext} from 'react';
 import {Button} from '@moodlehq/design-system';
-import {FormActionContext, type FormActionApi, type SubmitOverride} from '../context';
+import {FormActionContext, type FormActionApi, type SubmitOverride} from '../formContext';
 
 type ActionButtonProps = {
     label: string;

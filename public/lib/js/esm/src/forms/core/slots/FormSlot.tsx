@@ -1,6 +1,6 @@
 import {Component, type ReactNode} from 'react';
 import {useFormContext} from 'react-hook-form';
-import {getFormExtensions} from '../registry';
+import {getFormExtensions} from './formExtension';
 
 const DEFAULT_ORDER = 100;
 

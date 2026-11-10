@@ -1,8 +1,8 @@
 import {createElement, useContext, useEffect, useState} from 'react';
 import {useFormContext, useWatch, get} from 'react-hook-form';
-import type {Condition} from './conditions';
-import type {Rule, Validate} from './rules/types';
-import {FormStateContext, GroupContext, FieldRegistryContext, RowContext, ContainerContext, AdvancedContext} from './context';
+import type {Condition} from './formCondition';
+import type {Rule, Validate} from './formRule';
+import {FormStateContext, GroupContext, FieldRegistryContext, RowContext, ContainerContext, AdvancedContext} from './formContext';
 
 /**
  * Behaviour every field accepts as props.
@@ -19,8 +19,16 @@ export type FieldBehaviour = {
 };
 
 /**
+ * Props shared by every form field. Custom fields should accept these and call useFormField.
+ */
+// `name` is only left out for the field inside a RepeaterField, which names it after the row.
+export type FieldProps = FieldBehaviour & {name?: string; label: string; hideLabel?: boolean; id?: string};
+
+export type Option = {value: string; label: string; description?: string};
+
+/**
  * Resolves whether a field is hidden or disabled from its conditions and the server's disabled list.
- * For fields that manage their own registration (e.g. repeaters); simple fields use useMoodleFormField.
+ * For fields that manage their own registration (e.g. repeaters); simple fields use useFormField.
  */
 export function useFieldConditions(
     name: string,
@@ -105,7 +113,7 @@ export function useIsRequired(rules: Rule[] | undefined, active = true): boolean
  * The building block for form fields. Applies rules, conditions and error state from the field's props,
  * so a field (core or plugin) only has to render its element with the result.
  */
-export function useMoodleFormField(fieldName: string | undefined, {rules, hideIf, disableIf, advanced}: FieldBehaviour = {}) {
+export function useFormField(fieldName: string | undefined, {rules, hideIf, disableIf, advanced}: FieldBehaviour = {}) {
     // Inside a repeater the name comes from the row.
     const rowName = useContext(RowContext);
     const name = fieldName ?? rowName;

@@ -1,6 +1,5 @@
 import {useWatch, useFormContext} from 'react-hook-form';
-import {useMoodleFormField} from '../../core/useMoodleFormField';
-import type {FieldProps} from '../../core/fields/types';
+import {useFormField, type FieldProps} from '../../core/formField';
 
 type CountedTextareaFieldProps = Omit<FieldProps, 'hideLabel' | 'name'> & {
     name: string;
@@ -9,7 +8,7 @@ type CountedTextareaFieldProps = Omit<FieldProps, 'hideLabel' | 'name'> & {
 
 // A custom field: a textarea that counts the characters left. The limit itself is enforced by the field's rules.
 export function CountedTextareaField({name, label, maxLength, rules, hideIf, disableIf, advanced}: CountedTextareaFieldProps) {
-    const f = useMoodleFormField(name, {rules, hideIf, disableIf, advanced});
+    const f = useFormField(name, {rules, hideIf, disableIf, advanced});
     const {control} = useFormContext();
     const value = useWatch({control, name}) ?? '';
     if (f.hidden) {

@@ -1,7 +1,7 @@
 import type {ReactNode} from 'react';
 import {useController} from 'react-hook-form';
-import {useFieldConditions, useIsRequired, toValidate, requiredIndicator, type FieldBehaviour} from '../useMoodleFormField';
-import {GroupContext} from '../context';
+import {useFieldConditions, useIsRequired, toValidate, requiredIndicator, type FieldBehaviour} from '../formField';
+import {GroupContext} from '../formContext';
 
 type GroupFieldProps = FieldBehaviour & {
     // The path of the object holding the group's fields, e.g. 'duration' for duration.value and duration.unit.

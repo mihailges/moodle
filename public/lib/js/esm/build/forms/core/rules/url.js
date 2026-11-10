@@ -1,1 +1,1 @@
-import{stringRule as e}from"./helpers";const p=r=>e(t=>URL.canParse(t),r);export{p as url};
+import{stringRule as o}from"./helpers";const l=r=>o(e=>URL.canParse(e),r);export{l as url};

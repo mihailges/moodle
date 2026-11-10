@@ -1,8 +1,8 @@
 {
   "version": 3,
   "sources": ["../../../../src/forms/core/fields/TextareaField.tsx"],
-  "sourceRoot": "../../../../../../sources/public/local/formtest/js/esm/build",
-  "sourcesContent": ["import {Textarea} from '@moodlehq/design-system';\nimport {useMoodleFormField} from '../useMoodleFormField';\nimport type {FieldProps} from './types';\n\nexport function TextareaField({name, label, rules, hideIf, disableIf, advanced, ...rest}: FieldProps) {\n    const f = useMoodleFormField(name, {rules, hideIf, disableIf, advanced});\n    return f.hidden ? null : <Textarea label={label} required={f.required} {...rest} {...f.registration} />;\n}\n"],
-  "mappings": ";;AAM6B;AAN7B,SAAQ,gBAAe;AACvB,SAAQ,0BAAyB;AAG1B,SAAS,cAAc,EAAC,MAAM,OAAO,OAAO,QAAQ,WAAW,UAAU,GAAG,KAAI,GAAe;AAClG,QAAM,IAAI,mBAAmB,MAAM,EAAC,OAAO,QAAQ,WAAW,SAAQ,CAAC;AACvE,SAAO,EAAE,SAAS,OAAO,uBAAC,YAAS,OAAc,UAAU,EAAE,UAAW,GAAG,MAAO,GAAG,EAAE,gBAA9D;AAAA;AAAA;AAAA;AAAA,SAA4E;AACzG;AAHgB;",
+  "sourceRoot": "../../../../../../sources/public/lib/js/esm/build",
+  "sourcesContent": ["import {Textarea} from '@moodlehq/design-system';\nimport {useFormField, type FieldProps} from '../formField';\n\nexport function TextareaField({name, label, rules, hideIf, disableIf, advanced, ...rest}: FieldProps) {\n    const f = useFormField(name, {rules, hideIf, disableIf, advanced});\n    return f.hidden ? null : <Textarea label={label} required={f.required} {...rest} {...f.registration} />;\n}\n"],
+  "mappings": ";;AAK6B;AAL7B,SAAQ,gBAAe;AACvB,SAAQ,oBAAoC;AAErC,SAAS,cAAc,EAAC,MAAM,OAAO,OAAO,QAAQ,WAAW,UAAU,GAAG,KAAI,GAAe;AAClG,QAAM,IAAI,aAAa,MAAM,EAAC,OAAO,QAAQ,WAAW,SAAQ,CAAC;AACjE,SAAO,EAAE,SAAS,OAAO,uBAAC,YAAS,OAAc,UAAU,EAAE,UAAW,GAAG,MAAO,GAAG,EAAE,gBAA9D;AAAA;AAAA;AAAA;AAAA,SAA4E;AACzG;AAHgB;",
   "names": []
 }

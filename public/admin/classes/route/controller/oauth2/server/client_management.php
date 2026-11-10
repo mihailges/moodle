@@ -89,7 +89,7 @@ class client_management {
      */
     #[\core\router\route(
         path: '/create',
-        method: ['GET', 'POST'],
+        method: ['GET'],
         requirelogin: new require_login(
             requirelogin: true,
             autologinguest: false,
@@ -109,58 +109,6 @@ class client_management {
 
         $PAGE->set_pagetype('admin-oauth2server-client-create');
 
-        $mform = \core\di::make(\core_admin\form\oauth2\server\create_client_form::class);
-
-        // Handle form cancellation.
-        if ($mform->is_cancelled()) {
-            redirect(\core\router\util::get_path_for_callable([self::class, 'list_clients']));
-        }
-
-        // Process the form data.
-        if ($data = $mform->get_data()) {
-            // Sanitize the redirect URIs by trimming whitespace and removing empty entries.
-            $redirecturis = array_values(array_filter(array_map('trim', $data->redirecturi ?? [])));
-
-            $ispublicclient = (int) $data->clienttype === client_entity::TYPE_PUBLIC;
-
-            // Set the grant types based on the selected Primary flows.
-            $granttypes = [];
-            // If Authorization Code flow is selected or the client type is Public, add both Authorization Code and
-            // Refresh Token grant types.
-            if ($ispublicclient || !empty($data->flow_auth_code)) {
-                $granttypes = [
-                    client_entity::GRANT_TYPE_AUTHORIZATION_CODE,
-                    client_entity::GRANT_TYPE_REFRESH_TOKEN,
-                ];
-            }
-            // If Client Credentials flow is selected, add the Client Credentials grant type.
-            if (!empty($data->flow_client_credentials)) {
-                $granttypes[] = client_entity::GRANT_TYPE_CLIENT_CREDENTIALS;
-            }
-
-            $scopes = $mform->get_submitted_scopes((array) $data);
-
-            $clientmanager = \core\di::get(\core\oauth2\server\client_manager::class);
-            $cliententity = $clientmanager->create_client(
-                $data->name,
-                \core\context\system::instance(),
-                $granttypes,
-                $redirecturis,
-                $data->description,
-                (int) $data->clienttype === client_entity::TYPE_CONFIDENTIAL,
-                ($ispublicclient || !empty($data->ispkcerequired)),
-                $scopes,
-            );
-
-            if ($cliententity->isConfidential()) {
-                redirect(\core\router\util::get_path_for_callable(
-                    [self::class, 'manage_client_secrets'],
-                    ['client' => $cliententity->get_id()],
-                ));
-            }
-            redirect(\core\router\util::get_path_for_callable([self::class, 'list_clients']));
-        }
-
         $response->getBody()->write($OUTPUT->header());
         $response->getBody()->write(
             $OUTPUT->heading(
@@ -169,7 +117,12 @@ class client_management {
                 'fw-bold fs-3 mb-5',
             ),
         );
-        $response->getBody()->write($mform->render());
+        // The form submits to the create client API endpoint.
+        $response->getBody()->write(\html_writer::react_component('@moodle/lms/core_admin/oauth2/clientForm', [
+            'mode' => 'create',
+            'scopes' => $this->get_scope_options(),
+            'listUrl' => \core\router\util::get_path_for_callable([self::class, 'list_clients'])->out(false),
+        ]));
         $response->getBody()->write($OUTPUT->footer());
 
         return $response;
@@ -187,7 +140,7 @@ class client_management {
         pathtypes: [
             new \core_admin\route\parameters\oauth2\server\path_client(),
         ],
-        method: ['GET', 'POST'],
+        method: ['GET'],
         requirelogin: new require_login(
             requirelogin: true,
             autologinguest: false,
@@ -197,7 +150,7 @@ class client_management {
         ResponseInterface $response,
         \core\oauth2\server\entity\client_entity $cliententity,
     ): ResponseInterface {
-        global $OUTPUT, $PAGE, $DB;
+        global $OUTPUT, $PAGE;
 
         require_capability('moodle/site:manageoauth2clients', \core\context\system::instance());
 
@@ -209,56 +162,6 @@ class client_management {
         $PAGE->set_pagetype('admin-oauth2server-client-edit');
 
         $clientmanager = \core\di::get(\core\oauth2\server\client_manager::class);
-
-        $mform = \core\di::make(\core_admin\form\oauth2\server\edit_client_form::class, [
-            'customdata' => [
-                'cliententity' => $cliententity,
-            ],
-        ]);
-
-        // Handle form cancellation.
-        if ($mform->is_cancelled()) {
-            redirect(\core\router\util::get_path_for_callable([self::class, 'list_clients']));
-        }
-        // Process the form data.
-        if ($data = $mform->get_data()) {
-            $updates = [
-                'name' => $data->name,
-                'description' => $data->description,
-                'scopes' => $mform->get_submitted_scopes((array) $data),
-            ];
-
-            if ($cliententity->isConfidential() && $cliententity->supportsGrantType(client_entity::GRANT_TYPE_AUTHORIZATION_CODE)) {
-                $updates['ispkcerequired'] = empty($data->ispkcerequired) ? 0 : 1;
-            }
-            $transaction = $DB->start_delegated_transaction();
-
-            $clientmanager->update_client(
-                $cliententity->get_id(),
-                $updates,
-            );
-
-            // Sanitize the redirect URIs by trimming whitespace and removing empty entries.
-            $redirecturis = array_values(array_filter(array_map('trim', $data->redirecturi ?? [])));
-            // Fetch the current records from the database.
-            $existingredirecturis = $clientmanager->get_redirect_uris($cliententity->get_id());
-
-            // Find URIs that are in db, but missing from form and delete them.
-            $redirecturistodelete = array_diff($existingredirecturis, $redirecturis);
-            foreach ($redirecturistodelete as $redirecturi) {
-                $clientmanager->remove_redirect_uri($cliententity->get_id(), $redirecturi);
-            }
-
-            // Find URIs that are in the form, but missing from the database and add them.
-            $redirecturistoadd = array_diff($redirecturis, $existingredirecturis);
-            foreach ($redirecturistoadd as $redirecturi) {
-                $clientmanager->add_redirect_uri($cliententity->get_id(), $redirecturi);
-            }
-
-            $transaction->allow_commit();
-
-            redirect(\core\router\util::get_path_for_callable([self::class, 'list_clients']));
-        }
 
         $response->getBody()->write($OUTPUT->header());
 
@@ -280,7 +183,12 @@ class client_management {
                 true,
             ),
             'backurl' => \core\router\util::get_path_for_callable([self::class, 'list_clients'])->out(),
-            'editclientform' => $mform->render(),
+            'editclientform' => \html_writer::react_component('@moodle/lms/core_admin/oauth2/clientForm', [
+                'mode' => 'update',
+                'clientId' => $cliententity->get_id(),
+                'scopes' => $this->get_scope_options(),
+                'listUrl' => \core\router\util::get_path_for_callable([self::class, 'list_clients'])->out(false),
+            ]),
         ];
 
         if ($cliententity->isConfidential()) {
@@ -412,5 +320,22 @@ class client_management {
         } else {
             $PAGE->set_title(get_string('oauth2server_clients', 'admin'));
         }
+    }
+
+    /**
+     * The scopes a client can be granted, as options for the React forms.
+     *
+     * @return array[] List of value, label and description.
+     */
+    private function get_scope_options(): array {
+        $options = [];
+        foreach (\core\di::get(\core\oauth2\server\repository\scope_repository::class)->get_all_scopes() as $identifier => $scope) {
+            $options[] = [
+                'value' => $identifier,
+                'label' => $scope::get_summary() . ' - ' . $identifier,
+                'description' => $scope::get_description(),
+            ];
+        }
+        return $options;
     }
 }

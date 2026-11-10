@@ -43,11 +43,11 @@ class RequestWrapper {
   get promise() {
     return this.#promise;
   }
-  handleResponse(response) {
+  handleResponse(response, rejectWithResponse = false) {
     if (response.ok) {
       this.#resolve(response);
     } else {
-      this.#reject(response.statusText);
+      this.#reject(rejectWithResponse ? response : response.statusText);
     }
   }
 }
@@ -68,7 +68,8 @@ class Fetch {
     headers = {},
     params = {},
     body = null,
-    method = "GET"
+    method = "GET",
+    rejectWithResponse = false
   } = {}) {
     const resolvePending = new Pending(`Requesting ${component}/${action} with ${method}`);
     const requestWrapper = Fetch.#getRequest(
@@ -78,7 +79,7 @@ class Fetch {
     );
     const result = await fetch(requestWrapper.request);
     resolvePending.resolve();
-    requestWrapper.handleResponse(result);
+    requestWrapper.handleResponse(result, rejectWithResponse);
     return requestWrapper.promise;
   }
   /**
@@ -108,8 +109,8 @@ class Fetch {
    * @param action    The component action to perform.
    * @param options   The request body and optional headers.
    */
-  static performPost(component, action, { headers = {}, body }) {
-    return this.request(component, action, { headers, body, method: "POST" });
+  static performPost(component, action, { headers = {}, body, rejectWithResponse }) {
+    return this.request(component, action, { headers, body, method: "POST", rejectWithResponse });
   }
   /**
    * Perform a PUT request.
@@ -118,8 +119,8 @@ class Fetch {
    * @param action    The component action to perform.
    * @param options   The request body and optional headers.
    */
-  static performPut(component, action, { headers = {}, body }) {
-    return this.request(component, action, { headers, body, method: "PUT" });
+  static performPut(component, action, { headers = {}, body, rejectWithResponse }) {
+    return this.request(component, action, { headers, body, method: "PUT", rejectWithResponse });
   }
   /**
    * Perform a PATCH request.
@@ -128,8 +129,8 @@ class Fetch {
    * @param action    The component action to perform.
    * @param options   The request body and optional headers.
    */
-  static performPatch(component, action, { headers = {}, body }) {
-    return this.request(component, action, { headers, body, method: "PATCH" });
+  static performPatch(component, action, { headers = {}, body, rejectWithResponse }) {
+    return this.request(component, action, { headers, body, method: "PATCH", rejectWithResponse });
   }
   /**
    * Perform a DELETE request.

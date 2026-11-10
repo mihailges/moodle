@@ -71,6 +71,22 @@
     "eject": "risky",
     "wrap": "risky"
   },
+  "forms/test/fields/ColorField": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/test/fields/CountedTextareaField": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/test/fields/RatingField": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
+  "forms/test/testForm": {
+    "eject": "risky",
+    "wrap": "risky"
+  },
   "nav/Nav": {
     "eject": "risky",
     "wrap": "risky"

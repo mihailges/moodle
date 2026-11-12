@@ -2,13 +2,5 @@
   "oauth2/clientForm": {
     "eject": "risky",
     "wrap": "risky"
-  },
-  "oauth2/createClientForm": {
-    "eject": "risky",
-    "wrap": "risky"
-  },
-  "oauth2/editClientForm": {
-    "eject": "risky",
-    "wrap": "risky"
   }
 }

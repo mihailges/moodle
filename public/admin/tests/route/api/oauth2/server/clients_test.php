@@ -139,7 +139,7 @@ final class clients_test extends route_testcase {
     }
 
     /**
-     * A confidential client using only client credentials needs no redirect URI, and continues to its secrets.
+     * A confidential client using only client credentials needs no redirect URI.
      */
     public function test_create_confidential_client_credentials_client(): void {
         $this->resetAfterTest();
@@ -155,7 +155,6 @@ final class clients_test extends route_testcase {
         $this->assert_valid_response($response, 201);
         $payload = $this->decode_response($response);
         $this->assertTrue($payload->isconfidential);
-        $this->assertStringContainsString("/{$payload->id}/secrets", $payload->redirecturl);
 
         $client = \core\di::get(client_manager::class)->get_client_by_id($payload->id);
         $this->assertTrue($client->supportsGrantType(client_entity::GRANT_TYPE_CLIENT_CREDENTIALS));
@@ -212,6 +211,8 @@ final class clients_test extends route_testcase {
         $this->assertSame('Desc', $payload['description']);
         $this->assertSame([$this->get_scope()], $payload['scopes']);
         $this->assertNotEmpty($payload['redirecturis']);
+        $this->assertSame('confidential', $payload['clienttype']);
+        $this->assertSame(['auth_code'], $payload['flows']);
     }
 
     /**

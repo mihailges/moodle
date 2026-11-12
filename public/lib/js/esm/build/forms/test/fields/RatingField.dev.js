@@ -2,8 +2,8 @@ var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 import { jsxDEV } from "react/jsx-dev-runtime";
 import { useFormField } from "../../core/formField";
-function RatingField({ name, label, max = 5, rules, hideIf, disableIf, advanced }) {
-  const f = useFormField(name, { rules, hideIf, disableIf, advanced });
+function RatingField({ name, label, max = 5, rules, hideIf, disableIf, defaultIf, advanced }) {
+  const f = useFormField(name, { rules, hideIf, disableIf, defaultIf, advanced });
   if (f.hidden) {
     return null;
   }

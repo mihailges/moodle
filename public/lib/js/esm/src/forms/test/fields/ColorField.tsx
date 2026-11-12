@@ -4,8 +4,8 @@ import {useFormField, type FieldProps} from '../../core/formField';
 type ColorFieldProps = Omit<FieldProps, 'hideLabel' | 'name'> & {name: string};
 
 // A custom field: a native colour picker that also shows the chosen value.
-export function ColorField({name, label, rules, hideIf, disableIf, advanced}: ColorFieldProps) {
-    const f = useFormField(name, {rules, hideIf, disableIf, advanced});
+export function ColorField({name, label, rules, hideIf, disableIf, defaultIf, advanced}: ColorFieldProps) {
+    const f = useFormField(name, {rules, hideIf, disableIf, defaultIf, advanced});
     const {control} = useFormContext();
     const value = useWatch({control, name});
     if (f.hidden) {

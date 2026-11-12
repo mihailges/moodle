@@ -7,31 +7,33 @@ type ActionButtonProps = {
     variant?: 'primary' | 'secondary' | 'outline-secondary' | 'danger';
     // Shown instead of `label` while a submit is in progress.
     inProgressLabel?: string;
-    // Saves the form. `true` is the form's own submit (also triggered by Enter); an object saves with its own `action`
-    // (needed when the form has no `submit`) and `onSuccess` runs afterwards (e.g. "Save and continue" going elsewhere).
-    submit?: boolean | SubmitOverride;
+    // Validates the form, then saves the payload with `action`; `onSuccess` runs afterwards, e.g. to redirect or open
+    // a modal. Nothing is inherited from the form's `create` or `update`, so each button says what it does.
+    submit?: SubmitOverride;
+    // Only for the form's own save button: it submits with the active mode's `create` or `update` (and on Enter).
+    formSubmit?: boolean;
     // A custom action; receives the form's values and a way to change them or to submit.
     onClick?: (form: FormActionApi) => void | Promise<void>;
 };
 
 /**
  * A button of the form: its standard save and cancel buttons and any extra ones, like several buttons in an mform group.
- *   <ActionButton label="Save" variant="primary" inProgressLabel="Saving…" submit />
+ *   <ActionButton label="Save" variant="primary" inProgressLabel="Saving…" submit={{action: save, onSuccess: goBack}} />
  *   <ActionButton label="Reset" onClick={(f) => f.setValue('a', '')} />
  */
-export function ActionButton({label, variant = 'secondary', inProgressLabel, submit, onClick}: ActionButtonProps) {
+export function ActionButton({label, variant = 'secondary', inProgressLabel, submit, formSubmit, onClick}: ActionButtonProps) {
     const api = useContext(FormActionContext);
     const run = () => {
         if (submit) {
-            return api?.submit(typeof submit === 'object' ? submit : undefined);
+            return api?.submit(submit);
         }
         return api && onClick?.(api);
     };
     const submitting = !!api?.submitting;
     return (
         <Button
-            type={submit === true ? 'submit' : 'button'}
-            label={submitting && submit && inProgressLabel ? inProgressLabel : label}
+            type={formSubmit ? 'submit' : 'button'}
+            label={submitting && (submit || formSubmit) && inProgressLabel ? inProgressLabel : label}
             variant={variant}
             size="lg"
             // Not `disabled`, so a keyboard user's focus stays on the button while the form saves.
@@ -40,7 +42,7 @@ export function ActionButton({label, variant = 'secondary', inProgressLabel, sub
             onClick={(e: MouseEvent) => {
                 if (submitting) {
                     e.preventDefault();
-                } else if (submit !== true) {
+                } else if (!formSubmit) {
                     run();
                 }
             }}

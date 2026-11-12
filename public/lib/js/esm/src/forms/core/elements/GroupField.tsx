@@ -1,6 +1,6 @@
 import type {ReactNode} from 'react';
 import {useController} from 'react-hook-form';
-import {useFieldConditions, useIsRequired, toValidate, requiredIndicator, type FieldBehaviour} from '../formField';
+import {useDefaultIf, useFieldConditions, useIsRequired, toValidate, requiredIndicator, type FieldBehaviour} from '../formField';
 import {GroupContext} from '../formContext';
 
 type GroupFieldProps = FieldBehaviour & {
@@ -16,10 +16,13 @@ type GroupFieldProps = FieldBehaviour & {
  * Lays out several fields under one label. Fields inside use `${name}.<key>` as their names.
  * hideIf and disableIf apply to every field inside, and rules validate the group's object as a whole.
  */
-export function GroupField({name, label, layout = 'row', rules, hideIf, disableIf, advanced, children}: GroupFieldProps) {
+export function GroupField({
+    name, label, layout = 'row', rules, hideIf, disableIf, defaultIf, advanced, children,
+}: GroupFieldProps) {
     const validate = toValidate(rules);
     const {fieldState} = useController({name, rules: {validate}});
     const {hidden, collapsed, disabled} = useFieldConditions(name, {hideIf, disableIf, advanced});
+    useDefaultIf(name, defaultIf);
     const required = useIsRequired(rules, !hidden && !disabled);
     if (hidden) {
         return null;

@@ -3,8 +3,8 @@ var __name = (target, value) => __defProp(target, "name", { value, configurable:
 import { jsxDEV } from "react/jsx-dev-runtime";
 import { useWatch, useFormContext } from "react-hook-form";
 import { useFormField } from "../../core/formField";
-function ColorField({ name, label, rules, hideIf, disableIf, advanced }) {
-  const f = useFormField(name, { rules, hideIf, disableIf, advanced });
+function ColorField({ name, label, rules, hideIf, disableIf, defaultIf, advanced }) {
+  const f = useFormField(name, { rules, hideIf, disableIf, defaultIf, advanced });
   const { control } = useFormContext();
   const value = useWatch({ control, name });
   if (f.hidden) {

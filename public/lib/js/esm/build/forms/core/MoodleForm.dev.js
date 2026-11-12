@@ -13,23 +13,12 @@ import {
 } from "./formContext";
 import { ActionButton } from "./elements/ActionButton";
 import { isFormValidationError } from "./FormValidationError";
-import { sendFormEndpointRequest } from "./formEndpointRequest";
-function MoodleForm({
-  defaultValues,
-  endpoint,
-  method = "POST",
-  load,
-  submit,
-  cancel,
-  toForm,
-  toPayload,
-  mapErrorPath = /* @__PURE__ */ __name((p) => p, "mapErrorPath"),
-  children
-}) {
-  const rest = useMemo(() => endpoint ? sendFormEndpointRequest(endpoint, method) : null, [endpoint, method]);
-  const form = useForm({ defaultValues: defaultValues ?? {}, shouldFocusError: false });
+function MoodleForm(props) {
+  const { submit, cancel, toForm, toPayload, mapErrorPath = /* @__PURE__ */ __name((p) => p, "mapErrorPath"), children } = props;
+  const loader = typeof props.defaultValues === "function" ? props.defaultValues : null;
+  const defaultValues = loader ? void 0 : props.defaultValues;
+  const form = useForm({ defaultValues: defaultValues ?? {}, mode: "onTouched", shouldFocusError: false });
   const { reset, setError, handleSubmit, formState: { errors, isSubmitting } } = form;
-  const loader = load ?? (rest && method !== "POST" ? async () => ({ values: await rest.get() }) : null);
   const [status, setStatus] = useState(loader ? "loading" : "ready");
   const registry = useRef(new FieldRegistry()).current;
   const [serverDisabled, setServerDisabled] = useState([]);
@@ -77,7 +66,7 @@ function MoodleForm({
     return () => {
       cancelled = true;
     };
-  }, [endpoint]);
+  }, []);
   const state = useMemo(() => ({ serverDisabled }), [serverDisabled]);
   const formElement = useRef(null);
   const focusPending = useRef(false);
@@ -98,7 +87,7 @@ function MoodleForm({
     }
   });
   const onSubmit = /* @__PURE__ */ __name(async (values, override) => {
-    const action = override?.action ?? submit?.action ?? (rest ? rest.save : void 0);
+    const action = override?.action ?? submit?.action;
     if (!action) {
       return;
     }
@@ -108,7 +97,7 @@ function MoodleForm({
       if (loader) {
         reset(registry.wrap(asForm(saved)));
       }
-      (override?.onSuccess ?? submit?.onSuccess)?.(saved);
+      (override ? override.onSuccess : submit?.onSuccess)?.(saved);
     } catch (e) {
       if (!isFormValidationError(e)) {
         setError("root.server", { message: strings.error });
@@ -135,28 +124,28 @@ function MoodleForm({
   if (status === "loading") {
     return /* @__PURE__ */ jsxDEV("p", { role: "status", children: "Loading..." }, void 0, false, {
       fileName: "public/lib/js/esm/src/forms/core/MoodleForm.tsx",
-      lineNumber: 169,
+      lineNumber: 160,
       columnNumber: 16
     }, this);
   }
   if (status === "error") {
     return /* @__PURE__ */ jsxDEV("div", { role: "alert", className: "alert alert-danger", children: "This record could not be loaded." }, void 0, false, {
       fileName: "public/lib/js/esm/src/forms/core/MoodleForm.tsx",
-      lineNumber: 172,
+      lineNumber: 163,
       columnNumber: 16
     }, this);
   }
   return /* @__PURE__ */ jsxDEV(FormProvider, { ...form, children: /* @__PURE__ */ jsxDEV(FieldRegistryContext.Provider, { value: registry, children: /* @__PURE__ */ jsxDEV(FormStateContext.Provider, { value: state, children: /* @__PURE__ */ jsxDEV(FormActionContext.Provider, { value: actionApi, children: /* @__PURE__ */ jsxDEV(AdvancedContext.Provider, { value: advanced, children: /* @__PURE__ */ jsxDEV("form", { ref: formElement, onSubmit: handleSubmit((values) => onSubmit(values), focusFirstInvalid), noValidate: true, children: [
-    Children.map(children, (child) => /* @__PURE__ */ jsxDEV("div", { className: "mt-3", children: child }, void 0, false, {
+    Children.map(children, (child) => /* @__PURE__ */ jsxDEV("div", { className: "mt-4", children: child }, void 0, false, {
       fileName: "public/lib/js/esm/src/forms/core/MoodleForm.tsx",
-      lineNumber: 183,
+      lineNumber: 174,
       columnNumber: 25
     }, this)),
     advancedCount > 0 && /* @__PURE__ */ jsxDEV(
       "button",
       {
         type: "button",
-        className: "btn btn-link px-0 mt-3",
+        className: "btn btn-link px-0 mt-4",
         "aria-expanded": showAdvanced,
         onClick: () => setShowAdvanced(!showAdvanced),
         children: showAdvanced ? strings.showLess : strings.showMore
@@ -165,67 +154,67 @@ function MoodleForm({
       false,
       {
         fileName: "public/lib/js/esm/src/forms/core/MoodleForm.tsx",
-        lineNumber: 188,
+        lineNumber: 179,
         columnNumber: 25
       },
       this
     ),
     errors.root?.server && /* @__PURE__ */ jsxDEV("div", { role: "alert", className: "alert alert-danger", children: errors.root.server.message }, void 0, false, {
       fileName: "public/lib/js/esm/src/forms/core/MoodleForm.tsx",
-      lineNumber: 194,
+      lineNumber: 185,
       columnNumber: 25
     }, this),
-    (submit || rest || cancel) && /* @__PURE__ */ jsxDEV("div", { className: "d-flex gap-2 mt-3", children: [
-      (submit || rest) && /* @__PURE__ */ jsxDEV(
+    (submit || cancel) && /* @__PURE__ */ jsxDEV("div", { className: "d-flex gap-2 mt-4", children: [
+      submit && /* @__PURE__ */ jsxDEV(
         ActionButton,
         {
-          label: submit?.label ?? strings.save,
+          label: submit.label ?? strings.save,
           variant: "primary",
-          inProgressLabel: submit?.savingLabel ?? "Saving\u2026",
-          submit: true
+          inProgressLabel: submit.inProgressLabel ?? "Saving\u2026",
+          formSubmit: true
         },
         void 0,
         false,
         {
           fileName: "public/lib/js/esm/src/forms/core/MoodleForm.tsx",
-          lineNumber: 199,
+          lineNumber: 190,
           columnNumber: 33
         },
         this
       ),
       cancel && /* @__PURE__ */ jsxDEV(ActionButton, { label: cancel.label ?? strings.cancel, onClick: cancel.action }, void 0, false, {
         fileName: "public/lib/js/esm/src/forms/core/MoodleForm.tsx",
-        lineNumber: 207,
+        lineNumber: 198,
         columnNumber: 33
       }, this)
     ] }, void 0, true, {
       fileName: "public/lib/js/esm/src/forms/core/MoodleForm.tsx",
-      lineNumber: 197,
+      lineNumber: 188,
       columnNumber: 25
     }, this)
   ] }, void 0, true, {
     fileName: "public/lib/js/esm/src/forms/core/MoodleForm.tsx",
-    lineNumber: 181,
+    lineNumber: 172,
     columnNumber: 17
   }, this) }, void 0, false, {
     fileName: "public/lib/js/esm/src/forms/core/MoodleForm.tsx",
-    lineNumber: 180,
+    lineNumber: 171,
     columnNumber: 17
   }, this) }, void 0, false, {
     fileName: "public/lib/js/esm/src/forms/core/MoodleForm.tsx",
-    lineNumber: 179,
+    lineNumber: 170,
     columnNumber: 17
   }, this) }, void 0, false, {
     fileName: "public/lib/js/esm/src/forms/core/MoodleForm.tsx",
-    lineNumber: 178,
+    lineNumber: 169,
     columnNumber: 13
   }, this) }, void 0, false, {
     fileName: "public/lib/js/esm/src/forms/core/MoodleForm.tsx",
-    lineNumber: 177,
+    lineNumber: 168,
     columnNumber: 13
   }, this) }, void 0, false, {
     fileName: "public/lib/js/esm/src/forms/core/MoodleForm.tsx",
-    lineNumber: 176,
+    lineNumber: 167,
     columnNumber: 9
   }, this);
 }

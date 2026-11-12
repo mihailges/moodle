@@ -1,7 +1,7 @@
 {
   "version": 3,
   "sources": ["../../src/forms/rules.ts"],
-  "sourceRoot": "../../../../../../sources/public/lib/js/esm/build",
+  "sourceRoot": "../../../../../../sources/public/local/formtest/js/esm/build",
   "sourcesContent": ["export type {Rule} from './core/formRule';\nexport {validIf} from './core/rules/validIf';\nexport {required} from './core/rules/required';\nexport {requiredIf} from './core/rules/requiredIf';\nexport {maxLength} from './core/rules/maxLength';\nexport {minLength} from './core/rules/minLength';\nexport {pattern} from './core/rules/pattern';\nexport {url} from './core/rules/url';\nexport {minItems} from './core/rules/minItems';\nexport {passwordPolicy, type PasswordPolicy, type PasswordPolicyMessages} from './core/rules/passwordPolicy';\n"],
   "mappings": "AACA,SAAQ,eAAc;AACtB,SAAQ,gBAAe;AACvB,SAAQ,kBAAiB;AACzB,SAAQ,iBAAgB;AACxB,SAAQ,iBAAgB;AACxB,SAAQ,eAAc;AACtB,SAAQ,WAAU;AAClB,SAAQ,gBAAe;AACvB,SAAQ,sBAAuE;",
   "names": []

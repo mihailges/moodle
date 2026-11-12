@@ -1,4 +1,4 @@
-import {createElement, useContext, useEffect, useState} from 'react';
+import {createElement, useContext, useEffect, useRef, useState} from 'react';
 import {useFormContext, useWatch, get} from 'react-hook-form';
 import {getString} from '@moodle/lms/core/stringUtils';
 import type {Condition} from './formCondition';
@@ -14,6 +14,12 @@ export type FieldBehaviour = {
     hideIf?: Condition;
     // Disabled fields are not editable and not validated.
     disableIf?: Condition;
+    // The value this field should take for the current form values, or undefined for no opinion. Give a list to
+    // cover several cases: the first one with an answer wins. Whenever that answer changes (e.g. another field
+    // changes), the field is set to it; the user can still change it afterwards.
+    // It does not run when the form first renders, so saved or default values are kept. For a checkbox with a `value`
+    // it answers whether that checkbox is checked (true or false).
+    defaultIf?: DefaultRule | DefaultRule[];
     // Only shown after the form's "Show more" button, like an mform advanced element. Unlike hideIf, a collapsed
     // field is still validated and submitted, and it shows itself when it has an error.
     advanced?: boolean;
@@ -23,6 +29,9 @@ export type FieldBehaviour = {
  * Props shared by every form field. Custom fields should accept these and call useFormField.
  */
 // `name` is only left out for the field inside a RepeaterField, which names it after the row.
+// Answers the value a field should take for the form values, or undefined for no opinion.
+export type DefaultRule = (values: any) => unknown;
+
 export type FieldProps = FieldBehaviour & {name?: string; label: string; hideLabel?: boolean; id?: string};
 
 export type Option = {value: string; label: string; description?: string};
@@ -37,7 +46,7 @@ export function useFieldConditions(
 ) {
     const {serverDisabled} = useContext(FormStateContext);
     const {disabled: groupDisabled} = useContext(GroupContext);
-    const {control, formState: {errors}} = useFormContext();
+    const {control, clearErrors, formState: {errors}} = useFormContext();
     const registry = useContext(FieldRegistryContext);
     const container = useContext(ContainerContext);
     const {show, register: registerAdvanced} = useContext(AdvancedContext);
@@ -63,12 +72,54 @@ export function useFieldConditions(
 
     const values = useWatch({control, disabled: !hideIf && !disableIf});
 
+    const isDisabled = (disableIf?.(values) ?? false) || groupDisabled || serverDisabled.includes(name);
+    // A disabled field is not validated or submitted, so a message it showed earlier no longer applies.
+    useEffect(() => {
+        if (isDisabled) {
+            clearErrors(name);
+        }
+    }, [isDisabled, clearErrors, name]);
+
     return {
         hidden: hideIf?.(values) ?? false,
         // Not shown, but still part of the form: fields hide it with CSS or by rendering nothing.
         collapsed: Boolean(advanced) && !show && !hasError && !revealed,
-        disabled: (disableIf?.(values) ?? false) || groupDisabled || serverDisabled.includes(name),
+        disabled: isDisabled,
     };
+}
+
+/**
+ * Sets a field to what its `defaultIf` answers each time that answer changes. `merge` turns the answer into the
+ * stored value, for fields that hold only part of it (a checkbox in a list).
+ */
+export function useDefaultIf(
+    name: string,
+    defaultIf: FieldBehaviour['defaultIf'],
+    merge: (wanted: unknown, current: unknown) => unknown = (wanted) => wanted,
+) {
+    const {control, setValue, getValues} = useFormContext();
+    const values = useWatch({control, disabled: !defaultIf});
+    const rules = defaultIf === undefined ? [] : [defaultIf].flat();
+    let wanted: unknown;
+    for (const rule of rules) {
+        wanted = rule(values);
+        if (wanted !== undefined) {
+            break;
+        }
+    }
+    const key = JSON.stringify(wanted ?? null);
+    const previous = useRef<string | null>(null);
+    useEffect(() => {
+        if (!defaultIf) {
+            return;
+        }
+        const first = previous.current === null;
+        const changed = previous.current !== key;
+        previous.current = key;
+        if (!first && changed && wanted !== undefined) {
+            setValue(name, merge(wanted, getValues(name)) as any, {shouldDirty: true});
+        }
+    }, [key]);
 }
 
 // Turns a field's rules into react-hook-form's `validate`, or nothing when there are none.
@@ -124,7 +175,11 @@ export function useIsRequired(rules: Rule[] | undefined, active = true): boolean
  * The building block for form fields. Applies rules, conditions and error state from the field's props,
  * so a field (core or plugin) only has to render its element with the result.
  */
-export function useFormField(fieldName: string | undefined, {rules, hideIf, disableIf, advanced}: FieldBehaviour = {}) {
+export function useFormField(
+    fieldName: string | undefined,
+    {rules, hideIf, disableIf, defaultIf, advanced}: FieldBehaviour = {},
+    mergeDefault?: (wanted: unknown, current: unknown) => unknown,
+) {
     // Inside a repeater the name comes from the row.
     const rowName = useContext(RowContext);
     const name = fieldName ?? rowName;
@@ -133,6 +188,7 @@ export function useFormField(fieldName: string | undefined, {rules, hideIf, disa
     }
     const {register, formState: {errors}} = useFormContext();
     const {hidden, collapsed, disabled} = useFieldConditions(name, {hideIf, disableIf, advanced});
+    useDefaultIf(name, defaultIf, mergeDefault);
     // The group shows the error of the name it shares with its fields, so the fields don't repeat it.
     const group = useContext(GroupContext);
     const error = group.name === name ? undefined : get(errors, name);

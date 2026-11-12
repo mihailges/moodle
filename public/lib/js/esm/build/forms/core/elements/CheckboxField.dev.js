@@ -1,10 +1,33 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 import { jsxDEV } from "react/jsx-dev-runtime";
+import { useEffect } from "react";
+import { useFormContext } from "react-hook-form";
 import { Checkbox } from "@moodlehq/design-system";
 import { useFormField } from "../formField";
-function CheckboxField({ name, label, supportingText, rules, hideIf, disableIf, advanced, id, value }) {
-  const f = useFormField(name, { rules, hideIf, disableIf, advanced });
+function CheckboxField({
+  name,
+  label,
+  supportingText,
+  rules,
+  hideIf,
+  disableIf,
+  defaultIf,
+  advanced,
+  id,
+  value
+}) {
+  const mergeIntoList = /* @__PURE__ */ __name((wanted, current) => {
+    const list = Array.isArray(current) ? current.filter((v) => v !== value) : [];
+    return wanted ? [...list, value] : list;
+  }, "mergeIntoList");
+  const f = useFormField(name, { rules, hideIf, disableIf, defaultIf, advanced }, value === void 0 ? void 0 : mergeIntoList);
+  const { getValues, setValue } = useFormContext();
+  useEffect(() => {
+    if (value !== void 0 && !Array.isArray(getValues(name))) {
+      setValue(name, []);
+    }
+  }, []);
   if (f.hidden) {
     return null;
   }
@@ -24,7 +47,7 @@ function CheckboxField({ name, label, supportingText, rules, hideIf, disableIf, 
     false,
     {
       fileName: "public/lib/js/esm/src/forms/core/elements/CheckboxField.tsx",
-      lineNumber: 18,
+      lineNumber: 34,
       columnNumber: 9
     },
     this

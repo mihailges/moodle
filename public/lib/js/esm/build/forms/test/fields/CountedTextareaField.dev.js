@@ -3,8 +3,17 @@ var __name = (target, value) => __defProp(target, "name", { value, configurable:
 import { jsxDEV } from "react/jsx-dev-runtime";
 import { useWatch, useFormContext } from "react-hook-form";
 import { useFormField } from "../../core/formField";
-function CountedTextareaField({ name, label, maxLength, rules, hideIf, disableIf, advanced }) {
-  const f = useFormField(name, { rules, hideIf, disableIf, advanced });
+function CountedTextareaField({
+  name,
+  label,
+  maxLength,
+  rules,
+  hideIf,
+  disableIf,
+  defaultIf,
+  advanced
+}) {
+  const f = useFormField(name, { rules, hideIf, disableIf, defaultIf, advanced });
   const { control } = useFormContext();
   const value = useWatch({ control, name }) ?? "";
   if (f.hidden) {
@@ -17,12 +26,12 @@ function CountedTextareaField({ name, label, maxLength, rules, hideIf, disableIf
       f.requiredIndicator
     ] }, void 0, true, {
       fileName: "public/lib/js/esm/src/forms/test/fields/CountedTextareaField.tsx",
-      lineNumber: 20,
+      lineNumber: 22,
       columnNumber: 13
     }, this),
     /* @__PURE__ */ jsxDEV("textarea", { id: `field_${name}`, className: "form-control", rows: 3, ...f.registration, ...f.inputProps }, void 0, false, {
       fileName: "public/lib/js/esm/src/forms/test/fields/CountedTextareaField.tsx",
-      lineNumber: 21,
+      lineNumber: 23,
       columnNumber: 13
     }, this),
     /* @__PURE__ */ jsxDEV("div", { className: `small mt-1 ${left < 0 ? "text-danger" : "text-muted"}`, children: [
@@ -30,17 +39,17 @@ function CountedTextareaField({ name, label, maxLength, rules, hideIf, disableIf
       " characters left"
     ] }, void 0, true, {
       fileName: "public/lib/js/esm/src/forms/test/fields/CountedTextareaField.tsx",
-      lineNumber: 22,
+      lineNumber: 24,
       columnNumber: 13
     }, this),
     f.invalid && /* @__PURE__ */ jsxDEV("div", { ...f.errorProps, className: "text-danger small mt-1", children: f.message }, void 0, false, {
       fileName: "public/lib/js/esm/src/forms/test/fields/CountedTextareaField.tsx",
-      lineNumber: 23,
+      lineNumber: 25,
       columnNumber: 27
     }, this)
   ] }, void 0, true, {
     fileName: "public/lib/js/esm/src/forms/test/fields/CountedTextareaField.tsx",
-    lineNumber: 19,
+    lineNumber: 21,
     columnNumber: 9
   }, this);
 }

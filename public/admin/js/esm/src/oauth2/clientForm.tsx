@@ -1,7 +1,7 @@
 import {Suspense, use} from 'react';
 import {Alert} from '@moodlehq/design-system';
 import {getString} from '@moodle/lms/core/stringUtils';
-import {MoodleForm} from '@moodle/lms/core/forms';
+import {MoodleForm, sendFormEndpointRequest} from '@moodle/lms/core/forms';
 import {
     GroupField,
     RadioField,
@@ -14,6 +14,9 @@ import {
 import {required, maxLength, url, minItems} from '@moodle/lms/core/forms/rules';
 
 type Props = {
+    // The caller decides: create a client, or update the existing one (then clientId is required).
+    mode: 'create' | 'update';
+    clientId?: number;
     // Scope names and descriptions come from the scope classes, so they arrive as plain text.
     scopes: {value: string; label: string; description: string}[];
     listUrl: string;
@@ -29,51 +32,52 @@ type ClientPayload = {
     scopes: string[];
 };
 
-type CreatedClient = {id: number; isconfidential: boolean; redirecturl: string};
+const CLIENTS_URL = '/admin/oauth2/server/clients';
 
-const isPublic = (v: ClientPayload) => v.clienttype === 'public';
+// Values can be empty while a record loads, so the conditions don't assume any field is set.
+const isPublic = (v: Partial<ClientPayload>) => v.clienttype === 'public';
+const supportsAuthCode = (v: Partial<ClientPayload>) => isPublic(v) || Boolean(v.flows?.includes('auth_code'));
 
-function CreateClientForm({scopes, listUrl}: Props) {
-    // Every getString starts before any `use`, so the strings load in one batch.
-    const flowRequired = use(getString('oauth2server_clientmustselectprimaryflow', 'admin'));
-    const scopesRequired = use(getString('oauth2serverclientnoscopes', 'error'));
-    const redirectUris = use(getString('oauth2server_clientcallbackuris', 'admin'));
-    const redirectUriRequired = use(getString('oauth2server_clientcallbackurirequired', 'admin'));
-    const redirectUriInvalid = use(getString('oauth2server_clientcallbackurisinvalid', 'admin'));
+function ClientForm({mode, clientId, scopes, listUrl}: Props) {
+    const isCreate = mode === 'create';
+    const goToList = () => {
+        window.location.href = listUrl;
+    };
+    // Create and update differ only in what the form starts from and what saving does.
+    const create = {
+        defaultValues: {clienttype: 'confidential' as const, flows: ['auth_code'], redirecturis: [''], ispkcerequired: true},
+        submit: {
+            action: (payload: ClientPayload) => sendFormEndpointRequest('/admin/oauth2/server/clients', 'POST').save(payload),
+            label: use(getString('oauth2server_clientcreate', 'admin')),
+            onSuccess: goToList,
+        },
+    };
+    const update = {
+        defaultValues: async () => ({
+            values: await sendFormEndpointRequest(`/admin/oauth2/server/clients/${clientId}`).get() as ClientPayload,
+        }),
+        submit: {
+            action: (payload: ClientPayload) =>
+                sendFormEndpointRequest(`/admin/oauth2/server/clients/${clientId}`, 'PATCH').save(payload),
+            onSuccess: goToList,
+        },
+    };
 
     return (
-        <MoodleForm<ClientPayload, ClientPayload, CreatedClient>
-            defaultValues={{
-                name: '',
-                description: '',
-                clienttype: 'confidential',
-                flows: ['auth_code'],
-                redirecturis: [''],
-                ispkcerequired: true,
-                scopes: [],
-            }}
-            endpoint="/admin/oauth2/server/clients"
-            submit={{
-                label: use(getString('oauth2server_clientcreate', 'admin')),
-                onSuccess: (saved) => {
-                    window.location.href = saved.redirecturl;
-                },
-            }}
-            cancel={{
-                action: () => {
-                    window.location.href = listUrl;
-                },
-            }}
+        <MoodleForm<ClientPayload>
+            {...(isCreate ? create : update)}
+            cancel={{action: goToList}}
         >
             <TextField
                 name="name"
                 label={use(getString('name'))}
                 rules={[
                     required(use(getString('required'))),
-                    maxLength(255, use(getString('maximumchars', 'core', 255)))
+                    maxLength(255, use(getString('maximumchars', 'core', 255))),
                 ]}
             />
             <TextareaField name="description" label={use(getString('description'))} />
+            {isCreate && (
             <GroupField name="clienttype" label={use(getString('oauth2server_clienttype', 'admin'))} layout="column">
                 <RadioField
                     name="clienttype"
@@ -88,12 +92,15 @@ function CreateClientForm({scopes, listUrl}: Props) {
                     supportingText={use(getString('oauth2server_clienttypepublicdesc', 'admin'))}
                 />
             </GroupField>
+            )}
+            {isCreate && (
             <GroupField
                 name="flows"
                 label={use(getString('oauth2server_clientprimaryflows', 'admin'))}
                 layout="column"
+                defaultIf={(v) => (isPublic(v) ? ['auth_code'] : undefined)}
                 disableIf={isPublic}
-                rules={[minItems(1, flowRequired)]}
+                rules={[minItems(1, use(getString('oauth2server_clientmustselectprimaryflow', 'admin')))]}
             >
                 <CheckboxField
                     name="flows"
@@ -108,30 +115,42 @@ function CreateClientForm({scopes, listUrl}: Props) {
                     supportingText={use(getString('oauth2server_clientgranttypeclientcredsdesc', 'admin'))}
                 />
             </GroupField>
-            <StaticField hideIf={(v) => isPublic(v) || !v.flows.includes('client_credentials')}>
+            )}
+            {isCreate && (
+            <StaticField hideIf={(v) => isPublic(v) || !v.flows?.includes('client_credentials')}>
                 <Alert type="warning" message={use(getString('oauth2server_clientgranttypeclientcredswarning', 'admin'))} />
             </StaticField>
+            )}
             <RepeaterField
                 name="redirecturis"
-                rules={[minItems(1, redirectUriRequired)]}
-                label={redirectUris}
+                rules={[minItems(1, use(getString('oauth2server_clientcallbackurirequired', 'admin')))]}
+                label={use(getString('oauth2server_clientcallbackuris', 'admin'))}
                 addLabel={use(getString('oauth2server_clientaddcallbackuri', 'admin'))}
                 removeLabel={use(getString('remove'))}
-                hideIf={(v) => !isPublic(v) && !v.flows.includes('auth_code')}
+                hideIf={(v) => !supportsAuthCode(v)}
             >
-                <TextField label={redirectUris} hideLabel rules={[url(redirectUriInvalid)]} />
+                <TextField
+                    label={use(getString('oauth2server_clientcallbackuris', 'admin'))}
+                    hideLabel
+                    rules={[url(use(getString('oauth2server_clientcallbackurisinvalid', 'admin')))]}
+                />
             </RepeaterField>
             <CheckboxField
                 name="ispkcerequired"
                 label={use(getString('oauth2server_clientpkcerequired', 'admin'))}
-                supportingText={use(getString('oauth2server_clientpkcehelp', 'admin'))}
-                hideIf={(v) => isPublic(v) || !v.flows.includes('auth_code')}
+                supportingText={use(getString(
+                    isCreate ? 'oauth2server_clientpkcehelp' : 'oauth2server_clientpkcehelpconfidential',
+                    'admin',
+                ))}
+                hideIf={(v) => !v.flows?.includes('auth_code')}
+                defaultIf={(v) => isPublic(v) ? true : undefined}
+                disableIf={(v) => isPublic(v)}
             />
             <GroupField
                 name="scopes"
                 label={use(getString('oauth2server_scopes', 'admin'))}
                 layout="column"
-                rules={[minItems(1, scopesRequired)]}
+                rules={[minItems(1, use(getString('oauth2serverclientnoscopes', 'error')))]}
             >
                 {scopes.map((scope) => (
                     <CheckboxField
@@ -143,18 +162,20 @@ function CreateClientForm({scopes, listUrl}: Props) {
                     />
                 ))}
             </GroupField>
-            <StaticField>
-                <Alert type="warning" message={use(getString('oauth2server_clientcreationwarning', 'admin'))} />
-            </StaticField>
+            {isCreate && (
+                <StaticField>
+                    <Alert type="warning" message={use(getString('oauth2server_clientcreationwarning', 'admin'))} />
+                </StaticField>
+            )}
         </MoodleForm>
     );
 }
 
 // The strings load asynchronously, so the form renders under a Suspense boundary.
-export default function CreateClientFormLoader(props: Props) {
+export default function ClientFormLoader(props: Props) {
     return (
         <Suspense fallback={null}>
-            <CreateClientForm {...props} />
+            <ClientForm {...props} />
         </Suspense>
     );
 }

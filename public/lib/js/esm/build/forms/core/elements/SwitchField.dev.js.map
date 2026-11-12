@@ -1,8 +1,8 @@
 {
   "version": 3,
   "sources": ["../../../../src/forms/core/elements/SwitchField.tsx"],
-  "sourceRoot": "../../../../../../sources/public/lib/js/esm/build",
-  "sourcesContent": ["import {Switch} from '@moodlehq/design-system';\nimport {useFormField, type FieldProps} from '../formField';\n\nexport function SwitchField({name, label, rules, hideIf, disableIf, advanced, ...rest}: FieldProps) {\n    const f = useFormField(name, {rules, hideIf, disableIf, advanced});\n    return f.hidden ? null : <Switch label={label} {...rest} {...f.registration} />;\n}\n"],
-  "mappings": ";;AAK6B;AAL7B,SAAQ,cAAa;AACrB,SAAQ,oBAAoC;AAErC,SAAS,YAAY,EAAC,MAAM,OAAO,OAAO,QAAQ,WAAW,UAAU,GAAG,KAAI,GAAe;AAChG,QAAM,IAAI,aAAa,MAAM,EAAC,OAAO,QAAQ,WAAW,SAAQ,CAAC;AACjE,SAAO,EAAE,SAAS,OAAO,uBAAC,UAAO,OAAe,GAAG,MAAO,GAAG,EAAE,gBAAtC;AAAA;AAAA;AAAA;AAAA,SAAoD;AACjF;AAHgB;",
+  "sourceRoot": "../../../../../../sources/public/local/formtest/js/esm/build",
+  "sourcesContent": ["import {Switch} from '@moodlehq/design-system';\nimport {useFormField, type FieldProps} from '../formField';\n\nexport function SwitchField({name, label, rules, hideIf, disableIf, defaultIf, advanced, ...rest}: FieldProps) {\n    const f = useFormField(name, {rules, hideIf, disableIf, defaultIf, advanced});\n    return f.hidden ? null : <Switch label={label} {...rest} {...f.registration} />;\n}\n"],
+  "mappings": ";;AAK6B;AAL7B,SAAQ,cAAa;AACrB,SAAQ,oBAAoC;AAErC,SAAS,YAAY,EAAC,MAAM,OAAO,OAAO,QAAQ,WAAW,WAAW,UAAU,GAAG,KAAI,GAAe;AAC3G,QAAM,IAAI,aAAa,MAAM,EAAC,OAAO,QAAQ,WAAW,WAAW,SAAQ,CAAC;AAC5E,SAAO,EAAE,SAAS,OAAO,uBAAC,UAAO,OAAe,GAAG,MAAO,GAAG,EAAE,gBAAtC;AAAA;AAAA;AAAA;AAAA,SAAoD;AACjF;AAHgB;",
   "names": []
 }

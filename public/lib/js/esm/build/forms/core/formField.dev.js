@@ -1,13 +1,13 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
-import { createElement, useContext, useEffect, useState } from "react";
+import { createElement, useContext, useEffect, useRef, useState } from "react";
 import { useFormContext, useWatch, get } from "react-hook-form";
 import { getString } from "@moodle/lms/core/stringUtils";
 import { FormStateContext, GroupContext, FieldRegistryContext, RowContext, ContainerContext, AdvancedContext } from "./formContext";
 function useFieldConditions(name, { hideIf, disableIf, advanced } = {}) {
   const { serverDisabled } = useContext(FormStateContext);
   const { disabled: groupDisabled } = useContext(GroupContext);
-  const { control, formState: { errors } } = useFormContext();
+  const { control, clearErrors, formState: { errors } } = useFormContext();
   const registry = useContext(FieldRegistryContext);
   const container = useContext(ContainerContext);
   const { show, register: registerAdvanced } = useContext(AdvancedContext);
@@ -29,14 +29,46 @@ function useFieldConditions(name, { hideIf, disableIf, advanced } = {}) {
   }, [hasError]);
   useEffect(() => setRevealed(false), [show]);
   const values = useWatch({ control, disabled: !hideIf && !disableIf });
+  const isDisabled = (disableIf?.(values) ?? false) || groupDisabled || serverDisabled.includes(name);
+  useEffect(() => {
+    if (isDisabled) {
+      clearErrors(name);
+    }
+  }, [isDisabled, clearErrors, name]);
   return {
     hidden: hideIf?.(values) ?? false,
     // Not shown, but still part of the form: fields hide it with CSS or by rendering nothing.
     collapsed: Boolean(advanced) && !show && !hasError && !revealed,
-    disabled: (disableIf?.(values) ?? false) || groupDisabled || serverDisabled.includes(name)
+    disabled: isDisabled
   };
 }
 __name(useFieldConditions, "useFieldConditions");
+function useDefaultIf(name, defaultIf, merge = (wanted) => wanted) {
+  const { control, setValue, getValues } = useFormContext();
+  const values = useWatch({ control, disabled: !defaultIf });
+  const rules = defaultIf === void 0 ? [] : [defaultIf].flat();
+  let wanted;
+  for (const rule of rules) {
+    wanted = rule(values);
+    if (wanted !== void 0) {
+      break;
+    }
+  }
+  const key = JSON.stringify(wanted ?? null);
+  const previous = useRef(null);
+  useEffect(() => {
+    if (!defaultIf) {
+      return;
+    }
+    const first = previous.current === null;
+    const changed = previous.current !== key;
+    previous.current = key;
+    if (!first && changed && wanted !== void 0) {
+      setValue(name, merge(wanted, getValues(name)), { shouldDirty: true });
+    }
+  }, [key]);
+}
+__name(useDefaultIf, "useDefaultIf");
 const toValidate = /* @__PURE__ */ __name((rules) => rules?.length ? Object.fromEntries(rules.map((rule, i) => [i, rule])) : void 0, "toValidate");
 function RequiredMark() {
   const [text, setText] = useState("Required");
@@ -65,7 +97,7 @@ function useIsRequired(rules, active = true) {
   return active && when.some((w) => typeof w === "function" ? w(values) : w);
 }
 __name(useIsRequired, "useIsRequired");
-function useFormField(fieldName, { rules, hideIf, disableIf, advanced } = {}) {
+function useFormField(fieldName, { rules, hideIf, disableIf, defaultIf, advanced } = {}, mergeDefault) {
   const rowName = useContext(RowContext);
   const name = fieldName ?? rowName;
   if (name === null || name === void 0) {
@@ -73,6 +105,7 @@ function useFormField(fieldName, { rules, hideIf, disableIf, advanced } = {}) {
   }
   const { register, formState: { errors } } = useFormContext();
   const { hidden, collapsed, disabled } = useFieldConditions(name, { hideIf, disableIf, advanced });
+  useDefaultIf(name, defaultIf, mergeDefault);
   const group = useContext(GroupContext);
   const error = group.name === name ? void 0 : get(errors, name);
   const validate = toValidate(rules) ?? (group.name === name ? group.validate : void 0);
@@ -108,6 +141,7 @@ export {
   markMandatory,
   requiredIndicator,
   toValidate,
+  useDefaultIf,
   useFieldConditions,
   useFormField,
   useIsRequired

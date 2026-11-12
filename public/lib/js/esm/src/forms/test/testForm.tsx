@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import {Alert} from '@moodlehq/design-system';
-import {MoodleForm, FormSlot, ExtensionModules} from '@moodle/lms/core/forms';
+import {MoodleForm, FormSlot, ExtensionModules, sendFormEndpointRequest} from '@moodle/lms/core/forms';
 import {
     TextField,
     SwitchField,
@@ -72,8 +72,11 @@ function TestForm({extensionModules, extensionValues}: Props) {
                     website: '',
                     extensions: extensionValues ?? {},
                 }}
-                endpoint="/core/test/form"
-                submit={{label: 'Save test form', onSuccess: setSaved}}
+                submit={{
+                    action: (payload) => sendFormEndpointRequest('/core/test/form', 'POST').save(payload),
+                    label: 'Save test form',
+                    onSuccess: setSaved,
+                }}
             >
                 {saved !== null && (
                     <>

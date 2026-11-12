@@ -7,8 +7,10 @@ type CountedTextareaFieldProps = Omit<FieldProps, 'hideLabel' | 'name'> & {
 };
 
 // A custom field: a textarea that counts the characters left. The limit itself is enforced by the field's rules.
-export function CountedTextareaField({name, label, maxLength, rules, hideIf, disableIf, advanced}: CountedTextareaFieldProps) {
-    const f = useFormField(name, {rules, hideIf, disableIf, advanced});
+export function CountedTextareaField({
+    name, label, maxLength, rules, hideIf, disableIf, defaultIf, advanced,
+}: CountedTextareaFieldProps) {
+    const f = useFormField(name, {rules, hideIf, disableIf, defaultIf, advanced});
     const {control} = useFormContext();
     const value = useWatch({control, name}) ?? '';
     if (f.hidden) {

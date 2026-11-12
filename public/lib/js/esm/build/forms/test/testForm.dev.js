@@ -3,7 +3,7 @@ var __name = (target, value) => __defProp(target, "name", { value, configurable:
 import { Fragment, jsxDEV } from "react/jsx-dev-runtime";
 import { useState } from "react";
 import { Alert } from "@moodlehq/design-system";
-import { MoodleForm, FormSlot, ExtensionModules } from "@moodle/lms/core/forms";
+import { MoodleForm, FormSlot, ExtensionModules, sendFormEndpointRequest } from "@moodle/lms/core/forms";
 import {
   TextField,
   SwitchField,
@@ -43,23 +43,26 @@ function TestForm({ extensionModules, extensionValues }) {
         website: "",
         extensions: extensionValues ?? {}
       },
-      endpoint: "/core/test/form",
-      submit: { label: "Save test form", onSuccess: setSaved },
+      submit: {
+        action: /* @__PURE__ */ __name((payload) => sendFormEndpointRequest("/core/test/form", "POST").save(payload), "action"),
+        label: "Save test form",
+        onSuccess: setSaved
+      },
       children: [
         saved !== null && /* @__PURE__ */ jsxDEV(Fragment, { children: [
           /* @__PURE__ */ jsxDEV(Alert, { type: "success", message: "Saved" }, void 0, false, {
             fileName: "public/lib/js/esm/src/forms/test/testForm.tsx",
-            lineNumber: 80,
+            lineNumber: 83,
             columnNumber: 25
           }, this),
           /* @__PURE__ */ jsxDEV("pre", { children: JSON.stringify(saved, null, 2) }, void 0, false, {
             fileName: "public/lib/js/esm/src/forms/test/testForm.tsx",
-            lineNumber: 81,
+            lineNumber: 84,
             columnNumber: 25
           }, this)
         ] }, void 0, true, {
           fileName: "public/lib/js/esm/src/forms/test/testForm.tsx",
-          lineNumber: 79,
+          lineNumber: 82,
           columnNumber: 21
         }, this),
         /* @__PURE__ */ jsxDEV(
@@ -73,7 +76,7 @@ function TestForm({ extensionModules, extensionValues }) {
           false,
           {
             fileName: "public/lib/js/esm/src/forms/test/testForm.tsx",
-            lineNumber: 84,
+            lineNumber: 87,
             columnNumber: 17
           },
           this
@@ -90,40 +93,40 @@ function TestForm({ extensionModules, extensionValues }) {
           false,
           {
             fileName: "public/lib/js/esm/src/forms/test/testForm.tsx",
-            lineNumber: 89,
+            lineNumber: 92,
             columnNumber: 17
           },
           this
         ),
         /* @__PURE__ */ jsxDEV(FormSlot, { name: "core_test_form.general" }, void 0, false, {
           fileName: "public/lib/js/esm/src/forms/test/testForm.tsx",
-          lineNumber: 95,
+          lineNumber: 98,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ jsxDEV(GroupField, { name: "priority", label: "Priority", layout: "column", children: [
           /* @__PURE__ */ jsxDEV(RadioField, { name: "priority", value: "low", label: "Low" }, void 0, false, {
             fileName: "public/lib/js/esm/src/forms/test/testForm.tsx",
-            lineNumber: 97,
+            lineNumber: 100,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ jsxDEV(RadioField, { name: "priority", value: "normal", label: "Normal" }, void 0, false, {
             fileName: "public/lib/js/esm/src/forms/test/testForm.tsx",
-            lineNumber: 98,
+            lineNumber: 101,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ jsxDEV(RadioField, { name: "priority", value: "high", label: "High" }, void 0, false, {
             fileName: "public/lib/js/esm/src/forms/test/testForm.tsx",
-            lineNumber: 99,
+            lineNumber: 102,
             columnNumber: 21
           }, this)
         ] }, void 0, true, {
           fileName: "public/lib/js/esm/src/forms/test/testForm.tsx",
-          lineNumber: 96,
+          lineNumber: 99,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ jsxDEV(SwitchField, { name: "notify", label: "Notify me when it is done" }, void 0, false, {
           fileName: "public/lib/js/esm/src/forms/test/testForm.tsx",
-          lineNumber: 101,
+          lineNumber: 104,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ jsxDEV(
@@ -141,7 +144,7 @@ function TestForm({ extensionModules, extensionValues }) {
           false,
           {
             fileName: "public/lib/js/esm/src/forms/test/testForm.tsx",
-            lineNumber: 102,
+            lineNumber: 105,
             columnNumber: 17
           },
           this
@@ -155,7 +158,7 @@ function TestForm({ extensionModules, extensionValues }) {
             rules: [minItems(1, "Select at least one tag")],
             children: TAGS.map((tag) => /* @__PURE__ */ jsxDEV(CheckboxField, { name: "tags", value: tag, label: tag }, tag, false, {
               fileName: "public/lib/js/esm/src/forms/test/testForm.tsx",
-              lineNumber: 117,
+              lineNumber: 120,
               columnNumber: 40
             }, this))
           },
@@ -163,7 +166,7 @@ function TestForm({ extensionModules, extensionValues }) {
           false,
           {
             fileName: "public/lib/js/esm/src/forms/test/testForm.tsx",
-            lineNumber: 111,
+            lineNumber: 114,
             columnNumber: 17
           },
           this
@@ -178,7 +181,7 @@ function TestForm({ extensionModules, extensionValues }) {
             emptyItem: "",
             children: /* @__PURE__ */ jsxDEV(TextField, { label: "Email", hideLabel: true, rules: [pattern(EMAIL, "This is not a valid email address")] }, void 0, false, {
               fileName: "public/lib/js/esm/src/forms/test/testForm.tsx",
-              lineNumber: 126,
+              lineNumber: 129,
               columnNumber: 21
             }, this)
           },
@@ -186,7 +189,7 @@ function TestForm({ extensionModules, extensionValues }) {
           false,
           {
             fileName: "public/lib/js/esm/src/forms/test/testForm.tsx",
-            lineNumber: 119,
+            lineNumber: 122,
             columnNumber: 17
           },
           this
@@ -203,7 +206,7 @@ function TestForm({ extensionModules, extensionValues }) {
           false,
           {
             fileName: "public/lib/js/esm/src/forms/test/testForm.tsx",
-            lineNumber: 128,
+            lineNumber: 131,
             columnNumber: 17
           },
           this
@@ -220,14 +223,14 @@ function TestForm({ extensionModules, extensionValues }) {
             false,
             {
               fileName: "public/lib/js/esm/src/forms/test/testForm.tsx",
-              lineNumber: 135,
+              lineNumber: 138,
               columnNumber: 21
             },
             this
           ),
           /* @__PURE__ */ jsxDEV(TextField, { name: "website", label: "Website", rules: [url("Enter a valid URL")] }, void 0, false, {
             fileName: "public/lib/js/esm/src/forms/test/testForm.tsx",
-            lineNumber: 140,
+            lineNumber: 143,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ jsxDEV(
@@ -241,14 +244,14 @@ function TestForm({ extensionModules, extensionValues }) {
             false,
             {
               fileName: "public/lib/js/esm/src/forms/test/testForm.tsx",
-              lineNumber: 141,
+              lineNumber: 144,
               columnNumber: 21
             },
             this
           ),
           /* @__PURE__ */ jsxDEV(ColorField, { name: "color", label: "Colour" }, void 0, false, {
             fileName: "public/lib/js/esm/src/forms/test/testForm.tsx",
-            lineNumber: 146,
+            lineNumber: 149,
             columnNumber: 21
           }, this),
           /* @__PURE__ */ jsxDEV(
@@ -263,19 +266,19 @@ function TestForm({ extensionModules, extensionValues }) {
             false,
             {
               fileName: "public/lib/js/esm/src/forms/test/testForm.tsx",
-              lineNumber: 147,
+              lineNumber: 150,
               columnNumber: 21
             },
             this
           )
         ] }, void 0, true, {
           fileName: "public/lib/js/esm/src/forms/test/testForm.tsx",
-          lineNumber: 134,
+          lineNumber: 137,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ jsxDEV(FormSlot, { name: "core_test_form.footer" }, void 0, false, {
           fileName: "public/lib/js/esm/src/forms/test/testForm.tsx",
-          lineNumber: 154,
+          lineNumber: 157,
           columnNumber: 17
         }, this)
       ]

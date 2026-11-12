@@ -6,10 +6,12 @@ import { GroupField } from "./core/elements/GroupField";
 import { CheckboxField } from "./core/elements/CheckboxField";
 import { RadioField } from "./core/elements/RadioField";
 import { StaticField } from "./core/elements/StaticField";
+import { ActionGroup } from "./core/elements/ActionGroup";
 import { ActionButton } from "./core/elements/ActionButton";
 import { SectionField } from "./core/elements/SectionField";
 export {
   ActionButton,
+  ActionGroup,
   CheckboxField,
   GroupField,
   RadioField,

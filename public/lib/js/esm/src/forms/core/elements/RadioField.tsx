@@ -9,8 +9,10 @@ type RadioFieldProps = Omit<FieldProps, 'hideLabel' | 'name'> & {
 };
 
 // One radio button; render several with the same name, usually inside a GroupField for the shared label.
-export function RadioField({name, value, label, supportingText, rules, hideIf, disableIf, advanced, id}: RadioFieldProps) {
-    const f = useFormField(name, {rules, hideIf, disableIf, advanced});
+export function RadioField({
+    name, value, label, supportingText, rules, hideIf, disableIf, defaultIf, advanced, id,
+}: RadioFieldProps) {
+    const f = useFormField(name, {rules, hideIf, disableIf, defaultIf, advanced});
     if (f.hidden) {
         return null;
     }

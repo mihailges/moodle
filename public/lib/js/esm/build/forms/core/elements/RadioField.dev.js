@@ -3,8 +3,19 @@ var __name = (target, value) => __defProp(target, "name", { value, configurable:
 import { jsxDEV } from "react/jsx-dev-runtime";
 import { Radio } from "@moodlehq/design-system";
 import { useFormField } from "../formField";
-function RadioField({ name, value, label, supportingText, rules, hideIf, disableIf, advanced, id }) {
-  const f = useFormField(name, { rules, hideIf, disableIf, advanced });
+function RadioField({
+  name,
+  value,
+  label,
+  supportingText,
+  rules,
+  hideIf,
+  disableIf,
+  defaultIf,
+  advanced,
+  id
+}) {
+  const f = useFormField(name, { rules, hideIf, disableIf, defaultIf, advanced });
   if (f.hidden) {
     return null;
   }
@@ -21,19 +32,19 @@ function RadioField({ name, value, label, supportingText, rules, hideIf, disable
       false,
       {
         fileName: "public/lib/js/esm/src/forms/core/elements/RadioField.tsx",
-        lineNumber: 19,
+        lineNumber: 21,
         columnNumber: 13
       },
       this
     ),
     supportingText && /* @__PURE__ */ jsxDEV("div", { className: "text-muted small ms-4", children: supportingText }, void 0, false, {
       fileName: "public/lib/js/esm/src/forms/core/elements/RadioField.tsx",
-      lineNumber: 25,
+      lineNumber: 27,
       columnNumber: 32
     }, this)
   ] }, void 0, true, {
     fileName: "public/lib/js/esm/src/forms/core/elements/RadioField.tsx",
-    lineNumber: 18,
+    lineNumber: 20,
     columnNumber: 9
   }, this);
 }

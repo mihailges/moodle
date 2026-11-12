@@ -6,8 +6,8 @@ type RatingFieldProps = Omit<FieldProps, 'hideLabel'> & {
 };
 
 // A custom field: a 1..max rating made of native radios, so the form registers them like any other input.
-export function RatingField({name, label, max = 5, rules, hideIf, disableIf, advanced}: RatingFieldProps) {
-    const f = useFormField(name, {rules, hideIf, disableIf, advanced});
+export function RatingField({name, label, max = 5, rules, hideIf, disableIf, defaultIf, advanced}: RatingFieldProps) {
+    const f = useFormField(name, {rules, hideIf, disableIf, defaultIf, advanced});
     if (f.hidden) {
         return null;
     }

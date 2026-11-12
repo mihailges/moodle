@@ -94,5 +94,9 @@
   "String": {
     "eject": "risky",
     "wrap": "safe"
+  },
+  "forms/core/elements/ActionGroup": {
+    "eject": "risky",
+    "wrap": "risky"
   }
 }

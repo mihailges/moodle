@@ -1,9 +1,10 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 import { jsxDEV } from "react/jsx-dev-runtime";
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { Button } from "@moodlehq/design-system";
+import { getString } from "@moodle/lms/core/stringUtils";
 import { useFieldConditions, useIsRequired, toValidate, requiredIndicator } from "../formField";
 import { FieldRegistryContext, RowContext } from "../formContext";
 function RepeaterField({
@@ -12,7 +13,7 @@ function RepeaterField({
   addLabel,
   emptyItem = "",
   minRows = 1,
-  removeLabel = "Remove",
+  removeLabel,
   rules,
   hideIf,
   disableIf,
@@ -21,6 +22,10 @@ function RepeaterField({
 }) {
   const { control, clearErrors, getFieldState, formState, getValues, setValue, trigger } = useFormContext();
   const registry = useContext(FieldRegistryContext);
+  const [defaults, setDefaults] = useState({ add: "Add", remove: "Remove" });
+  useEffect(() => {
+    Promise.all([getString("add"), getString("remove")]).then(([add, remove2]) => setDefaults({ add, remove: remove2 })).catch(() => void 0);
+  }, []);
   registry.addRepeater(name);
   const initial = getValues(name);
   if (Array.isArray(initial) && initial.some((row) => row === null || typeof row !== "object" || !("value" in row))) {
@@ -78,13 +83,17 @@ function RepeaterField({
           required && requiredIndicator
         ] }, void 0, true, {
           fileName: "public/lib/js/esm/src/forms/core/elements/RepeaterField.tsx",
-          lineNumber: 81,
+          lineNumber: 90,
           columnNumber: 13
         }, this),
-        /* @__PURE__ */ jsxDEV("div", { className: "d-flex flex-column gap-2", children: fields.map((field, index) => /* @__PURE__ */ jsxDEV("div", { className: "d-flex gap-2 align-items-center", children: [
-          /* @__PURE__ */ jsxDEV(RowContext.Provider, { value: `${name}.${index}.value`, children }, void 0, false, {
+        /* @__PURE__ */ jsxDEV("div", { className: "d-flex flex-column gap-2", children: fields.map((field, index) => /* @__PURE__ */ jsxDEV("div", { className: "d-flex gap-2 align-items-start", children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "flex-grow-1", children: /* @__PURE__ */ jsxDEV(RowContext.Provider, { value: `${name}.${index}.value`, children }, void 0, false, {
             fileName: "public/lib/js/esm/src/forms/core/elements/RepeaterField.tsx",
-            lineNumber: 85,
+            lineNumber: 95,
+            columnNumber: 29
+          }, this) }, void 0, false, {
+            fileName: "public/lib/js/esm/src/forms/core/elements/RepeaterField.tsx",
+            lineNumber: 94,
             columnNumber: 25
           }, this),
           /* @__PURE__ */ jsxDEV(
@@ -93,13 +102,13 @@ function RepeaterField({
               type: "button",
               onClick: () => removeRow(index),
               disabled: disabled || fields.length <= minRows,
-              "aria-label": `${removeLabel} ${label} ${index + 1}`,
-              label: "",
+              "aria-label": `${removeLabel ?? defaults.remove} ${label} ${index + 1}`,
+              label: removeLabel ?? "",
               size: "lg",
-              startIcon: /* @__PURE__ */ jsxDEV("i", { "aria-hidden": "true", className: "fa-solid fa-xmark" }, void 0, false, {
+              startIcon: removeLabel ? void 0 : /* @__PURE__ */ jsxDEV("i", { "aria-hidden": "true", className: "fa-solid fa-xmark" }, void 0, false, {
                 fileName: "public/lib/js/esm/src/forms/core/elements/RepeaterField.tsx",
-                lineNumber: 93,
-                columnNumber: 40
+                lineNumber: 104,
+                columnNumber: 66
               }, this),
               variant: "outline-secondary"
             },
@@ -107,32 +116,50 @@ function RepeaterField({
             false,
             {
               fileName: "public/lib/js/esm/src/forms/core/elements/RepeaterField.tsx",
-              lineNumber: 86,
+              lineNumber: 97,
               columnNumber: 25
             },
             this
           )
         ] }, field.id, true, {
           fileName: "public/lib/js/esm/src/forms/core/elements/RepeaterField.tsx",
-          lineNumber: 84,
+          lineNumber: 93,
           columnNumber: 21
         }, this)) }, void 0, false, {
           fileName: "public/lib/js/esm/src/forms/core/elements/RepeaterField.tsx",
-          lineNumber: 82,
+          lineNumber: 91,
           columnNumber: 13
         }, this),
         message && /* @__PURE__ */ jsxDEV("div", { id: errorId, role: "alert", className: "text-danger small mt-1", children: message }, void 0, false, {
           fileName: "public/lib/js/esm/src/forms/core/elements/RepeaterField.tsx",
-          lineNumber: 99,
+          lineNumber: 110,
           columnNumber: 25
         }, this),
-        /* @__PURE__ */ jsxDEV("div", { ref: addButton, children: /* @__PURE__ */ jsxDEV(Button, { type: "button", className: "mt-2", onClick: addRow, label: addLabel, disabled }, void 0, false, {
+        /* @__PURE__ */ jsxDEV("div", { ref: addButton, children: /* @__PURE__ */ jsxDEV(
+          Button,
+          {
+            type: "button",
+            className: "mt-2",
+            onClick: addRow,
+            label: addLabel ?? defaults.add,
+            startIcon: addLabel ? void 0 : /* @__PURE__ */ jsxDEV("i", { "aria-hidden": "true", className: "fa-solid fa-plus" }, void 0, false, {
+              fileName: "public/lib/js/esm/src/forms/core/elements/RepeaterField.tsx",
+              lineNumber: 117,
+              columnNumber: 55
+            }, this),
+            disabled
+          },
+          void 0,
+          false,
+          {
+            fileName: "public/lib/js/esm/src/forms/core/elements/RepeaterField.tsx",
+            lineNumber: 112,
+            columnNumber: 17
+          },
+          this
+        ) }, void 0, false, {
           fileName: "public/lib/js/esm/src/forms/core/elements/RepeaterField.tsx",
-          lineNumber: 101,
-          columnNumber: 17
-        }, this) }, void 0, false, {
-          fileName: "public/lib/js/esm/src/forms/core/elements/RepeaterField.tsx",
-          lineNumber: 100,
+          lineNumber: 111,
           columnNumber: 13
         }, this)
       ]
@@ -141,7 +168,7 @@ function RepeaterField({
     true,
     {
       fileName: "public/lib/js/esm/src/forms/core/elements/RepeaterField.tsx",
-      lineNumber: 75,
+      lineNumber: 84,
       columnNumber: 9
     },
     this

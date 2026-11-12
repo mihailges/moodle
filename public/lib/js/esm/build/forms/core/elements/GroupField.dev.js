@@ -2,12 +2,23 @@ var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 import { jsxDEV } from "react/jsx-dev-runtime";
 import { useController } from "react-hook-form";
-import { useFieldConditions, useIsRequired, toValidate, requiredIndicator } from "../formField";
+import { useDefaultIf, useFieldConditions, useIsRequired, toValidate, requiredIndicator } from "../formField";
 import { GroupContext } from "../formContext";
-function GroupField({ name, label, layout = "row", rules, hideIf, disableIf, advanced, children }) {
+function GroupField({
+  name,
+  label,
+  layout = "row",
+  rules,
+  hideIf,
+  disableIf,
+  defaultIf,
+  advanced,
+  children
+}) {
   const validate = toValidate(rules);
   const { fieldState } = useController({ name, rules: { validate } });
   const { hidden, collapsed, disabled } = useFieldConditions(name, { hideIf, disableIf, advanced });
+  useDefaultIf(name, defaultIf);
   const required = useIsRequired(rules, !hidden && !disabled);
   if (hidden) {
     return null;
@@ -27,17 +38,17 @@ function GroupField({ name, label, layout = "row", rules, hideIf, disableIf, adv
           required && requiredIndicator
         ] }, void 0, true, {
           fileName: "public/lib/js/esm/src/forms/core/elements/GroupField.tsx",
-          lineNumber: 40,
+          lineNumber: 43,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ jsxDEV("div", { className: layout === "row" ? "d-flex gap-2 align-items-start" : "d-flex flex-column gap-2", children }, void 0, false, {
           fileName: "public/lib/js/esm/src/forms/core/elements/GroupField.tsx",
-          lineNumber: 41,
+          lineNumber: 44,
           columnNumber: 17
         }, this),
         message && /* @__PURE__ */ jsxDEV("div", { id: errorId, role: "alert", className: "text-danger small mt-1", children: message }, void 0, false, {
           fileName: "public/lib/js/esm/src/forms/core/elements/GroupField.tsx",
-          lineNumber: 42,
+          lineNumber: 45,
           columnNumber: 29
         }, this)
       ]
@@ -46,13 +57,13 @@ function GroupField({ name, label, layout = "row", rules, hideIf, disableIf, adv
     true,
     {
       fileName: "public/lib/js/esm/src/forms/core/elements/GroupField.tsx",
-      lineNumber: 34,
+      lineNumber: 37,
       columnNumber: 13
     },
     this
   ) }, void 0, false, {
     fileName: "public/lib/js/esm/src/forms/core/elements/GroupField.tsx",
-    lineNumber: 33,
+    lineNumber: 36,
     columnNumber: 9
   }, this);
 }

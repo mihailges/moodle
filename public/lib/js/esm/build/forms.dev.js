@@ -1,5 +1,6 @@
 import { MoodleForm } from "./forms/core/MoodleForm";
-import { useFormField, requiredIndicator } from "./forms/core/formField";
+import { sendFormEndpointRequest } from "./forms/core/formEndpointRequest";
+import { useFormField, useDefaultIf, requiredIndicator } from "./forms/core/formField";
 import { FormValidationError } from "./forms/core/FormValidationError";
 import { FormSlot } from "./forms/core/slots/FormSlot";
 import { registerFormExtension, getFormExtensions } from "./forms/core/slots/formExtension";
@@ -13,6 +14,8 @@ export {
   loadFormExtensionModules,
   registerFormExtension,
   requiredIndicator,
+  sendFormEndpointRequest,
+  useDefaultIf,
   useFormField
 };
 //# sourceMappingURL=forms.dev.js.map

@@ -1,16 +1,19 @@
-import {useContext, useEffect, useRef, type ReactElement} from 'react';
+import {useContext, useEffect, useRef, useState, type ReactElement} from 'react';
 import {useFieldArray, useFormContext, useWatch} from 'react-hook-form';
 import {Button} from '@moodlehq/design-system';
+import {getString} from '@moodle/lms/core/stringUtils';
 import {useFieldConditions, useIsRequired, toValidate, requiredIndicator, type FieldBehaviour} from '../formField';
 import {FieldRegistryContext, RowContext} from '../formContext';
 
 type RepeaterFieldProps = FieldBehaviour & {
     name: string;
     label: string;
-    addLabel: string;
+    // Text of the add button. Without it the button is the standard "Add" with a plus icon.
+    addLabel?: string;
     // The value of a new row, e.g. ''. The form's values stay a plain array; rows are wrapped as {value} internally.
     emptyItem?: unknown;
     minRows?: number;
+    // Text of each remove button. Without it the buttons are the standard icon-only cross.
     removeLabel?: string;
     // The single field repeated for each row, without a name: the row names it. For example
     // <TextField label="URL" rules={[url('Invalid')]} />. Rules on the repeater itself get the list of rows.
@@ -18,10 +21,16 @@ type RepeaterFieldProps = FieldBehaviour & {
 };
 
 export function RepeaterField({
-    name, label, addLabel, emptyItem = '', minRows = 1, removeLabel = 'Remove', rules, hideIf, disableIf, advanced, children,
+    name, label, addLabel, emptyItem = '', minRows = 1, removeLabel, rules, hideIf, disableIf, advanced, children,
 }: RepeaterFieldProps) {
     const {control, clearErrors, getFieldState, formState, getValues, setValue, trigger} = useFormContext();
     const registry = useContext(FieldRegistryContext);
+    const [defaults, setDefaults] = useState({add: 'Add', remove: 'Remove'});
+    useEffect(() => {
+        Promise.all([getString('add'), getString('remove')])
+            .then(([add, remove]) => setDefaults({add, remove}))
+            .catch(() => undefined);
+    }, []);
     registry.addRepeater(name);
     // Forms hold plain arrays; useFieldArray needs object rows, so convert them before it first reads them.
     const initial = getValues(name);
@@ -81,16 +90,18 @@ export function RepeaterField({
             <legend className="fs-6 mb-2">{label}{required && requiredIndicator}</legend>
             <div className="d-flex flex-column gap-2">
                 {fields.map((field, index) => (
-                    <div key={field.id} className="d-flex gap-2 align-items-center">
-                        <RowContext.Provider value={`${name}.${index}.value`}>{children}</RowContext.Provider>
+                    <div key={field.id} className="d-flex gap-2 align-items-start">
+                        <div className="flex-grow-1">
+                            <RowContext.Provider value={`${name}.${index}.value`}>{children}</RowContext.Provider>
+                        </div>
                         <Button
                             type="button"
                             onClick={() => removeRow(index)}
                             disabled={disabled || fields.length <= minRows}
-                            aria-label={`${removeLabel} ${label} ${index + 1}`}
-                            label=""
+                            aria-label={`${removeLabel ?? defaults.remove} ${label} ${index + 1}`}
+                            label={removeLabel ?? ''}
                             size="lg"
-                            startIcon={<i aria-hidden="true" className="fa-solid fa-xmark"/>}
+                            startIcon={removeLabel ? undefined : <i aria-hidden="true" className="fa-solid fa-xmark"/>}
                             variant="outline-secondary"
                         />
                     </div>
@@ -98,7 +109,14 @@ export function RepeaterField({
             </div>
             {message && <div id={errorId} role="alert" className="text-danger small mt-1">{message}</div>}
             <div ref={addButton}>
-                <Button type="button" className="mt-2" onClick={addRow} label={addLabel} disabled={disabled} />
+                <Button
+                    type="button"
+                    className="mt-2"
+                    onClick={addRow}
+                    label={addLabel ?? defaults.add}
+                    startIcon={addLabel ? undefined : <i aria-hidden="true" className="fa-solid fa-plus"/>}
+                    disabled={disabled}
+                />
             </div>
         </fieldset>
     );

@@ -91,11 +91,11 @@ export class FieldRegistry {
 
 export const FieldRegistryContext = createContext(new FieldRegistry());
 
-// What a custom button changes about a save: where the payload goes, and what happens afterwards.
-export type SubmitOverride = {action?: (payload: any) => Promise<any>; onSuccess?: (saved: any) => void};
+// What a custom button does on save: where the payload goes, and what happens afterwards.
+export type SubmitOverride = {action: (payload: any) => Promise<any>; onSuccess?: (saved: any) => void};
 
 export type FormActionApi = {
-    // Validate and save; `override` replaces the form's own submit action and/or onSuccess.
+    // Validate and save; `override` is used instead of the active mode's action and onSuccess.
     submit: (override?: SubmitOverride) => Promise<void>;
     submitting: boolean;
     getValues: () => any;

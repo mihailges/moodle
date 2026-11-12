@@ -1,7 +1,7 @@
 {
   "version": 3,
   "sources": ["../../../../src/forms/core/rules/validIf.ts"],
-  "sourceRoot": "../../../../../../sources/public/lib/js/esm/build",
+  "sourceRoot": "../../../../../../sources/public/local/formtest/js/esm/build",
   "sourcesContent": ["import type {Rule} from '../formRule';\n\n/**\n * A rule from a condition and a message: valid when `isValid` returns true, otherwise the message is the error.\n * For custom checks, e.g. validIf((flows) => flows.auth_code || flows.client_credentials, 'Select a flow').\n */\nexport const validIf = <T = any, V = any>(isValid: (value: T, values: V) => unknown, message: string): Rule<T, V> =>\n    (value, values) => Boolean(isValid(value, values)) || message;\n"],
   "mappings": ";;AAMO,MAAM,UAAU,wBAAmB,SAA2C,YACjF,CAAC,OAAO,WAAW,QAAQ,QAAQ,OAAO,MAAM,CAAC,KAAK,SADnC;",
   "names": []

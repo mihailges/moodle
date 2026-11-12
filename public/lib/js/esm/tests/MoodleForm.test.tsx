@@ -21,10 +21,10 @@
  */
 
 import {render, screen, waitFor, fireEvent} from '@testing-library/react';
-import {MoodleForm, FormValidationError} from '@moodle/lms/core/forms';
+import {MoodleForm, FormValidationError, sendFormEndpointRequest} from '@moodle/lms/core/forms';
 import {
     TextField, SwitchField, RepeaterField, GroupField, CheckboxField, RadioField, StaticField,
-    ActionButton, SectionField,
+    ActionButton, ActionGroup, SectionField,
 } from '@moodle/lms/core/forms/fields';
 import {required, requiredIf, maxLength, minItems} from '@moodle/lms/core/forms/rules';
 import Fetch from '@moodle/lms/core/fetch';
@@ -58,7 +58,7 @@ jest.mock('@moodlehq/design-system', () => ({
     Radio: ({label, invalid, invalidFeedback, ...rest}: any) => (
         <label>{label}<input type="radio" {...rest} /></label>
     ),
-    Button: ({label, ...rest}: any) => <button {...rest}>{label}</button>,
+    Button: ({label, startIcon, ...rest}: any) => <button {...rest}>{startIcon}{label}</button>,
 }), {virtual: true});
 
 type Values = {name: string; pkce: boolean; method: string};
@@ -67,10 +67,10 @@ const defaults: Values = {name: '', pkce: false, method: ''};
 const click = (el: HTMLElement) => fireEvent.click(el);
 const type = (el: HTMLElement, value: string) => fireEvent.change(el, {target: {value}});
 
-const renderForm = (props: Partial<React.ComponentProps<typeof MoodleForm<Values>>> = {}) => {
+const renderForm = (props: Record<string, unknown> = {}) => {
     const create = jest.fn().mockResolvedValue(defaults);
     render(
-        <MoodleForm<Values> defaultValues={defaults} submit={{action: create}} {...props}>
+        <MoodleForm<Values> defaultValues={defaults} submit={{action: create}} {...(props as any)}>
             <TextField name="name" label="Name" rules={[required('Enter a name'), maxLength(5, 'Too long')]} />
             <SwitchField name="pkce" label="PKCE" />
             <TextField name="method" label="Method" hideIf={(v: any) => !v.pkce} rules={[required('Choose a method')]} />
@@ -80,6 +80,28 @@ const renderForm = (props: Partial<React.ComponentProps<typeof MoodleForm<Values
 };
 
 describe('core/forms MoodleForm', () => {
+    it('shows loading, then the loaded record, when update defaultValues is a loader', async() => {
+        let resolve: (v: unknown) => void = () => undefined;
+        const load = jest.fn(() => new Promise((r) => {
+            resolve = r;
+        }));
+        renderForm({defaultValues: load, submit: {action: jest.fn()}});
+        expect(screen.getByRole('status')).toBeTruthy();
+        resolve({values: {name: 'loaded', pkce: false, method: ''}});
+        expect(((await screen.findByLabelText('Name')) as HTMLInputElement).value).toBe('loaded');
+    });
+
+    it('sends the payload without the fields toPayload drops', async() => {
+        const update = jest.fn().mockResolvedValue({});
+        renderForm({
+            defaultValues: async() => ({values: {name: 'a', pkce: false, method: ''}}),
+            submit: {action: update},
+            toPayload: ({name}: Values) => ({name}),
+        });
+        click(await screen.findByText('[save, core]'));
+        await waitFor(() => expect(update).toHaveBeenCalledWith({name: 'a'}));
+    });
+
     it('shows rule errors and does not submit invalid data', async() => {
         const create = renderForm();
         click(await screen.findByText('[save, core]'));
@@ -265,7 +287,9 @@ describe('core/forms MoodleForm', () => {
     it('sends the full values when editing', async() => {
         const load = jest.fn().mockResolvedValue({values: {name: 'old', pkce: false, method: ''}});
         const update = jest.fn().mockResolvedValue({name: 'new', pkce: false, method: ''});
-        renderForm({load, submit: {action: (payload) => update(1, payload)}});
+        renderForm({
+            defaultValues: load, submit: {action: (payload: Values) => update(1, payload)},
+        });
         const input = await screen.findByLabelText('Name');
         type(input, 'new');
         click(await screen.findByText('[save, core]'));
@@ -284,7 +308,9 @@ describe('core/forms MoodleForm', () => {
     it('applies server-disabled fields and maps server validation errors', async() => {
         const load = jest.fn().mockResolvedValue({values: {name: 'old', pkce: false, method: ''}, readonly: ['pkce']});
         const update = jest.fn().mockRejectedValue(new FormValidationError({name: ['Already exists']}));
-        renderForm({load, submit: {action: (payload) => update(1, payload)}});
+        renderForm({
+            defaultValues: load, submit: {action: (payload: Values) => update(1, payload)},
+        });
         expect(((await screen.findByLabelText('PKCE')) as HTMLInputElement).disabled).toBe(true);
         type(screen.getByLabelText('Name'), 'x');
         click(await screen.findByText('[save, core]'));
@@ -296,8 +322,7 @@ describe('core/forms MoodleForm', () => {
         const onCancel = jest.fn();
         render(
             <MoodleForm<any>
-                defaultValues={{type: 'confidential', scopes: []}}
-                submit={{action: create, label: 'Create client'}}
+                defaultValues={{type: 'confidential', scopes: []}} submit={{action: create, label: 'Create client'}}
                 cancel={{action: onCancel, label: 'Back'}}
             >
                 <GroupField name="type" label="Type" layout="column">
@@ -363,6 +388,141 @@ describe('core/forms MoodleForm', () => {
         expect(create).toHaveBeenCalledWith({name: 'y'});
     });
 
+    it('runs several custom buttons with different actions inside an ActionGroup', async() => {
+        const save = jest.fn().mockResolvedValue({id: 1});
+        const draft = jest.fn().mockResolvedValue({id: 2});
+        const onSaved = jest.fn();
+        const onDraft = jest.fn();
+        const onCancel = jest.fn();
+        render(
+            <MoodleForm<any> defaultValues={{name: ''}}>
+                <TextField name="name" label="Name" rules={[required('Enter a name')]} />
+                <ActionGroup label="Actions">
+                    <ActionButton label="Save" submit={{action: save, onSuccess: onSaved}} />
+                    <ActionButton label="Draft" submit={{action: draft, onSuccess: onDraft}} />
+                    <ActionButton label="Cancel" onClick={onCancel} />
+                </ActionGroup>
+            </MoodleForm>,
+        );
+        expect(screen.getByRole('group', {name: 'Actions'})).toBeTruthy();
+        click(screen.getByText('Save'));
+        expect(await screen.findByText('Enter a name')).toBeTruthy();
+        expect(save).not.toHaveBeenCalled();
+        type(screen.getByLabelText('Name'), 'x');
+        click(screen.getByText('Draft'));
+        await waitFor(() => expect(onDraft).toHaveBeenCalledWith({id: 2}));
+        expect(save).not.toHaveBeenCalled();
+        click(screen.getByText('Save'));
+        await waitFor(() => expect(onSaved).toHaveBeenCalledWith({id: 1}));
+        click(screen.getByText('Cancel'));
+        expect(onCancel).toHaveBeenCalled();
+    });
+
+    it('sets a field from defaultIf when the answer changes, not on first render, and lets the user override', async() => {
+        render(
+            <MoodleForm<any> defaultValues={{type: 'a', name: 'kept', roles: ['x']}}>
+                <SwitchField name="on" label="On" />
+                <TextField name="name" label="Name" defaultIf={(v: any) => (v.on ? 'auto' : undefined)} />
+                <GroupField name="roles" label="Roles">
+                    <CheckboxField name="roles" value="x" label="X" />
+                    <CheckboxField name="roles" value="y" label="Y" defaultIf={(v: any) => Boolean(v.on)} />
+                </GroupField>
+            </MoodleForm>,
+        );
+        const name = screen.getByLabelText('Name') as HTMLInputElement;
+        expect(name.value).toBe('kept');
+        click(screen.getByLabelText('On'));
+        await waitFor(() => expect(name.value).toBe('auto'));
+        await waitFor(() => expect((screen.getByLabelText('Y') as HTMLInputElement).checked).toBe(true));
+        expect((screen.getByLabelText('X') as HTMLInputElement).checked).toBe(true);
+        type(name, 'mine');
+        expect(name.value).toBe('mine');
+    });
+
+    it('uses the first defaultIf that answers when given a list', async() => {
+        render(
+            <MoodleForm<any> defaultValues={{x: 'a', z: ''}}>
+                <TextField name="x" label="X" />
+                <TextField
+                    name="z"
+                    label="Z"
+                    defaultIf={[(v: any) => (v.x === 'b' ? 'one' : undefined), (v: any) => (v.x === 'c' ? 'two' : undefined)]}
+                />
+            </MoodleForm>,
+        );
+        const z = screen.getByLabelText('Z') as HTMLInputElement;
+        type(screen.getByLabelText('X'), 'b');
+        await waitFor(() => expect(z.value).toBe('one'));
+        type(screen.getByLabelText('X'), 'c');
+        await waitFor(() => expect(z.value).toBe('two'));
+    });
+
+    it('requires a checkbox group that has no default value and was never touched', async() => {
+        const create = jest.fn().mockResolvedValue({});
+        render(
+            <MoodleForm<any> defaultValues={{name: 'a'}} submit={{action: create}}>
+                <TextField name="name" label="Name" />
+                <GroupField name="scopes" label="Scopes" rules={[minItems(1, 'Pick a scope')]}>
+                    <CheckboxField name="scopes" value="read" label="Read" />
+                    <CheckboxField name="scopes" value="write" label="Write" />
+                </GroupField>
+            </MoodleForm>,
+        );
+        click(await screen.findByText('[save, core]'));
+        expect(await screen.findByText('Pick a scope')).toBeTruthy();
+        expect(create).not.toHaveBeenCalled();
+    });
+
+    it('validates a field when the user leaves it, before any submit', async() => {
+        render(
+            <MoodleForm<any> submit={{action: jest.fn()}}>
+                <TextField name="name" label="Name" rules={[required('Name needed')]} />
+            </MoodleForm>,
+        );
+        const input = await screen.findByLabelText(/Name/);
+        fireEvent.focus(input);
+        fireEvent.blur(input);
+        expect(await screen.findByText('Name needed')).toBeTruthy();
+    });
+
+    it('uses icon buttons unless the repeater sets its own add and remove labels', async() => {
+        const {container, unmount} = render(
+            <MoodleForm<any> defaultValues={{uris: ['a']}} submit={{action: jest.fn()}}>
+                <RepeaterField name="uris" label="URIs"><TextField label="URI" /></RepeaterField>
+            </MoodleForm>,
+        );
+        await screen.findByText('[add, core]');
+        expect(container.querySelector('.fa-plus')).not.toBeNull();
+        expect(container.querySelector('.fa-xmark')).not.toBeNull();
+        unmount();
+        const custom = render(
+            <MoodleForm<any> defaultValues={{uris: ['a']}} submit={{action: jest.fn()}}>
+                <RepeaterField name="uris" label="URIs" addLabel="Add URI" removeLabel="Delete">
+                    <TextField label="URI" />
+                </RepeaterField>
+            </MoodleForm>,
+        );
+        expect(await screen.findByText('Add URI')).toBeTruthy();
+        expect(screen.getByText('Delete')).toBeTruthy();
+        expect(custom.container.querySelector('.fa-plus')).toBeNull();
+        expect(custom.container.querySelector('.fa-xmark')).toBeNull();
+    });
+
+    it('clears a group error as soon as the group becomes disabled', async() => {
+        render(
+            <MoodleForm<any> defaultValues={{name: 'a'}} submit={{action: jest.fn()}}>
+                <TextField name="name" label="Name" />
+                <GroupField name="scopes" label="Scopes" rules={[minItems(1, 'Pick a scope')]} disableIf={(v) => v.name === 'off'}>
+                    <CheckboxField name="scopes" value="read" label="Read" />
+                </GroupField>
+            </MoodleForm>,
+        );
+        click(await screen.findByText('[save, core]'));
+        expect(await screen.findByText('Pick a scope')).toBeTruthy();
+        fireEvent.change(screen.getByLabelText('Name'), {target: {value: 'off'}});
+        await waitFor(() => expect(screen.queryByText('Pick a scope')).toBeNull());
+    });
+
     it('shows preset checkbox values as checked and submits the changed list', async() => {
         const create = jest.fn().mockResolvedValue({});
         render(
@@ -382,7 +542,7 @@ describe('core/forms MoodleForm', () => {
 
     describe('with an api', () => {
         const json = (body: unknown) => Promise.resolve({json: () => Promise.resolve(body)});
-        const route = {endpoint: '/test/things'};
+        const request = (endpoint: string, method?: 'POST' | 'PATCH') => sendFormEndpointRequest(endpoint, method);
 
         beforeEach(() => {
             Object.values(Fetch).forEach((fn) => (fn as jest.Mock).mockReset());
@@ -392,7 +552,7 @@ describe('core/forms MoodleForm', () => {
             (Fetch.performPost as jest.Mock).mockReturnValue(json({id: 5}));
             const onSuccess = jest.fn();
             render(
-                <MoodleForm<any> defaultValues={{name: 'a'}} {...route} submit={{onSuccess}}>
+                <MoodleForm<any> defaultValues={{name: 'a'}} submit={{action: request('/test/things').save, onSuccess}}>
                     <TextField name="name" label="Name" />
                 </MoodleForm>,
             );
@@ -412,7 +572,8 @@ describe('core/forms MoodleForm', () => {
             (global as any).Response = FakeResponse;
             (Fetch.performPatch as jest.Mock).mockRejectedValue(new FakeResponse());
             render(
-                <MoodleForm<any> endpoint="/test/things/7" method="PATCH">
+                <MoodleForm<any> defaultValues={async () => ({values: await request('/test/things/7').get()})}
+                    submit={{action: request('/test/things/7', 'PATCH').save}}>
                     <TextField name="name" label="Name" />
                 </MoodleForm>,
             );

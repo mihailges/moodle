@@ -118,7 +118,8 @@ class client_management {
             ),
         );
         // The form submits to the create client API endpoint.
-        $response->getBody()->write(\html_writer::react_component('@moodle/lms/core_admin/oauth2/createClientForm', [
+        $response->getBody()->write(\html_writer::react_component('@moodle/lms/core_admin/oauth2/clientForm', [
+            'mode' => 'create',
             'scopes' => $this->get_scope_options(),
             'listUrl' => \core\router\util::get_path_for_callable([self::class, 'list_clients'])->out(false),
         ]));
@@ -182,10 +183,9 @@ class client_management {
                 true,
             ),
             'backurl' => \core\router\util::get_path_for_callable([self::class, 'list_clients'])->out(),
-            'editclientform' => \html_writer::react_component('@moodle/lms/core_admin/oauth2/editClientForm', [
+            'editclientform' => \html_writer::react_component('@moodle/lms/core_admin/oauth2/clientForm', [
+                'mode' => 'update',
                 'clientId' => $cliententity->get_id(),
-                'hasAuthCode' => $cliententity->supportsGrantType(client_entity::GRANT_TYPE_AUTHORIZATION_CODE),
-                'isConfidential' => $cliententity->isConfidential(),
                 'scopes' => $this->get_scope_options(),
                 'listUrl' => \core\router\util::get_path_for_callable([self::class, 'list_clients'])->out(false),
             ]),

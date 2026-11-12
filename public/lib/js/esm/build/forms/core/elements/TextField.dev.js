@@ -3,8 +3,8 @@ var __name = (target, value) => __defProp(target, "name", { value, configurable:
 import { jsxDEV } from "react/jsx-dev-runtime";
 import { Input } from "@moodlehq/design-system";
 import { useFormField } from "../formField";
-function TextField({ name, label, rules, hideIf, disableIf, advanced, ...rest }) {
-  const f = useFormField(name, { rules, hideIf, disableIf, advanced });
+function TextField({ name, label, rules, hideIf, disableIf, defaultIf, advanced, ...rest }) {
+  const f = useFormField(name, { rules, hideIf, disableIf, defaultIf, advanced });
   return f.hidden ? null : /* @__PURE__ */ jsxDEV(
     Input,
     {

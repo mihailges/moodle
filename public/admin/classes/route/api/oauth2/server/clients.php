@@ -96,18 +96,10 @@ class clients {
             return $this->get_validation_error_response($e, $request);
         }
 
-        // Confidential clients continue to their secrets, public clients to the list.
-        $nextroute = $cliententity->isConfidential() ? 'manage_client_secrets' : 'list_clients';
-        $nexturl = \core\router\util::get_path_for_callable(
-            [\core_admin\route\controller\oauth2\server\client_management::class, $nextroute],
-            $cliententity->isConfidential() ? ['client' => $cliententity->get_id()] : [],
-        );
-
         return new payload_response(
             payload: [
                 'id' => $cliententity->get_id(),
                 'isconfidential' => $cliententity->isConfidential(),
-                'redirecturl' => $nexturl->out(false),
             ],
             request: $request,
             response: new HttpResponse(201),
@@ -164,10 +156,19 @@ class clients {
     protected function get_client_payload(\core\oauth2\server\entity\client_entity $cliententity): array {
         $clientmanager = \core\di::get(\core\oauth2\server\client_manager::class);
 
+        $flows = array_values(array_filter([
+            $cliententity->supportsGrantType(\core\oauth2\server\entity\client_entity::GRANT_TYPE_AUTHORIZATION_CODE)
+                ? 'auth_code' : null,
+            $cliententity->supportsGrantType(\core\oauth2\server\entity\client_entity::GRANT_TYPE_CLIENT_CREDENTIALS)
+                ? 'client_credentials' : null,
+        ]));
+
         return [
             'id' => $cliententity->get_id(),
             'name' => $cliententity->getName(),
             'description' => (string) $cliententity->get_description(),
+            'clienttype' => $cliententity->isConfidential() ? 'confidential' : 'public',
+            'flows' => $flows,
             'ispkcerequired' => $cliententity->is_pkce_required(),
             'scopes' => array_values($cliententity->get_scopes()),
             'redirecturis' => array_values($clientmanager->get_redirect_uris($cliententity->get_id())),

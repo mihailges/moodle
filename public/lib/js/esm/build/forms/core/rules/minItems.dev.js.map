@@ -1,8 +1,8 @@
 {
   "version": 3,
   "sources": ["../../../../src/forms/core/rules/minItems.ts"],
-  "sourceRoot": "../../../../../../sources/public/lib/js/esm/build",
-  "sourcesContent": ["import type {Rule} from '../formRule';\nimport {isEmpty} from './helpers';\nimport {markMandatory} from '../formField';\n\n/**\n * For a list: at least `min` items must be filled in. Blank items (e.g. unused rows of a repeater) don't count.\n */\nexport const minItems = (min: number, message: string): Rule => markMandatory(\n    (v) => !Array.isArray(v) || v.filter((item) => !isEmpty(item)).length >= min || message,\n    min >= 1,\n);\n"],
-  "mappings": ";;AACA,SAAQ,eAAc;AACtB,SAAQ,qBAAoB;AAKrB,MAAM,WAAW,wBAAC,KAAa,YAA0B;AAAA,EAC5D,CAAC,MAAM,CAAC,MAAM,QAAQ,CAAC,KAAK,EAAE,OAAO,CAAC,SAAS,CAAC,QAAQ,IAAI,CAAC,EAAE,UAAU,OAAO;AAAA,EAChF,OAAO;AACX,GAHwB;",
+  "sourceRoot": "../../../../../../sources/public/local/formtest/js/esm/build",
+  "sourcesContent": ["import type {Rule} from '../formRule';\nimport {isEmpty} from './helpers';\nimport {markMandatory} from '../formField';\n\n/**\n * For a list: at least `min` items must be filled in. Blank items (e.g. unused rows of a repeater) don't count, and\n * a list that was never set (e.g. checkboxes nobody touched, with no default) is an empty one.\n */\nexport const minItems = (min: number, message: string): Rule => markMandatory(\n    (v) => (v !== undefined && v !== null && !Array.isArray(v))\n        || (Array.isArray(v) ? v.filter((item) => !isEmpty(item)).length : 0) >= min || message,\n    min >= 1,\n);\n"],
+  "mappings": ";;AACA,SAAQ,eAAc;AACtB,SAAQ,qBAAoB;AAMrB,MAAM,WAAW,wBAAC,KAAa,YAA0B;AAAA,EAC5D,CAAC,MAAO,MAAM,UAAa,MAAM,QAAQ,CAAC,MAAM,QAAQ,CAAC,MACjD,MAAM,QAAQ,CAAC,IAAI,EAAE,OAAO,CAAC,SAAS,CAAC,QAAQ,IAAI,CAAC,EAAE,SAAS,MAAM,OAAO;AAAA,EACpF,OAAO;AACX,GAJwB;",
   "names": []
 }

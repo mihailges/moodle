@@ -6,52 +6,46 @@ import {
 } from './formContext';
 import {ActionButton} from './elements/ActionButton';
 import {isFormValidationError} from './FormValidationError';
-import {sendFormEndpointRequest, type SaveMethod} from './formEndpointRequest';
+
+// What happens when the form is submitted.
+export type FormSubmit<P, S> = {
+    action: (payload: P) => Promise<S>;
+    onSuccess?: (saved: S) => void;
+    label?: string;
+    inProgressLabel?: string;
+};
+
+// Loads the existing record of a form that edits one; it may use any URL, independent of the submit request.
+export type RecordLoader<P> = () => Promise<{values: P; readonly?: string[]}>;
 
 type MoodleFormProps<V extends FieldValues, P, S> = {
-    // Not needed when the values come from the server (`method` other than POST, or `load`).
-    defaultValues?: DefaultValues<V>;
-    // The full URL of the resource, e.g. '/admin/oauth2/server/clients/5' or '/admin/settings/foo'; it is used as given.
-    // The form saves to it with `method`, and unless the method is POST it first GETs the values from it.
-    endpoint?: string;
-    // POST creates (the default); PATCH and PUT update, so the existing values are loaded and a save resets the form.
-    method?: SaveMethod;
-    // Only for forms that don't use `endpoint`, or whose values are not a plain GET of it.
-    load?: () => Promise<{values: P; readonly?: string[]}>;
-    // The standard submit button; shown with `endpoint` or `submit`. Without either, place your own
-    // <ActionButton submit={{action}}>.
-    submit?: {
-        // Saves the payload instead of `endpoint`.
-        action?: (payload: P) => Promise<S>;
-        label?: string;
-        savingLabel?: string;
-        onSuccess?: (saved: S) => void;
-    };
+    // Static values, or a loader of the record being edited: the form shows loading, then starts from the record,
+    // and after a save starts from the saved values.
+    defaultValues?: DefaultValues<V> | RecordLoader<P>;
+    // The standard submit button. Without it the form has none: place your own <ActionButton>s.
+    submit?: FormSubmit<P, S>;
     // The standard cancel button.
     cancel?: {action: () => void; label?: string};
     // Only needed when the form values differ in shape from the payload.
     toForm?: (payload: P) => V;
     toPayload?: (values: V) => P;
-    // Optional: rename a server error path. By default it is matched to the field with that name, or the closest one.
+    // Optional: rename a server error path. By default, it is matched to the field with that name, or the closest one.
     mapErrorPath?: (path: string) => string;
     children: ReactNode;
 };
 
 /**
  * Renders a form from its fields (children) and owns the shared plumbing:
- * loading, saving and server error mapping.
+ * loading, saving and server error mapping. It does not know whether the form creates or edits: `defaultValues`
+ * and `submit` say what the form starts from and what saving does.
  */
-export function MoodleForm<V extends FieldValues, P = V, S = P>({
-    defaultValues, endpoint, method = 'POST', load, submit, cancel, toForm, toPayload, mapErrorPath = (p) => p, children,
-}: MoodleFormProps<V, P, S>) {
-    const rest = useMemo(() => (endpoint ? sendFormEndpointRequest(endpoint, method) : null), [endpoint, method]);
-    const form = useForm<V>({defaultValues: defaultValues ?? ({} as DefaultValues<V>), shouldFocusError: false});
+export function MoodleForm<V extends FieldValues, P = V, S = P>(props: MoodleFormProps<V, P, S>) {
+    const {submit, cancel, toForm, toPayload, mapErrorPath = (p) => p, children} = props;
+    const loader = typeof props.defaultValues === 'function' ? props.defaultValues : null;
+    const defaultValues = (loader ? undefined : props.defaultValues) as DefaultValues<V> | undefined;
+    const form = useForm<V>({defaultValues: defaultValues ?? ({} as DefaultValues<V>), mode: 'onTouched', shouldFocusError: false});
     const {reset, setError, handleSubmit, formState: {errors, isSubmitting}} = form;
 
-    // An update form starts from the saved values; a create form starts from its defaults.
-    const loader: (() => Promise<{values: P; readonly?: string[]}>) | null = load ?? (rest && method !== 'POST'
-        ? async () => ({values: await rest.get() as P})
-        : null);
     const [status, setStatus] = useState<'loading' | 'ready' | 'error'>(loader ? 'loading' : 'ready');
     const registry = useRef(new FieldRegistry()).current;
     const [serverDisabled, setServerDisabled] = useState<string[]>([]);
@@ -100,7 +94,7 @@ export function MoodleForm<V extends FieldValues, P = V, S = P>({
         return () => {
             cancelled = true;
         };
-    }, [endpoint]);
+    }, []);
 
     const state = useMemo(() => ({serverDisabled}), [serverDisabled]);
 
@@ -126,10 +120,7 @@ export function MoodleForm<V extends FieldValues, P = V, S = P>({
     });
 
     const onSubmit = async (values: V, override?: SubmitOverride) => {
-        const action = override?.action ?? submit?.action
-            ?? (rest
-                ? rest.save
-                : undefined);
+        const action = override?.action ?? submit?.action;
         if (!action) {
             return;
         }
@@ -139,7 +130,7 @@ export function MoodleForm<V extends FieldValues, P = V, S = P>({
             if (loader) {
                 reset(registry.wrap(asForm(saved as unknown as P)) as DefaultValues<V>);   // saved state becomes the clean baseline
             }
-            (override?.onSuccess ?? submit?.onSuccess)?.(saved);
+            (override ? override.onSuccess : submit?.onSuccess)?.(saved);
         } catch (e) {
             if (!isFormValidationError(e)) {
                 setError('root.server', {message: strings.error});
@@ -180,12 +171,12 @@ export function MoodleForm<V extends FieldValues, P = V, S = P>({
                 <AdvancedContext.Provider value={advanced}>
                 <form ref={formElement} onSubmit={handleSubmit((values) => onSubmit(values), focusFirstInvalid)} noValidate>
                     {Children.map(children, (child) => (
-                        <div className="mt-3">
+                        <div className="mt-4">
                             {child}
                         </div>
                     ))}
                     {advancedCount > 0 && (
-                        <button type="button" className="btn btn-link px-0 mt-3" aria-expanded={showAdvanced}
+                        <button type="button" className="btn btn-link px-0 mt-4" aria-expanded={showAdvanced}
                             onClick={() => setShowAdvanced(!showAdvanced)}>
                             {showAdvanced ? strings.showLess : strings.showMore}
                         </button>
@@ -193,14 +184,14 @@ export function MoodleForm<V extends FieldValues, P = V, S = P>({
                     {errors.root?.server && (
                         <div role="alert" className="alert alert-danger">{errors.root.server.message}</div>
                     )}
-                    {(submit || rest || cancel) && (
-                        <div className="d-flex gap-2 mt-3">
-                            {(submit || rest) && (
+                    {(submit || cancel) && (
+                        <div className="d-flex gap-2 mt-4">
+                            {submit && (
                                 <ActionButton
-                                    label={submit?.label ?? strings.save}
+                                    label={submit.label ?? strings.save}
                                     variant="primary"
-                                    inProgressLabel={submit?.savingLabel ?? 'Saving…'}
-                                    submit
+                                    inProgressLabel={submit.inProgressLabel ?? 'Saving…'}
+                                    formSubmit
                                 />
                             )}
                             {cancel && (

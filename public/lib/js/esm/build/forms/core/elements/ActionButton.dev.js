@@ -4,11 +4,11 @@ import { jsxDEV } from "react/jsx-dev-runtime";
 import { useContext } from "react";
 import { Button } from "@moodlehq/design-system";
 import { FormActionContext } from "../formContext";
-function ActionButton({ label, variant = "secondary", inProgressLabel, submit, onClick }) {
+function ActionButton({ label, variant = "secondary", inProgressLabel, submit, formSubmit, onClick }) {
   const api = useContext(FormActionContext);
   const run = /* @__PURE__ */ __name(() => {
     if (submit) {
-      return api?.submit(typeof submit === "object" ? submit : void 0);
+      return api?.submit(submit);
     }
     return api && onClick?.(api);
   }, "run");
@@ -16,8 +16,8 @@ function ActionButton({ label, variant = "secondary", inProgressLabel, submit, o
   return /* @__PURE__ */ jsxDEV(
     Button,
     {
-      type: submit === true ? "submit" : "button",
-      label: submitting && submit && inProgressLabel ? inProgressLabel : label,
+      type: formSubmit ? "submit" : "button",
+      label: submitting && (submit || formSubmit) && inProgressLabel ? inProgressLabel : label,
       variant,
       size: "lg",
       "aria-disabled": submitting || void 0,
@@ -25,7 +25,7 @@ function ActionButton({ label, variant = "secondary", inProgressLabel, submit, o
       onClick: (e) => {
         if (submitting) {
           e.preventDefault();
-        } else if (submit !== true) {
+        } else if (!formSubmit) {
           run();
         }
       }
@@ -34,7 +34,7 @@ function ActionButton({ label, variant = "secondary", inProgressLabel, submit, o
     false,
     {
       fileName: "public/lib/js/esm/src/forms/core/elements/ActionButton.tsx",
-      lineNumber: 32,
+      lineNumber: 34,
       columnNumber: 9
     },
     this

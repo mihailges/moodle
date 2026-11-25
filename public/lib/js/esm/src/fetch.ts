@@ -215,6 +215,9 @@ export default class Fetch {
      * @param action The component action to perform.
      * @param options Request options (params, body, method, headers, cachekey).
      * @returns A promise that resolves to the {@link Response}.
+     *   For any non-2xx response (for example 400, 403, 422 or 500) the promise rejects with the unconsumed {@link Response},
+     *   so callers can read its status, headers and body (such as an RFC 9457 `application/problem+json` document).
+     *   If no response is received (a network failure or abort) it rejects with the underlying error instead.
      */
     // eslint-disable-next-line unicorn/consistent-class-member-order -- Group singleton state first.
     static async request(

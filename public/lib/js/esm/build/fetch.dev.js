@@ -130,6 +130,11 @@ class Fetch {
   /**
    * Make a single request to the Moodle API.
    *
+   * For any non-2xx response (for example 400, 403, 422 or 500) the promise rejects with the unconsumed
+   * {@link Response}, so callers can read its status, headers and body (such as an RFC 9457
+   * `application/problem+json` document). If no response is received (a network failure or abort) it rejects
+   * with the underlying error instead.
+   *
    * @param component The frankenstyle component name.
    * @param action The component action to perform.
    * @param options Request options (params, body, method, headers, cachekey).

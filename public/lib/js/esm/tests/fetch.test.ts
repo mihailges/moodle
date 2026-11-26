@@ -223,6 +223,36 @@ describe('@moodle/lms/core/fetch', () => {
             await expect(Fetch.request('mod_example', 'missing')).rejects.toMatchObject({status: 404, statusText: 'Not Found'});
         });
 
+        it.each([
+            [400, 'Bad Request'],
+            [403, 'Forbidden'],
+            [422, 'Unprocessable Entity'],
+            [500, 'Internal Server Error'],
+        ])('rejects with a readable %i response', async(status, statusText) => {
+            const problem = {type: 'about:blank', title: statusText, status, errors: {name: ['Required']}};
+            mockFetch.mockResolvedValue(new MockResponse(JSON.stringify(problem), {
+                status,
+                statusText: '',
+                headers: {'Content-Type': 'application/problem+json'},
+            }));
+
+            const error = await Fetch.request('mod_example', 'save', {method: 'POST', body: {}}).catch((e) => e);
+
+            expect(error).toBeInstanceOf(MockResponse);
+            expect(error.status).toBe(status);
+            expect(await error.json()).toEqual(problem);
+        });
+
+        it('rejects with the underlying error on a network failure', async() => {
+            const networkError = new TypeError('Failed to fetch');
+            mockFetch.mockRejectedValue(networkError);
+
+            const error = await Fetch.request('mod_example', 'get_items').catch((e) => e);
+
+            expect(error).toBe(networkError);
+            expect(error).not.toBeInstanceOf(MockResponse);
+        });
+
         it('registers and completes a Pending operation', async() => {
             await Fetch.request('mod_example', 'get_items');
 

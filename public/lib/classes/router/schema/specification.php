@@ -19,6 +19,7 @@ namespace core\router\schema;
 use coding_exception;
 use core\router\response\invalid_parameter_response;
 use core\router\response\not_found_response;
+use core\router\response\validation_error_response;
 use core\router\route;
 use core\router\route_loader_interface;
 use core\router\schema\objects\type_base;
@@ -120,6 +121,7 @@ class specification implements
     protected function generate_common_responses(): self {
         $invalidresponse = new invalid_parameter_response();
         $notfoundresponse = new not_found_response();
+        $validationresponse = new validation_error_response();
 
         $this->commonresponses[] = function (
             route $route,
@@ -127,6 +129,7 @@ class specification implements
         ) use (
             $invalidresponse,
             $notfoundresponse,
+            $validationresponse,
         ): stdClass {
             if ($route->has_any_validatable_parameter()) {
                 if (!array_key_exists($invalidresponse::get_exception_status_code(), $data->responses)) {
@@ -134,6 +137,13 @@ class specification implements
                 }
                 if (!array_key_exists($notfoundresponse::get_exception_status_code(), $data->responses)) {
                     $data->responses[$notfoundresponse::get_exception_status_code()] = $notfoundresponse->get_openapi_schema($this);
+                }
+            }
+
+            if ($route->has_request_body()) {
+                $status = $validationresponse::get_exception_status_code();
+                if (!array_key_exists($status, $data->responses)) {
+                    $data->responses[$status] = $validationresponse->get_openapi_schema($this);
                 }
             }
 

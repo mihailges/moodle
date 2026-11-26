@@ -216,6 +216,44 @@ final class specification_test extends route_testcase {
         ];
     }
 
+    /**
+     * A route with a request body documents the 422 validation response, and the constraints of the body.
+     */
+    public function test_add_path_with_request_body_documents_validation_response(): void {
+        $spec = new specification();
+
+        $spec->add_path(
+            'core',
+            new route(
+                path: '/example/body',
+                method: ['POST'],
+                requestbody: new \core\router\schema\request_body(
+                    content: new \core\router\schema\response\content\payload_response_type(
+                        schema: new \core\router\schema\objects\schema_object(
+                            content: [
+                                'name' => new \core\router\schema\objects\scalar_type(
+                                    type: param::TEXT,
+                                    required: true,
+                                    maxlength: 20,
+                                ),
+                            ],
+                        ),
+                    ),
+                ),
+            ),
+        );
+
+        $schema = json_decode(json_encode($spec->get_schema()));
+        $operation = $schema->paths->{'/core/example/body'}->post;
+        $this->assertObjectHasProperty('422', $operation->responses);
+
+        $problem = $operation->responses->{'422'};
+        if (isset($problem->{'$ref'})) {
+            $problem = $schema->components->responses->{basename($problem->{'$ref'})};
+        }
+        $this->assertObjectHasProperty('application/problem+json', $problem->content);
+    }
+
     public function test_add_path_with_option(): void {
         $spec = new specification();
 

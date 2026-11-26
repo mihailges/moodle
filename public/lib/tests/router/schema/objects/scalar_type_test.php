@@ -16,11 +16,11 @@
 
 namespace core\router\schema\objects;
 
+use core\exception\validation_exception;
 use core\param;
 use core\router\schema\referenced_object;
 use core\router\schema\specification;
 use core\tests\router\route_testcase;
-use invalid_parameter_exception;
 
 /**
  * Tests for a scalar type.
@@ -74,7 +74,46 @@ final class scalar_type_test extends route_testcase {
             required: true,
         );
 
-        $this->expectException(invalid_parameter_exception::class);
+        $this->expectException(validation_exception::class);
         $object->validate_data(null);
+    }
+
+    public function test_validation_maxlength(): void {
+        $object = new scalar_type(
+            type: param::TEXT,
+            maxlength: 5,
+        );
+
+        $this->assertEquals('12345', $object->validate_data('12345'));
+
+        try {
+            $object->validate_data('123456');
+            $this->fail('Expected a validation_exception');
+        } catch (validation_exception $e) {
+            $this->assertEquals(
+                [validation_exception::ROOT => [get_string('validationmaxlength', 'error', 5)]],
+                $e->get_errors(),
+            );
+        }
+    }
+
+    public function test_validation_enum(): void {
+        $object = new scalar_type(
+            type: param::ALPHA,
+            enum: ['one', 'two'],
+        );
+
+        $this->assertEquals('two', $object->validate_data('two'));
+        $this->assertNull($object->validate_data(null));
+
+        $this->expectException(validation_exception::class);
+        $object->validate_data('three');
+    }
+
+    public function test_validation_invalid_type(): void {
+        $object = new scalar_type(type: param::INT);
+
+        $this->expectException(validation_exception::class);
+        $object->validate_data('abc');
     }
 }

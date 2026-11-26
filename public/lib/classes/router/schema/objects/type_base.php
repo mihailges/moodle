@@ -87,9 +87,20 @@ abstract class type_base extends openapi_base {
     }
 
     /**
+     * Whether a value is required for this type.
+     *
+     * @return bool
+     */
+    public function is_required(): bool {
+        return false;
+    }
+
+    /**
      * Validate the data against the type.
      *
      * @param mixed $data
+     * @return mixed The validated data
+     * @throws \core\exception\validation_exception If the data is not valid, with the messages for each invalid field.
      */
     abstract public function validate_data(mixed $data);
 }

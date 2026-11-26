@@ -140,6 +140,49 @@ final class preferences_test extends route_testcase {
     }
 
     /**
+     * Test that invalid and unknown fields in the body are all reported in a 422 response.
+     */
+    public function test_preferences_set_invalid_body(): void {
+        $this->resetAfterTest();
+
+        $this->add_class_routes_to_route_loader(preferences::class);
+
+        $this->setAdminUser();
+
+        $response = $this->process_api_request(
+            'POST',
+            '/current/preferences',
+            body: Utils::streamFor(json_encode([
+                'preferences' => ['filemanager_recentviewmode' => ['not a scalar']],
+                'unknown' => 1,
+            ])),
+        );
+
+        $this->assert_validation_error_response($response, ['preferences.filemanager_recentviewmode', 'unknown']);
+    }
+
+    /**
+     * Test that a malformed JSON body is reported in a 422 response.
+     */
+    public function test_preferences_set_malformed_json(): void {
+        $this->resetAfterTest();
+
+        $this->add_class_routes_to_route_loader(preferences::class);
+
+        $this->setAdminUser();
+
+        $response = $this->process_api_request(
+            'POST',
+            '/current/preferences',
+            body: Utils::streamFor('{"preferences": '),
+        );
+
+        $this->assert_validation_error_response($response, []);
+        $payload = $this->decode_response($response);
+        $this->assertEquals(get_string('validationmalformedjson', 'error'), $payload->detail);
+    }
+
+    /**
      * Test that a preference the user does not have permission to is rejected.
      */
     public function test_preferences_set_not_permitted_valid_login(): void {

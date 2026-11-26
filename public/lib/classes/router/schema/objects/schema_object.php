@@ -17,6 +17,8 @@
 namespace core\router\schema\objects;
 
 use core\exception\coding_exception;
+use core\exception\invalid_parameter_exception;
+use core\exception\validation_exception;
 use core\router\schema\specification;
 
 /**
@@ -73,23 +75,47 @@ class schema_object extends type_base {
 
     #[\Override]
     public function validate_data(mixed $data) {
-        foreach ($data as $key => $values) {
+        if (!is_array($data)) {
+            throw validation_exception::for_field(validation_exception::ROOT, get_string('validationinvalid', 'error'));
+        }
+
+        // All of the problems are collected so that they can be reported together.
+        $errors = [];
+        $validated = [];
+
+        foreach ($data as $key => $value) {
+            $key = (string) $key;
             if (!$this->has($key)) {
-                // We do not know about this one.
-                // Remove it from the params array.
-                $data = array_diff_key(
-                    $data,
-                    [$key => $values],
-                );
+                $errors[$key][] = get_string('validationunknownfield', 'error');
                 continue;
             }
 
-            // Validate this parameter.
-            $child = $this->content[$key];
-            $data[$key] = $child->validate_data($values);
+            try {
+                $validated[$key] = $this->content[$key]->validate_data($value);
+            } catch (validation_exception $e) {
+                foreach ($e->get_errors_under($key) as $path => $messages) {
+                    $errors[$path] = array_merge($errors[$path] ?? [], $messages);
+                }
+            } catch (invalid_parameter_exception) {
+                $errors[$key][] = get_string('validationinvalid', 'error');
+            }
         }
 
-        return $data;
+        foreach ($this->content as $key => $child) {
+            if (array_key_exists($key, $data)) {
+                continue;
+            }
+
+            if ($child->is_required()) {
+                $errors[$key][] = get_string('validationrequired', 'error');
+            }
+        }
+
+        if ($errors) {
+            throw new validation_exception($errors);
+        }
+
+        return $validated;
     }
 
     #[\Override]

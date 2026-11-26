@@ -16,6 +16,7 @@
 
 namespace core\router\schema\objects;
 
+use core\exception\validation_exception;
 use core\param;
 use core\router\schema\referenced_object;
 use core\router\schema\specification;
@@ -160,8 +161,12 @@ final class array_of_things_test extends route_testcase {
             $valueparamtype,
         );
 
-        $this->expectException(\invalid_parameter_exception::class);
-        $object->validate_data($data);
+        try {
+            $object->validate_data($data);
+            $this->fail('Expected a validation_exception');
+        } catch (validation_exception $e) {
+            $this->assertNotEmpty($e->get_errors());
+        }
     }
 
     /**

@@ -132,6 +132,10 @@ class schema_object extends type_base {
             $data->properties->{$name} = $content->get_openapi_schema(
                 $api,
             );
+
+            if ($content->is_required()) {
+                $data->required[] = $name;
+            }
         }
 
         return $data;

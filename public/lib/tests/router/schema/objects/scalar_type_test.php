@@ -116,4 +116,20 @@ final class scalar_type_test extends route_testcase {
         $this->expectException(validation_exception::class);
         $object->validate_data('abc');
     }
+
+    public function test_openapi_constraints(): void {
+        $object = new scalar_type(
+            type: param::ALPHA,
+            maxlength: 10,
+            enum: ['one', 'two'],
+        );
+
+        $schema = $object->get_openapi_description(new specification());
+        $this->assertEquals(10, $schema->maxLength);
+        $this->assertEquals(['one', 'two'], $schema->enum);
+
+        $schema = (new scalar_type(type: param::ALPHA))->get_openapi_description(new specification());
+        $this->assertObjectNotHasProperty('maxLength', $schema);
+        $this->assertObjectNotHasProperty('enum', $schema);
+    }
 }

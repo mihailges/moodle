@@ -59,6 +59,14 @@ class scalar_type extends type_base {
     ): ?\stdClass {
         $data = $this->get_schema_from_type($this->type);
 
+        if ($this->maxlength !== null) {
+            $data->maxLength = $this->maxlength;
+        }
+
+        if ($this->enum !== null) {
+            $data->enum = array_values($this->enum);
+        }
+
         return $data;
     }
 

@@ -154,4 +154,19 @@ final class schema_object_test extends route_testcase {
         $this->expectException(validation_exception::class);
         $object->validate_data('string');
     }
+
+    public function test_openapi_required(): void {
+        $object = new schema_object(
+            content: [
+                'name' => new scalar_type(type: param::TEXT, required: true),
+                'note' => new scalar_type(type: param::TEXT),
+            ],
+        );
+
+        $schema = $object->get_openapi_description(new specification());
+        $this->assertEquals(['name'], $schema->required);
+
+        $schema = (new schema_object(content: []))->get_openapi_description(new specification());
+        $this->assertObjectNotHasProperty('required', $schema);
+    }
 }

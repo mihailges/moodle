@@ -37,7 +37,18 @@ class problem_response_schema extends schema_object implements
     public function __construct(
         ...$extra,
     ) {
-        $extra['content'] = [
+        $extra['content'] = static::get_content();
+
+        parent::__construct(...$extra);
+    }
+
+    /**
+     * Get the members of the problem details object.
+     *
+     * @return type_base[]
+     */
+    protected static function get_content(): array {
+        return [
             'type' => new scalar_type(
                 type: param::URL,
                 description: 'A URI reference that identifies the problem type.',
@@ -70,7 +81,5 @@ class problem_response_schema extends schema_object implements
             ),
             'stacktrace' => new stacktrace(),
         ];
-
-        parent::__construct(...$extra);
     }
 }

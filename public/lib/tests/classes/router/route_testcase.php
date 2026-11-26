@@ -490,6 +490,28 @@ abstract class route_testcase extends \advanced_testcase {
     }
 
     /**
+     * Assert that the supplied response was a validation error response.
+     *
+     * @param ResponseInterface $response
+     * @param string[]|null $fields The fields expected to have messages, if they should be checked
+     */
+    protected function assert_validation_error_response(
+        ResponseInterface $response,
+        ?array $fields = null,
+    ): void {
+        $this->assert_exception_response($response, 422);
+        $this->assertStringContainsString('application/problem+json', $response->getHeaderLine('Content-Type'));
+
+        $payload = $this->decode_response($response);
+        $this->assertEquals('Unprocessable Entity', $payload->title);
+        $this->assertObjectHasProperty('errors', $payload);
+
+        if ($fields !== null) {
+            $this->assertEqualsCanonicalizing($fields, array_keys((array) $payload->errors));
+        }
+    }
+
+    /**
      * Assert that the supplied response was an access_denied exception response.
      *
      * @param ResponseInterface $response

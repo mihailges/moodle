@@ -16,6 +16,7 @@
 
 namespace core\router\schema\objects;
 
+use core\exception\validation_exception;
 use core\param;
 use core\router\schema\specification;
 use core\tests\router\route_testcase;
@@ -83,9 +84,23 @@ final class array_of_strings_test extends route_testcase {
             valueparamtype: $valueparamtype,
         );
 
-        $this->expectException(\invalid_parameter_exception::class);
+        $this->expectException(validation_exception::class);
 
         $object->validate_data($data);
+    }
+
+    /**
+     * Test that a value which is not a scalar is reported against its key.
+     */
+    public function test_validation_non_scalar_value(): void {
+        $object = new array_of_strings();
+
+        try {
+            $object->validate_data(['example' => ['nested']]);
+            $this->fail('Expected a validation_exception');
+        } catch (validation_exception $e) {
+            $this->assertEquals(['example'], array_keys($e->get_errors()));
+        }
     }
 
     /**

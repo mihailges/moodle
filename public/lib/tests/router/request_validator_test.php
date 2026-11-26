@@ -16,6 +16,7 @@
 
 namespace core\router;
 
+use core\exception\validation_exception;
 use core\param;
 use core\router\schema\parameters\path_parameter;
 use core\router\schema\parameters\query_parameter;
@@ -261,8 +262,37 @@ final class request_validator_test extends route_testcase {
 
         // Validate the request.
         $validator = \core\di::get(request_validator::class);
-        $this->expectException(\invalid_parameter_exception::class);
+        $this->expectException(validation_exception::class);
         $validator->validate_request($request);
+    }
+
+    /**
+     * Validate a request body which is malformed JSON.
+     */
+    public function test_validate_request_body_malformed_json(): void {
+        $route = new route(
+            path: '/example',
+            requestbody: new request_body(
+                content: new payload_response_type(
+                    schema: new \core\router\schema\objects\schema_object(content: []),
+                ),
+            ),
+        );
+
+        $request = $this->get_request_for_routed_route($route, '/example')
+            ->withHeader('Content-Type', 'application/json')
+            ->withBody(\GuzzleHttp\Psr7\Utils::streamFor('{"name": '));
+
+        $validator = \core\di::get(request_validator::class);
+        try {
+            $validator->validate_request($request);
+            $this->fail('Expected a validation_exception');
+        } catch (validation_exception $e) {
+            $this->assertEquals(
+                [validation_exception::ROOT => [get_string('validationmalformedjson', 'error')]],
+                $e->get_errors(),
+            );
+        }
     }
 
     /**

@@ -1,0 +1,17 @@
+issueNumber: MDL-90657
+notes:
+  core:
+    - message: >
+        Route request bodies are now validated in full and failures return an
+        RFC-9457 `422` response with an `errors` object keyed by field path.
+        Unknown fields, missing required fields, invalid types and values
+        exceeding `maxlength` or outside an `enum` are now rejected, rather
+        than being ignored or returning a `400`. The new
+        `core\exception\validation_exception` can be thrown from services to
+        return the same response.
+      type: changed
+    - message: >
+        `core\router\schema\objects\scalar_type` accepts new `maxlength` and
+        `enum` arguments, and the OpenAPI specification now documents the `422`
+        response, required fields, `maxLength` and `enum`.
+      type: improved

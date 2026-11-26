@@ -16,6 +16,8 @@
 
 namespace core\router\schema\objects;
 
+use core\exception\invalid_parameter_exception;
+use core\exception\validation_exception;
 use core\param;
 use core\router\schema\specification;
 
@@ -66,7 +68,7 @@ class array_of_things extends type_base {
     #[\Override]
     public function validate_data(mixed $data) {
         if (!is_array($data)) {
-            throw new \invalid_parameter_exception('Invalid data type, expected array.');
+            throw validation_exception::for_field(validation_exception::ROOT, get_string('validationinvalid', 'error'));
         }
 
         if ($this->thingtype === null) {
@@ -85,9 +87,23 @@ class array_of_things extends type_base {
             $validator = fn ($value) => $param->validate_param($value);
         }
 
-        foreach ($data as $value) {
-            $validator($value);
+        $errors = [];
+        foreach ($data as $key => $value) {
+            try {
+                $validator($value);
+            } catch (validation_exception $e) {
+                foreach ($e->get_errors_under((string) $key) as $path => $messages) {
+                    $errors[$path] = array_merge($errors[$path] ?? [], $messages);
+                }
+            } catch (invalid_parameter_exception) {
+                $errors[(string) $key][] = get_string('validationinvalid', 'error');
+            }
         }
+
+        if ($errors) {
+            throw new validation_exception($errors);
+        }
+
         return $data;
     }
 }

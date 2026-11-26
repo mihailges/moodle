@@ -16,6 +16,8 @@
 
 namespace core\router\schema\objects;
 
+use core\exception\invalid_parameter_exception;
+use core\exception\validation_exception;
 use core\param;
 use core\router\schema\referenced_object;
 
@@ -49,16 +51,30 @@ final class array_of_strings extends array_of_things implements referenced_objec
 
     #[\Override]
     public function validate_data(mixed $data) {
-        foreach ($data as $name => $value) {
-            $this->keyparamtype->validate_param(
-                param: $name,
-                debuginfo: $this->get_debug_info_for_validation_failure($this->keyparamtype, $name),
-            );
-            $this->valueparamtype->validate_param(
-                param: $value,
-                debuginfo: $this->get_debug_info_for_validation_failure($this->valueparamtype, $value),
-            );
+        if (!is_array($data)) {
+            throw validation_exception::for_field(validation_exception::ROOT, get_string('validationinvalid', 'error'));
         }
+
+        $errors = [];
+        foreach ($data as $name => $value) {
+            try {
+                $this->keyparamtype->validate_param(
+                    param: (string) $name,
+                    debuginfo: $this->get_debug_info_for_validation_failure($this->keyparamtype, $name),
+                );
+                $this->valueparamtype->validate_param(
+                    param: $value,
+                    debuginfo: $this->get_debug_info_for_validation_failure($this->valueparamtype, $value),
+                );
+            } catch (invalid_parameter_exception) {
+                $errors[(string) $name][] = get_string('validationinvalid', 'error');
+            }
+        }
+
+        if ($errors) {
+            throw new validation_exception($errors);
+        }
+
         return $data;
     }
 
@@ -66,13 +82,15 @@ final class array_of_strings extends array_of_things implements referenced_objec
      * Get the debug info for a validation failure.
      *
      * @param param $type
-     * @param string $value
+     * @param mixed $value
      * @return string
      */
     protected function get_debug_info_for_validation_failure(
         param $type,
-        string $value,
+        mixed $value,
     ): string {
+        $value = is_scalar($value) ? (string) $value : gettype($value);
+
         return  "The value '{$value}' was not of type {$type->value}.";
     }
 }

@@ -212,4 +212,22 @@ final class response_handler_test extends \advanced_testcase {
         $this->assertSame('/api/items', $payload['instance']);
         $this->assertSame('invalidparameter', $payload['errorcode']);
     }
+
+    /**
+     * A validation exception thrown by a service or hook is mapped to a 422 problem details response.
+     */
+    public function test_get_response_from_validation_exception(): void {
+        $request = new ServerRequest('POST', 'http://example.com/api/items');
+        $exception = new \core\exception\validation_exception(['name' => ['Already in use']]);
+
+        $result = di::get(response_handler::class)->get_response_from_exception($request, $exception);
+        $payload = json_decode((string) $result->getBody(), true);
+
+        $this->assertSame(422, $result->getStatusCode());
+        $this->assertSame('application/problem+json', $result->getHeaderLine('Content-Type'));
+        $this->assertSame(422, $payload['status']);
+        $this->assertSame('Unprocessable Entity', $payload['title']);
+        $this->assertSame('/api/items', $payload['instance']);
+        $this->assertSame(['name' => ['Already in use']], $payload['errors']);
+    }
 }

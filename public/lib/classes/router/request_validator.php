@@ -16,6 +16,7 @@
 
 namespace core\router;
 
+use core\exception\validation_exception;
 use invalid_parameter_exception;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpNotFoundException;
@@ -181,7 +182,9 @@ class request_validator implements request_validator_interface {
         $bodyschema = $bodyconfig->get_schema();
 
         $parsedbody = $request->getParsedBody();
-        if (empty($parsedbody)) {
+        $rawbody = trim((string) $request->getBody());
+
+        if ($rawbody === '' && empty($parsedbody)) {
             if ($moodleroute->get_request_body()->is_required()) {
                 throw new invalid_parameter_exception('Missing request body.');
             }
@@ -190,8 +193,22 @@ class request_validator implements request_validator_interface {
             return $request;
         }
 
+        if (
+            empty($parsedbody)
+            && str_contains(strtolower($request->getHeaderLine('Content-Type')), 'json')
+        ) {
+            // The body parser silently ignores a body that it cannot parse.
+            json_decode($rawbody);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw validation_exception::for_field(
+                    validation_exception::ROOT,
+                    get_string('validationmalformedjson', 'error'),
+                );
+            }
+        }
+
         return $request->withParsedBody(
-            $bodyschema->validate_data($request->getParsedBody()),
+            $bodyschema->validate_data($parsedbody ?? []),
         );
     }
 }

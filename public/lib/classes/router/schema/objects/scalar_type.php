@@ -16,6 +16,8 @@
 
 namespace core\router\schema\objects;
 
+use core\exception\invalid_parameter_exception;
+use core\exception\validation_exception;
 use core\param;
 use core\router\schema\specification;
 
@@ -32,7 +34,8 @@ class scalar_type extends type_base {
      *
      * @param param $type The Moodle PARAM_ type
      * @param bool $required Whether the value is required or not
-     * @param mixed $default The value used if none was supplied (request bodies only)
+     * @param int|null $maxlength The maximum length of a string value
+     * @param array|null $enum The values which are allowed
      * @param mixed[] ...$extra
      */
     public function __construct(
@@ -40,8 +43,10 @@ class scalar_type extends type_base {
         protected param $type,
         /** @var bool Whether the value is required or not */
         protected bool $required = false,
-        /** @var mixed $default The value used if none was supplied (request bodies only) */
-        protected mixed $default = null,
+        /** @var int|null The maximum length of a string value */
+        protected ?int $maxlength = null,
+        /** @var array|null The values which are allowed */
+        protected ?array $enum = null,
         ...$extra,
     ) {
         parent::__construct(...$extra);
@@ -52,14 +57,49 @@ class scalar_type extends type_base {
         specification $api,
         ?string $path = null,
     ): ?\stdClass {
-        return $this->get_schema_from_type($this->type);
+        $data = $this->get_schema_from_type($this->type);
+
+        return $data;
+    }
+
+    #[\Override]
+    public function is_required(): bool {
+        return $this->required;
     }
 
     #[\Override]
     public function validate_data(mixed $data) {
-        return $this->type->validate_param(
-            param: $data,
-            allownull: $this->required ? NULL_NOT_ALLOWED : NULL_ALLOWED,
-        );
+        if ($data === null && $this->required) {
+            throw validation_exception::for_field(validation_exception::ROOT, get_string('validationrequired', 'error'));
+        }
+
+        try {
+            $value = $this->type->validate_param(
+                param: $data,
+                allownull: NULL_ALLOWED,
+            );
+        } catch (invalid_parameter_exception) {
+            throw validation_exception::for_field(validation_exception::ROOT, get_string('validationinvalid', 'error'));
+        }
+
+        if ($value === null) {
+            return null;
+        }
+
+        if ($this->maxlength !== null && mb_strlen((string) $value) > $this->maxlength) {
+            throw validation_exception::for_field(
+                validation_exception::ROOT,
+                get_string('validationmaxlength', 'error', $this->maxlength),
+            );
+        }
+
+        if ($this->enum !== null && !in_array((string) $value, array_map(strval(...), $this->enum), true)) {
+            throw validation_exception::for_field(
+                validation_exception::ROOT,
+                get_string('validationenum', 'error', implode(', ', $this->enum)),
+            );
+        }
+
+        return $value;
     }
 }
